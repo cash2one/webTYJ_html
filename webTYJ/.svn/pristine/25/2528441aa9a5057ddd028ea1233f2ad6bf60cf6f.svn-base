@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="bower_components/skins/zyupload-1.0.0.min.css " type="text/css">
+
+    <link rel="stylesheet" href="css/ztree/demo.css" type="text/css">
+    <link rel="stylesheet" href="css/ztree/zTreeStyle.css" type="text/css">
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.core-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.excheck-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.exedit-3.5.js"></script>
+    <script type="text/javascript">
+        function exportExcelWater() {
+            var url = document.getElementById("fileurl").value;
+            window.location.href = url + "/info/outWaterMeterExcel.do?"
+        }
+
+    </script>
+</head>
+<body>
+<form id="css_form" name="mainForm" novalidate>
+    <!--搜索-->
+    <div class="sel_top" ng-show="show8">
+        <div class="row">
+            <div class="col-lg-9 col-md-9 col-sm-6">
+                <button type="button" class="btn btn-default btn-primary" data-target="#outPut" data-toggle="modal"
+                        ng-click="inportExcel()">
+                    <span class="glyphicon glyphicon-log-in btn_icon"></span>
+                    导入
+                </button>
+                <button type="button" class="btn btn-default btn-primary" data-target="#new" data-toggle="modal">
+                    <span class="glyphicon glyphicon-plus btn_icon"></span>
+                    新建
+                </button>
+                <button type="button" class="btn btn-default btn-primary" ng-click="updateWater(item2)">
+                    <span class="glyphicon glyphicon-edit btn_icon"></span>
+                    编辑
+                </button>
+                <button type="button" class="btn btn-default btn-primary" ng-click="showLink(item2)">
+                    <span class="glyphicon glyphicon-link btn_icon"></span>
+                    关联
+                </button>
+                <button type="button" class="btn btn-default btn-primary" ng-click="disableWater(item2)">
+                    <span class="glyphicon glyphicon-ban-circle btn_icon"></span>
+                    停用
+                </button>
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-4"><input class="form-control" ng-model="searchMeter.waterMeterNum" placeholder="请输入编号">
+            </div>
+            <div class="col-lg-1 col-md-1 col-sm-2">
+                <button type="button" class="btn btn-default btn-primary" ng-click="currentWater._load()">
+                    <span class="glyphicon glyphicon-search btn_icon"></span>
+                    查询
+                </button>
+            </div>
+        </div>
+    </div>
+    <!--搜素结束-->
+    <div class="row padding" ng-show="show9">
+        <div class="col-lg-12">
+            <table>
+                <thead>
+                <tr>
+                    <th>序号</th>
+                    <th>资产编号</th>
+                    <th>水表编号</th>
+                    <th>水表状态</th>
+                    <th>区域</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-dblclick="showList(item)" ng-repeat="item in currentWater.object['waterMeter']"
+                    ng-show="item['waterMeterId'] != null" ng-class="{'this_info':btnIndex==item}"
+                    ng-click="checkCurrentWater(item)">
+                    <!--<td><input type="checkbox"></td>-->
+                    <td>{{$index}}</td>
+                    <td>{{item.propertyNumber}}</td>
+                    <td>{{item.waterMeterNum}}</td>
+                    <td>
+                        <div ng-switch on="{{item['state']}}">
+                            <div class="animate-switch" ng-switch-when="1">新建</div>
+                            <div class="animate-switch" ng-switch-when="4">未使用</div>
+                            <div class="animate-switch" ng-switch-when="2">使用中</div>
+                            <div class="animate-switch" ng-switch-when="3">停用</div>
+                        </div>
+                    </td>
+                    <td>{{item.fullName}}</td>
+                </tr>
+                </tbody>
+            </table>
+            <!--<div class="bill_paging">
+                <ul class="pagination">
+                    <li><a style="cursor:pointer;" ng-click="currentWater.go(1)">首页</a></li>
+                    <li><a style="cursor:pointer;" ng-show="currentWater.hasPrevious()"
+                           ng-click="currentWater.previous()">上一页</a></li>
+                    <li><a style="cursor:pointer;" ng-repeat="i in currentWater.pages" ng-click="currentWater.go(i)">{{i}}</a>
+                    </li>
+                    <li><a style="cursor:pointer;" ng-show="currentWater.hasNext()"
+                           ng-click="currentWater.next()">下一页</a></li>
+                    <li><a style="cursor:pointer;" ng-click="currentWater.go(currentWater.page.totalPage)">尾页</a></li>
+                </ul>
+            </div>-->
+            <div class="bill_paging">
+                <span>共{{currentWater.object.page.totalResult}}条</span>
+                <ul class="pagination">
+                    <li ng-class="{true:'disabled'}[currentWater.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-click="currentWater.go(1)">首页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[currentWater.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-show="currentWater.hasPrevious()" ng-click="currentWater.previous()">上一页</a>
+                    </li>
+                    <li ng-class="{true:'active'}[currentWater.page.currentPage==i]" ng-repeat="i in currentWater.pages">
+                        <a href="javascript:void(0)"  ng-click="currentWater.go(i)">{{i}}</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[currentWater.page.currentPage==currentWater.page.totalPage]">
+                        <a href="javascript:void(0)" ng-show="currentWater.hasNext()" ng-click="currentWater.next()">下一页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[currentWater.page.currentPage==currentWater.page.totalPage]">
+                        <a href="javascript:void(0)" ng-click="currentWater.go(currentWater.page.totalPage)">尾页</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!--新建-->
+    <div class="modal fade" id="new" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <span class="modal-title">新建</span>
+                </div>
+                <div class="modal-body">
+                    <div class="padding">
+                        <div class="row sel1">
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">资产名称：</div>
+                            <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"
+                                                                           ng-model="currentAddWater.property.propertyName"
+                                                                           name="propertyName"
+                                                                           placeholder="请输入资产名称">
+                                       <span class="glyphicon glyphicon-exclamation-sign mess"
+                                             ng-show="mainForm.propertyName.$dirty && mainForm.propertyName.$invalid">
+                                                         <p class="alter"
+                                                            ng-show="mainForm.propertyName.$error.required">
+                                                             不能为空
+                                                         </p>
+                                                        <p class="alter" ng-show="mainForm.propertyName.defined ">
+                                                            正确
+                                                        </p>
+                                                  </span>
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 "></div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">资产编号：</div>
+                            <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"
+                                                                           ng-model="currentAddWater.property.propertyNumber"
+                                                                           ng-pattern="/^[0-9]*$/" name="propertyNumber"
+                                                                           placeholder="请输入数字">
+                                   <span class="glyphicon glyphicon-exclamation-sign mess"
+                                         ng-show="mainForm.propertyNumber.$dirty && mainForm.propertyNumber.$invalid">
+                                                         <p class="alter"
+                                                            ng-show="mainForm.propertyNumber.$error.required">
+                                                             不能为空
+                                                         </p>
+                                                        <p class="alter" ng-show="mainForm.propertyNumber.defined ">
+                                                            正确
+                                                        </p>
+                                                  </span>
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 "></div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">保质期：</div>
+                            <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"
+                                                                           ng-model="currentAddWater.property.expirationDate"
+                                                                           name="expirationDate"
+                                                                           placeholder="请输入保质期">
+                                   <span class="glyphicon glyphicon-exclamation-sign mess"
+                                         ng-show="mainForm.expirationDate.$dirty && mainForm.expirationDate.$invalid">
+                                                         <p class="alter"
+                                                            ng-show="mainForm.expirationDate.$error.required">
+                                                             不能为空
+                                                         </p>
+                                                        <p class="alter" ng-show="mainForm.expirationDate.defined ">
+                                                            正确
+                                                        </p>
+                                                  </span>
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 "></div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">产地：</div>
+                            <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"
+                                                                           ng-model="currentAddWater.property.producingArea"
+                                                                           name="producingArea"
+                                                                           placeholder="请输入产地">
+                           <span class="glyphicon glyphicon-exclamation-sign mess"
+                                 ng-show="mainForm.producingArea.$dirty && mainForm.producingArea.$invalid">
+                                                         <p class="alter"
+                                                            ng-show="mainForm.producingArea.$error.required">
+                                                             不能为空
+                                                         </p>
+                                                        <p class="alter" ng-show="mainForm.producingArea.defined ">
+                                                            正确
+                                                        </p>
+                                                  </span>
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 "></div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">厂商：</div>
+                            <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"
+                                                                           ng-model="currentAddWater.property.manufacturer"
+                                                                           name="manufacturer"
+                                                                           placeholder="请输入厂商">
+                                   <span class="glyphicon glyphicon-exclamation-sign mess"
+                                         ng-show="mainForm.manufacturer.$dirty && mainForm.manufacturer.$invalid">
+                                                         <p class="alter"
+                                                            ng-show="mainForm.manufacturer.$error.required">
+                                                             不能为空
+                                                         </p>
+                                                        <p class="alter" ng-show="mainForm.manufacturer.defined ">
+                                                            正确
+                                                        </p>
+                                                  </span>
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 "></div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">厂商电话：</div>
+                            <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"
+                                                                           ng-model="currentAddWater.property.manufacturerPhone"
+                                                                           name="manufacturerPhone"
+                                                                           ng-pattern="/^[0-9]*$/"
+                                                                           placeholder="请输入厂商电话">
+                                   <span class="glyphicon glyphicon-exclamation-sign mess"
+                                         ng-show="mainForm.manufacturerPhone.$dirty && mainForm.manufacturerPhone.$invalid">
+                                                         <p class="alter"
+                                                            ng-show="mainForm.manufacturerPhone.$error.required">
+                                                             不能为空
+                                                         </p>
+                                                        <p class="alter" ng-show="mainForm.manufacturerPhone.defined ">
+                                                            正确
+                                                        </p>
+                                                  </span>
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 "></div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">分类ID：</div>
+                            <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"
+                                                                           ng-model="currentAddWater.property.propertyTypeId"
+                                                                           name="propertyTypeId" ng-pattern="/^[0-9]*$/"
+                                                                           placeholder="请输入分类Id">
+                                   <span class="glyphicon glyphicon-exclamation-sign mess"
+                                         ng-show="mainForm.projectName.$dirty && mainForm.projectName.$invalid">
+                                                         <p class="alter"
+                                                            ng-show="mainForm.projectName.$error.required">
+                                                             不能为空
+                                                         </p>
+                                                        <p class="alter" ng-show="mainForm.projectName.defined ">
+                                                            正确
+                                                        </p>
+                                                  </span>
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 "></div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">表编号：</div>
+                            <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"
+                                                                           ng-model="currentAddWater.waterMeterNum"
+                                                                           ng-pattern="/^[0-9]*$/"
+                                                                           name="electricityMeterNum" required
+                                                                           placeholder="请输入表编号">
+                                   <span class="glyphicon glyphicon-exclamation-sign mess"
+                                         ng-show="mainForm.electricityMeterNum.$dirty && mainForm.electricityMeterNum.$invalid">
+                                                         <p class="alter"
+                                                            ng-show="mainForm.electricityMeterNum.$error.required">
+                                                             不能为空
+                                                         </p>
+                                                        <p class="alter"
+                                                           ng-show="mainForm.electricityMeterNum.defined ">
+                                                            正确
+                                                        </p>
+                                                  </span>
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 "><span style="color: red">*</span></div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">规格：</div>
+                            <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"
+                                                                           ng-model="currentAddWater.property.propertySpecification"
+                                                                           name="propertySpecification"
+                                                                           placeholder="请输入规格">
+                                   <span class="glyphicon glyphicon-exclamation-sign mess"
+                                         ng-show="mainForm.propertySpecification.$dirty && mainForm.propertySpecification.$invalid">
+                                                         <p class="alter"
+                                                            ng-show="mainForm.propertySpecification.$error.required">
+                                                             不能为空
+                                                         </p>
+                                                        <p class="alter"
+                                                           ng-show="mainForm.propertySpecification.defined ">
+                                                            正确
+                                                        </p>
+                                                  </span>
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 "></div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">品牌：</div>
+                            <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"
+                                                                           ng-model="currentAddWater.property.brand"
+                                                                           name="brand" placeholder="请输入品牌">
+                                   <span class="glyphicon glyphicon-exclamation-sign mess"
+                                         ng-show="mainForm.brand.$dirty && mainForm.brand.$invalid">
+                                                         <p class="alter" ng-show="mainForm.brand.$error.required">
+                                                             不能为空
+                                                         </p>
+                                                        <p class="alter" ng-show="mainForm.brand.defined ">
+                                                            正确
+                                                        </p>
+                                                  </span>
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 "></div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">倍率：</div>
+                            <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"
+                                                                           ng-model="currentAddWater.ratio"
+                                                                           ng-pattern="/^[0-9]*$/" name="ratio"
+                                                                           ng-init="currentAddWater.ratio=1">
+                                   <span class="glyphicon glyphicon-exclamation-sign mess"
+                                         ng-show="mainForm.ratio.$dirty && mainForm.ratio.$invalid">
+                                                         <p class="alter" ng-show="mainForm.ratio.$error.required">
+                                                             不能为空
+                                                         </p>
+                                                        <p class="alter" ng-show="mainForm.ratio.defined ">
+                                                            正确
+                                                        </p>
+                                                  </span>
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 "><span style="color: red">*</span></div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">最小数值：</div>
+                            <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"
+                                                                           ng-model="currentAddWater.min"
+                                                                           ng-pattern="/^[0-9]*$/" name="min" required
+                                                                           ng-init="currentAddWater.min=0">
+                                   <span class="glyphicon glyphicon-exclamation-sign mess"
+                                         ng-show="mainForm.min.$dirty && mainForm.min.$invalid">
+                                                         <p class="alter" ng-show="mainForm.min.$error.required">
+                                                             不能为空
+                                                         </p>
+                                                        <p class="alter" ng-show="mainForm.min.defined ">
+                                                            正确
+                                                        </p>
+                                                  </span>
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 "><span style="color: red">*</span></div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">最大数值：</div>
+                            <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"
+                                                                           ng-model="currentAddWater.max"
+                                                                           ng-pattern="/^[0-9]*$/" name="max" required
+                                                                           ng-init="currentAddWater.max=0"></div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 "><span style="color: red">*</span></div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">循环使用：</div>
+                            <div class="col-lg-1 col-md-2 col-sm-2">
+                                <label class="radio inline">
+                                    <input type="radio" value="0" ng-model="currentAddWater.whetherRepeatedUse"
+                                           ng-init="currentAddWater.whetherRepeatedUse=0">
+                                    <span>是</span>
+                                </label>
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                <label class="radio inline">
+                                    <input type="radio" value="1" ng-model="currentAddWater.whetherRepeatedUse">
+                                    <span>否</span>
+                                </label>
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 "><span style="color: red">*</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancelWater()">关闭
+                    </button>
+                    <button type="button" class="btn btn-primary" ng-click="saveAddWater()">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--新建 结束-->
+    <!--编辑-->
+    <div class="modal fade" id="new1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <span class="modal-title" id="myModalLabel">编辑</span>
+                </div>
+                <div class="modal-body">
+                    <div class="padding">
+                        <div class="row sel1">
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">资产名称：</div>
+                            <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"
+                                                                           ng-model="currentUpdateWater.property.propertyName"
+                                                                           name="propertyName"
+                                                                           placeholder="请输入资产名称">
+                                       <span class="glyphicon glyphicon-exclamation-sign mess"
+                                             ng-show="mainForm.projectName.$dirty && mainForm.projectName.$invalid">
+                                                         <p class="alter"
+                                                            ng-show="mainForm.projectName.$error.required">
+                                                             不能为空
+                                                         </p>
+                                                        <p class="alter" ng-show="mainForm.projectName.defined ">
+                                                            正确
+                                                        </p>
+                                                  </span>
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 "></div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">资产编号：</div>
+                            <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"
+                                                                           ng-model="currentUpdateWater.property.propertyNumber"
+                                                                           ng-pattern="/^[0-9]*$/" name="propertyNumber"
+                                                                           placeholder="请输入数字">
+                                   <span class="glyphicon glyphicon-exclamation-sign mess"
+                                         ng-show="mainForm.projectName.$dirty && mainForm.projectName.$invalid">
+                                                         <p class="alter"
+                                                            ng-show="mainForm.projectName.$error.required">
+                                                             不能为空
+                                                         </p>
+                                                        <p class="alter" ng-show="mainForm.projectName.defined ">
+                                                            正确
+                                                        </p>
+                                                  </span>
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 "></div>
+                            <!-- <div class="col-lg-2 col-md-2 col-sm-2 text-right">操作人：</div>
+                             <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"
+                                                                            ng-model="currentUpdateWater.operator"
+                                                                            name="operator"
+                                                                            placeholder="请输入操作人">
+                                    <span class="glyphicon glyphicon-exclamation-sign mess"
+                                          ng-show="mainForm.projectName.$dirty && mainForm.projectName.$invalid">
+                                                          <p class="alter"
+                                                             ng-show="mainForm.projectName.$error.required">
+                                                              不能为空
+                                                          </p>
+                                                         <p class="alter" ng-show="mainForm.projectName.defined ">
+                                                             正确
+                                                         </p>
+                                                   </span>
+                             </div>
+                             <div class="col-lg-1 col-md-2 col-sm-2 "></div>-->
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">保质期：</div>
+                            <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"
+                                                                           ng-model="currentUpdateWater.property.expirationDate"
+                                                                           name="expirationDate"
+                                                                           placeholder="请输入保质期">
+                                   <span class="glyphicon glyphicon-exclamation-sign mess"
+                                         ng-show="mainForm.projectName.$dirty && mainForm.projectName.$invalid">
+                                                         <p class="alter"
+                                                            ng-show="mainForm.projectName.$error.required">
+                                                             不能为空
+                                                         </p>
+                                                        <p class="alter" ng-show="mainForm.projectName.defined ">
+                                                            正确
+                                                        </p>
+                                                  </span>
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 "></div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">产地：</div>
+                            <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"
+                                                                           ng-model="currentUpdateWater.property.producingArea"
+                                                                           name="producingArea"
+                                                                           placeholder="请输入产地">
+                           <span class="glyphicon glyphicon-exclamation-sign mess"
+                                 ng-show="mainForm.projectName.$dirty && mainForm.projectName.$invalid">
+                                                         <p class="alter"
+                                                            ng-show="mainForm.projectName.$error.required">
+                                                             不能为空
+                                                         </p>
+                                                        <p class="alter" ng-show="mainForm.projectName.defined ">
+                                                            正确
+                                                        </p>
+                                                  </span>
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 "></div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">厂商：</div>
+                            <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"
+                                                                           ng-model="currentUpdateWater.property.manufacturer"
+                                                                           name="manufacturer"
+                                                                           placeholder="请输入厂商">
+                                   <span class="glyphicon glyphicon-exclamation-sign mess"
+                                         ng-show="mainForm.projectName.$dirty && mainForm.projectName.$invalid">
+                                                         <p class="alter"
+                                                            ng-show="mainForm.projectName.$error.required">
+                                                             不能为空
+                                                         </p>
+                                                        <p class="alter" ng-show="mainForm.projectName.defined ">
+                                                            正确
+                                                        </p>
+                                                  </span>
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 "></div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">厂商电话：</div>
+                            <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"
+                                                                           ng-model="currentUpdateWater.property.manufacturerPhone"
+                                                                           name="manufacturerPhone"
+                                                                           ng-pattern="/^[0-9]*$/"
+                                                                           placeholder="请输入厂商电话">
+                                   <span class="glyphicon glyphicon-exclamation-sign mess"
+                                         ng-show="mainForm.projectName.$dirty && mainForm.projectName.$invalid">
+                                                         <p class="alter"
+                                                            ng-show="mainForm.projectName.$error.required">
+                                                             不能为空
+                                                         </p>
+                                                        <p class="alter" ng-show="mainForm.projectName.defined ">
+                                                            正确
+                                                        </p>
+                                                  </span>
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 "></div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">分类ID：</div>
+                            <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"
+                                                                           ng-model="currentUpdateWater.property.propertyTypeId"
+                                                                           name="propertyTypeId" ng-pattern="/^[0-9]*$/"
+                                                                           placeholder="请输入分类Id">
+                                   <span class="glyphicon glyphicon-exclamation-sign mess"
+                                         ng-show="mainForm.projectName.$dirty && mainForm.projectName.$invalid">
+                                                         <p class="alter"
+                                                            ng-show="mainForm.projectName.$error.required">
+                                                             不能为空
+                                                         </p>
+                                                        <p class="alter" ng-show="mainForm.projectName.defined ">
+                                                            正确
+                                                        </p>
+                                                  </span>
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 "></div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">表编号：</div>
+                            <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"
+                                                                           ng-model="currentUpdateWater.waterMeterNum"
+                                                                           ng-pattern="/^[0-9]*$/"
+                                                                           name="electricityMeterNum" required
+                                                                           placeholder="请输入表编号">
+                                   <span class="glyphicon glyphicon-exclamation-sign mess"
+                                         ng-show="mainForm.projectName.$dirty && mainForm.projectName.$invalid">
+                                                         <p class="alter"
+                                                            ng-show="mainForm.projectName.$error.required">
+                                                             不能为空
+                                                         </p>
+                                                        <p class="alter" ng-show="mainForm.projectName.defined ">
+                                                            正确
+                                                        </p>
+                                                  </span>
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 "><span style="color: red">*</span></div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">规格：</div>
+                            <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"
+                                                                           ng-model="currentUpdateWater.property.propertySpecification"
+                                                                           name="propertySpecification"
+                                                                           placeholder="请输入规格">
+                                   <span class="glyphicon glyphicon-exclamation-sign mess"
+                                         ng-show="mainForm.projectName.$dirty && mainForm.projectName.$invalid">
+                                                         <p class="alter"
+                                                            ng-show="mainForm.projectName.$error.required">
+                                                             不能为空
+                                                         </p>
+                                                        <p class="alter" ng-show="mainForm.projectName.defined ">
+                                                            正确
+                                                        </p>
+                                                  </span>
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 "></div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">品牌：</div>
+                            <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"
+                                                                           ng-model="currentUpdateWater.property.brand"
+                                                                           name="brand" placeholder="请输入品牌">
+                                   <span class="glyphicon glyphicon-exclamation-sign mess"
+                                         ng-show="mainForm.projectName.$dirty && mainForm.projectName.$invalid">
+                                                         <p class="alter"
+                                                            ng-show="mainForm.projectName.$error.required">
+                                                             不能为空
+                                                         </p>
+                                                        <p class="alter" ng-show="mainForm.projectName.defined ">
+                                                            正确
+                                                        </p>
+                                                  </span>
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 "></div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">倍率：</div>
+                            <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"
+                                                                           ng-model="currentUpdateWater.ratio"
+                                                                           ng-pattern="/^[0-9]*$/" name="ratio"
+                                                                           placeholder="请输入倍率">
+                                   <span class="glyphicon glyphicon-exclamation-sign mess"
+                                         ng-show="mainForm.projectName.$dirty && mainForm.projectName.$invalid">
+                                                         <p class="alter"
+                                                            ng-show="mainForm.projectName.$error.required">
+                                                             不能为空
+                                                         </p>
+                                                        <p class="alter" ng-show="mainForm.projectName.defined ">
+                                                            正确
+                                                        </p>
+                                                  </span>
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 "></span></div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">最小数值：</div>
+                            <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"
+                                                                           ng-model="currentUpdateWater.min"
+                                                                           ng-pattern="/^[0-9]*$/" name="min" required
+                                                                           placeholder="请输入最小数值">
+                                   <span class="glyphicon glyphicon-exclamation-sign mess"
+                                         ng-show="mainForm.projectName.$dirty && mainForm.projectName.$invalid">
+                                                         <p class="alter"
+                                                            ng-show="mainForm.projectName.$error.required">
+                                                             不能为空
+                                                         </p>
+                                                        <p class="alter" ng-show="mainForm.projectName.defined ">
+                                                            正确
+                                                        </p>
+                                                  </span>
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 "><span style="color: red">*</span></div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">最大数值：</div>
+                            <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"
+                                                                           ng-model="currentUpdateWater.max"
+                                                                           ng-pattern="/^[0-9]*$/" name="max" required
+                                                                           placeholder="请输入最大数值"></div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 "><span style="color: red">*</span></div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">循环使用：</div>
+                            <div class="col-lg-1 col-md-2 col-sm-2">
+                                <label class="radio inline">
+                                    <input type="radio" value="0" ng-model="currentUpdateWater.whetherRepeatedUse"
+                                           ng-true-value="0" ng-true-false="1">
+                                    <span>是</span>
+                                </label>
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                <label class="radio inline">
+                                    <input type="radio" value="1" ng-model="currentUpdateWater.whetherRepeatedUse"
+                                           ng-true-value="1" ng-true-false="0">
+                                    <span>否</span>
+                                </label>
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 "><span style="color: red">*</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="saveUpdateWater()">确定
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--编辑 结束-->
+    <!--关联-->
+    <div class="row padding" ng-show="show1">
+        <div class="col-lg-4 col-md-4 col-sm-4">
+            <div class="row sel1">
+                <div class="padding component_select">
+                    <div class="col-lg-4 col-md-6 col-sm-6 text-right">资产编号：</div>
+                    <div class="col-lg-8 col-md-6 col-sm-6"><input class="form-control"
+                                                                   ng-model="currentLinkWater.property.propertyNumber"
+                                                                   disabled="disabled"></div>
+                    <div class="col-lg-4 col-md-6 col-sm-6 text-right">表编号：</div>
+                    <div class="col-lg-8 col-md-6 col-sm-6"><input class="form-control"
+                                                                   ng-model="currentLinkWater.waterMeterNum"
+                                                                   disabled="disabled"></div>
+                    <div class="col-lg-4 col-md-6 col-sm-6 text-right">品牌：</div>
+                    <div class="col-lg-8 col-md-6 col-sm-6"><input class="form-control"
+                                                                   ng-model="currentLinkWater.property.brand"
+                                                                   disabled="disabled"></div>
+                    <div class="col-lg-4 col-md-6 col-sm-6 text-right">规格：</div>
+                    <div class="col-lg-8 col-md-6 col-sm-6"><input class="form-control"
+                                                                   ng-model="currentLinkWater.property.propertySpecification"
+                                                                   disabled="disabled"></div>
+                    <div class="col-lg-4 col-md-6 col-sm-6 text-right">倍率：</div>
+                    <div class="col-lg-8 col-md-6 col-sm-6"><input class="form-control"
+                                                                   ng-model="currentLinkWater.ratio"
+                                                                   disabled="disabled"></div>
+                    <div class="col-lg-4 col-md-6 col-sm-6 text-right">最小数值：</div>
+                    <div class="col-lg-8 col-md-6 col-sm-6"><input class="form-control" ng-model="currentLinkWater.min"
+                                                                   disabled="disabled"></div>
+                    <div class="col-lg-4 col-md-6 col-sm-6 text-right">最大数值：</div>
+                    <div class="col-lg-8 col-md-6 col-sm-6"><input class="form-control" ng-model="currentLinkWater.max"
+                                                                   disabled="disabled"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-4">
+            <div class="row sel1">
+                <div class="padding component_select">
+                    <div id="treeDemo1" class="ztree"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-4">
+            <div class="row sel1">
+                <div class="padding component_select">
+                    <div class="col-lg-4 col-md-5 col-sm-5 text-right">表位置描述：</div>
+                    <div class="col-lg-7 col-md-6 col-sm-6"><input class="form-control" id="classifyName"
+                                                                   ng-model="bsList" type="text" disabled="disabled">
+                        <input value="asList" id="buildingStructureId" ng-model="waterMeterRecords.buildingStructureId"
+                               type="hidden"></div>
+                    <div class="col-lg-1 col-md-1 col-sm-1"></div>
+                    <div class="col-lg-4 col-md-5 col-sm-5 text-right">表状态：</div>
+                    <div class="col-lg-7 col-md-6 col-sm-6"><select class="form-control"
+                                                                    ng-model="waterMeterRecords.state">
+                        <option value="">请选择</option>
+                        <option value="2">使用中</option>
+                        <option value="3">停用</option>
+                    </select>
+                    </div>
+                    <div class="col-lg-1 col-md-1 col-sm-1"><span style="color: red">*</span></div>
+                    <div class="col-lg-4 col-md-5 col-sm-5 text-right">抄表方式：</div>
+                    <div class="col-lg-7 col-md-6 col-sm-6"><select class="form-control"
+                                                                    ng-model="waterMeterRecords.readingWay">
+                        <option value="">请选择</option>
+                        <option value="1">户内</option>
+                        <option value="2">户外</option>
+                        <option value="3">远程抄表</option>
+                    </select></div>
+                    <div class="col-lg-1 col-md-1 col-sm-1"></div>
+                    <div class="col-lg-4 col-md-5 col-sm-5 text-right">父表编号：</div>
+                    <div class="col-lg-7 col-md-6 col-sm-6"><input class="form-control"
+                                                                   ng-model="waterMeterRecords.parentNum"></div>
+                    <div class="col-lg-1 col-md-1 col-sm-1"></div>
+                    <div class="col-lg-4 col-md-5 col-sm-5 text-right">主表编号：</div>
+                    <div class="col-lg-7 col-md-6 col-sm-6"><input class="form-control"
+                                                                   ng-model="waterMeterRecords.mainNum"></div>
+                    <div class="col-lg-1 col-md-1 col-sm-1"></div>
+                    <div class="col-lg-4 col-md-5 col-sm-5 text-right">使用性质：</div>
+                    <div class="col-lg-7 col-md-6 col-sm-6"><select class="form-control"
+                                                                    ng-model="waterMeterRecords.usingNature">
+                        <option value="">请选择</option>
+                        <option value="0">商业</option>
+                        <option value="1">居民</option>
+                        <option value="2">管理处</option>
+                    </select></div>
+                    <div class="col-lg-1 col-md-1 col-sm-1"></div>
+                    <div class="col-lg-4 col-md-5 col-sm-5 text-right">公共用水表：</div>
+                    <div class="col-lg-7 col-md-6 col-sm-6"><select class="form-control"
+                                                                    ng-model="waterMeterRecords.publiWater">
+                        <option value="">请选择</option>
+                        <option value="0">是</option>
+                        <option value="1">否</option>
+                    </select></div>
+                    <div class="col-lg-1 col-md-1 col-sm-1"></div>
+                    <div class="col-lg-4 col-md-5 col-sm-5 text-right">是否计费表：</div>
+                    <div class="col-lg-7 col-md-6 col-sm-6"><select class="form-control"
+                                                                    ng-model="waterMeterRecords.isBilling">
+                        <option value="">请选择</option>
+                        <option value="0">是</option>
+                        <option value="1">否</option>
+                    </select></div>
+                    <div class="col-lg-1 col-md-1 col-sm-1"></div>
+                    <div class="col-lg-4 col-md-5 col-sm-5 text-right">安装人：</div>
+                    <div class="col-lg-7 col-md-6 col-sm-6"><input class="form-control"
+                                                                   ng-model="waterMeterRecords.install"></div>
+                    <div class="col-lg-1 col-md-1 col-sm-1"></div>
+                    <div class="col-lg-4 col-md-5 col-sm-5 text-right">安装日期：</div>
+                    <div class="col-lg-7 col-md-6 col-sm-6"><!--<input class="form-control" type="date"
+                                                                   ng-model="waterMeterRecords.installationTime">-->
+                        <input type="text" onclick="WdatePicker({readOnly:true})"  placeholder="请选择安装日期"  class="Wdate form-control"   ng-model="waterMeterRecords.installationTime" onchange=""  ng-blur="checkDates()" ng-change="getStall(stallss.id,false)">
+                    </div>
+                    <div class="col-lg-1 col-md-1 col-sm-1"></div>
+                    <div class="col-lg-4 col-md-5 col-sm-5 text-right">初始读数：</div>
+                    <div class="col-lg-7 col-md-6 col-sm-6"><input class="form-control"
+                                                                   ng-model="waterMeterRecords.initialReading"
+                                                                   ng-init="waterMeterRecords.initialReading=0"></div>
+                    <div class="col-lg-1 col-md-1 col-sm-1"><span style="color: red">*</span></div>
+
+                    <div class="col-lg-12 col-md-12 col-sm-12 text-center">
+                        <button type="button" class="btn btn-primary" ng-click="cenceLink()">取消</button>
+                        <button type="button" class="btn btn-primary" ng-click="saveLinkMeter()">确定</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--关联结束-->
+    </div>
+    <!--水表列表-->
+
+    <div class="row pannel-padding" ng-show="show2">
+        <div class="col-lg-12">
+            <div id="content-first">
+                <!--tab页切换开始-->
+                <div id="tab">
+                    <!--<a ng-click="returnList()">返回</a>-->
+                    <div class="col-sm-6">
+                        <a ng-class="{'this_action':btnIndex==1}" ng-click="doClick(1)">表数据</a>
+                        <a ng-class="{'this_action':btnIndex==2}" ng-click="doClick(2)">抄表历史</a>
+                        <a ng-class="{'this_action':btnIndex==3}" ng-click="doClick(3)">修正数据</a>
+                        <a ng-class="{'this_action':btnIndex==4}" ng-click="doClick(4)">换表数据</a>
+                        <a lang="no" ng-class="{'this_action':btnIndex==5}" ng-click="doClick(5)">历史用表</a>
+                    </div>
+                </div>
+                <!--tab页切换结束-->
+                <!--表数据-->
+                <div class="row padding" ng-show="show3">
+                    <div class="col-md-12 text-right">
+                        <button type="button" class="btn btn-default btn-primary" ng-click="returnList()">
+                            <span class="glyphicon glyphicon-arrow-left btn_icon"></span>
+                            返回
+                        </button>
+                    </div>
+                    <div class="col-lg-8 col-md-8 col-sm-8">
+                        <div class="row sel1">
+                            <div class="padding component_select">
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">资产名称：</div>
+                                <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" readonly="readonly"
+                                                                               ng-model="waterMeterList.property.propertyName">
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">资产编号：</div>
+                                <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" readonly="readonly"
+                                                                               ng-model="waterMeterList.property.propertyNumber">
+                                </div>
+                                <!-- <div class="col-lg-2 col-md-2 col-sm-2 text-right">操作人：</div>
+                                 <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" readonly="readonly"
+                                                                                ng-model="waterMeterList.operator"></div>-->
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">保质期：</div>
+                                <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" readonly="readonly"
+                                                                               ng-model="waterMeterList.property.expirationDate">
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">产地：</div>
+                                <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" readonly="readonly"
+                                                                               ng-model="waterMeterList.property.producingArea">
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">厂商：</div>
+                                <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" readonly="readonly"
+                                                                               ng-model="waterMeterList.property.manufacturer">
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">厂商电话：</div>
+                                <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" readonly="readonly"
+                                                                               ng-model="waterMeterList.property.manufacturerPhone">
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">分类ID：</div>
+                                <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" readonly="readonly"
+                                                                               ng-model="waterMeterList.property.propertyTypeId">
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">表编号：</div>
+                                <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" readonly="readonly"
+                                                                               ng-model="waterMeterList.waterMeterNum">
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">规格：</div>
+                                <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" readonly="readonly"
+                                                                               ng-model="waterMeterList.property.propertySpecification">
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">品牌：</div>
+                                <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" readonly="readonly"
+                                                                               ng-model="waterMeterList.property.brand">
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">倍率：</div>
+                                <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" readonly="readonly"
+                                                                               ng-model="waterMeterList.ratio"
+                                                                                ng-init="waterMeterList.ratio=1"></div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">最小数值：</div>
+                                <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" readonly="readonly"
+                                                                               ng-model="waterMeterList.min"
+                                                                                ng-init="waterMeterList.min=0"></div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">循环使用：</div>
+                                <div class="col-lg-1 col-md-2 col-sm-2">
+                                    <label class="checkbox inline">
+                                        <input type="checkbox" ng-true-value="0" ng-true-false="1" disabled="disabled"
+                                               ng-model="waterMeterList.whetherRepeatedUse">
+                                        <span>是</span>
+                                    </label>
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">
+                                    <label class="checkbox inline">
+                                        <input type="checkbox" ng-true-value="1" ng-true-false="0" disabled="disabled"
+                                               ng-model="waterMeterList.whetherRepeatedUse">
+                                        <span>否</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4">
+                        <div class="row sel1">
+                            <div class="padding component_select">
+                                <div class="col-lg-4 col-md-6 col-sm-6 text-right">表位置表示：</div>
+                                <div class="col-lg-8 col-md-6 col-sm-6"><input class="form-control" readonly="readonly"
+                                                                               ng-model="waterMeterList.fullName"></div>
+                                <div class="col-lg-4 col-md-6 col-sm-6 text-right">表状态：</div>
+                                <div class="col-lg-8 col-md-6 col-sm-6">
+                                    <select class="form-control" disabled="disabled"
+                                            ng-model="waterMeterList.waterMeterRecords.state">
+                                        <option>请选择</option>
+                                        <option value="2">使用中</option>
+                                        <option value="3">停用</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-4 col-md-6 col-sm-6 text-right">抄表方式：</div>
+                                <div class="col-lg-8 col-md-6 col-sm-6"><select class="form-control" disabled="disabled"
+                                                                                ng-model="waterMeterList.waterMeterRecords.readingWay">
+                                    <option>请选择</option>
+                                    <option value="1">户内</option>
+                                    <option value="2">户外</option>
+                                    <option value="3">远程抄表</option>
+                                </select></div>
+                                <div class="col-lg-4 col-md-6 col-sm-6 text-right">父表编号：</div>
+                                <div class="col-lg-8 col-md-6 col-sm-6"><input class="form-control" readonly="readonly"
+                                                                               ng-model="waterMeterList.waterMeterRecords.parentNum">
+                                </div>
+                                <div class="col-lg-4 col-md-6 col-sm-6 text-right">主表编号：</div>
+                                <div class="col-lg-8 col-md-6 col-sm-6"><input class="form-control" readonly="readonly"
+                                                                               ng-model="waterMeterList.waterMeterRecords.mainNum">
+                                </div>
+                                <div class="col-lg-4 col-md-6 col-sm-6 text-right">使用性质：</div>
+                                <div class="col-lg-8 col-md-6 col-sm-6"><select class="form-control" disabled="disabled"
+                                                                                ng-model="waterMeterList.waterMeterRecords.usingNature">
+                                    <option>请选择</option>
+                                    <option value="0">商业</option>
+                                    <option value="1">居民</option>
+                                    <option value="2">管理处</option>
+                                </select></div>
+                                <div class="col-lg-4 col-md-6 col-sm-6 text-right">是否计费表：</div>
+                                <div class="col-lg-8 col-md-6 col-sm-6"><select class="form-control" disabled="disabled"
+                                                                                ng-model="waterMeterList.waterMeterRecords.isBilling">
+                                    <option>请选择</option>
+                                    <option value="0">是</option>
+                                    <option value="1">否</option>
+                                </select></div>
+                                <div class="col-lg-4 col-md-6 col-sm-6 text-right">安装人：</div>
+                                <div class="col-lg-8 col-md-6 col-sm-6"><input class="form-control" readonly="readonly"
+                                                                               ng-model="waterMeterList.waterMeterRecords.install">
+                                </div>
+                                <div class="col-lg-4 col-md-6 col-sm-6 text-right">安装日期：</div>
+                                <div class="col-lg-8 col-md-6 col-sm-6"><input class="form-control" readonly="readonly"
+                                                                               type="date"
+                                                                               ng-model="waterMeterList.waterMeterRecords.installationTime">
+                                </div>
+                                <div class="col-lg-4 col-md-6 col-sm-6 text-right">初始读数：</div>
+                                <div class="col-lg-8 col-md-6 col-sm-6"><input class="form-control" readonly="readonly"
+                                                                               ng-model="waterMeterList.waterMeterRecords.initialReading" ng-init="waterMeterList.waterMeterRecords.initialReading=0">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--<div class="col-lg-12 col-md-12 col-sm-12 text-center">-->
+                    <!--<button type="button" class="btn btn-default btn-primary" >-->
+                    <!--<span class="glyphicon glyphicon-edit btn_icon"></span>-->
+                    <!--编辑-->
+                    <!--</button>-->
+                    <!--</div>-->
+                </div>
+                <!--表数据结束-->
+                <!--抄表历史-->
+                <div class="padding" ng-show="show4">
+                    <div class="text-center">
+                        <ul class="pagination">
+                            <li><a style="cursor:pointer;" ng-click="left(year)">《</a></li>
+                            <li><a>{{year}}</a></li>
+                            <li><a style="cursor:pointer;" ng-click="right(year)">》</a></li>
+                        </ul>
+                    </div>
+                    <table>
+                        <thead>
+                        <th>月份</th>
+                        <th>水表编号</th>
+                        <th>用量</th>
+                        <th>上月读数</th>
+                        <th>本月读数</th>
+                        <th>修正值</th>
+                        <th>修正量</th>
+                        <th>余用量</th>
+                        <th>抄表人</th>
+                        <th>抄表时间</th>
+                        <th>状态</th>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="item in listWaterMeterRecords" ng-show="item['waterMeterId'] != null">
+                            <td>{{item.meterReadingDate|date:"MM"}}月</td>
+                            <td>{{item.waterMeter.waterMeterNum}}</td>
+                            <td>{{item.reading-item.lastMonthReading}}</td>
+                            <td>{{item.lastMonthReading}}</td>
+                            <td>{{item.reading}}</td>
+                            <td>{{item.correction}}</td>
+                            <td>{{item.correction}}</td>
+                            <td>{{item.surplus}}</td>
+                            <td>{{item.meterReadingPeople}}</td>
+                            <td>{{item.meterReadingDate|date:"yyyy-MM-dd"}}</td>
+                            <td>{{}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!--抄表历史 结束-->
+                <!--修正数据-->
+                <div class="row padding" ng-show="show5">
+                    <div class="col-lg-8 col-md-8 col-sm-8">
+                        <div class="row sel1">
+                            <div class="padding component_select">
+                                <div class="text-center">
+                                    <ul class="pagination">
+                                        <li><a style="cursor:pointer;" ng-click="left(year)">《</a></li>
+                                        <li><a>{{year}}</a></li>
+                                        <li><a style="cursor:pointer;" ng-click="right(year)">》</a></li>
+                                    </ul>
+                                </div>
+                                <table>
+                                    <thead>
+                                    <tr>
+                                        <th>月份</th>
+                                        <th>水表编号</th>
+                                        <th>用量</th>
+                                        <th>上月读数</th>
+                                        <th>本月读数</th>
+                                        <th>修正值</th>
+                                        <th>错误修正量</th>
+                                        <th>循环修正量</th>
+                                        <th>水损</th>
+                                        <th>公摊</th>
+                                        <th>余用量</th>
+                                        <th>抄表人</th>
+                                        <th>抄表时间</th>
+                                        <th>状态</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                    <tr ng-repeat="item in listWaterMeterRecords" ng-show="item['waterMeterId'] != null"
+                                        ng-class="{'this_info':btnIndex==item}" ng-click="checkMeter(item)">
+                                        <td>{{item.meterReadingDate|date:"MM"}}月</td>
+                                        <td>{{item.waterMeter.waterMeterNum}}</td>
+                                        <td>{{item.reading-item.lastMonthReading}}</td>
+                                        <td>{{item.lastMonthReading}}</td>
+                                        <td>{{item.reading}}</td>
+                                        <td>{{item.correctionValue}}</td>
+                                        <td>{{item.correction}}</td>
+                                        <td>{{item.surplus}}</td>
+                                        <td>{{item.meterReadingPeople}}</td>
+                                        <td>{{item.meterReadingDate|date:"yyyy-MM-dd"}}</td>
+                                        <td ng-switch on="item.abnormalState">
+                                            <span ng-switch-when="1">异常</span>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4">
+                        <div class="row sel1">
+                            <div class="padding component_select">
+                                <div class="col-lg-3 col-md-4 col-sm-4 text-right">水表编号：</div>
+                                <div class="col-lg-9 col-md-8 col-sm-8"><input class="form-control" disabled
+                                                                               ng-model="numB"></div>
+                                <div class="col-lg-3 col-md-4 col-sm-4 text-right">区域：</div>
+                                <div class="col-lg-9 col-md-8 col-sm-8"><input class="form-control" disabled
+                                                                               ng-model="fullNAme"></div>
+                                <div class="col-lg-3 col-md-4 col-sm-4 text-right">修正值：</div>
+                                <div class="col-lg-9 col-md-8 col-sm-8"><input class="form-control"
+                                                                               ng-model="correctedReading.correctionValue">
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4 text-right">修正量：</div>
+                                <div class="col-lg-9 col-md-8 col-sm-8"><input class="form-control"
+                                                                               ng-model="correctedReading.correction">
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4 text-right">退费：</div>
+                                <div class="col-lg-9 col-md-8 col-sm-8">
+                                    <div class="col-md-1"><input  class="form-control" type="checkbox"></div>
+                                    <div class="col-md-3"><label value="0" ng-model="correctedReading.returnPremium">账户</label></div>
+                                    <div class="col-md-1"><input  class="form-control" type="checkbox"></div>
+                                    <div class="col-md-3"><label  value="1" ng-model="correctedReading.returnPremium">现金</label></div>
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4 text-right">上传附件：</div>
+                                <div class="col-lg-6 col-md-6 col-sm-6"><input class="form-control"></div>
+                                <div class="col-lg-3 col-md-2 col-sm-2">
+                                    <button type="button" class="btn btn-default btn-primary" data-target="#out"
+                                            data-toggle="modal" ng-click="upCorrected()">上传
+                                    </button>
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4 text-right">原因备注：</div>
+                                <div class="col-lg-9 col-md-8 col-sm-8"><textarea class="text_min"
+                                                                                  ng-model="correctedReading.reason"></textarea>
+                                </div>
+                                <div class="col-lg-12 col-md-12 col-sm-12 text-center">
+                                    <button type="button" class="btn btn-default btn-primary">
+                                        取消
+                                    </button>
+                                    <button type="button" class="btn btn-default btn-primary"
+                                            ng-click="inestCorrected()">
+                                        确定
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--修正数据 结束-->
+                <!--换表数据-->
+                <div class="padding" ng-show="show6">
+                    <table>
+                        <thead>
+                        <th>序号</th>
+                        <th>资产编号</th>
+                        <th>水表编号</th>
+                        <th>水表状态</th>
+                        <th>开始使用时间</th>
+                        <th>结束时间</th>
+                        <th>初始读数</th>
+                        <th>终止读数</th>
+                        <th>备注</th>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="item in waterMeterReading" ng-show="item['waterMeterId'] != null">
+                            <td>{{$index+1}}</td>
+                            <td>{{item.property.propertyNumber}}</td>
+                            <td>{{item.waterMeter.waterMeterNum}}</td>
+                            <td>
+                                <div ng-switch on="{{item['state']}}">
+                                    <div class="animate-switch" ng-switch-when="1">新建</div>
+                                    <div class="animate-switch" ng-switch-when="4">未使用</div>
+                                    <div class="animate-switch" ng-switch-when="2">使用中</div>
+                                    <div class="animate-switch" ng-switch-when="3">停用</div>
+                                </div>
+                            </td>
+                            <td>{{item.installationTime|date:"yyyy-MM-dd"}}</td>
+                            <td>{{item.outageTime|date:"yyyy-MM-dd"}}</td>
+                            <td>{{item.initialReading}}</td>
+                            <td>{{item.stopReading}}</td>
+                            <td>{{item.water_meter_described}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!--换标数据结束-->
+                <!--历史用表-->
+                <div class="padding" ng-show="show7">
+                    <table>
+                        <thead>
+                        <th>序号</th>
+                        <th>资产编号</th>
+                        <th>水表编号</th>
+                        <th>水表状态</th>
+                        <th>区域</th>
+                        <th>开始使用时间</th>
+                        <th>结束时间</th>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="item in waterMeterState" ng-show="item['waterMeterId'] != null">
+                            <td>{{$index+1}}</td>
+                            <td>{{item.property.propertyNumber}}</td>
+                            <td>{{item.waterMeter.waterMeterNum}}</td>
+                            <td>
+                                <div ng-switch on="{{item['state']}}">
+                                    <div class="animate-switch" ng-switch-when="1">新建</div>
+                                    <div class="animate-switch" ng-switch-when="4">未使用</div>
+                                    <div class="animate-switch" ng-switch-when="2">使用中</div>
+                                    <div class="animate-switch" ng-switch-when="3">停用</div>
+                                </div>
+                            </td>
+                            <td>{{item.fullName}}</td>
+                            <td>{{item.installationTime|date:"yyyy-MM-dd"}}</td>
+                            <td>{{item.outageTime|date:"yyyy-MM-dd"}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!--历史用表结束-->
+            </div>
+        </div>
+    </div>
+    <!--水表列表结束-->
+    <div class="modal fade" id="outPut" tabindex="-1" role="dialog"
+         aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    导入Excel表
+                    <button type="button" class="close"
+                            data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="padding">
+                        <div class="row search-padding-10">
+                            <div class="col-lg-12 col-md-2 col-sm-2 ">
+                                <input type="hidden" id="fileurl" value="{{fileUrl}}">
+                            </div>
+                            <div class="col-lg-12 col-md-2 col-sm-2 text-right">
+                                <button class="btn-primary btn" onClick="exportExcelWater()">
+                                    导入模版下载
+                                </button>
+                            </div>
+                        </div>
+                        <div id="remove">
+                            <div id="excelupload" class="zyupload"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button class="btn btn-default btn-primary" data-dismiss="modal">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--    停用-->
+    <div class="modal fade" id="disable" tabindex="-1" role="dialog"
+         aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    停用
+                    <button type="button" class="close"
+                            data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="sel1">
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                水表编号:
+                            </div>
+                            <div class="col-lg-4 col-md-2 col-sm-2 ">
+                                {{item2.waterMeterNum}}
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                抄表人:
+                            </div>
+                            <div class="col-lg-3 col-md-2 col-sm-2 ">
+                                <input class="form-control" ng-model="meterReadingData.meterReadingPeople">
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 " style="color: red">
+                                *
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                本月读数:
+                            </div>
+                            <div class="col-lg-4 col-md-2 col-sm-2 ">
+                                {{reading}}
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                抄表年月:
+                            </div>
+                            <div class="col-lg-3 col-md-2 col-sm-2 ">
+                                <input class="form-control" type="date" ng-model="meterReadingData.meterReadingDate">
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 " style="color: red">
+                                *
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                表区域:
+                            </div>
+                            <div class="col-lg-4 col-md-2 col-sm-2 ">
+                                {{item2.fullName}}
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                停用读数:
+                            </div>
+                            <div class="col-lg-3 col-md-2 col-sm-2 ">
+                                <input class="form-control" ng-model="meterReadingData.reading">
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 " style="color: red">
+                                *
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <!--<div class="col-lg-2 col-md-2 col-sm-2 text-right">-->
+                            <!--&lt;!&ndash;栋:&ndash;&gt;-->
+                            <!--</div>-->
+                            <!--<div class="col-lg-4 col-md-2 col-sm-2 ">-->
+                            <!--{{}}-->
+                            <!--</div>-->
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                停用原因:
+                            </div>
+                            <div class="col-lg-9 col-md-2 col-sm-2 ">
+                                <textarea class="text_min" ng-model="meterReadingData.note"></textarea>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button class="btn btn-default btn-primary" data-dismiss="modal" ng-click="saveDisbleMeterDate()">
+                        确认
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--附件上传-->
+    <div class="modal fade" id="out" tabindex="-1" role="dialog"
+         aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    导入Excel表
+                    <button type="button" class="close"
+                            data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="padding">
+                        <div id="remove1">
+                            <div id="excelupload1" class="zyupload"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button class="btn btn-default btn-primary" data-dismiss="modal">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+</body>
+
+</html>

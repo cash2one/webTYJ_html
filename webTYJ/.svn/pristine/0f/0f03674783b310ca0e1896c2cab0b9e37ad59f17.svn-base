@@ -1,0 +1,631 @@
+<!--
+    pageName:【车辆登记记录】物业服务人员主页中车辆管理
+    Author:钟加诚
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>车辆登记记录</title>
+    <link rel="stylesheet" href="bower_components/skins/zyupload-1.0.0.min.css " type="text/css">
+</head>
+<body>
+
+<div  ng-show="show1">
+    <div class="sel">
+        <div class="row">
+            <div class="col-lg-5">
+                <button type="button" class="btn btn-default btn-primary" ui-sref="index.propertyService.staffHome.vehicleManagement.vehicleManagementAdd">
+                    <span class="glyphicon glyphicon-plus btn_icon"></span>
+                    新建
+                </button>
+            </div>
+            <div class="col-lg-3"><input class="form-control"></div>
+            <div class="col-lg-2">
+                <button type="button" class="btn btn-default btn-primary" >
+                    <span class="glyphicon glyphicon-search btn_icon"></span>
+                    搜索
+                </button>
+                <a data-toggle="collapse" href="#collapseExample1" aria-expanded="false" aria-controls="collapseExample1" ><span class="red">高级搜索</span></a>
+            </div>
+            <div class="col-lg-2 text-right">
+                    <button type="button" class="btn btn-default btn-primary" ng-click="grid()">
+                        <span class="glyphicon glyphicon-th-large btn_icon"></span>
+                        网格
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary" ng-click="list()">
+                        <span class="glyphicon glyphicon-th-list btn_icon"></span>
+                        列表
+                    </button>
+            </div>
+            <div class="col-lg-12 collapse" id="collapseExample1">
+                <div class="row">
+                    <div class="col-lg-1 col-md-2 col-sm-2 text-right">车牌号：</div>
+                    <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"></div>
+                    <div class="col-lg-1 col-md-2 col-sm-2 text-right">车辆颜色：</div>
+                    <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"></div>
+                    <div class="col-lg-1 col-md-2 col-sm-2 text-right">行驶证号：</div>
+                    <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"></div>
+                    <div class="col-lg-1 col-md-2 col-sm-2 text-right">车辆所有人：</div>
+                    <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"></div>
+                    <div class="col-lg-1 col-md-2 col-sm-2 text-right">车辆型号：</div>
+                    <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--<div class="search-padding-10">-->
+        <!--<button type="button" class="btn btn-default btn-primary" ui-sref="index.propertyService.staffHome.vehicleManagement.vehicleManagementAdd" ><span class="glyphicon glyphicon-plus btn_icon"></span>新建车辆</button>-->
+    <!--</div>-->
+    <div class="row padding">
+    <div class="col-lg-4 col-md-6 col-sm-6 ng-scope" ng-repeat="carInfo in searchPaginator.object.carInfos" ng-show="carInfo.carId != null" >
+        <div id="pannel">
+            <div class="downList">
+                <div class="col-xs-12 col-lg-12 col-md-12 col-sm-12 text-right" >
+                    <span class="glyphicon glyphicon-chevron-down"id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></span>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <li><a data-toggle="modal" data-target="#modal_change" style="cursor:pointer" ng-click="choiceCar(carInfo)">编辑</a></li>
+                        <li><a style="cursor:pointer" ng-click="deleteCarInfo(carInfo)">删除</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="title">
+                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                    <h3 class="text-left">车辆信息</h3>
+                </div>
+            </div>
+            <div class="pannel_content height" ng-click="getStallId(stall)">
+                <div class="row">
+                    <div class="col-md-5">
+                        <a href="#" data-toggle="modal" data-target="#modifyPet" ng-click="choiceCar(carInfo)">
+                            <img src="images/project/car/c_03.png" width="100" height="90" >
+                        </a>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="row"><div class="col-md-6 text-right" >车牌号：</div><div class="col-md-6" >{{carInfo.carNum}}</div></div>
+                        <div class="row"><div class="col-md-6 text-right" >车辆颜色：</div><div class="col-md-6" >{{carInfo.carColor}}</div></div>
+                        <div class="row"><div class="col-md-6 text-right" >行驶证号：</div><div class="col-md-6" >{{carInfo.drivingLicense}}</div></div>
+                        <div class="row"><div class="col-md-6 text-right" >车辆所有人：</div><div class="col-md-6" >{{carInfo.personCustNew.name}}</div></div>
+                        <div class="row"><div class="col-md-6 text-right" >车辆型号：</div><div class="col-md-6" >{{carInfo.carStyle}}</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<div class="clear"></div>
+
+        <div class="bill_paging">
+            <span>共{{searchPaginator.object.page.totalResult}}条</span>
+            <ul class="pagination">
+                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                    <a href="javascript:void(0)" ng-click="searchPaginator.go(1)">首页</a>
+                </li>
+                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                    <a href="javascript:void(0)" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a>
+                </li>
+                <li ng-class="{true:'active'}[searchPaginator.page.currentPage==i]" ng-repeat="i in searchPaginator.pages">
+                    <a href="javascript:void(0)"  ng-click="searchPaginator.go(i)">{{i}}</a>
+                </li>
+                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                    <a href="javascript:void(0)" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a>
+                </li>
+                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                    <a href="javascript:void(0)" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+<div ng-show="show2">
+    <div class="sel">
+        <div class="row">
+            <div class="col-lg-5">
+                <button type="button" class="btn btn-default btn-primary" ui-sref="index.propertyService.staffHome.vehicleManagement.vehicleManagementAdd">
+                    <span class="glyphicon glyphicon-plus btn_icon"></span>
+                    新建
+                </button>
+                <button type="button" class="btn btn-default btn-primary" >
+                    <span class="glyphicon glyphicon-edit btn_icon"></span>
+                    编辑
+                </button>
+                <button type="button" class="btn btn-default btn-primary" >
+                    <span class="glyphicon glyphicon-trash btn_icon"></span>
+                    删除
+                </button>
+            </div>
+            <div class="col-lg-3"><input class="form-control"></div>
+            <div class="col-lg-2">
+                <button type="button" class="btn btn-default btn-primary" >
+                    <span class="glyphicon glyphicon-search btn_icon"></span>
+                    搜索
+                </button>
+                <a data-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample" ><span class="red">高级搜索</span></a>
+            </div>
+            <div class="col-lg-2 text-right">
+                    <button type="button" class="btn btn-default btn-primary" ng-click="grid()">
+                        <span class="glyphicon glyphicon-th-large btn_icon"></span>
+                        网格
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary" ng-click="list()">
+                        <span class="glyphicon glyphicon-th-list btn_icon"></span>
+                        列表
+                    </button>
+            </div>
+            <div class="col-lg-12 collapse" id="collapseExample">
+                <div class="row">
+                    <div class="col-lg-1 col-md-2 col-sm-2 text-right">车牌号：</div>
+                    <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"></div>
+                    <div class="col-lg-1 col-md-2 col-sm-2 text-right">车辆颜色：</div>
+                    <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"></div>
+                    <div class="col-lg-1 col-md-2 col-sm-2 text-right">行驶证号：</div>
+                    <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"></div>
+                    <div class="col-lg-1 col-md-2 col-sm-2 text-right">车辆所有人：</div>
+                    <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"></div>
+                    <div class="col-lg-1 col-md-2 col-sm-2 text-right">车辆型号：</div>
+                    <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row padding">
+    <table>
+        <thead>
+        <th width="50px"></th>
+        <th>序号</th>
+        <th>车牌号</th>
+        <th>车辆颜色</th>
+        <th>行驶证号</th>
+        <th>车辆所有人</th>
+        <th>车辆型号</th>
+        <th>状态</th>
+        </thead>
+        <tbody>
+        <tr data-toggle="modal" data-target="#modifyPet" ng-dbclick="choiceCar(carInfo)" ng-repeat="carInfo in searchPaginator.object.carInfos" ng-show="carInfo.carId != null" >
+            <td><input type="checkbox"></td>
+            <td>1</td>
+            <td>{{carInfo.carNum}}</td>
+            <td>{{carInfo.carColor}}</td>
+            <td>{{carInfo.drivingLicense}}</td>
+            <td>{{carInfo.personCustNew.name}}</td>
+            <td>{{carInfo.carStyle}}</td>
+            <td>失效</td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="bill_paging">
+        <ul class="pagination">
+            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                <a href="javascript:void(0)" ng-click="searchPaginator.go(1)">首页</a>
+            </li>
+            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                <a href="javascript:void(0)" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a>
+            </li>
+            <li ng-class="{true:'active'}[searchPaginator.page.currentPage==i]" ng-repeat="i in searchPaginator.pages">
+                <a href="javascript:void(0)"  ng-click="searchPaginator.go(i)">{{i}}</a>
+            </li>
+            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                <a href="javascript:void(0)" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a>
+            </li>
+            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                <a href="javascript:void(0)" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a>
+            </li>
+        </ul>
+        <span>共{{searchPaginator.object.page.totalResult}}条</span>
+    </div>
+    </div>
+</div>
+
+
+<!--编辑modal-->
+<div class="modal fade" id="modal_change" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>编辑</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" >
+                <div class="sel1">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            车牌号码：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <input type="text" class="form-control" maxlength="36" ng-model="carInfoone.carNum"/>
+                        </div>
+                        <div class="col-lg-1 col-md-2 col-sm-2 search-padding-10 ">
+                            <span style="color: red">*</span>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            核定载客：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <input type="text" class="form-control" ng-model="carInfoone.passengers" onkeyup="value=value.replace(/[^\d.]/g,'')"/>
+                        </div>
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            车辆颜色：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <input type="text" class="form-control" maxlength="10" ng-model="carInfoone.carColor"/>
+                        </div>
+
+                        <div class="col-lg-1 col-md-2 col-sm-2 search-padding-10 ">
+                            <span style="color: red">*</span>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            注册车辆日期：
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            {{carInfoone.regeditDate|date:'yyyy-MM-dd'}}
+
+                        </div>
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            车辆品牌：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <input type="text" class="form-control" ng-model="carInfoone.carBrand"/>
+
+                        </div>
+
+                        <div class="col-lg-3 col-md-2 col-sm-2 text-right">
+                            行驶证发证日期：
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                        {{carInfoone.certificationDate|date:'yyyy-MM-dd'}}
+
+                        </div>
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            车辆型号：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <input type="text" class="form-control" maxlength="16" ng-model="carInfoone.carStyle"/>
+                        </div>
+                        <div class="col-lg-1 col-md-2 col-sm-2 search-padding-10 ">
+                            <span style="color: red">*</span>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            车辆所有人：
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            {{carInfoone.personCustNew.name}}
+                    <!--        <input type="text" class="form-control" ng-model="carInfoone.personCustNew.name" disabled="disabled"/>-->
+                        </div>
+
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            车辆类型：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <select type="text" class="form-control"  name="cardnum2" ng-model="carInfoone.carType" required>
+                                <option value="">请选择</option>
+                                <option value="微型车">微型车</option>
+                                <option value="两厢车">两厢车</option>
+                                <option value="三厢车">三厢车</option>
+                                <option value="SUV">SUV</option>
+                                <option value="MPV">MPV</option>
+                                <option value="皮卡">皮卡</option>
+                                <option value="跑车">跑车</option>
+                                <option value="新能源车">新能源车</option>
+                                <option value="大型车">大型车</option>
+                                <option value="面包车">面包车</option>
+
+                            </select>
+                       </div>
+                        <div class="col-lg-1 col-md-2 col-sm-2 search-padding-10 ">
+                            <span style="color: red">*</span>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            发动机型号：
+                        </div>
+                            <div class="col-lg-3 col-md-4 col-sm-4">
+                                <input type="text" class="form-control" maxlength="36" onkeyup="value=value.replace(/[\W]/g,'') "onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[\W]/g,''))" ng-model="carInfoone.engineNum"/>
+                            </div>
+
+
+
+
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            行驶证号：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <input type="text" class="form-control"  maxlength="36" onkeyup="value=value.replace(/[\W]/g,'') "onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[\W]/g,''))" ng-model="carInfoone.drivingLicense"/>
+                        </div>
+
+                        <div class="col-lg-1 col-md-2 col-sm-2 search-padding-10 ">
+                            <span style="color: red">*</span>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            车辆识别号：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <input type="text" class="form-control" maxlength="36" onkeyup="value=value.replace(/[\W]/g,'') "onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[\W]/g,''))" ng-model="carInfoone.discriminateCode"/>
+                        </div>
+
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            登记人：
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            {{user.name}}
+                           <!-- <input type="text" class="form-control" ng-model="user.name"/>-->
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            登记时间：
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                          {{carInfoone.recordDate|date:'yyyy-MM-dd'}}
+
+                        </div>
+
+                    </div>
+                    <div  class="row search-padding-10">
+                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                        图片：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4" ng-repeat="item in annexs track by $index"  ng-show="item.annexAddress != null&&item1.annexAddress!=''">
+                        <img src={{fileUrl}}/{{item.annexAddress}} width="80px" height="80px">
+                        <br>
+                        <button class="btn btn-default btn-primary tab-btn" ng-click="delPic(item);">移除</button>
+                    </div>
+
+                </div>
+                </div>
+                <div class="clear"></div>
+                <div id="remove">
+                    <div id="zyupload" class="zyupload" ></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="quxiao()">取消</button>
+                <button type="button" class="btn bg-primary"  ng-click="updateCarInfo()">提交</button>
+            </div>
+        </div>
+    </div><!-- /.modal -->
+</div>
+
+<!--车辆详情-->
+
+<div class="modal fade" id="modifyPet" role="dialog" aria-label="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content" style="width: 700px">
+                    <div class="modal-header">
+                        <span>车辆详细信息：</span>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+            <div class="modal-body">
+                <div style="padding:20px">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-3 col-md-3 col-sm-3 text-right">
+                            车牌号码：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3" ng-show="carInfoone.carNum!=null">
+                            {{carInfoone.carNum}}
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3" ng-show="carInfoone.carNum==null">
+                           <b>暂无数据</b>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 text-right">
+                            车辆颜色：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 " ng-show="carInfoone.carColor!=null">
+                           {{carInfoone.carColor}}
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 " ng-show="carInfoone.carColor==null">
+                            <b>暂无数据</b>
+                        </div>
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-3 col-md-3 col-sm-3 text-right">
+                            核定载客：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3" ng-show="carInfoone.passengers!=null">
+                            {{carInfoone.passengers}}
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3" ng-show="carInfoone.passengers==null">
+                            <b>暂无数据</b>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 text-right">
+                            注册车辆日期：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3" ng-show="carInfoone.regeditDate!=null">
+                            {{carInfoone.regeditDate|date:'yyyy-MM-dd'}}
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3" ng-show="carInfoone.regeditDate==null">
+                            <b>暂无数据</b>
+                        </div>
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-3 col-md-3 col-sm-3 text-right" >
+                            车辆品牌：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3" ng-show="carInfoone.carBrand!=null">
+                            {{carInfoone.carBrand}}
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3" ng-show="carInfoone.carBrand==null">
+                            <b>暂无数据</b>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 text-right" >
+                            行驶证发证日期：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3" ng-show="carInfoone.certificationDate!=null">
+                            {{carInfoone.certificationDate|date:'yyyy-MM-dd'}}
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3" ng-show="carInfoone.certificationDate==null">
+                            <b>暂无数据</b>
+                        </div>
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-3 col-md-3 col-sm-3  text-right">
+                            车辆型号：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3" ng-show="carInfoone.carStyle!=null">
+                            {{carInfoone.carStyle}}
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3" ng-show="carInfoone.carStyle==null">
+                            <b>暂无数据</b>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 text-right" >
+                            车辆所有人：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3" ng-show="carInfoone.personCustNew.name!=null">
+                           {{carInfoone.personCustNew.name}}
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3" ng-show="carInfoone.personCustNew.name==null">
+                            <b>暂无数据</b>
+                        </div>
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-3 col-md-3 col-sm-3 text-right" >
+                            发动机型号：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3" ng-show="carInfoone.engineNum!=null">
+                           {{carInfoone.engineNum}}
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3"  ng-show="carInfoone.engineNum==null">
+                            <b>暂无数据</b>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3  text-right">
+                            车辆类型：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3" ng-show="carInfoone.carType!=null">
+                            {{carInfoone.carType}}
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3" ng-show="carInfoone.carType==null">
+                            <b>暂无数据</b>
+                        </div>
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-3 col-md-3 col-sm-3 text-right" >
+                            车辆识别代号：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3" ng-show="carInfoone.discriminateCode!=null">
+                            {{carInfoone.discriminateCode}}
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3" ng-show="carInfoone.discriminateCode==null">
+                            <b>暂无数据</b>
+                        </div>
+                        <div  class="col-lg-3 col-md-3 col-sm-3 text-right" >
+                            行驶证号：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3" ng-show="carInfoone.drivingLicense!=null">
+                            {{carInfoone.drivingLicense}}
+                        </div>
+                        <div  class="col-lg-3 col-md-3 col-sm-3" ng-show="carInfoone.drivingLicense==null">
+                            <b>暂无数据</b>
+                        </div>
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-3 col-md-3 col-sm-3 text-right" >
+                            登记人：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3" ng-show="user.name!=null">
+                            {{user.name}}
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3" ng-show="user.name==null">
+                            <b>暂无数据</b>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3  text-right">
+                            登记时间：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3" ng-show="carInfoone.recordDate!=null">
+                            {{carInfoone.recordDate|date:'yyyy-MM-dd'}}
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3" ng-show="carInfoone.recordDate==null">
+                            <b>暂无数据</b>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" >关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!--<div class="modal fade" id="modifyPet" role="dialog" aria-label="myModalLabel" aria-hidden="true">-->
+    <!--<div class="modal-dialog">-->
+        <!--<div class="modal-content">-->
+            <!--<div class="modal-header" style="background-color: white;height: 50px">-->
+                <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+                <!--</button>-->
+            <!--</div>-->
+            <!--<div class="modal-body">-->
+                <!--<div class="media-left" style="height:auto;width: 650px;">-->
+                    <!--<table class="table-bordered" style="width:95%;text-align: center">-->
+                        <!--<tr >-->
+                            <!--<td >车牌号码</td>-->
+                            <!--<td style="width: 25%">{{carInfoone.carNum}}</td>-->
+                            <!--<td >车辆颜色</td>-->
+                            <!--<td style="width: 25%">{{carInfoone.carColor}}</td>-->
+
+                        <!--</tr>-->
+                        <!--<tr>-->
+                            <!--<td>核定载客</td>-->
+                            <!--<td>{{carInfoone.passengers}}</td>-->
+                            <!--<td>注册车辆日期</td>-->
+                            <!--<td>{{carInfoone.regeditDate|date:'yyyy-MM-dd'}}</td>-->
+                        <!--</tr>-->
+                        <!--<tr>-->
+                            <!--<td>车辆品牌</td>-->
+                            <!--<td>{{carInfoone.carBrand}}</td>-->
+                            <!--<td>发证日期</td>-->
+                            <!--<td>{{carInfoone.certificationDate|date:'yyyy-MM-dd'}}</td>-->
+                        <!--</tr>-->
+                        <!--<tr>-->
+                            <!--<td>车辆型号</td>-->
+                            <!--<td>{{carInfoone.carStyle}}</td>-->
+                            <!--<td>车辆所有人</td>-->
+                            <!--<td>{{carInfoone.personCustNew.name}}</td>-->
+                        <!--</tr>-->
+                        <!--<tr>-->
+                            <!--<td>发动机型号</td>-->
+                            <!--<td>{{carInfoone.engineNum}}</td>-->
+                            <!--<td>车辆类型</td>-->
+                            <!--<td>{{carInfoone.carType}}</td>-->
+                        <!--</tr>-->
+                        <!--<tr>-->
+                            <!--<td>车辆识别代号</td>-->
+                            <!--<td>{{carInfoone.discriminateCode}}</td>-->
+                            <!--<td>行驶证号</td>-->
+                            <!--<td>{{carInfoone.drivingLicense}}</td>-->
+                            <!--&lt;!&ndash;<td>住址</td>-->
+                            <!--<td>{{}}</td>&ndash;&gt;-->
+                        <!--</tr>-->
+                        <!--<tr>-->
+                            <!--<td>登记人</td>-->
+                            <!--<td>{{carInfoone.personCustNew.name}}</td>-->
+                            <!--<td>登记时间</td>-->
+                            <!--<td>{{carInfoone.recordDate|date:'yyyy-MM-dd'}}</td>-->
+                        <!--</tr>-->
+                    <!--</table>-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<div class="modal-footer">-->
+                <!--<button type="button" class="btn bg-primary" data-dismiss="modal" aria-label="Close">关闭</button>-->
+            <!--</div>-->
+
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->
+</body>
+</html>

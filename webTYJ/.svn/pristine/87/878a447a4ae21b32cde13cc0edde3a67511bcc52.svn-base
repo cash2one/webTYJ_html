@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div class="sel_top">
+    <div class="row">
+        <div class="col-lg-9 col-md-9 col-sm-6">
+            <button type="button" class="btn btn-default btn-primary">
+                <span class="glyphicon glyphicon-log-out btn_icon"></span>
+                导出
+            </button>
+            <button type="button" class="btn btn-default btn-primary">
+                <span class="glyphicon glyphicon-arrow-left btn_icon"></span>
+                返回
+            </button>
+        </div>
+        <div class="col-lg-2 col-md-2 col-sm-4"><input class="form-control" placeholder="请输入编号/描述">
+        </div>
+        <div class="col-lg-1 col-md-1 col-sm-2">
+            <button type="button" class="btn btn-default btn-primary">
+                <span class="glyphicon glyphicon-search btn_icon"></span>
+                查询
+            </button>
+        </div>
+    </div>
+</div>
+<div class="row search-padding-10">
+    <div id="tab" class="thisTab">
+        <a href="javascript:void(0)" class="this_info"
+           ng-repeat="item in tabs track by $index"
+           ng-click="tabChecked(item)" id="{{item.id}}">{{item.name}}</a>
+    </div>
+</div>
+<div class="row padding" ngs-show="showState1">
+    <div>
+        <table>
+            <thead>
+                <tr>
+                    <th>表编号</th>
+                    <th>表描述</th>
+                    <th>表用量（吨）</th>
+                    <th>子表用量（吨）</th>
+                    <th>水损（吨）</th>
+                    <th>损耗率</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="item in total"
+                    ng-click="showDetail(item)">
+                    <td>1</td>
+                    <td>{{item.name}}</td>
+                    <td>3</td>
+                    <td>4</td>
+                    <td>5</td>
+                    <td>6</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="row padding" ng-show="showState2">
+    <div>
+        <table>
+            <thead>
+                <tr>
+                    <th>表编号</th>
+                    <th>表描述</th>
+                    <th>表用量（吨）</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="item in detail">
+                    <td>1</td>
+                    <td>{{item.name}}</td>
+                    <td>3</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

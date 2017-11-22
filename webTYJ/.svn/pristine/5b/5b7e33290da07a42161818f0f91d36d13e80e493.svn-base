@@ -1,0 +1,473 @@
+<!--
+    页面名称：新增合同
+    创建人：彭婷婷     创建时间：2015/6/16
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>新增合同</title>
+     <link rel="stylesheet" href="bower_components/skins/zyupload-1.0.0.min.css " type="text/css">
+    <script>
+        function check(obj) {
+            $(':checkbox').each(function () {
+                if (this != obj)
+                    $(this).attr("checked", false);
+                else {
+                    if ($(this).prop("checked")){
+                        $(this).attr("checked", true);
+                    }
+                    else
+                        $(this).attr("checked", false);
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+<div class="padding">
+    <form id="css_form" name="mainForm" novalidate>
+        <div class="sel1">
+            <div class="row search-padding-10">
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    保险单号：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <input type="text" ng-model="tenementInsurance.insuranceNum" name="insuranceNum" required placeholder="请输入保险单号"  class="form-control"/>
+                    <!--<span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.insuranceNum.$dirty && mainForm.insuranceNum.$invalid">
+                        <p class="alter" ng-show="mainForm.insuranceNum.$error.required">
+                            不能为空
+                        </p>
+                        <p class="alter" ng-show="mainForm.insuranceNum.defined ">
+                            正确
+                        </p>
+                    </span>-->
+                </div>
+                <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                    <span style="color: red">*</span>
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    开始时间：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <input type="date" ng-model="tenementInsurance.startTime" name="startTime" class="form-control"/>
+                    <!--<span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.startTime.$dirty && mainForm.startTime.$invalid">
+                            <p class="alter" ng-show="mainForm.startTime.$error.required">
+                                不能为空
+                            </p>
+                            <p class="alter" ng-show="mainForm.startTime.defined ">
+                                正确
+                            </p>
+                     </span>-->
+                </div>
+                <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                    <span style="color: red">*</span>
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    物业项目：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <span name="projectId" required ng-model="tenementInsurance.projectId" required >{{project.projectName}}</span>
+                    <!--<span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.projectId.$dirty && mainForm.projectId.$invalid">
+                        <p class="alter" ng-show="mainForm.projectId.$error.required">
+                            不能为空
+                        </p>
+                        <p class="alter" ng-show="mainForm.projectId.defined ">
+                            正确
+                        </p>
+                    </span>-->
+                </div>
+                <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                    <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="selectProjectList()">
+                        查询
+                    </button>
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    结束时间：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <input type="date" ng-model="tenementInsurance.endTime" name="endTime" class="form-control"/>
+                    <!--<span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.endTime.$dirty && mainForm.endTime.$invalid">
+                            <p class="alter" ng-show="mainForm.endTime.$error.required">
+                                不能为空
+                            </p>
+                            <p class="alter" ng-show="mainForm.endTime.defined ">
+                                正确
+                            </p>
+                     </span>-->
+                </div>
+                <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                    <span style="color: red">*</span>
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                   保险公司：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <span name="enterpriseId" required ng-model="tenementInsurance.insuranceCompanyName" required >{{erp.insuranceCompanyName}}</span>
+                    <!--<span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.enterpriseId.$dirty && mainForm.enterpriseId.$invalid">
+                        <p class="alter" ng-show="mainForm.enterpriseId.$error.required">
+                            不能为空
+                        </p>
+                        <p class="alter" ng-show="mainForm.enterpriseId.defined ">
+                            正确
+                        </p>
+                    </span>-->
+                </div>
+                <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                    <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="showEntry()">
+                        查询
+                    </button>
+                </div>
+
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    保险金额：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <input type="text" ng-model="tenementInsurance.enterpriseMoney" ng-pattern="/^[\d]+\.?\d*$/" name="enterpriseMoney" required placeholder="请输入保险金额"  class="form-control"/>
+                    <!--<span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.enterpriseMoney.$dirty && mainForm.enterpriseMoney.$invalid">
+                            <p class="alter" ng-show="mainForm.enterpriseMoney.$error.required">
+                                不能为空
+                            </p>
+                            <p class="alter" ng-show="mainForm.enterpriseMoney.defined ">
+                                正确
+                            </p>
+                     </span>-->
+                </div>
+                <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                    <span style="color: red">*</span>
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    区域保险公司：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <input class="form-control" readonly="true" type="text" ng-model="tenementInsurance.areaCompanyName" >
+                    <!--
+                    <select class="form-control" ng-model="tenementInsurance.areaInsuranceCompanyId">
+                        <option value="">请选择区域保险公司</option>
+                    </select>
+                    -->
+                    <!--<span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.areaInsuranceCompanyId.$dirty && mainForm.areaInsuranceCompanyId.$invalid">
+                        <p class="alter" ng-show="mainForm.areaInsuranceCompanyId.$error.required">
+                            不能为空
+                        </p>
+                        <p class="alter" ng-show="mainForm.areaInsuranceCompanyId.defined ">
+                            正确
+                        </p>
+                    </span>-->
+                </div>
+                <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                    <span style="color: red">*</span>
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    理赔金额：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <input type="text" ng-model="tenementInsurance.settlingFee" name="settlingFee" ng-pattern="/^[\d]+\.?\d*$/" required placeholder="请输入理赔金额"  class="form-control"/>
+                    <!--<span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.settlingFee.$dirty && mainForm.settlingFee.$invalid">
+                            <p class="alter" ng-show="mainForm.settlingFee.$error.required">
+                                不能为空
+                            </p>
+                            <p class="alter" ng-show="mainForm.settlingFee.defined ">
+                                正确
+                            </p>
+                     </span>-->
+                </div>
+                <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                    <span style="color: red">*</span>
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    保险类型：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <select class="form-control" ng-model="tenementInsurance.insuranceType">
+                        <option value=" ">请选择保险类型</option>
+                        <option value="1">物业管理责任险</option>
+                        <option value="2">公众责任险</option>
+                        <option value="3">企财险</option>
+                        <option value="4">办公室综合险</option>
+                    </select>
+                </div>
+                <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                    <span style="color: red">*</span>
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    保费金额：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <input type="text" ng-model="tenementInsurance.premiumMoney" ng-pattern="/^[\d]+\.?\d*$/" name="premiumMoney" required placeholder="请输入保费金额"  class="form-control"/>
+                    <!--<span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.premiumMoney.$dirty && mainForm.premiumMoney.$invalid">
+                            <p class="alter" ng-show="mainForm.premiumMoney.$error.required">
+                                不能为空
+                            </p>
+                            <p class="alter" ng-show="mainForm.premiumMoney.defined ">
+                                正确
+                            </p>
+                     </span>-->
+                </div>
+                <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                    <span style="color: red">*</span>
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    责任人：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <span name="staffId" required ng-model="tenementInsurance.staffId" required >{{person.staffName}}</span>
+                    <!--<span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.staffId.$dirty && mainForm.staffId.$invalid">
+                        <p class="alter" ng-show="mainForm.staffId.$error.required">
+                            不能为空
+                        </p>
+                        <p class="alter" ng-show="mainForm.staffId.defined ">
+                            正确
+                        </p>
+                    </span>-->
+                </div>
+                <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                    <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="selectPerson()">
+                        查询
+                    </button>
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    累计理赔：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <span name="settlingFeeSum" required ng-model="tenementInsurance.settlingFeeSum" required >{{tenementInsurance.settlingFeeSum}}元</span>
+                    <!--<span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.settlingFeeSum.$dirty && mainForm.settlingFeeSum.$invalid">
+                            <p class="alter" ng-show="mainForm.settlingFeeSum.$error.required">
+                                不能为空
+                            </p>
+                            <p class="alter" ng-show="mainForm.settlingFeeSum.defined ">
+                                正确
+                            </p>
+                     </span>-->
+                </div>
+                <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                    <span style="color: red">*</span>
+                </div>
+
+            </div>
+        </div>
+    </form>
+    <div class="search-padding-10">
+        <div id="remove">
+            <div id="zyupload" class="zyupload" ></div>
+        </div>
+
+    </div>
+    <div class="text-center">
+        <button type="button" class="btn btn-default btn-primary tab-btn" ui-sref="index.businessManagement.propertyInsuranceManagement.insuranceList" ng-click="cancle()">
+            取消
+        </button>
+        <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="saveAll()">
+            提交
+        </button>
+    </div>
+
+</div>
+
+<!-- 选择项目 -->
+<div class="modal fade" id="project" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                选择项目
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                    <div class="row search-padding-10">
+                        <div class="sel1">
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">项目名称：</div>
+                            <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" placeholder="请输入项目名称" ng-model="Project.projectName"/></div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 ">
+                                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="projects._load()">
+                                    <span class="glyphicon glyphicon-search btn_icon"></span>
+                                    搜索
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>序号</th>
+                            <th>项目名称</th>
+                            <th>所属公司</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="project in projects.object.project" ng-show="project.projectId != null" ng-class="{'this_info':btnIndex==project.projectId}">
+                            <td><input type="checkbox" id="{{project.projectId}}" ng-click="addOrDeleteProjectId(project)"></td>
+                            <td>{{$index}}</td>
+                            <td>{{project.projectName}}</td>
+                            <td>{{project.companyDetail.companyName}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="bill_paging">
+                        <ul class="pagination">
+                            <li><a style="cursor:pointer;" ng-click="projects.go(1)">首页</a></li>
+                            <li><a style="cursor:pointer;" ng-show="projects.hasPrevious()" ng-click="projects.previous()">上一页</a></li>
+                            <li><a style="cursor:pointer;" ng-repeat="i in projects.pages"  ng-click="projects.go(i)">{{i}}</a></li>
+                            <li><a style="cursor:pointer;" ng-show="projects.hasNext()" ng-click="projects.next()">下一页</a></li>
+                            <li><a style="cursor:pointer;" ng-click="projects.go(projects.page.totalPage)">尾页</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" ng-click="close()">关闭</button>
+                <button type="button" class="btn btn-primary" ng-click="saveProject()">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--负责人员-->
+<div class="modal fade" id="person" role="dialog" aria-label="personDatil" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>人员</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                    <div class="sel1">
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                姓名：
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input class="form-control"  ng-model="Teamworkstaff.staffName" placeholder="请输入姓名"/>
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                电话：
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input class="form-control" ng-model="Teamworkstaff.telphone" placeholder="请输入电话号码"/>
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                部门：
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <select class="form-control"  ng-model="Teamworkstaff.professionalLineId" ng-options="a.specialtyId as a.specialtyName for a in SpecialtyInfo" >
+                                    <option value="" >选择部门</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+                                <button type="button" class="btn btn-default btn-primary" ng-click="searchPaginator2._load()">
+                                    <span class="glyphicon glyphicon-search btn_icon"></span>搜索
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="search-padding-10">
+                        <table>
+                            <thead>
+                            <th></th>
+                            <th>姓名</th>
+                            <th>部门</th>
+                            <th>电话</th>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="item in searchPaginator2.object.teamworkStaffs" ng-show="item.id != null" ng-click="getdata(item)" ng-class="{'this_info ':btnIndex==item.id }">
+                                <td><input type="checkbox"  name="aaa"  onclick="check(this)"></td>
+                                <td>{{item.staff.staffName}}</td>
+                                <td>{{item.specialtyInfo.specialtyName}}</td>
+                                <td>{{item.staff.telphone}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="bill_paging">
+                            <ul class="pagination">
+                                <li><a style="cursor:pointer;" ng-click="searchPaginator2.go(1)">首页</a></li>
+                                <li><a style="cursor:pointer;" ng-show="searchPaginator2.hasPrevious()" ng-click="searchPaginator2.previous()">上一页</a></li>
+                                <li><a style="cursor:pointer;" ng-repeat="i in searchPaginator2.pages"  ng-click="searchPaginator2.go(i)">{{i}}</a></li>
+                                <li><a style="cursor:pointer;" ng-show="searchPaginator2.hasNext()" ng-click="searchPaginator2.next()">下一页</a></li>
+                                <li><a style="cursor:pointer;" ng-click="searchPaginator2.go(searchPaginator2.page.totalPage)">尾页</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"  ng-click="canclePerson()">取消</button>
+                <button type="button" class="btn bg-primary"  ng-click="addPerson()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--负责人员 END-->
+
+<!-- 选择保险单位 -->
+<div class="modal fade" id="enterprise" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                选择保险单位
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                    <div class="row search-padding-10">
+                        <div class="sel1">
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">公司名称：</div>
+                            <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" placeholder="请输入公司名称" ng-model="insurance.insuranceCompanyName"/></div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 ">
+                                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="insuranceCompanies._load()">
+                                    <span class="glyphicon glyphicon-search btn_icon"></span>
+                                    搜索
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>序号</th>
+                            <th>公司名称</th>
+                            <th>区域公司名称</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="erp in insuranceCompanies.object.insuranceCompany" ng-show="erp.insuranceCompanyId != null" ng-class="{'this_info':btnIndex==erp.insuranceCompanyId}">
+                            <td><input type="checkbox" id="{{erp.insuranceCompanyId}}" ng-click="addOrDeleteErpId(erp)"></td>
+                            <td>{{$index}}</td>
+                            <td>{{erp.insuranceCompanyName}}</td>
+                            <td>{{erp.areaCompanyName}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="bill_paging">
+                        <ul class="pagination">
+                            <li><a style="cursor:pointer;" ng-click="insuranceCompanies.go(1)">首页</a></li>
+                            <li><a style="cursor:pointer;" ng-show="insuranceCompanies.hasPrevious()" ng-click="insuranceCompanies.previous()">上一页</a></li>
+                            <li><a style="cursor:pointer;" ng-repeat="i in insuranceCompanies.pages"  ng-click="insuranceCompanies.go(i)">{{i}}</a></li>
+                            <li><a style="cursor:pointer;" ng-show="insuranceCompanies.hasNext()" ng-click="insuranceCompanies.next()">下一页</a></li>
+                            <li><a style="cursor:pointer;" ng-click="insuranceCompanies.go(insuranceCompanies.page.totalPage)">尾页</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" ng-click="closeEntry()">关闭</button>
+                <button type="button" class="btn btn-primary" ng-click="saveEntry()">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--  -->
+
+
+</body>
+</html>

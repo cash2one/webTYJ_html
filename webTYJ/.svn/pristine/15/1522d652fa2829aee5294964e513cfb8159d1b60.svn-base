@@ -1,0 +1,163 @@
+<!--
+author:程健
+pageName:可视对讲组管理
+jsPath: 'controllers/videoIntercom/areaManagement/teamManagement'
+
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>区域管理(视频对讲)组管理</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="css/ztree/ztreeAssets.css" type="text/css">
+    <link rel="stylesheet" href="css/ztree/zTreeStyle.css" type="text/css">
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.core-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.excheck-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.exedit-3.5.js"></script>
+
+    <script>
+
+
+
+
+        /* 禅道BUG 184
+         修改人：陶勇超
+         2016年1月12日 10:59:55*/
+        function onClick(e,treeId, treeNode) {
+            var zTree = $.fn.zTree.getZTreeObj("buildingtreeforTeam");
+            zTree.expandNode(treeNode);
+        }
+        /*  setting.check.radioType = "all";*/
+        function selectAll() {
+            var zTree = $.fn.zTree.getZTreeObj("buildingtreeforTeam");
+            zTree.setting.edit.editNameSelectAll =  $("#selectAll").attr("checked");
+        }
+
+        $(document).ready(function(){
+            $("#selectAll").bind("click", selectAll);
+        });
+    </script>
+
+</head>
+<body>
+<!--<div ng-show="gatingDatil" >-->
+<div class="row sel">
+    <div class="col-lg-5"></div>
+    <div class="col-lg-3">
+        <select  class="form-control" ng-model="team.projectId" ng-options="item.projectId as item.projectName for item in projectIdList">
+            <option value="">--请选择项目--</option>
+        </select>
+    </div>
+    <div class="col-lg-3">
+        <input class="form-control" placeholder="请输入组名" ng-model="team.name"/>
+    </div>
+    <div class="col-lg-1 ">
+        <button class="btn btn-primary" ng-click="getTeamList()">
+            <span class="glyphicon glyphicon-search btn_icon"></span>
+            搜索
+        </button>
+    </div>
+</div>
+<div class="row padding">
+    <div class="search-padding-10">
+        <button class="btn btn-primary" data-toggle="modal" data-target="#new">
+            <span class="glyphicon glyphicon-plus btn_icon"></span>
+            新建
+        </button>
+        <button class="btn btn-primary" ng-click="deleteTeam()">
+            <span class="glyphicon glyphicon-trash btn_icon" ></span>
+            删除
+        </button>
+    </div>
+    <table>
+        <thead>
+        <th>选择</th>
+        <th>编号</th>
+        <th>组名</th>
+        <th>组详情</th>
+
+        </thead>
+        <tbody>
+        <tr ng-repeat="item in currentHouse" ng-show="item.id!=null">
+            <td><input type="checkbox" id="{{item.id}}" ng-model="item.isActive" ng-click="getData(item)"/></td>
+            <td>{{$index+1+(currentPage-1)*6}}</td>
+            <td>{{item.nodeName}}</td>
+            <td ng-click="getInfo(item.detailsId)">{{item.detailsName | limitTo : 10}}<span ng-show="item.detailsName.length>10">...</span></td>
+        </tr>
+        <tr ng-if="currentHouse.length == '0'">
+            <td colspan="12">暂无数据</td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="bill_paging">
+        <ul class="pagination">
+            <span>共{{teamList.length}}条</span>
+            <li ng-class="{true:'disabled'}[currentPage==1]"><a href="javascript:void(0)"
+                                                                ng-click="currentPage=1;loadPage(currentPage)">首页</a></li>
+            <li ng-class="{true:'disabled'}[currentPage==1]"><a href="javascript:void(0);" ng-click="prev()">上一页</a></li>
+            <li ng-repeat="page in pages" ng-class="{true:'active'}[currentPage==page]"><a href="javascript:void(0);" ng-click="loadPage(page)">{{ page }}</a></li>
+            <li ng-class="{true:'disabled'}[currentPage==totalPage]"><a href="javascript:void(0);" ng-click="next()">下一页</a>
+            </li>
+            <li ng-class="{true:'disabled'}[currentPage==totalPage]"><a href="javascript:void(0)" ng-click="currentPage=totalPage;loadPage(currentPage)">末页</a></li>
+        </ul>
+    </div>
+</div>
+
+
+
+
+
+
+<!--右侧结束-->
+
+<!--正文结束-->
+
+<div class="modal fade" id="new" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog">
+        <div class="modal-content" >
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" id="ImpClient">
+                    新建
+                </h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="row sel">
+                    <div class="col-lg-2 text-right">新建组名：</div>
+                    <div class="col-lg-3"><input class="form-control" ng-model="new.name"></div>
+                    <div class="col-lg-1 blankSpace">
+                        <span style="color: red">*</span>
+                    </div>
+                    <div class="col-lg-2 text-right">
+                        请选择项目：
+                    </div>
+                    <div class="col-lg-3">
+                        <select id="projectSe" class="form-control" ng-model="projectId" ng-options="item.projectId as item.projectName for item in projectIdList" ng-change="addteam()">
+                            <option value="">--请选择--</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-1 blankSpace">
+                        <span style="color: red">*</span>
+                    </div>
+                </div>
+                <div class="padding">
+                    <ul id="buildingtreeforTeam"  class="ztree"></ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" ng-click="save()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+</body>
+</html>

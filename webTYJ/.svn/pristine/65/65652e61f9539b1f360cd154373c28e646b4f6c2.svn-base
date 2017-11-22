@@ -1,0 +1,424 @@
+<!--
+    页面名称:在职员工
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>在职员工</title>
+    <link rel="stylesheet" href="bower_components/skins/zyupload-1.0.0.min.css " type="text/css">
+</head>
+
+<!--<div id="zyupload" class="zyupload" ></div>-->
+
+<body>
+<div class="padding">
+    <div class="">
+        <div class="row padding">
+            <div class="row search-padding-10">
+                <div class="col-lg-1 col-md-4 col-sm-4 text-right">
+                    姓名：
+                </div>
+                <div class="col-lg-3 col-md-1 col-sm-1 text-right">
+                    <input class="form-control" set-focus placeholder="请输入查询姓名"/>
+                </div>
+                <div class="col-lg-1 col-md-1 col-sm-1">
+                    <button type="button" class="btn btn-primary" ng-click="">
+                        查询
+                    </button>
+                </div>
+                <div class="col-lg-7 col-md-1 col-sm-1 text-right">
+                    <button type="button" class="btn btn-default btn-primary tab-btn"
+                            ng-click="searchPaginator._load();">
+                        导出
+                    </button>
+                    <button type="button" class="btn btn-primary" ng-click="lee()">
+                        离职
+                    </button>
+                </div>
+            </div>
+            <div class="row search-padding-10">
+                <div class="col-lg-12 col-md-12 col-sm-12 text-right">
+                    <button type="button" class="btn btn-default btn-primary" ng-click="gridChange()">
+                        <span class="glyphicon glyphicon-th-large btn_icon"></span>
+                        网格
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary" ng-click="list()">
+                        <span class="glyphicon glyphicon-th-list btn_icon"></span>
+                        列表
+                    </button>
+                </div>
+            </div>
+            <!--列表开始-->
+            <div class="sel" ng-show="grid == true">
+                <table>
+                    <thead>
+                    <tr>
+                        <th width="10px"><span style="width: 15px"><input  type="checkbox" id="allchose" ng-true-value="1" ng-false-value="0" ng-click="allchose(searchPaginator.object.staffs)" style="vertical-align: -4px;"></span></th>
+                        <th>序号</th>
+                        <th>头像</th>
+                        <th>姓名</th>
+                        <th>联系方式</th>
+                        <th>账号</th>
+                        <th>工号</th>
+                        <th>性别</th>
+                        <th>年龄</th>
+                        <th>入职时间</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr style="cursor:pointer;" ng-repeat="item in searchPaginator.object.staffs" ng-show="item.userAppId!=null" ng-dblclick="toShow(item);" ng-click="getData(item)">
+                        <td><input type="checkbox" id="{{item.userAppId}}" ng-click="getData(item)"></td>
+                        <td>{{$index}}</td>
+                        <td></td>
+                        <td>{{item.staffName}}</td>
+                        <td>{{item.telphone}}</td>
+                        <td>{{item.userAppId}}</td>
+                        <td>{{item.staffNumber}}</td>
+                        <td ng-switch="item.sex">
+                            <span ng-switch-when="0">男</span>
+                            <span ng-switch-when="1">女</span>
+                        </td>
+                        <td>{{item.birthday|date:'yyyy-MM-dd'}}</td>
+                        <td>{{}}</td>
+                    </tr>
+                    <tr ng-show="searchPaginator.object.staffs.length == null">
+                        <td colspan="9">没有数据！</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="row">
+                    <div class="padding">
+                        <div class="bill_paging">
+                            <span>共{{searchPaginator.object.page.totalResult}}条</span>
+                            <ul class="pagination">
+                                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-click="searchPaginator.go(1)">首页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-show="searchPaginator.hasPrevious()"
+                                       ng-click="searchPaginator.previous()">上一页</a>
+                                </li>
+                                <li ng-class="{true:'active'}[searchPaginator.page.currentPage==i]"
+                                    ng-repeat="i in searchPaginator.pages">
+                                    <a href="javascript:void(0)" ng-click="searchPaginator.go(i)">{{i}}</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-show="searchPaginator.hasNext()"
+                                       ng-click="searchPaginator.next()">下一页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                                    <a href="javascript:void(0)"
+                                       ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--网格开始-->
+            <div class="col-lg-12" ng-show="grid == false">
+                <div class="col-lg-4 col-md-6 col-sm-6"
+                     ng-repeat="items in searchPaginator.object.staffs"
+                     ng-show="items.staffId != null">
+                    <div id="pannel">
+                        <div class="title">
+                            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                <h3>在职员工</h3>
+                            </div>
+                        </div>
+                        <div class="pannel_content" ng-click="getStaffInfo(items)" data-target="#staffInfoModal" data-toggle="modal" style="cursor: pointer">
+                            <div class="row">
+                                <div class="col-xs-4 col-lg-4 col-md-4">
+                                    <a style="cursor: pointer"  ng-dblclick="toShow(items);">
+                                        <img ng-show="items.annexs.annexAddress==null" src="images/project/user/user_3.png" width="100%"/>
+                                        <img ng-show="items.annexs.annexAddress!=null" ng-src="{{fileUrl}}/{{items.annexs.annexAddress}}" style="width:100px;height:100px;">
+                                    </a>
+                                </div>
+                                <div class="col-xs-8 col-lg-8 col-md-8">
+                                    <div class="row search-padding">
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <div class="col-lg-5 col-md-5 col-sm-5 text-right">员工工号：</div>
+                                            <div class="col-lg-7 col-md-7 col-sm-7">{{items.staffNo}}</div>
+                                        </div>
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <div class="col-lg-5 col-md-5 col-sm-5 text-right">员工姓名：</div>
+                                            <div class="col-lg-7 col-md-7 col-sm-7 ">{{items.staffName}}</div>
+                                        </div>
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <div class="col-lg-5 col-md-5 col-sm-5 text-right">性別：</div>
+                                            <div class="col-lg-7 col-md-7 col-sm-7">
+                                                <span ng-show="items.sex==0">男</span>
+                                                <span ng-show="items.sex==1">女</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <div class="col-lg-5 col-md-5 col-sm-5 text-right">证件号：</div>
+                                            <div class="col-lg-7 col-md-7 col-sm-7 ">{{items.cardNum| limitTo:18}}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-6 ng-scope"
+                     ng-show="searchPaginator.object.staffs.length == null">
+                    <div id="pannel">
+                        <div class="title">
+                            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                <h3>在职员工</h3>
+                            </div>
+                        </div>
+                        <div class="pannel_content">
+                            <div class="row search-padding 10">
+                                暂无数据！
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                    <div class="padding">
+                        <div class="bill_paging" ng-show="searchPaginator.object.page.totalResult">
+                            <span>共{{searchPaginator.object.page.totalResult}}条</span>
+                            <ul class="pagination">
+                                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-click="searchPaginator.go(1)">首页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-show="searchPaginator.hasPrevious()"
+                                       ng-click="searchPaginator.previous()">上一页</a>
+                                </li>
+                                <li ng-class="{true:'active'}[searchPaginator.page.currentPage==i]"
+                                    ng-repeat="i in searchPaginator.pages">
+                                    <a href="javascript:void(0)" ng-click="searchPaginator.go(i)">{{i}}</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-show="searchPaginator.hasNext()"
+                                       ng-click="searchPaginator.next()">下一页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                                    <a href="javascript:void(0)"
+                                       ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+<!--查看模态框开始-->
+<div class="modal fade" id="personDatil" role="dialog" aria-label="personDatil" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>员工基本信息：</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="sel1">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            员工工号：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            {{staff1.staffNo}}
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            员工姓名：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            {{staff1.staffName}}
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            出生日期：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            {{staff1.birthday|date:'yyyy-MM-dd'}}
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            员工性别：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <span ng-switch  on="staff1.sex"  >
+                                <span ng-switch-when="0">男</span>
+                                <span ng-switch-when="1">女</span>
+                            </span>
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            联系电话：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            {{staff1.telphone}}
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            婚姻状况：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <span ng-switch on="staff1.married">
+                                <span ng-switch-when="0">已婚</span>
+                                <span ng-switch-when="1">未婚</span>
+                            </span>
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            证件类型：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                           <span ng-switch on="staff1.cardType">
+                                <span ng-switch-when="0">身份证</span>
+                                <span ng-switch-when="1">护照</span>
+                            </span>
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            现居地址：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            {{staff1.address}}
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            证件号码：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            {{staff1.cardNum|limitTo:18}}
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                        </div>
+                        <!--<div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            学历：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <span ng-switch on="staff1.eduLever">
+                                <span ng-switch-when="1">小学</span>
+                                <span ng-switch-when="2">初中</span>
+                                <span ng-switch-when="3">中专</span>
+                                <span ng-switch-when="4">高中</span>
+                                <span ng-switch-when="5">大专</span>
+                                <span ng-switch-when="6">本科</span>
+                                <span ng-switch-when="7">硕士研究生</span>
+                                <span ng-switch-when="8">博士研究生</span>
+                            </span>
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            户籍：
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-6">
+                            {{staff1.nativePlace}}
+                        </div>-->
+
+                        <div class="clear"></div>
+
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            图片：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4" ng-show="staff1.annexs.length==0">
+                            <img src="images/project/user/user_3.png" width="100%"/>
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4"  ng-repeat="item in staff1.annexs track by $index"  ng-show="item.annexAddress != null">
+                            <img src={{fileUrl}}/{{item.annexAddress}} width="80px" height="80px">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="save_concel_botton icon_float_else">
+                    <a href="" class="radius_all button_bule" data-dismiss="modal" aria-label="Close">关闭</a>
+                    <div class="clear"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--查看模态框结束-->
+<!--员工信息模态框-->
+<div class="modal fade" id="staffInfoModal" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    员工信息
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-lg-2 col-md-2 col-sm-2" style="margin-top:20px;margin-bottom:20px">
+                        <img src="images/project/user/user_3.png" width="100%" style="display: block;"/>
+                        <span class="text-center"><h4>{{staffInfo.staffName}}</h4></span>
+                    </div>
+                    <div class="col-lg-10 col-md-10 col-sm-10">
+                        <div class="row" style="margin-top:20px;margin-bottom:20px">
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                APP账号：{{staffInfo.userAppId}}
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                APP账号ID：{{staffInfo.cardNum}}
+                            </div>
+                        </div>
+                        <div class="row" style="margin-bottom:20px">
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                手机：{{staffInfo.telphone}}
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                邮箱：{{staffInfo.email}}
+                            </div>
+                        </div>
+                        <div class="row" style="margin-bottom:20px">
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                工号：{{staffInfo.staffNumber}}
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                出生年月：{{staffInfo.birthday|date:'yyyy-MM-dd'}}
+                            </div>
+                        </div>
+                        <div class="row" style="margin-bottom:20px">
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                性别：<span ng-switch="staffInfo.sex">
+                                <span ng-switch-when="0">男</span>
+                                <span ng-switch-when="1">女</span>
+                            </span>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                身份证号：{{staffInfo.cardNum}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" data-dismiss="modal">确定</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+</body>
+</html>

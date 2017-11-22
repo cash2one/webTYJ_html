@@ -1,0 +1,139 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 售后管理
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../app');
+
+    app.controller('customerCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        $scope.btnIndex = 1;
+        var url=$rootScope.url;
+        $scope.AfterSale={page:{}};
+        $scope.AfterSaleQuery={page:{},responsibleDepartmentId:{},propertyTypeName:{},sourceList:{},process:{},propertyName:{},propertyTypeNameList:{}};
+        $scope.addAfterSale={};
+        $scope.pptname='';
+        $scope.deplist='';
+        $scope.Project={};
+        $scope.PropertyType={};
+        $scope.propertytypenames =[];
+
+        var fetchFunction = function(page,callback) {
+            $scope.AfterSaleQuery.page=page;
+            $scope.AfterSaleQuery.propertyName = $scope.pptname;
+            $scope.AfterSaleQuery.responsibleDepartmentId =$scope.deplist;
+            var temp = document.getElementsByName("propertypename");
+            for(var i=0;i<temp.length;i++){
+                if(temp[i].checked==true){
+                    $scope.propertytypenames.push(temp[i].id);
+                }
+            }
+            $scope.AfterSaleQuery.propertyTypeName = [];
+            $scope.AfterSaleQuery.propertyTypeNameList = $scope.propertytypenames;        
+            //alert($scope.AfterSaleQuery.propertyTypeName);
+            //$http.post(url + '/AfterSale/listPageAfterSaleRestful',{AfterSaleQuery:$scope.AfterSaleQuery}).success(callback);
+            $http.post(url + '/AfterSale/listProjectAndTypeName',{AfterSaleQuery:$scope.AfterSaleQuery}).success(callback);
+        };
+
+        $scope.Psearchaginator=app.get('Paginator').list(fetchFunction,5);
+
+
+        //查询所有项目
+        $scope.Project = {};
+        $scope.listprojectname = function(){
+            $http.get(url + '/AfterSale/listprojectname').success(function(data){
+                $scope.Project = data.Project;
+            }).error(function(data){
+                layer.msg('查询项目失败', {icon: 2});
+            })
+        };
+
+        $scope.showlist = function()
+        {
+            //$scope.AfterSaleQuery.responsibleDepartmentId =$scope.deplist;
+        };
+
+        //查询所有专业
+        $scope.PropertyType={};
+        $scope.listpropertytype = function(){
+            $http.get(url + '/AfterSale/listpropertytype').success(function(data){
+                $scope.PropertyType = data.PropertyType;
+            }).error(function(){
+                layer.msg('查询专业失败', {icon: 2});
+            })
+        };
+
+        $scope.listprojectname();
+        $scope.listpropertytype();
+
+        //不保修时发送通知
+        $scope.sendnotice = function(aftersale)
+        {
+            $scope.AfterSale = aftersale;
+            $http.put(url+'/Tasks/createTasksFromAfterSale',{AfterSale:$scope.AfterSale}).success(function()
+            {
+                $scope.Psearchaginator._load();
+            }).error(function(data, status, headers, config){
+            });
+        };
+
+        $scope.view=function(id)
+        {
+            $http.get(url+'/AfterSale/getAfterSaleByIdRestful/'+id).success(function(data)
+            {
+                $scope.afterSale=data.AfterSale;
+            });
+        };
+        $scope.update=function()
+        {
+            $http.put(url+'/AfterSale/updateAfterSaleRestful',{AfterSale:$scope.afterSale}).success(function()
+            {
+                $scope.searchPaginator._load();//ˢ�����
+                layer.msg('查询失败！', {icon: 2});
+            }).error(function(data, status, headers, config){
+                layer.msg('查询失败！', {icon: 2});
+            }) ;
+        };
+        $scope.insert=function()
+        {
+            $http.post(url+'/AfterSale/insertAfterSaleRestful',{AfterSale:$scope.addAfterSale}).success(function()
+            {
+                $scope.searchPaginator._load();//ˢ�����
+                layer.msg('查询失败！', {icon: 2});
+            }).error(function(data, status, headers, config){
+                layer.msg('查询失败！', {icon: 2});
+            }) ;
+        };
+        $scope.deleteAfterSales=function()
+        {
+            if(confirm("查询失败"))
+            {
+                var indexchekbox=0;
+                var indexsuccess=0;
+                for(var i=0;i<$scope.searchPaginator.object.afterSales.length;i++){
+                    if($scope.searchPaginator.object.afterSales[i].checkbox==true){
+                        indexchekbox++;
+                        $http({
+                            method:'DELETE',
+                            url:url + '/AfterSale/deleteAfterSaleRestful/'+$scope.searchPaginator.object.afterSales[i].id
+                        })
+                            .success(function(data, status, headers, config){
+                                indexsuccess++;
+                                if(indexchekbox==indexsuccess)
+                                {
+                                    $scope.searchPaginator._load();
+                                }
+                            }).error(function(data, status, headers, config){
+                                 layer.msg('查询失败！', {icon: 2});
+                                return;
+                            }) ;
+                    };
+                }
+            }
+        };
+
+    }]);
+});

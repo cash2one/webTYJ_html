@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div class="padding">
+    <div id="content-first">
+<div id="tab">
+    <a ng-click="decorate1()" >有效巡检方案</a>
+    <a lang="no" ng-click="addDecorate1()" >新建巡检方案</a>
+</div>
+<div ng-show="show1" >
+    <div class="sel_top">
+        <div class="row">
+            <div class="col-lg-8 col-md-6 col-sm-6">
+                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="allChecked()">
+                    <span class="glyphicon glyphicon-check btn_icon"></span>
+                    全选
+                </button>
+                <button type="button" class="btn btn-default btn-primary tab-btn" data-target="#new1" data-toggle="modal" ng-click="reatartAccounting()">
+                    <span class="glyphicon glyphicon-ban-circle btn_icon"></span>
+                    失效
+                </button>
+                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="verifyAccounting()">
+                    <span class="glyphicon glyphicon-ok btn_icon"></span>
+                    完成
+                </button>
+                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="addDecorate1()">
+                    <span class="glyphicon glyphicon-plus btn_icon"></span>
+                    新建方案
+                </button>
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2">
+                搜索条件
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-4">
+                <input class="form-control"/>
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2">
+                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="searchPaginator._load();">
+                    <span class="glyphicon glyphicon-search btn_icon"></span>
+                    搜索
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="row padding">
+        <div class="col-lg-12">
+            <div class="col-lg-4 col-md-6 col-sm-6 ng-scope" ng-repeat="item in searchPaginator.object.decorationInspectionPlan" ng-show="item.decorationInspectionPlanId != null">
+                <div id="pannel">
+                    <div class="title">
+                        <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                            <h3>巡检方案</h3>
+                        </div>
+                        <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                            <span class="glyphicon glyphicon-chevron-down"></span>
+                        </div>
+                    </div>
+                    <div class="pannel_content">
+                        <div class="row search-padding-10">
+                            <div class="col-lg-6 col-md-6 col-sm-6">方案名称：</div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 text-right">{{item.decorationInspectionPlanName}}</div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-6 col-md-6 col-sm-6">状态：</div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 text-right">{{}}</div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-6 col-md-6 col-sm-6">失效时间：</div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 text-right">{{item.failureTime|date:"yyyy-MM-dd"}}</div>
+                        </div>
+
+                        <div class="row search-padding-10">
+                            <div class="col-lg-6 col-md-6 col-sm-6">生效时间：</div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 text-right">{{item.effectiveTime|date:"yyyy-MM-dd"}}</div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-6 col-md-6 col-sm-6">备注：</div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 text-right">{{item.decorationInspectionPlanRemarks}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bill_paging">
+                <div class="pagination">
+                    <li><a style="cursor:pointer;" ng-click="searchPaginator.go(1)">首页</a></li>
+                    <li><a style="cursor:pointer;" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a></li>
+                    <li><a href="#" style="cursor:pointer;" ng-repeat="i in searchPaginator.pages"  ng-click="searchPaginator.go(i)">{{i}}</a></li>
+                    <li><a style="cursor:pointer;" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a></li>
+                    <li><a style="cursor:pointer;" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a></li>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div ng-show="show2">
+    <div class="padding">
+        <div class="row search-padding-10">
+            <div class="col-lg-1 col-md-2 col-sm-2">巡检方案名称</div>
+            <div class="col-lg-11 col-md-10 col-sm-10"><input class="form-control" ng-model="DecorationInspectionPlan.decorationInspectionPlanName"/></div>
+        </div>
+        <div class="row search-padding-10">
+            <div class="col-lg-1 col-md-2 col-sm-2">巡检方案说明</div>
+            <div class="col-lg-11 col-md-10 col-sm-10"><textarea class="form-control" ng-model="DecorationInspectionPlan.decorationInspectionPlanRemarks"></textarea></div>
+        </div>
+        <div class="row search-padding-10">
+            <div class="col-lg-1 col-md-2 col-sm-2 ">生效时间</div>
+            <div class="col-lg-5 col-md-4 col-sm-4"><input class="form-control" type="date" ng-model="DecorationInspectionPlan.effectiveTime"/></div>
+            <div class="col-lg-1 col-md-2 col-sm-2 ">失效时间</div>
+            <div class="col-lg-5 col-md-4 col-sm-4"><input class="form-control" type="date" ng-model="DecorationInspectionPlan.failureTime"/></div>
+        </div>
+        <div class="row search-padding-10">
+            <div class="col-lg-1 col-md-2 col-sm-2">频率类型</div>
+            <div class="col-lg-11 col-md-10 col-sm-10"><select class="form-control"  ng-model="DecorationInspectionPlan.frequencyRecord.frequencyType" ng-options="c.id as c.name for c in demand.frequency"><option value="">请选择</option></select></div>
+        </div>
+        <div class="row search-padding-10">
+            <div class="col-lg-1 col-md-2 col-sm-2">执行频率</div>
+           <!-- <div class="col-lg-11 col-md-10 col-sm-10"><select class="form-control"><option>请选择</option></select></div>-->
+        </div>
+        <div class="search-padding-10">
+            <div class="info_lista">
+                <table class="table_lists">
+                    <tbody>
+                    <tr>
+                        <td><span>周天</span><input type="checkbox" name="checkb" value="mon"></td>
+                        <td><span>周一</span><input type="checkbox" name="checkb" value="tue"></td>
+                        <td><span>周二</span><input type="checkbox" name="checkb" value="wed"></td>
+                        <td><span>周三</span><input type="checkbox" name="checkb" value="thu"></td>
+                        <td><span>周四</span><input type="checkbox" name="checkb" value="fri"></td>
+                        <td><span>周五</span><input type="checkbox" name="checkb" value="sat"></td>
+                        <td><span>周六</span><input type="checkbox" name="checkb" value="sun"></td>
+                        <td><button type="button" class="btn btn-default btn-primary tab-btn" ng-click="selectAll('checkb')">
+                            全选
+                        </button>
+                        </td>
+                        <td><button type="button" class="btn btn-default btn-primary tab-btn" ng-click="clearAll('checkb')">
+                            取消
+                        </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span>1</span><input type="checkbox" value="1"></td>
+                        <td><span>2</span><input type="checkbox" value="2"></td>
+                        <td><span>3</span><input type="checkbox" value="3"></td>
+                        <td><span>4</span><input type="checkbox" value="4"></td>
+                        <td><span>5</span><input type="checkbox" value="5"></td>
+                        <td><span>6</span><input type="checkbox" value="6"></td>
+                        <td><span>7</span><input type="checkbox" value="7"></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><span>8</span><input type="checkbox" value="8"></td>
+                        <td><span>9</span><input type="checkbox" value="9"></td>
+                        <td><span>10</span><input type="checkbox" value="10"></td>
+                        <td><span>11</span><input type="checkbox" value="11"></td>
+                        <td><span>12</span><input type="checkbox" value="12"></td>
+                        <td><span>13</span><input type="checkbox" value="13"></td>
+                        <td><span>14</span><input type="checkbox" value="14"></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><span>15</span><input type="checkbox" value="15"></td>
+                        <td><span>16</span><input type="checkbox" value="16"></td>
+                        <td><span>17</span><input type="checkbox" value="17"></td>
+                        <td><span>18</span><input type="checkbox" value="18"></td>
+                        <td><span>19</span><input type="checkbox" value="19"></td>
+                        <td><span>20</span><input type="checkbox" value="20"></td>
+                        <td><span>21</span><input type="checkbox" value="21"></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><span>22</span><input type="checkbox" value="22"></td>
+                        <td><span>23</span><input type="checkbox" value="23"></td>
+                        <td><span>24</span><input type="checkbox" value="24"></td>
+                        <td><span>25</span><input type="checkbox" value="25"></td>
+                        <td><span>26</span><input type="checkbox" value="26"></td>
+                        <td><span>27</span><input type="checkbox" value="27"></td>
+                        <td><span>28</span><input type="checkbox" value="28"></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><span>29</span><input type="checkbox" value="29"></td>
+                        <td><span>30</span><input type="checkbox" value="30"></td>
+                        <td><span>31</span><input type="checkbox" value="31" ></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row search-padding-10">
+            <div class="col-lg-6 col-md-6 col-sm-6">当天执行次数与时间</div>
+            <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="add()">
+                    <span class="glyphicon glyphicon-plus btn_icon"></span>
+                    新建
+                </button>
+            </div>
+        </div>
+        <table id="artificial">
+            <thead>
+            <tr>
+                <th>次数</th>
+                <th>执行时间</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="item1 in itemRecord2" >
+                <td>第{{$index+1}}次</td>
+                <td><input type="time"  ></td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="text-center">
+            <button type="button" class="btn btn-default btn-primary tab-btn">
+                取消
+            </button>
+            <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="addDecoration()">
+                提交
+            </button>
+        </div>
+    </div>
+
+    <!--右侧正文内容 END-->
+</div>
+        </div>
+</div>
+</body>
+</html>

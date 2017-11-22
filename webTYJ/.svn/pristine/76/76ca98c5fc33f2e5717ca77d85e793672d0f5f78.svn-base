@@ -1,0 +1,890 @@
+/**
+ * Created by 尹霞 on 2015/9/25.
+ * 名称：银行托收办理js
+ */
+
+/**
+ * Created by NM on 2018/1/18.
+ * 银行托收办理js
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../app');
+
+    app.controller('bankCollectionCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        $scope.changeShowNum(1);
+        $scope.doClick(15);
+        $scope.userller={};
+        var url = $rootScope.url;
+        var fileUrl=$rootScope.fileUrl;    //上传的文件路径
+        var filePath='';
+        $scope.show1 = false;    //办理银行托收
+        $scope.show2 = true;   //托收信息列表
+        $scope.show3 = false;   //修改托收信息
+        $scope.show4 = false;   //金融联行别列表
+        $scope.show5 = false;   //修改金融联行别
+        $scope.show6 = false;   //新增金融联行别
+        $scope.personCust=$rootScope.user;//得到当前登录的用户
+        $scope.collectionManage={}; //用于新增的对象
+        $scope.collectionManage.custId=$scope.personCust.custId;//得到登录人的id
+        /**
+         * hulili 2016-6-22
+         * bug修改应用变量
+         */
+        var bankEntrustId=''; //用于保存修改时的id
+        
+        /*************银行信息*********************/
+        $scope.collectionState=[
+            {
+                value:0,
+                name:'启用'
+            },
+            {
+                value:1,
+                name:'停用'
+            },
+            {
+                value:2,
+                name:'暂停'
+            }
+        ];
+
+        /**
+         *根据进入的客户的主键id查询能够办理银行托收的建筑信息
+         */
+        $scope.getList=function(){
+            $http.get(url+'/BuildingStructureNew/listBuildingforconllection/'+$scope.personCust.custId).success(function(data){
+                $("#selectBuilding").modal("show");
+                $scope.buildings=data.BuildingStructureNew;
+            }).error(function(data, status, headers, config){
+                layer.msg("查询该客户房产信息失败",{icon:2});
+            }) ;
+        };
+
+        /**
+         * 存放选中的房产信息
+         * @param persons
+         * @param person
+         */
+        $scope.buildings_choice={};
+        $scope.choiceBuilding=function(building){
+            $scope.buildings_choice=building;
+            var checkes=document.getElementsByName("buildings");
+            for(var i=0;i<checkes.length;i++){
+                checkes[i].checked=false;
+            }
+            document.getElementById(building.id).checked=true;
+        };
+
+        /**
+         * 保存选中的建筑信息
+         */
+        $scope.baocunjianzhu=function(){
+            $scope.collectionManage.id=$scope.buildings_choice.id;
+            $scope.collections.id=$scope.buildings_choice.id;
+        };
+
+        /**
+         * 取消选择中建筑
+         */
+        $scope.quxiaojianzhu=function(){
+            $scope.buildings_choice={};
+            $scope.buildings_choice=$scope.collections.buildingStructure;
+        };
+
+        //选中房屋
+        /*$scope.houseone={};
+         $scope.choiceHouse = function(items){
+         $scope.btnIndex = items.id;
+         $scope.houseone = items;
+         $scope.collectionManage.buildingStructureId=$scope.houseone.buildingStructureId;
+         $scope.collectionManage.fullName=$scope.houseone.fullName;
+         };*/
+
+        /*********保存***********/
+        $scope.saveAll=function(){
+            $scope.collectionManage.custId=$scope.personCust.custId;
+            if(angular.equals($scope.collectionManage.custName,'')||angular.isUndefined($scope.collectionManage.custName)){
+                layer.msg('户主姓名未填写',{icon:0});
+                return;
+            }else{
+                if($scope.collectionManage.custName.length>20){
+                    layer.msg('户主姓名长度大于20位',{icon:0});
+                    return;
+                }
+            }
+            if(angular.equals($scope.collectionManage.bankAccount,'')||angular.isUndefined($scope.collectionManage.bankAccount)){
+                layer.msg('账户未填写',{icon:0});
+                return;
+            }else{
+                if($scope.collectionManage.bankAccount.length>19){
+                    layer.msg('银行账户长度超过16位',{icon:0});
+                    return;
+                }
+                if(/^[0-9]*$/.test($scope.collectionManage.bankAccount)==false){
+                    layer.msg('银行帐号非纯数字',{icon:0});
+                    return;
+                }
+            }
+            if(angular.equals($scope.collectionManage.contractNumber,'')||angular.isUndefined($scope.collectionManage.contractNumber)){
+                layer.msg('合同号未填写',{icon:0});
+                return;
+            }else{
+                if($scope.collectionManage.contractNumber.length != 10){
+                    layer.msg('合同号长度不等于10位',{icon:0});
+                    return;
+                }
+            }
+            if(angular.equals($scope.collectionManage.startTime,'')||angular.isUndefined($scope.collectionManage.startTime)){
+                layer.msg('启用时间未选择',{icon:0});
+                return;
+            }
+            if(angular.equals($scope.collectionManage.bankName,'')||angular.isUndefined($scope.collectionManage.bankName)){
+                layer.msg('银行未选择',{icon:0});
+                return;
+            }
+            if(angular.equals($scope.collectionManage.province,'')||angular.isUndefined($scope.collectionManage.province)){
+                layer.msg('开户省未选择',{icon:0});
+                return;
+            }
+            if(angular.equals($scope.collectionManage.city,'')||angular.isUndefined($scope.collectionManage.city)){
+                layer.msg('开户市未选择',{icon:0});
+                return;
+            }
+            if(angular.equals($scope.collectionManage.id,'')||angular.isUndefined($scope.collectionManage.id)){
+                layer.msg('建筑未选择',{icon:0});
+                return;
+            }
+            /*if(angular.equals($scope.collectionManage.collectionState,"")||angular.isUndefined($scope.collectionManage.collectionState)){
+                layer.msg('使用状态未选择',{icon:0});
+                return;
+            }*/
+            if(angular.equals($scope.collectionManage.collectionType==2)||angular.isUndefined($scope.collectionManage.collectionType)){
+                layer.msg('托收类型未选择',{icon:0});
+                return;
+            }
+            $http.post(url+'/CollectionManage/insertCollectionManage',{CollectionManage:$scope.collectionManage}).success(function(data){
+                if(angular.equals(data.code,'200')){
+                    layer.msg(data.information,{icon:0});
+                    $scope.buildings_choice={};
+                    $scope.unionPay();
+                }else if(angular.equals(data.code,'3001')){
+                    layer.msg(data.information,{icon:0});
+                }
+
+            }).error(function(data, status, headers, config){
+                layer.msg("添加失败",{icon:2});
+            }) ;
+        };
+
+        /**
+         * maogaofei 2016-06-14
+         * 保存行别
+         */
+        $scope.saveFinanBankNumAll=function(){
+            var bool = angular.equals($scope.finanBankNum.bankNum,'')||angular.isUndefined($scope.finanBankNum.bankNum);
+            var bl = angular.equals($scope.finanBankNum.unionpayBankNum,'')||angular.isUndefined($scope.finanBankNum.unionpayBankNum);
+            if(bool && bl){
+                layer.msg('银行行别和银联银行行号应至少填写一个',{icon:0});
+                return;
+            }else{
+                if(!bool){
+                    if($scope.finanBankNum.bankNum.length != 2){
+                        layer.msg('行别长度必须为2位',{icon:0});
+                        return;
+                    }
+                }
+                if(!bl){
+                    if($scope.finanBankNum.unionpayBankNum.length != 4){
+                        layer.msg('银联银行行号长度必须为4位',{icon:0});
+                        return;
+                    }
+                }
+            }
+            if(angular.equals($scope.finanBankNum.bankName,'')||angular.isUndefined($scope.finanBankNum.bankName)){
+                layer.msg('银行名称未填写',{icon:0});
+                return;
+            }
+            if(angular.equals($scope.finanBankNum.bankNameSeq,'')||angular.isUndefined($scope.finanBankNum.bankNameSeq)){
+                layer.msg('简称序列未填写',{icon:0});
+                return;
+            }else{
+                if($scope.finanBankNum.bankNameSeq.length < 3){
+                    layer.msg('简称序列必须大于等于3位',{icon:0});
+                    return;
+                }
+                if( /^[a-zA-Z]*$/.test($scope.finanBankNum.bankNameSeq)==false){
+                    layer.msg('简称序列必须为字母',{icon:0});
+                    return;
+                }
+            }
+            $http.post(url+'/FinancialBankNum/insertFinancialBankNum',{FinancialBankNum:$scope.finanBankNum}).success(function(data){
+                if(angular.equals(data.code,'200')){
+                    layer.msg(data.information,{icon:0});
+                    $scope.showBankNum();
+                }else if(angular.equals(data.code,'3001')){
+                    layer.msg(data.information,{icon:0});
+                }
+
+            }).error(function(data, status, headers, config){
+                layer.msg("添加失败",{icon:2});
+            }) ;
+        };
+
+        /**
+         * 显示新建方案
+         */
+        $scope.finance=function(){
+            $scope.btnIndex=1;
+            $scope.show1 = true;
+            $scope.show2 = false;
+            $scope.show3 = false;
+            $scope.show4 = false;
+            $scope.show5 = false;
+            $scope.show6 = false;
+            $scope.collectionManage={
+                custId:'',
+                custName:'',
+                bankName:'',
+                bankAccount:'',
+                startTime:'',
+                endTime:'',
+                province:'',
+                city:'',
+                contractNumber:'', //合同号
+                id:'',  //建筑结构id
+                annexs:[],
+                collectionType:2,
+                ids:[]
+            };
+            $scope.fullName='';
+            $scope.buildings_choice={};
+        };
+
+        $scope.unionPay=function(){
+            $scope.show1 = false;
+            $scope.show2 = true;
+            $scope.show3 = false;
+            $scope.show4 = false;
+            $scope.show5 = false;
+            $scope.show6 = false;
+            $scope.init();
+        };
+
+        $scope.showBankNum=function(){
+            $scope.show1 = false;
+            $scope.show2 = false;
+            $scope.show3 = false;
+            $scope.show4 = true;
+            $scope.show5 = false;
+            $scope.show6 = false;
+            $scope.d = false;
+            $scope.initBankNunList();
+        };
+
+        /**
+         * 新增行别
+         */
+        $scope.addBankNum=function(){
+            $scope.btnIndex=3;
+            $scope.show1 = false
+            $scope.show2 = false;
+            $scope.show3 = false;
+            $scope.show4 = false;
+            $scope.show5 = false;
+            $scope.show6 = true;
+            $scope.finanBankNum={
+                bankNum:'',
+                bankName:'',
+                bankNameSeq:''
+            };
+        };
+
+        /*******银行行别分页查询*************/
+        $scope.bankNun={page:{}};
+        $scope.initBankNunList=function(){
+            $scope.btnIndex=3;
+            $scope.btn_choice='';
+            var fetchFunction=function(page,callback){
+                $scope.bankNun.page=page;
+                $http.post(
+                    url + '/FinancialBankNum/listPageFinancialBankNum',{FinancialBankNum:$scope.bankNun}).success(callback);
+            };
+            $scope.searchPaginatorBankNum=app.get('Paginator').list(fetchFunction,6);
+        };
+        $scope.initBankNunList();
+
+        /**
+         * hulili 2016-06-23
+         * 查询金融联银行行别详细信息
+         */
+        $scope.financialBankNum={};
+        var bankNumId = '';
+        $scope.editBankNum=function(){
+            if($("input[name='financialBank']:checkbox:checked").length == 0){
+                layer.msg('请选择一条信息', {icon: 0});
+                return;
+            }
+            if($("input[name='financialBank']:checkbox:checked").length > 1){
+                layer.msg('每次只能编辑一条信息',{icon:0});
+                return;
+            }
+            $("input[name='financialBank']:checkbox:checked").each(function(){
+                bankNumId = $(this).val();
+            })
+            $http.get(url + '/FinancialBankNum/getFinancialBankNumById/'+bankNumId).success(function(data){
+                $scope.financialBankNum=data.FinancialBankNum;
+                $scope.btnIndex=3;
+                $scope.show1 = false;
+                $scope.show2 = false;
+                $scope.show3 = false;
+                $scope.show4 = false;
+                $scope.show5 = true;
+                $scope.show6 = false;
+            }).error(function(data, status, headers, config){
+                layer.msg("查询失败，请重新选择",{icon:2});
+            });
+        };
+
+        /**
+         * hulili 2016-6-23
+         * 删除银行行别列表数据
+         */
+        $scope.deleteBankNum=function(){
+            bankNumId="";
+            if($("input[name='financialBank']:checkbox:checked").length == 0){
+                layer.msg('请选择一条信息', {icon: 0});
+                return;
+            }
+            $("input[name='financialBank']:checkbox:checked").each(function(){
+                bankNumId += $(this).val()+",";
+            })
+            $http.get(url + '/FinancialBankNum/deleteFinancialBankNum/'+bankNumId).success(function(data){
+                if(angular.equals(data.code,'200')){
+                    layer.msg(data.information,{icon:0});
+                    $scope.searchPaginatorBankNum._load();
+                    $scope.d = false;
+                }else if(angular.equals(data.code,'3001')){
+                    layer.msg(data.information,{icon:0});
+                }
+            }).error(function(data, status, headers, config){
+                layer.msg("删除失败，请重新选择",{icon:2});
+            });
+        };
+
+        /**
+         * hulili 2016-6-23
+         * bug 修改点击效果为整行点击有效
+         */
+        $scope.choiceRel=function(Relation){
+            if(document.getElementById(Relation.financialBankNumId).checked==true){
+                document.getElementById(Relation.financialBankNumId).checked = false;
+                document.getElementById(Relation.financialBankNumId).parentNode.parentNode.style.background = '';
+            }else{
+                document.getElementById(Relation.financialBankNumId).checked = true;
+                document.getElementById(Relation.financialBankNumId).parentNode.parentNode.style.background = '#f6f8fa';
+            }
+        };
+
+        /*******分页查询*************/
+        $scope.collection={custId:'',page:{}};
+        $scope.init=function(){
+            $scope.btnIndex=2;
+            $scope.btn_choice='';
+            var fetchFunction=function(page,callback){
+                $scope.collection.custId=$scope.personCust.custId;
+                $scope.collection.page=page;
+                $http.post(
+                    url + '/CollectionManage/listPageCollectionManage',{CollectionManage:$scope.collection}).success(callback);
+            };
+            $scope.searchPaginator=app.get('Paginator').list(fetchFunction,6);
+        };
+        $scope.init();
+
+        /**
+         * hulili 2016-6-22
+         * bug 修改点击效果为整行点击有效
+         */
+        $scope.choiceRelation=function(Relation){
+            if(document.getElementById(Relation.collectionManageId).checked==true){
+                document.getElementById(Relation.collectionManageId).checked = false;
+                document.getElementById(Relation.collectionManageId).parentNode.parentNode.style.background = '';
+            }else{
+                document.getElementById(Relation.collectionManageId).checked = true;
+                document.getElementById(Relation.collectionManageId).parentNode.parentNode.style.background = '#f6f8fa';
+            }
+        };
+        
+        //新增
+        $scope.add=function(){
+            $scope.show1 = true;
+            $scope.show2 = false;
+            $scope.show3 = false;
+            $scope.show4 = false;
+            $scope.show5 = false;
+            $scope.show6 = false;
+            $scope.collectionManage={
+                custId:'',
+                custName:'',
+                bankName:'',
+                bankAccount:'',
+                startTime:'',
+                endTime:'',
+                province:'',
+                city:'',
+                contractNumber:'', //合同号
+                id:'',  //建筑结构id
+                annexs:[],
+                ids:[]
+            };
+            $scope.fullName='';
+            $scope.buildings_choice={};
+        };
+
+        /**
+         * hulili 2016-6-22
+         * bug 编辑银行委托列表
+         */
+        $scope.editBankEntrust=function(){
+            if($("input[name='bankEntrust']:checkbox:checked").length == 0){
+                layer.msg('请选择一条信息', {icon: 0});
+                return;
+            }
+            if($("input[name='bankEntrust']:checkbox:checked").length > 1){
+                layer.msg('每次只能编辑一条信息',{icon:0});
+                return;
+            }
+            $("input[name='bankEntrust']:checkbox:checked").each(function(){
+                bankEntrustId = $(this).val();
+            })
+            $http.get(url + '/CollectionManage/getCollectionManageById/'+bankEntrustId).success(function(data){
+                $scope.collections=data.CollectionManage;
+                $scope.collections.startTime=new Date($scope.collections.startTime);
+                $scope.collections.endTime=new Date($scope.collections.endTime);
+                $scope.buildings_choice= $scope.collections.buildingStructure;
+                $scope.show2=false;
+                $scope.show3=true;
+            }).error(function(data, status, headers, config){
+                layer.msg("查询失败，请重新选择",{icon:2});
+            });
+        };
+
+        $scope.cancel=function(){
+            $scope.show1 = false;
+            $scope.show2 = true;
+            $scope.show3 = false;
+            $scope.show4 = false;
+            $scope.show5 = false;
+            $scope.show6 = false;
+            $scope.searchPaginator._load();
+        }
+
+        /**
+         * hulili 2016-6-22
+         * bug 删除银行委托列表数据
+         */
+        $scope.deleteBankEntrust=function(){
+            bankEntrustId="";
+            if($("input[name='bankEntrust']:checkbox:checked").length == 0){
+                layer.msg('请选择一条信息', {icon: 0});
+                return;
+            }
+            $("input[name='bankEntrust']:checkbox:checked").each(function(){
+                bankEntrustId += $(this).val()+",";
+            })
+            bankEntrustId=bankEntrustId.substring(0,bankEntrustId.length-1);
+            layer.confirm("您确定要删除选中的数据？",{btn : ['是','否']},function(){
+                    //执行删除操作
+                    $http.get(url + '/CollectionManage/deleteCollectionManage/'+bankEntrustId).success(function (data) {
+                        if(angular.equals(data.code,'200')){
+                            layer.msg('删除成功',{icon : 1, time : 2000});
+                            $scope.searchPaginator._load();
+                            $scope.show1 = false;
+                            $scope.show2 = true;
+                            $scope.show3 = false;
+                            $scope.show4 = false;
+                            $scope.show5 = false;
+                            $scope.show6 = false;
+                        }else{
+                            layer.msg('删除失败',{icon : 2});
+                        }
+                    }).error(function (data, status, headers, config) {
+                        layer.msg('删除失败',{icon : 2});
+                    });
+                }
+            );
+        };
+        
+        //修改
+        $scope.updateData=function(){
+            if($scope.d==false){
+                alert("请先选择修改项");
+            }else if($scope.d==true){
+                $scope.show1 = false;
+                $scope.show2 = false;
+                $scope.show3 = true;
+                $scope.show4 = false;
+                $scope.show5 = false;
+                $scope.show6 = false;
+
+                $scope.search={staffName:""};
+                //根据条件搜索出房屋信息
+                $scope.getList=function() {
+                    $scope.search.staffName=$scope.collections.custName;
+                    $scope.collections.startTime=new Date($scope.collections.startTime);
+                    $scope.collections.endTime=new Date($scope.collections.endTime);
+                    $http.post(url+'/HouseNew/listAllHouseNewBySearch',{Search:$scope.search}).success(function(data)
+                    {
+                        $scope.houses=data.HouseNew;
+                    });
+                };
+
+            }
+        };
+
+        /**
+         * maogaofei 2016-06-14
+         * 修改保存银行行别
+         */
+        $scope.saveBankNumUpdate=function(){
+
+            var bool = angular.equals($scope.financialBankNum.bankNum,'')||angular.isUndefined($scope.financialBankNum.bankNum);
+            var bl = angular.equals($scope.financialBankNum.unionpayBankNum,'')||angular.isUndefined($scope.financialBankNum.unionpayBankNum);
+            if(bool && bl){
+                layer.msg('银行行别和银联银行行号应至少填写一个',{icon:0});
+                return;
+            }else{
+                if(!bool){
+                    if(JSON.stringify($scope.financialBankNum.bankNum).length != 4){
+                        layer.msg('行别长度必须为2位',{icon:0});
+                        return;
+                    }
+                }
+                if(!bl){
+                    if(JSON.stringify($scope.financialBankNum.unionpayBankNum).length != 6){
+                        layer.msg('银联银行行号长度必须为4位',{icon:0});
+                        return;
+                    }
+                }
+            }
+
+            if(angular.equals($scope.financialBankNum.bankName,'')||angular.isUndefined($scope.financialBankNum.bankName)){
+                layer.msg('银行名称未填写',{icon:0});
+                return;
+            }
+            if(angular.equals($scope.financialBankNum.bankNameSeq,'')||angular.isUndefined($scope.financialBankNum.bankNameSeq)){
+                layer.msg('简称序列未填写',{icon:0});
+                return;
+            }else{
+                if(JSON.stringify($scope.financialBankNum.bankNameSeq).length < 5){
+                    layer.msg('简称序列必须大于等于3位',{icon:0});
+                    return;
+                }
+                if( /^[a-zA-Z]*$/.test($scope.financialBankNum.bankNameSeq)==false){
+                    layer.msg('简称序列必须为字母',{icon:0});
+                    return;
+                }
+            }
+
+            $http.post(url+'/FinancialBankNum/updateFinancialBankNum',{FinancialBankNum:$scope.financialBankNum}).success(function(data){
+                if(angular.equals(data.code,'200')){
+                    layer.msg(data.information,{icon:0});
+                    $scope.searchPaginatorBankNum._load();
+                    $scope.show1 = false;
+                    $scope.show2 = false;
+                    $scope.show3 = false;
+                    $scope.show4 = true;
+                    $scope.show5 = false;
+                    $scope.show6 = false;
+                    $scope.d = false;
+                }else if(angular.equals(data.code,'3001')){
+                    layer.msg(data.information,{icon:0});
+                }
+
+            }).error(function(data, status, headers, config){
+                layer.msg("修改失败",{icon:2});
+            }) ;
+
+            /*$http.put(url+'/FinancialBankNum/updateFinancialBankNum',{FinancialBankNum:$scope.financialBankNum}).success(function(){
+                layer.msg("修改成功",{icon:1});
+                $scope.searchPaginatorBankNum._load();
+                $scope.show1 = false;
+                $scope.show2 = false;
+                $scope.show3 = false;
+                $scope.show4 = true;
+                $scope.show5 = false;
+                $scope.show6 = false;
+            }).error(function(data, status, headers, config){
+                layer.msg("修改失败",{icon:2});
+            });*/
+        };
+
+        //修改保存
+        $scope.saveUpdate=function(){
+            /*if($scope.collections.collectionState == 1){
+                layer.msg('停用状态不能修改！',{icon:0});
+                return;
+            }*/
+            if(angular.equals($scope.collections.custName,'')||angular.isUndefined($scope.collections.custName)){
+                layer.msg('户主姓名未填写',{icon:0});
+                return;
+            }else{
+                if($scope.collections.custName.length>20){
+                    layer.msg('户主姓名长度大于20位',{icon:0});
+                    return;
+                }
+            }
+            if(angular.equals($scope.collections.bankAccount,'')||angular.isUndefined($scope.collections.bankAccount)){
+                layer.msg('账户未填写',{icon:0});
+                return;
+            }else{
+                if($scope.collections.bankAccount.length>19){
+                    layer.msg('银行帐号长度不为19位',{icon:0});
+                    return;
+                }
+                if(/^[0-9]*$/.test($scope.collections.bankAccount)==false){
+                    layer.msg('银行帐号非纯数字',{icon:0});
+                    return;
+                }
+            }
+            if(angular.equals($scope.collections.bankName,'')||angular.isUndefined($scope.collections.bankName)){
+                layer.msg('银行未选择',{icon:0});
+                return;
+            }
+            if(angular.equals($scope.collections.province,'')||angular.isUndefined($scope.collections.province)){
+                layer.msg('开户省未选择',{icon:0});
+                return;
+            }
+            if(angular.equals($scope.collections.city,'')||angular.isUndefined($scope.collections.city)){
+                layer.msg('开户市未选择',{icon:0});
+                return;
+            }
+            if(angular.equals($scope.collections.id,'')||angular.isUndefined($scope.collections.id)){
+                layer.msg('建筑未选择',{icon:0});
+                return;
+            }
+            if(angular.equals($scope.collections.contractNumber,'')||angular.isUndefined($scope.collections.contractNumber)){
+                layer.msg('合同号未填写',{icon:0});
+                return;
+            }else{
+                if(Object.prototype.toString.call($scope.collections.contractNumber) != "[object String]"){
+                    $scope.collections.contractNumber = JSON.stringify($scope.collections.contractNumber);
+                };
+                if($scope.collections.contractNumber.length != 10){
+                    layer.msg('合同号长度不等于10位',{icon:0});
+                    return;
+                }
+            }
+            if(angular.equals(JSON.stringify($scope.collections.startTime),'null')||angular.isUndefined($scope.collections.startTime)){
+                layer.msg('启用时间未选择',{icon:0});
+                return;
+            }
+            if(angular.equals($scope.collections.collectionState,"")||angular.isUndefined($scope.collections.collectionState)){
+                layer.msg('使用状态未选择',{icon:0});
+                return;
+            }
+
+            $http.post(url+'/CollectionManage/updateCollectionManage',{CollectionManage:$scope.collections}).success(function(data){
+                    if(angular.equals(data.code,'200')){
+                        layer.msg(data.information,{icon:0});
+                        $scope.searchPaginator._load();
+                        $scope.show1 = false;
+                        $scope.show2 = true;
+                        $scope.show3 = false;
+                        $scope.show4 = false;
+                        $scope.show5 = false;
+                        $scope.show6 = false;
+                    }else if(angular.equals(data.code,'3001')){
+                        layer.msg(data.information,{icon:0});
+                    }
+                }).error(function(data, status, headers, config){
+                    layer.msg("修改失败",{icon:2});
+                }) ;
+        };
+
+        //查看详情
+        $scope.show=function(){
+            if($scope.d==false){
+                alert("请先选择查看项 ");
+            }else if($scope.d==true){
+                $("#datils").modal("show");
+                $scope.show1 = false;
+                $scope.show2 = true;
+                $scope.show3 = false;
+                $scope.show4 = false;
+                $scope.show5 = false;
+                $scope.show6 = false;
+            }
+        };
+
+
+
+        //单选
+        /*定义id把复选框选中的值放进去*/
+        /*  $scope.chk = false;
+         var id ="";
+         $scope.fullName='';
+         $scope.saveChoose=function(){
+         $scope.checked= function(val,index,chk){
+         if(chk == true){
+         id=val.id;
+         $scope.fullName+=val.fullName+" ";
+         $scope.collectionManage.ids.push(id);
+         }else{
+         $scope.collectionManage.ids.splice(index,1);
+         $scope.fullName = $scope.fullName.replace(val.fullName+" ","");
+         }
+         console.log($scope.collectionManage.ids);
+         console.log($scope.fullName);
+         };
+         }
+         */
+
+        $scope.fullName='';
+        $scope.saveChoose=function(){
+            $scope.getDatas=function(item){
+                var id=item.buildingStructureId;//得到选中的建筑结构id
+                var chk = document.getElementById(id);
+                $scope.buildIds = {};
+                $scope.buildIds = id;
+                if(chk.checked == true){
+                    $scope.collectionManage.ids.push($scope.buildIds);
+                    $scope.fullName+=item.fullName+" ";
+                }else {
+                    $scope.temp = [];
+                    $scope.temp = $scope.collectionManage.ids;
+                    for (var i = 0; i < $scope.temp.length; i++) {
+                        if ($scope.temp[i] != id) {
+                            $scope.collectionManage.ids.push($scope.temp[i]);
+                            $scope.fullName = $scope.fullName.replace(item.fullName+" ","");
+
+                        }
+                    }
+                }
+            };
+        };
+
+        $scope.cancle=function(){
+            $scope.collectionManage.ids=[];
+        };
+
+        //上传文件
+        $scope.annex=[{annexAddress:''}];
+        $("#zyupload").remove();
+        $("#remove").append("<div id='zyupload' class='zyupload'></div>");
+        $(function(){
+            $("#remove").html('');
+            $("#remove").append('<div id="zyupload" class="zyupload"></div>');
+            // 初始化插件
+            $("#zyupload").zyUpload({
+                itemWidth        :   "140px",                 // 文件项的宽度
+                itemHeight       :   "115px",                 // 文件项的高度
+                url              :   fileUrl+"/FileService",  // 上传文件的路径
+                fileType         :   ["jpg","png","jpeg","gif","xls","docx","xlsx","pdf","txt","doc","ppt"],// 上传文件的类型
+                fileSize         :   51200000,                // 上传文件的大小
+                multiple         :   true,                    // 是否可以多个文件上传
+                dragDrop         :   true,                    // 是否可以拖动上传文件
+                tailor           :   true,                    // 是否可以裁剪图片
+                del              :   true,                    // 是否可以删除文件
+                finishDel        :   false,  				  // 是否在上传文件完成后删除预览
+                /* 外部获得的回调接口 */
+                onSelect: function(selectFiles, allFiles){    // 选择文件的回调方法  selectFile:当前选中的文件  allFiles:还没上传的全部文件
+                },
+                onDelete: function(file, files){
+                },
+                onSuccess: function(file, response){          // 文件上传成功的回调方法
+                    filePath=response;
+                    $scope.annex.annexAddress=filePath;
+                    $scope.collectionManage.annexs=$scope.annex;
+                },
+                onFailure: function(file, response){          // 文件上传失败的回调方法
+                },
+                onComplete: function(response){           	  // 上传完成的回调方法
+                }
+            });
+        });
+
+        $scope.clearWenjian=function(){
+            $scope.annex=[{annexAddress:''}];
+            $scope.collectionManage.annexs=$scope.annex;
+            //$scope.annex=[{annexAddress:''}];
+            $("#zyupload").remove();
+            $("#remove").append('<div id="zyupload" class="zyupload"></div>');
+            $(function(){
+                $("#remove").html('');
+                $("#remove").append('<div id="zyupload" class="zyupload"></div>');
+                // 初始化插件
+                $("#zyupload").zyUpload({
+                    itemWidth        :   "140px",                 // 文件项的宽度
+                    itemHeight       :   "115px",                 // 文件项的高度
+                    url              :   fileUrl+"/FileService",  // 上传文件的路径
+                    fileType         :   ["jpg","png","jpeg","gif","xls","docx","xlsx","pdf","txt","doc","ppt"],// 上传文件的类型
+                    fileSize         :   51200000,                // 上传文件的大小
+                    multiple         :   true,                    // 是否可以多个文件上传
+                    dragDrop         :   true,                    // 是否可以拖动上传文件
+                    tailor           :   true,                    // 是否可以裁剪图片
+                    del              :   true,                    // 是否可以删除文件
+                    finishDel        :   false,  				  // 是否在上传文件完成后删除预览
+                    /* 外部获得的回调接口 */
+                    onSelect: function(selectFiles, allFiles){    // 选择文件的回调方法  selectFile:当前选中的文件  allFiles:还没上传的全部文件
+                    },
+                    onDelete: function(file, files){
+                    },
+                    onSuccess: function(file, response){          // 文件上传成功的回调方法
+                        filePath=response;
+                        $scope.annex.annexAddress=filePath;
+                        $scope.collectionManage.annexs=$scope.annex;
+                    },
+                    onFailure: function(file, response){          // 文件上传失败的回调方法
+                    },
+                    onComplete: function(response){           	  // 上传完成的回调方法
+                    }
+                });
+            });
+        };
+
+        /*************省市信息**************************/
+        $http.get("data/cityselect.json").success(function(data){
+            $scope.division=data;
+        }).error(function(data, status, headers, config){
+        });
+
+        function duixiangzhuanshuzu(object){
+            var object_array=[];
+            object_array.push(object);
+            return object_array;
+        }
+
+        $scope.bank={};
+        $scope.bn = {};
+        <!--托收类型选择事件-->
+        $scope.ctChange = function(x){
+            $scope.bank={};
+            $scope.bn = {};
+            if(x == 0){
+                $scope.bn.bankNameSeq = "0";
+                $http.post(url+'/FinancialBankNum/listAllFinancialBankNum',{FinancialBankNum:$scope.bn}).success(function(data){
+                    $scope.bank = data.FinancialBankNum;
+                })
+            }else if(x == 1){
+                $scope.bn.bankNameSeq = "";
+                $http.post(url+'/FinancialBankNum/listAllFinancialBankNum',{FinancialBankNum:$scope.bn}).success(function(data){
+                    $scope.bank = data.FinancialBankNum;
+                })
+            }else{
+                $scope.bank={};
+            }
+        }
+        <!--开户银行点击事件-->
+        $scope.bankSelect = function(){
+            if($scope.collectionManage.collectionType==2||angular.isUndefined($scope.collectionManage.collectionType)){
+                layer.msg('请先选择托收类型',{icon:0});
+                return;
+            }
+        }
+
+    }]);
+});

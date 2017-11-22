@@ -1,0 +1,30 @@
+<!--
+    pageName:【门禁卡】物业服务人员主页
+    Author:钟加诚
+   -->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>门禁卡</title>
+</head>
+<body>
+
+<div class="padding_info">
+
+    <div id="content-first">
+
+        <div id="tab">
+            <a ng-class="{'this_action':btnIndex==2}" ng-click="doClick(2)" ui-sref="index.propertyService.staffHome.entranceGuard.addEntranceGuard">新建门禁卡</a>
+            <a ng-class="{'this_action':btnIndex==1}" ng-click="doClick(1)" lang="no" ui-sref="index.propertyService.staffHome.entranceGuard.checkEntranceGuard">门禁卡列表</a>
+        </div>
+
+        <div ui-view></div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

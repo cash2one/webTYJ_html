@@ -1,0 +1,26 @@
+<!--
+    前端负责人：倪明
+    页面名称：首页加载
+    创建时间：2015/4/1
+    修改时间：2015/9/20
+-->
+<!--头部-->
+<div class="row" style="margin-left: -10px;">
+    <header>
+        <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
+            <div class="logo">
+
+            </div>
+        </div>
+        <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
+            <div class="set">
+                <span class="set_button glyphicon glyphicon-cog" aria-hidden="true"></span>
+                <span class="set_close font16 fontBold"><a ng-click="personCenter()" style="cursor: pointer" title="点击跳转到社区云个人中心">个人中心</a></span>
+				&nbsp;&nbsp;&nbsp;
+                <!-- 退出 -->
+                <span class="set_close font16 fontBold"><a ng-click="loginOut()" style="cursor: pointer">退出</a></span><!-- 修改鼠标样式  王洲  2016.03.08 -->
+            </div>
+        </div>
+    </header>
+</div>
+<!--头部结束-->

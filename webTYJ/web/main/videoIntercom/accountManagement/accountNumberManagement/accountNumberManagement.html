@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+
+<div class="col-lg-12">
+    <div id="content-first">
+        <div class="row sel">
+            <div class="col-lg-1 col-md-1 col-sm-1 text-right">门控机账号：</div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                <input class="form-control" placeholder="请输入门控机账号" ng-model="searchPram">
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                <button class="btn btn-primary" ng-click="searchInfo()">
+                    <span class="glyphicon glyphicon-search btn_icon"></span>
+                    搜索
+                </button>
+            </div>
+
+        </div>
+        <div class="row padding">
+            <div class="search-padding-10">
+                <!--<button class="btn btn-primary" data-toggle="modal" data-target="#new">-->
+                    <!--新建组-->
+                <!--</button>-->
+                <!--<button class="btn btn-primary" data-toggle="modal" data-target="#new1">-->
+                    <!--编辑组-->
+                <!--</button>-->
+                <button class="btn btn-primary" ng-click="addModel()">
+                    申请账号
+                </button>
+                <button class="btn btn-primary" ng-click="updateModel()">
+                    修改密码
+                </button>
+                <!--<button class="btn btn-primary" data-toggle="modal" data-target="#new4">-->
+                    <!--查看绑定信息-->
+                <!--</button>-->
+                <!--<button class="btn btn-primary" ng-click="updateAut();">-->
+                    <!--开通-->
+                <!--</button>-->
+                <!--<button class="btn btn-primary">-->
+                    <!--退出登录-->
+                <!--</button>-->
+            </div>
+            <table>
+                <thead>
+                <tr><th></th>
+                    <!--<th>账号</th>-->
+                    <!--<th>密码</th>-->
+                    <th>昵称</th>
+                    <th>所属组</th>
+                    <th>视频通话</th>
+                    <th>语音通话</th>
+                    <th>二维码</th>
+                    <th>密码开门</th>
+                    <th>设备类型</th>
+                </tr></thead>
+                <tbody>
+                <tr ng-repeat="item in currentHouse" ng-show="item.id!=null">
+                    <td><input type="checkbox" ng-click="getCheckBoxs(item)"></td>
+                    <!--<td>{{item.accountNum}}</td>-->
+                    <!--<td>{{item.password}}</td>-->
+                    <td>{{item.accountName}}</td>
+                    <td>{{item.area.nodeName}}</td>
+                    <td ng-switch on="item.isVideo">
+                        <span ng-switch-when="true">开通</span>
+                        <span ng-switch-when="false">未开通</span>
+                    </td>
+                    <td ng-switch on="item.isVoice">
+                        <span ng-switch-when="true">开通</span>
+                        <span ng-switch-when="false">未开通</span>
+                    </td>
+                    <td ng-switch on="item.isTdcode">
+                        <span ng-switch-when="true">开通</span>
+                        <span ng-switch-when="false">未开通</span>
+                    </td>
+                    <td ng-switch on="item.isPwd">
+                        <span ng-switch-when="true">开通</span>
+                        <span ng-switch-when="false">未开通</span>
+                    </td>
+                    <td ng-switch on="item.isWallGating">
+                        <span ng-switch-when="1">围墙机</span>
+                        <span ng-switch-when="0">门控机</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="bill_paging">
+                <ul class="pagination" ng-show="totalPage>=1">
+                    <li ng-class="{true:'disabled'}[currentPage==1]"><a href="javascript:void(0)"
+                                                                        ng-click="currentPage=1;loadPage(currentPage)">首页</a></li>
+                    <li ng-class="{true:'disabled'}[currentPage==1]"><a href="javascript:void(0);" ng-click="prev()">上一页</a></li>
+                    <li ng-repeat="page in pages" ng-class="{true:'active'}[currentPage==page]"><a href="javascript:void(0);" ng-click="loadPage(page)">{{ page }}</a></li>
+                    <li ng-class="{true:'disabled'}[currentPage==totalPage]"><a href="javascript:void(0);" ng-click="next()">下一页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[currentPage==totalPage]"><a href="javascript:void(0)" ng-click="currentPage=totalPage;loadPage(currentPage)">末页</a></li>
+                </ul>
+            </div>
+            <div class="clear"></div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="new" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog">
+        <div class="modal-content" >
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" id="ImpClient">
+                    新建
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="row sel">
+                    <div class="col-lg-2 text-right">新建组名：</div>
+                    <div class="col-lg-4"><input class="form-control"></div>
+                    <div class="col-lg-2 text-right">组详情：</div>
+                    <div class="col-lg-4"><input class="form-control"></div>
+                </div>
+                <div class="padding"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="save()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="new1" tabindex="-1" role3="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog">
+        <div class="modal-content" >
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    编辑
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="row padding">
+                    <div class="col-lg-12">
+                        <table>
+                            <thead>
+                            <th>新建时间</th>
+                            <th>组名</th>
+                            <th>操作人</th>
+                            <th>组详情</th>
+                            <th>编辑</th>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td><button >编辑</button></td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td><button >编辑</button></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="save()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="new2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog">
+        <div class="modal-content" >
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    申请账号
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="row padding15 sel1">
+                    <!--<div class="col-lg-5 text-right">账号：</div>-->
+                    <!--<div class="col-lg-4"><input class="form-control" set-Focus="" ng-model="account.accountNum" placeholder="请输入账号"></div>-->
+                    <!--<div class="col-lg-1 col-md-3 col-sm-3 blankSpace">-->
+                        <!--<span style="color: red">*</span>-->
+                    <!--</div>-->
+                    <!--<div class="clear"></div>-->
+                    <!--<div class="col-lg-5 text-right">密码：</div>-->
+                    <!--<div class="col-lg-4"><input class="form-control" ng-model="account.password" placeholder="请输入不超过6位字符的密码"></div>-->
+                    <!--<div class="col-lg-1 col-md-3 col-sm-3 blankSpace">-->
+                        <!--<span style="color: red">*</span>-->
+                    <!--</div>-->
+                    <div class="col-lg-5 text-right">昵称：</div>
+                    <div class="col-lg-4"><input class="form-control" set-Focus="" ng-model="account.accountName" placeholder="请输入昵称"></div>
+                    <div class="col-lg-1 col-md-3 col-sm-3 blankSpace">
+                        <span style="color: red">*</span>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="col-lg-5 text-right">门控机地址：</div>
+                    <div class="col-lg-4"><input class="form-control" ng-model="account.gateaddress" placeholder="请输入员门控机地址"></div>
+                    <div class="col-lg-1 col-md-3 col-sm-3 blankSpace">
+                        <span style="color: red">*</span>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="col-lg-5 text-right">门控机类型：</div>
+                    <div class="col-lg-4">
+                        <label class="radio inline">
+                            <input type="radio" ng-model="account.isWallGating" value="0" name="isWallGating"><span>门控机</span>
+                            <input type="radio" ng-model="account.isWallGating" value="1" name="isWallGating"><span>围墙机</span>
+                        </label>
+                    </div>
+                    <div class="col-lg-1 col-md-3 col-sm-3 blankSpace">
+                        <span style="color: red">*</span>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="col-lg-5 text-right">选择组：</div>
+                    <div class="col-lg-4">
+                        <select class="form-control" ng-model="areaEntity" ng-options="a as a.nodeName for a in area">
+                            <option value="">请选择</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-1 col-md-3 col-sm-3 blankSpace">
+                        <span style="color: red">*</span>
+                    </div>
+                    <div class="clear"></div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" ng-click="addAccount()">生成</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="new3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog">
+        <div class="modal-content" >
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    修改密码
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="row padding15 sel1">
+                    <div class="col-lg-5 text-right">账号：</div>
+                    <div class="col-lg-4">{{account.accountNum}}</div>
+                    <div class="clear"></div>
+                    <div class="col-lg-5 text-right">新密码：</div>
+                    <div class="col-lg-4"><input ng-model="tempPWD.nwePassword" class="form-control" placeholder="请输入不超过6位字符的密码"></div>
+                    <div class="col-lg-1 col-md-3 col-sm-3 blankSpace">
+                        <span style="color: red">*</span>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="col-lg-5 text-right">再次输入密码：</div>
+                    <div class="col-lg-4"><input ng-model="tempPWD.secondPassword" class="form-control" placeholder="请输入不超过6位字符的密码"></div>
+                    <div class="col-lg-1 col-md-3 col-sm-3 blankSpace">
+                        <span style="color: red">*</span>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="updatePwd()">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="new4" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog">
+        <div class="modal-content" >
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" >
+                    查看
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="row sel">
+                    <div class="col-lg-2 text-right">所在项目：</div>
+                    <div class="col-lg-4">111</div>
+                    <div class="col-lg-2 text-right">所在小区：</div>
+                    <div class="col-lg-4">111</div>
+                    <div class="col-lg-2 text-right">期：</div>
+                    <div class="col-lg-4">111</div>
+                    <div class="col-lg-2 text-right">区：</div>
+                    <div class="col-lg-4">111</div>
+                    <div class="col-lg-2 text-right">栋/座/幢：</div>
+                    <div class="col-lg-4">111</div>
+                    <div class="col-lg-2 text-right">单元：</div>
+                    <div class="col-lg-4">111</div>
+                </div>
+                <div class="row padding">
+                    <div class="col-lg-6">
+                        <p>地理位置：</p>
+                        <img src="../../images/propertyService/user.jpg" width="100%">
+                    </div>
+                    <div class="col-lg-6">
+                        <p>房间号：</p>
+                        <!--树-->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="save()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="new5" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog">
+        <div class="modal-content" >
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" id="ImpClient">
+                    申请
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="row padding15">
+                    <div class="col-lg-5"></div>
+                    <div class="col-lg-4">
+                        <label class="checkbox inline">
+                            <input type="checkbox" id="isPwd" name="check_list" ng-checked="selectAll">
+                            <span>密码开门</span>
+                        </label>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="col-lg-5"></div>
+                    <div class="col-lg-4">
+                        <label class="checkbox inline">
+                            <input type="checkbox" id="isVideo" name="check_list" ng-checked="selectAll">
+                            <span>视频通话</span>
+                        </label>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="col-lg-5"></div>
+                    <div class="col-lg-4">
+                        <label class="checkbox inline">
+                            <input type="checkbox" id="isVoice" name="check_list" ng-checked="selectAll">
+                            <span>语音通话</span>
+                        </label>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="col-lg-5"></div>
+                    <div class="col-lg-4">
+                        <label class="checkbox inline">
+                            <input type="checkbox" id="isTdcode" name="check_list" ng-checked="selectAll">
+                            <span>二维码</span>
+                        </label>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="updateAu();">生成</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function(){
+        var wWidth = $(window).width();
+        var wHeight = $(window).height();
+        $(".container-fluid .left").height(wHeight-78);
+        $(".container-fluid .right").height(wHeight-158);
+        $(".container-fluid .rihgtheight").height(wHeight-158);
+    });
+</script>
+</body>
+</html>

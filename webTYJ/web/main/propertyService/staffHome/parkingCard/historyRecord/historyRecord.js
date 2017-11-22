@@ -1,0 +1,576 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 停车卡历史记录查询js
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../../app');
+
+    app.controller('historyRecordCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        $scope.doClick(1);
+        var url = $rootScope.url;
+        //加载页面显示网格
+        $scope.showStatus=1;
+        $scope.gs=true;
+        $scope.hk=true;
+        $scope.tk=true;
+        $scope.jf=true;
+        //切换为网格
+        $scope.tabview=function(){
+            $scope.showStatus=0;
+        }
+        //切换为列表
+        $scope.listview=function(){
+            $scope.showStatus=1;
+            $scope.gs=true;
+            $scope.hk=true;
+            $scope.tk=true;
+            $scope.jf=true;
+        }
+
+        //点击列表时获取cardId
+        /*$scope.getCardId=function(cardId){
+            $scope.caraccesscardone.cardId=cardId;
+        }*/
+        //根据办理人id查询办理人和授权人停车卡历史记录
+        $scope.search={};
+        //$scope.search.custId=$rootScope.user.custId;
+        /*     $scope.search.custId=7;
+         *//*$scope.search.parkingCard=1;*//*
+         $http.post(url+'/Caraccesscard/listSearchCaraccesscardAu',{Search:$scope.search}).success(function(data)
+         {
+         $scope.caraccesscards=data.Caraccesscard;
+
+         }).error(function(error){
+
+         });*/
+
+        //查询客户停车卡信息
+
+        $scope.Caraccesscard={page:{}};
+
+        $scope.load=function(){
+            $scope.Caraccesscard.custCode=$rootScope.user.custId;
+            var fetchFunction = function (page, callback) {
+                $scope.Caraccesscard.page = page;
+                $http.post(url + '/Caraccesscard/listPageCaraccesscardByCustCode', {Caraccesscard: $scope.Caraccesscard}).success(callback)
+            };
+            $scope.searchPaginator = app.get('Paginator').list(fetchFunction,6);
+            console.log($scope.searchPaginator);
+        };
+        $scope.load();
+        //选择停车卡
+        $scope.caraccesscardone={};
+        $scope.caraccesscardone1={};
+        $scope.getCaraccesscardbycardId=function(caraccesscard){
+            /**
+             * BUG 340  陶勇超 2016年1月13日 13:39:48
+             * @type {string}
+             */
+            if(document.getElementById(caraccesscard.idcardNum).style.background=='')
+            {
+                for(var i=0;i<angular.element('.allDate').size();i++)
+                {
+                    angular.element('.allDate').eq(i).css('background-color','');
+                    angular.element('.allDate').eq(i).children()[0].children[0].checked=false;
+                }
+                document.getElementById(caraccesscard.idcardNum).style.background = '#F8F6FA';
+                document.getElementById(caraccesscard.cardId).checked = true;
+
+            }else
+            {
+                document.getElementById(caraccesscard.idcardNum).style.background = '';
+                document.getElementById(caraccesscard.cardId).checked = false;
+                $scope.caraccesscardone={};
+                $scope.caraccesscardone1={};
+                return;
+            }
+
+            if(caraccesscard.cardState==3){//禁用
+                    $scope.gs=false;
+                    $scope.hk=false;
+                    $scope.tk=false;
+                    $scope.jf=false;
+            }else if(caraccesscard.cardState==2){
+                $scope.gs=false;
+                $scope.hk=false;
+                $scope.tk=false;
+                $scope.jf=false;
+            }else{
+                $scope.gs=true;
+                $scope.hk=true;
+                $scope.tk=true;
+                $scope.jf=true;
+            }
+
+            $scope.newcardId='';
+            $scope.caraccesscardone=caraccesscard;
+            $scope.caraccesscardone1=caraccesscard;
+            $scope.caraccesscard2=caraccesscard;
+            console.log($scope.caraccesscard2);
+            /****************************退款**********************************************/
+            Date.prototype.Format = function (fmt) { //author: meizz
+                var o = {
+                    "M+": this.getMonth() + 1, //月份
+                    "d+": this.getDate(), //日
+                    "h+": this.getHours(), //小时
+                    "m+": this.getMinutes(), //分
+                    "s+": this.getSeconds(), //秒
+                    "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+                    "S": this.getMilliseconds() //毫秒
+                };
+                if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+                for (var k in o)
+                    if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+                return fmt;
+            }
+//两个日期
+            var date1=new Date( $scope.caraccesscardone.startDate).Format("yyyy-MM-dd");
+            var date2=new Date($scope.caraccesscardone.endDate).Format("yyyy-MM-dd");
+// 拆分年月日
+            date1 =  date1.split('-');
+// 得到月数
+            date1 = parseInt(date1[0]) * 12 + parseInt(date1[1]);
+// 拆分年月日
+            date2 =  date2.split('-');
+// 得到月数
+            date2 = parseInt( date2[0]) * 12 + parseInt( date2[1]);
+            var   mon1 = parseInt( date2[1])+mon;
+
+            var year =parseInt( date2[0]);
+            var m= Math.abs(date2 -  date1);
+            //$scope.monthMoney=m*parseInt( $scope.Product.price);//流动车位退款
+           // $scope.dayMoney=m*30;//私人车位退款
+            $scope.yearMoney=m*parseInt( $scope.caraccesscardone.price);//固定车位退款
+            /****************************退款**********************************************/
+
+            /****************************缴费计算**********************************************/
+            var mon= angular.element("input#mony").val();
+            $scope.payC= mon*parseInt( $scope.Product.price)
+            $scope.payB= mon*30
+            $scope.payA= mon*parseInt( $scope.ProductFour.price)
+            /*
+             *   功能:实现VBScript的DateAdd功能.
+             *   参数:interval,字符串表达式，表示要添加的时间间隔.
+             *   参数:number,数值表达式，表示要添加的时间间隔的个数.
+             *   参数:date,时间对象.
+             *   返回:新的时间对象.
+             *   var now = new Date();
+             *   var newDate = DateAdd( "d", 5, now);
+             *---------------   DateAdd(interval,number,date)   -----------------
+             */
+            function DateAdd(interval, number, date) {
+                switch (interval) {
+                    case "y ": {
+                        date.setFullYear(date.getFullYear() + number);
+                        return date;
+                    }
+                    case "q ": {
+                        date.setMonth(date.getMonth() + number * 3);
+                        return date;
+                    }
+                    case "m ": {
+                        date.setMonth(date.getMonth() + number);
+                        return date;
+                    }
+                    case "w ": {
+                        date.setDate(date.getDate() + number * 7);
+                        return date;
+                    }
+                    case "d ": {
+                        date.setDate(date.getDate() + number);
+                        return date;
+                    }
+                    case "h ": {
+                        date.setHours(date.getHours() + number);
+                        return date;
+                    }
+                    case "m ": {
+                        date.setMinutes(date.getMinutes() + number);
+                        return date;
+                    }
+                    case "s ": {
+                        date.setSeconds(date.getSeconds() + number);
+                        return date;
+                    }
+                    default: {
+                        date.setDate(d.getDate() + number);
+                        return date;
+                    }
+                }
+            }
+            $scope.saveDat=function(){
+                $scope.newDat=$scope.caraccesscardone.endDate;
+                var now = new Date($scope.caraccesscardone.endDate);
+// 加五天.
+//            var newDate = DateAdd("d ", 5, now);
+//            alert(newDate.toLocaleDateString())
+// 加两个月.
+                var mm=parseInt($scope.caraccesscard2.mony)
+                now = DateAdd("m ",mm, now);
+                // alert(now.toLocaleDateString())
+// 加一年
+//            newDate = DateAdd("y ", 1, now);
+//            alert(newDate.toLocaleDateString())
+                $scope.newDatt=now
+                $scope.caraccesscardone.endDate=$scope.newDatt
+            }
+            caraccesscard={};
+        };
+
+        //$scope.caraccesscardone1={};
+        $scope.getCaraccesscardbycardId1=function(caraccesscard){
+            $scope.newcardId='';
+            $scope.caraccesscardone=caraccesscard;
+            $scope.caraccesscard2=caraccesscard;
+
+            //退款金额计算
+            Date.prototype.Format = function (fmt) { //author: meizz
+                var o = {
+                    "M+": this.getMonth() + 1, //月份
+                    "d+": this.getDate(), //日
+                    "h+": this.getHours(), //小时
+                    "m+": this.getMinutes(), //分
+                    "s+": this.getSeconds(), //秒
+                    "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+                    "S": this.getMilliseconds() //毫秒
+                };
+                if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+                for (var k in o)
+                    if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+                return fmt;
+            };
+
+            var mon= angular.element("input#mony").val();
+//两个日期
+            var date1=new Date().Format("yyyy-MM-dd");
+            var date2=new Date($scope.caraccesscard2.endDate).Format("yyyy-MM-dd");
+// 拆分年月日
+            date1 =  date1.split('-');
+// 得到月数
+            date1 = parseInt(date1[0]) * 12 + parseInt(date1[1]);
+// 拆分年月日
+            date2 =  date2.split('-');
+// 得到月数
+            date2 = parseInt( date2[0]) * 12 + parseInt( date2[1]);
+            var   mon1 = parseInt( date2[1])+mon;
+
+            var year =parseInt( date2[0]);
+            var m= Math.abs(date2 -  date1);
+           // $scope.monthMoney=m*parseInt( $scope.Product.price);//流动车位退款
+           // $scope.dayMoney=m*30;//私人车位退款
+            $scope.yearMoney=m*parseInt( $scope.caraccesscard2.price);//固定车位退款
+            /****************************退款**********************************************/
+        };
+
+        /**
+         * 展示停车卡信息
+         * @type {Array}
+         */
+        $scope.caraccesscardoneInfo={};
+        $scope.showCar=function(caraccesscard){
+            $scope.caraccesscardoneInfo=caraccesscard;
+            angular.element('#show').modal('show');
+            console.log( $scope.caraccesscardoneInfo);
+        }
+
+        //更换停车卡
+        $scope.Carac=[];
+        $http.get(url + '/Caraccesscard/listAllCaraccesscard' ).success(function(data){
+            $scope.Carac = data.Caraccesscard;
+        }).error(function(data){
+            layer.alert('查询失败',{icon : 2});
+        });
+        $scope.newcardId;
+        $scope.updateCaraccessBycardId=function(){
+
+            /**
+             * BUG 339 陶勇超 2016年1月13日 11:52:53
+             */
+            if(  $scope.newcardId==undefined ||  $scope.newcardId=="" ||  $scope.newcardId == null){
+                layer.alert('停车卡号不能为空！',{icon : 0});
+                return;
+            }
+            if(   $scope.Carac.length>0){
+                for(var i=0;i<$scope.Carac.length;i++){
+                    if($scope.newcardId==$scope.Carac[i].idcardNum){
+                        layer.alert('停车卡号已存在！',{icon : 0});
+                        return;
+                    }
+                }
+            }
+            $scope.caraccesscardone.newcardId= $scope.newcardId;
+            $http.put(url + '/Caraccesscard/updateCaraccessBycardId',{Caraccesscard:$scope.caraccesscardone}).success(function(data) {
+                layer.msg('更换停车卡成功',{icon : 1, time : 2000});
+                angular.element("#freed").modal("hide");
+                $scope.load();
+            }).error(function(data, status, headers, config){
+                layer.alert('更换停车卡失败',{icon : 2});
+            }) ;
+        };
+
+        //停车卡挂失
+        $scope.LossCaraccesscardById=function(cardId){
+            //卡状态修改为挂失
+            $scope.caraccesscardone.cardId=cardId
+            /**
+             * BUG 360 陶勇超 2016年1月13日 10:58:58
+             */
+            layer.confirm("您确定要挂失停车卡？",
+                {btn : ['是','否']},function(){
+                    $http.put(url + '/Caraccesscard/LossCaraccessBycardId/'+$scope.caraccesscardone.cardId).success(function(data) {
+                        layer.msg('挂失停车卡成功!',{icon : 1});
+                        $("#free").modal("hide");
+                        $scope.caraccesscardone={};
+                        $scope.load();
+                    }).error(function(data, status, headers, config){
+                        layer.alert('挂失停车卡失败',{icon : 2});
+                    }) ;
+                })
+
+
+        };
+
+console.log();
+        //模态框取消
+        $scope.quxiao=function(){
+            $scope.load();
+        };
+        $scope.serviceRequest = {listTasks:{}};
+        //停车卡退卡
+        $scope.RefundCaraccessBycardId=function(caraccesscardone){
+            //卡状态修改为禁用
+            //$scope.caraccesscardone.cardId=cardId;
+            if(caraccesscardone.carType==1){
+                $scope.caraccesscardone.paymentAmount =$scope.caraccesscard2.nominalFee;
+
+            }else if(caraccesscardone.carType==2){
+                $scope.caraccesscardone.paymentAmount= $scope.yearMoney + $scope.caraccesscard2.nominalFee
+            }
+            $http.put(url + '/Caraccesscard/RefundCaraccessBycardId',{Caraccesscard:$scope.caraccesscardone}).success(function(data) {
+                //是否为固定车位
+                if($scope.caraccesscardone.parkingLocation !=null){
+                    $scope.serviceRequest.requestSource = '自动创建';
+                    $scope.serviceRequest.serviceRequestState = 1;
+                    $scope.serviceRequest.serviceRequestName = '固定车位服务请求'
+                    $scope.serviceRequest.customerId = $scope.caraccesscardone.personCust.custId;//客户id
+                    $scope.serviceRequest.serviceRequestType = '10'//固定车位
+                    //$scope.serviceRequest.writerId = $scope.caraccesscardone.creater;//创建人id
+                    $scope.serviceRequest.remarks = '停车卡固定车位自动创建';//备注
+                    $scope.serviceRequest.directionType = 1;//外部服务请求
+                    $scope.serviceRequest.listTasks.customerId =  $scope.caraccesscardone.personCust.custId;//客户id
+                    $scope.serviceRequest.listTasks.taskType = 19;//任务类型
+                    $scope.serviceRequest.listTasks.taskState = '4';//任务状态
+                    var curDate = new Date();
+                    $scope.serviceRequest.listTasks.estimatedTime = new Date((new Date()/1000+86400)*1000);//预计完成时间7天以后
+                    //$scope.serviceRequest.listTasks.addressId = $scope.caraccesscardone.fullName;//地址id
+                    $scope.serviceRequest.listTasks.taskDescription = '取消固定车位';/*+ $scope.caraccesscardone.stallCoding;*///任务描述
+                    $scope.serviceRequest.listTasks.principal = ''//负责人
+                    //创建服务请求
+                    $http.post(url + '/ServiceRequest/insertServiceRequestRestful', {ServiceRequest: $scope.serviceRequest}).success(function (data) {
+                        layer.msg('退卡成功',{icon : 1});
+                        $scope.load();
+                    }).error(function (data, status, headers, config) {
+                        layer.msg("提交失败",{icon : 2,time : 2000});
+                    });
+                }
+
+            }).error(function(data, status, headers, config){
+                layer.alert('退卡失败',{icon : 2});
+            }) ;
+        };
+
+        /**
+         * 列表下停车卡不选择数据，挂失/退卡/缴费都可以点开
+         */
+        $scope.detailShow = function(num) {
+            if($scope.caraccesscardone1.carId!=undefined)
+            {
+                switch (num)
+                {
+                    case 1:
+
+                        angular.element('#free').modal("show");
+                        break;
+                    case 2:
+                        angular.element('#freed').modal("show");
+                        break;
+                    case 3:
+                        angular.element('#file').modal("show");
+                        break;
+                    case 4:
+                        angular.element('#freedom').modal("show");
+                        break;
+                }
+            }else
+            {
+                switch (num)
+                {
+                    case 1:
+                        layer.msg('选择您要挂失的数据',{icon:0});
+                        break;
+                    case 2:
+                        layer.msg('选择您要换卡的数据',{icon:0});
+                        break;
+                    case 3:
+                        layer.msg('选择您要退卡的数据',{icon:0});
+                        break;
+                    case 4:
+                        layer.msg('选择您要续费的数据',{icon:0});
+                        break;
+                }
+
+            }
+
+        };
+
+        //重新获取停车卡信息
+        $scope.repeatCaraccesscard=function(){
+            $http.post(url+'/Caraccesscard/listSearchCaraccesscardAu',{Search:$scope.search}).success(function(data)
+            {
+                $scope.caraccesscards=data.Caraccesscard;
+
+            }).error(function(error){
+
+            });
+        };
+        //取消模态框
+        $scope.clearModel=function(){
+            $scope.newcardId=null;
+            $scope.Lproducts='';
+            $scope.Product.productName='';
+            $scope.caraccesscard2.mony='';
+            //$scope.load()
+        };
+
+        //停车卡缴费
+        $scope.caraccesscard2={};
+        $scope.starDate;
+        $scope.PayCaraccessBycardId=function(caraccesscard){
+            ////每天的金额
+            //$scope.price=200/30;
+
+            $scope.starDate=(new Date( $scope.caraccesscard2.startDate)).getTime();
+            $scope.endDate=(new Date( $scope.caraccesscard2.endDate)).getTime();
+
+            $scope.starTime= $scope.starDate;
+            $scope.endTime=$scope.endDate;
+            $scope.sumDay=($scope.endTime-$scope.starTime)/(24*60*60*1000);
+            var money = caraccesscard.paymentAmount;
+            if($scope.caraccesscard2.parkingLocation!=null){
+                if( $scope.caraccesscard2.mony==null|| $scope.caraccesscard2.mony==''){
+                    layer.msg('缴纳月数不能为空',{icon : 0});
+                    return;
+                }
+                caraccesscard.paymentAmount = $scope.caraccesscard2.mony * $scope.caraccesscard2.price;
+            }else if($scope.caraccesscard2.parkingLocation==null){
+                if( $scope.caraccesscard2.productName==null|| $scope.caraccesscard2.productName==''){
+                    layer.msg('优惠卡不能为空',{icon : 0});
+                    return;
+                }
+
+                caraccesscard.paymentAmount = $scope.Lproducts.price;
+            }/*else if(caraccesscard.stall.stallType=='私人'){
+                caraccesscard.paymentAmount = caraccesscard.mony*$scope.Product.price;
+            }*/
+
+            //获取日期
+            var dateArray = new Date(caraccesscard.endDate);
+            dateArray.setMonth(Number(dateArray.getMonth())+Number(caraccesscard.mony));
+            caraccesscard.endDate = dateArray.Format('yyyy-MM-dd');
+            //获取金额
+            if(money==null){
+                money=0;
+            }
+            caraccesscard.paymentAmount+=money;
+            $http.put(url+'/Caraccesscard/updateCaraccesscard',{Caraccesscard:caraccesscard}).success(function(){
+                layer.msg('缴费成功',{icon : 1,time:1000});
+                $scope.caraccesscardone1 = {};
+                $scope.load();
+            }).error(function(){
+                layer.msg('缴费失败',{icon : 2,time:1000});
+            });
+
+            /*     if($scope.sumDay <= 30)
+             {
+             $scope.caraccesscard2.paymentAmount=200;
+             }
+             else
+             {
+             $scope.caraccesscard2.paymentAmount=Math.ceil($scope.sumDay/30)*200
+             }*/
+            //$scope.caraccesscard2.paymentAmount=($scope.price*$scope.sumDay).toFixed(2);
+            //$scope.payCost.cardId=$scope.caraccesscards1.cardId; // 将停车卡id赋值给费用表的cardId
+            //$http.post(url + '/PayCost/AddPayCost',{PayCost:$scope.payCost}).success(function(data) {
+            //	alert("缴费成功");
+            //}).error(function(data, status, headers, config){
+            //    alert("缴费失败");
+            //}) ;
+            //$http.get(url + '/Caraccesscard/listCaraccesscardByCustId/'+7).success(function(data) {
+            //     $scope.caraccesscards = data.Caraccesscard;
+            // });
+        };
+
+
+
+
+        //查询产品初始化停车月卡，获取办理金额
+        $http.get(url + '/Product/getProductByType/' + '1').success(function(data){
+            $scope.Product = data.Product;
+        }).error(function(data){
+            layer.alert('查询不到有效的门禁卡初始化信息',{icon : 2});
+        });
+
+        //查询产品初始化固定车位，获取办理金额
+        $http.get(url + '/Product/getProductByType/' + '4').success(function(data){
+            $scope.ProductFour = data.Product;
+        }).error(function(data){
+            layer.alert('查询不到有效的门禁卡初始化信息',{icon : 2});
+        });
+        //查询产品初始化工本费，获取工本费
+        $http.get(url + '/Product/getProductByType/' + '2').success(function(data){
+            $scope.ProductFiv = data.Product;
+        }).error(function(data){
+            layer.alert('查询不到有效的门禁卡初始化信息',{icon : 2});
+        });
+
+        $scope.add=function()
+        {
+            $scope.doClick(2);
+        };
+
+
+
+        $http.get(url + '/Product/listgetProductByType/' + '1').success(function(data){
+            $scope.Products=[];
+            $scope.Products = data.Product;
+            for(var i in $scope.Products){
+                $scope.Products[i].name = $scope.Products[i].productName;
+                $scope.Products[i].id = $scope.Products[i].productId;
+                $scope.Datil.taskType.push($scope.Products[i])
+            }
+            console.log( $scope.Products);
+        }).error(function(data){
+            layer.alert('查询不到有效的优惠卡初始化信息',{icon : 2});
+        });
+        $scope.Datil= {
+            taskType: [
+
+            ]
+        }
+        $scope.Lproducts='';
+
+        $scope.ProductChange=function(id){
+            $http.get(url+'/Product/getProductById1/'+id).success(function(data){
+                $scope.Lproducts=data.Product;
+                $scope.caraccesscard2.mony=$scope.Lproducts.month;
+                console.log($scope.Lproducts);
+            }).error(function(){
+            });
+
+        }
+    }]);
+});

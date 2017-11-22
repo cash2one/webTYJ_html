@@ -1,0 +1,149 @@
+<!--前端负责人：倪明
+    页面名称：规章制度
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>规章制度</title>
+</head>
+<body >
+<div id="message">
+    <!-- 公告标题 -->
+    <div class="row title">
+        <div class="col-md-6 col-xs-6">
+            <h3><strong>规章制度</strong></h3>
+        </div>
+        <div class="col-md-6 col-xs-6 text-right">
+            <button type="button" class="btn btn-default btn-primary" data-toggle="modal" data-target="#myModale" ><span class="glyphicon glyphicon-plus btn_icon"></span>新增 </button>
+            <button type="button" class="btn btn-default btn-primary" data-toggle="modal" data-target="#myModales" ><span class="glyphicon glyphicon-list-alt btn_icon"></span>详情 </button>
+            <button type="button" class="btn btn-default btn-primary" ><span class="glyphicon glyphicon-trash btn_icon"></span>删除 </button>
+        </div>
+    </div>
+    <!-- 公告标题 结束 -->
+
+    <!-- 公告内容 -->
+    <div class="row">
+        <!-- 公告标题列表 -->
+        <div class="col-md-3">
+            <div class="list">
+                <ul class="list_ul">
+                    <li ng-repeat="rules in data2" ng-click="getRules(rules.id)">
+                        <span class="glyphicon glyphicon-user pull-left"></span>
+                        <h4><strong>{{rules.title}}</strong></h4>
+                        {{rules.briefContent}}
+                    </li>
+                </ul>
+                <!--分页开始-->
+                <div class="bill_paging">
+                    <ul class="pagination">
+                        <li ng-class="{true:'disabled'}[index2==1]"><a href="javascript:void(0)"
+                                                                            ng-click="index2=1;go2(index2)">首页</a></li>
+                        <li ng-class="{true:'disabled'}[index2==1]"><a href="javascript:void(0);" ng-click="previous2()">上一页</a></li>
+                        <li ng-class="{true:'active'}[index2==page]"><a href="javascript:void(0);" ng-click="go2($index)">{{index2}}</a></li>
+                        <li ng-class="{true:'disabled'}[index2==totalPage2]"><a href="javascript:void(0);" ng-click="next2()">下一页</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[index2==totalPage2]"><a href="javascript:void(0)" ng-click="index2=totalPage2;go2(index2)">末页</a></li>
+                    </ul>
+                </div>
+                <!--分页结束-->
+            </div>
+        </div>
+        <!-- 公告标题列表 结束 -->
+
+        <!-- 公告列表内容 -->
+        <div class="col-md-9">
+            <div class="text">
+                <div class="text-title">
+                    <h3><strong>{{rulesA.title}}</strong></h3>
+                    <div class="row">
+                        <div class="col-md-7 col-xs-7">
+                            发布单位：{{rulesA.recordCreater}}  发布者：{{rulesA.recordCreater}}
+                        </div>
+                        <div class="col-md-5 col-xs-5 text-right">
+                            {{rulesA.createTime|date:"yyyy-MM-dd mm:ss"}}
+                            <a href="#">更多信息</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-text">
+                    <p><strong>Dear All,</strong></p>
+                    <p>{{rulesA.briefContent}}</p>
+                    <p>{{rulesA.detailInfo}}</p>
+                </div>
+            </div>
+        </div>
+        <!-- 公告列表内容 结束-->
+    </div>
+    <!-- 公告内容 -->
+
+    <!-- 操作按钮 -->
+    <div class="button_group">
+        <button><span class="glyphicon glyphicon glyphicon-check"></span>待办任务</button>
+        <button><span class="glyphicon glyphicon glyphicon-check"></span>待办任务</button>
+        <button><span class="glyphicon glyphicon glyphicon-check"></span>待办任务</button>
+    </div>
+    <!-- 操作按钮 结束-->
+</div>
+
+<div class="modal fade" id="myModale" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <p>添加制度</p>
+            </div>
+            <div class="modal-body" >
+                <div class="padding sel1">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">标题：</div>
+                        <div class="col-lg-10 col-md-10 col-sm-10">
+                            <input type="text" class="form-control" ng-model="rul.title">
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">标题：</div>
+                        <div class="col-lg-10 col-md-10 col-sm-10">
+                            <input type="text" class="form-control" ng-model="rul.title">
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">详细内容：</div>
+                        <div class="col-lg-10 col-md-10 col-sm-10">
+                            <textarea class="text_min" ng-model="rul.briefContent"></textarea>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">详细内容：</div>
+                        <div class="col-lg-10 col-md-10 col-sm-10">
+                            <textarea class="text_min" ng-model="rul.detailInfo"></textarea>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">创建人：</div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <input type="text" class="form-control" ng-model="rul.recordCreater">
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">建立时间：</div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <input type="text" class="form-control" ng-model="rul.createTime">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">
+                    <span aria-hidden="true">取消</span>
+                </button>
+                <button type="button" class="btn bg-primary " ng-click="ruleLists()" aria-label="Left Align" data-dismiss="modal" >
+                    <span aria-hidden="true">信息列表</span>
+                </button>
+                <button type="button" class="btn bg-primary" ng-click="addRule()" aria-label="Left Align" data-dismiss="modal" >
+                    <span aria-hidden="true">保存</span>
+                </button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+</body>
+</html>

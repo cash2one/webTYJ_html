@@ -1,0 +1,211 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 部门质检管理
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../app');
+
+    app.controller('allDepartmentsISRCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        var url=$scope.url;
+        $scope.gardens=true;                    //园林
+        $scope.cleans=false;                    //清洁
+        $scope.securities=false;                 //安保
+        $scope.maintenances=false;              //维修
+
+        $scope.ServiceRequest={};
+        //$http.get(url+'/ServiceRequest/getServiceRequestbyQCType/0').success(function(data){
+        //
+        //    if(data){
+        //        $scope.ServiceRequest = data.ServiceRequest;
+        //
+        //        //遍历所有评分标准按照周期分组
+        //        for(var i=0;i<$scope.ServiceRequest.length;i++){
+        //            if($scope.ServiceRequest[i].frequency==0){
+        //                $scope.gardenDayCheck.push($scope.ServiceRequest[i]);
+        //            }else if($scope.ServiceRequest[i].frequency==1){
+        //                $scope.gardenWeekCheck.push($scope.ServiceRequest[i]);
+        //            }else if($scope.ServiceRequest[i].frequency==2){
+        //                $scope.gardenHalfMonthCheck.push($scope.ServiceRequest[i]);
+        //            }else if($scope.ServiceRequest[i].frequency==3){
+        //                $scope.gardenMonthCheck.push($scope.ServiceRequest[i]);
+        //            }
+        //        }
+        //        alert("园林标准！")
+        //    }else{
+        //        alert("没有找到园林标准！")
+        //    }
+        //}).error(function(data,status,headers,config){
+        //    alert("服务器请求失败！");
+        //});
+
+        $scope.selectGarden=function(){
+            $scope.gardenServiceRequest=[];
+            $scope.gardenDayCheck=[];
+            $scope.gardenWeekCheck=[];
+            $scope.gardenHalfMonthCheck=[];
+            $scope.gardenMonthCheck=[];
+            $http.get(url+'/ServiceRequest/getServiceRequestbyQCType/0').success(function(data){
+                console.log(data);
+                if(data){
+                    $scope.ServiceRequest = data.ServiceRequest;
+                    console.log( $scope.ServiceRequest);
+                    //遍历所有评分标准按照周期分组
+                    for(var i=0;i<$scope.ServiceRequest.length;i++){
+                        if($scope.ServiceRequest[i].frequencyRecord.frequencyType==0){
+                            $scope.gardenDayCheck.push($scope.ServiceRequest[i]);
+                        }else if($scope.ServiceRequest[i].frequencyRecord.frequencyType==1){
+                            $scope.gardenWeekCheck.push($scope.ServiceRequest[i]);
+                        }else if($scope.ServiceRequest[i].frequencyRecord.frequencyType==2){
+                            $scope.gardenHalfMonthCheck.push($scope.ServiceRequest[i]);
+                        }else if($scope.ServiceRequest[i].frequencyRecord.frequencyType==3){
+                            $scope.gardenMonthCheck.push($scope.ServiceRequest[i]);
+                        }
+                    }
+                }else{
+                    alert("没有找到园林标准！")
+                }
+            }).error(function(data,status,headers,config){
+                alert("服务器请求失败！");
+            });
+        };
+
+        $scope.selectGarden();
+
+        $scope.test='allDepartmentsISR';
+        $scope.btnIndex=1;
+
+        $scope.doClick=function(index){
+            $scope.btnIndex=index;
+        };
+        $scope.showGarden=function(index){
+            $scope.gardens=true;                //园林
+            $scope.cleans=false;                //清洁
+            $scope.securities=false;             //安保
+            $scope.maintenances=false;          //维修
+
+            $scope.btnIndex=index;
+            $scope.selectGarden();
+
+        };
+
+        $scope.showClean=function(index){
+            $scope.gardens=false;               //园林
+            $scope.cleans=true;                 //清洁
+            $scope.securities=false;             //安保
+            $scope.maintenances=false;          //维修
+
+            $scope.btnIndex=index;
+
+            $scope.cleanServiceRequest=[];
+            $scope.cleanDayCheck=[];
+            $scope.cleanWeekCheck=[];
+            $scope.cleanHalfMonthCheck=[];
+            $scope.cleanMonthCheck=[];
+            $http.get(url+'/ServiceRequest/getServiceRequestbyQCType/1').success(function(data){
+                if(data){
+                    $scope.ServiceRequest = data.ServiceRequest;
+                    //遍历所有评分标准按照周期分组
+                    for(var i=0;i<$scope.ServiceRequest.length;i++){
+                        if($scope.ServiceRequest[i].frequencyRecord.frequencyType==0){
+                            $scope.cleanDayCheck.push($scope.ServiceRequest[i]);
+                        }else if($scope.ServiceRequest[i].frequencyRecord.frequencyType==1){
+                            $scope.cleanWeekCheck.push($scope.ServiceRequest[i]);
+                        }else if($scope.ServiceRequest[i].frequencyRecord.frequencyType==2){
+                            $scope.cleanHalfMonthCheck.push($scope.ServiceRequest[i]);
+                        }else if($scope.ServiceRequest[i].frequencyRecord.frequencyType==3){
+                            $scope.cleanMonthCheck.push($scope.ServiceRequest[i]);
+                        }
+                    }
+                }else{
+                    alert("没有找到清洁标准！")
+                }
+            }).error(function(data,status,headers,config){
+                alert("服务器请求失败！");
+            });
+        };
+
+        $scope.showSecurity=function(index){
+            $scope.gardens=false;               //园林
+            $scope.cleans=false;                //清洁
+            $scope.securities=true;              //安保
+            $scope.maintenances=false;          //维修
+
+            $scope.btnIndex=index;
+
+            $scope.securityServiceRequest=[];
+            $scope.securityDayCheck=[];
+            $scope.securityWeekCheck=[];
+            $scope.securityHalfMonthCheck=[];
+            $scope.securityMonthCheck=[];
+            $http.get(url+'/ServiceRequest/getServiceRequestbyQCType/2').success(function(data){
+                if(data){
+                    $scope.ServiceRequest = data.ServiceRequest;
+                    //遍历所有评分标准按照周期分组
+                    for(var i=0;i<$scope.ServiceRequest.length;i++){
+                        if($scope.ServiceRequest[i].frequencyRecord.frequencyType==0){
+                            $scope.securityDayCheck.push($scope.ServiceRequest[i]);
+                        }else if($scope.ServiceRequest[i].frequencyRecord.frequencyType==1){
+                            $scope.securityWeekCheck.push($scope.ServiceRequest[i]);
+                        }else if($scope.ServiceRequest[i].frequencyRecord.frequencyType==2){
+                            $scope.securityHalfMonthCheck.push($scope.ServiceRequest[i]);
+                        }else if($scope.ServiceRequest[i].frequencyRecord.frequencyType==3){
+                            $scope.securityMonthCheck.push($scope.ServiceRequest[i]);
+                        }
+                    }
+                }else{
+                    alert("没有找到安保标准！")
+                }
+            }).error(function(data,status,headers,config){
+                alert("服务器请求失败！");
+            });
+        };
+
+        $scope.showMaintenance=function(index){
+            $scope.gardens=false;               //园林
+            $scope.cleans=false;                //清洁
+            $scope.securities=false;             //安保
+            $scope.maintenances=true;           //维修
+
+            $scope.btnIndex=index;
+
+            $scope.maintenanceServiceRequest=[];
+            $scope.maintenanceDayCheck=[];
+            $scope.maintenanceWeekCheck=[];
+            $scope.maintenanceHalfMonthCheck=[];
+            $scope.maintenanceMonthCheck=[];
+            $http.get(url+'/ServiceRequest/getServiceRequestbyQCType/3').success(function(data){
+                if(data){
+                    $scope.ServiceRequest = data.ServiceRequest;
+                    //遍历所有评分标准按照周期分组
+                    for(var i=0;i<$scope.ServiceRequest.length;i++){
+                        if($scope.ServiceRequest[i].frequencyRecord.frequencyType==0){
+                            $scope.maintenanceDayCheck.push($scope.ServiceRequest[i]);
+                        }else if($scope.ServiceRequest[i].frequencyRecord.frequencyType==1){
+                            $scope.maintenanceWeekCheck.push($scope.ServiceRequest[i]);
+                        }else if($scope.ServiceRequest[i].frequencyRecord.frequencyType==2){
+                            $scope.maintenanceHalfMonthCheck.push($scope.ServiceRequest[i]);
+                        }else if($scope.ServiceRequest[i].frequencyRecord.frequencyType==3){
+                            $scope.maintenanceMonthCheck.push($scope.ServiceRequest[i]);
+                        }
+                    }
+                }else{
+                    alert("没有找到维修标准！")
+                }
+            }).error(function(data,status,headers,config){
+                alert("服务器请求失败！");
+            });
+        };
+        //查询服务请求下所有的任务
+        $scope.clickCheck=function(serviceRequestId){
+
+            console.log(serviceRequestId);
+            $location.path("/index/serviceRequest/departmentServiceRequestForDetails/"+serviceRequestId).search({depart:serviceRequestId});
+
+        }
+
+    }]);
+});

@@ -1,0 +1,98 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 收款台js
+ */
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../../app');
+
+    app.controller('billInquiryCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        $scope.show1 = false;
+        $scope.show2 = false;
+        //定义全局变量url,访问数据库接口路径
+        var url = $rootScope.url;
+        $scope.electronic={page:{}};
+        //条件查询电子账单
+        $scope.load = function () {
+            var fetchFunction = function (page, callback) {
+                $scope.electronic.page = page;
+                $http.post(url + '/ElectronicBilling/listPageElectronicBilling', {ElectronicBilling: $scope.electronic}).success(callback);
+            };
+            $scope.searchPaginator = app.get('Paginator').list(fetchFunction, 5);
+        };
+
+        $scope.info={billNum:'',total:''};
+        $scope.custId='';
+        $scope.currData={};//得到当前选择的数据
+        //获取电子账单下的应付款账单
+        $scope.Bill={page:{},billDate:''}
+        $scope.showBills=function(currentData){
+            $scope.show1 = true;
+            $scope.currData=currentData;
+            $scope.btnIndex=currentData.electronicBillingId;
+            $scope.custId=currentData.custId;//得到客户的id
+            $scope.info.billNum=currentData.electronicBillingNum;
+            $scope.info.total=currentData.overdue+currentData.lastOweSum+currentData.currentOweSum;
+            var fetchFunction = function (page, callback) {
+                $scope.Bill.page.page = page;
+                $scope.Bill.billDate=currentData.billDate;
+                $http.post(url + '/Bill/listPageBillsByelectronicBillingIdThisMonth', {Bill: $scope.Bill}).success(callback);
+            };
+            $scope.searchPaginator1 = app.get('Paginator').list(fetchFunction, 5);
+
+
+        }
+
+        //查询历史账单
+        $scope.Billa={page:{},billDate:''};
+        $scope.showHistory=function(){
+            $scope.show1 = true;
+            $scope.show2 = true;
+            var fetchFunction = function (page, callback) {
+                $scope.Billa.page.page = page;
+                $scope.Billa.billDate= $scope.currData.billDate;
+                $http.post(url + '/Bill/listPageBillsByelectronicBillingIdLastMonth', {Bill: $scope.Billa}).success(callback);
+            };
+            $scope.searchPaginator2 = app.get('Paginator').list(fetchFunction, 5);
+        }
+
+        //选中数据
+        $scope.dataa={list:[]};
+        $scope.chooseData={};
+        $scope.getData=function(datas){
+            var id=datas.chargeItemId;
+            var chk = document.getElementById(id);
+            $scope.chooseData=datas;
+            if(chk.checked == true){
+                $scope.btnIndex=id;
+                $scope.dataa.list.push($scope.chooseData);
+            }else{
+                $scope.temp = [];
+                $scope.temp = $scope.dataa.list;
+                $scope.dataa={list:[]};
+                for(var i = 0; i < $scope.temp.length; i ++){
+                    if($scope.temp[i].chargeItemId != id){
+                        $scope.dataa.list.push($scope.temp[i]);
+                        $scope.btnIndex='';
+                    }
+                }
+            }
+        };
+
+
+        //添加到购物车
+        $scope.addCart=function(){
+            //将值传递到收款台页面
+            var dataa=JSON.stringify($scope.dataa);
+            sessionStorage.setItem("data1",dataa);
+            if($scope.dataa.list.length>0){
+                $location.path("/index/cashier/cashier/cashierUI/cashiers/"+$scope.custId).search({custId:$scope.custId});
+            }else{
+                layer.alert("请先选择数据", {icon: 0});
+            }
+        };
+
+    }]);
+});

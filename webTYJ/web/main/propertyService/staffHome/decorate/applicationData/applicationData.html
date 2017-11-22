@@ -1,0 +1,248 @@
+<!--创建人：王志刚-->
+<!--物业服务修装页面-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>申请资料</title>
+    <link rel="stylesheet" href="bower_components/skins/zyupload-1.0.0.min.css " type="text/css">
+</head>
+<body ng-controller="applicationDataCtrl">
+<div class="row">
+<div  class="complaint_user rightpadding"  >
+    <!--房屋地址表格-->
+    <div class="row">
+        <div class="col-md-6">
+            <span>房屋地址：</span>
+        </div>
+        <div class="col-md-6">
+            <span>可加建范围：无</span>
+        </div>
+    </div>
+    <div class="table">
+        <table width="100%" >
+            <tr class="table_nav">
+                <td>装修图纸管理</td>
+                <td>户型图</td>
+                <td>水路图</td>
+                <td>电路图</td>
+            </tr>
+            <tr>
+                <td>原图</td>
+                <td><span class="glyphicon glyphicon-plus" data-toggle="modal" data-target="#ddd" style="cursor:pointer"  ng-click="QuoteOrdersfile()"></span></td>
+                <td><span class="glyphicon glyphicon-plus" data-toggle="modal" data-target="#ddd" style="cursor:pointer"  ng-click="QuoteOrdersfile()"></span></td>
+                <td><span class="glyphicon glyphicon-plus" data-toggle="modal" data-target="#ddd" style="cursor:pointer"  ng-click="QuoteOrdersfile()"></span></td>
+            </tr>
+            <tr>
+                <td>设计图</td>
+                <td><span class="glyphicon glyphicon-plus" data-toggle="modal" data-target="#ddd" style="cursor:pointer"  ng-click="QuoteOrdersfile()"></span></td>
+                <td><span class="glyphicon glyphicon-plus" data-toggle="modal" data-target="#ddd" style="cursor:pointer"  ng-click="QuoteOrdersfile()"></span></td>
+                <td><span class="glyphicon glyphicon-plus" data-toggle="modal" data-target="#ddd" style="cursor:pointer"  ng-click="QuoteOrdersfile()"></span></td>
+            </tr>
+            </table>
+        </div>
+    <!--房屋地址表格 结束-->
+
+    <!--装修对象表格-->
+    <span>装修对象选择：</span>
+    <div class="table">
+        <table width="100%">
+            <tr class="table_nav">
+                <td>建筑组建名称</td>
+                <td>建筑组建编号</td>
+                <td>选择</td>
+
+            </tr>
+            <tr>
+                <td>获取组建名称(客厅)</td>
+                <td></td>
+                <td>
+                    <input type="checkbox" style="width:15px;height: 15px;">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">全部装修</td>
+            </tr>
+        </table>
+    </div>
+    <!--装修对象表格 结束-->
+
+    <!--条件搜索-->
+    <div class="row">
+    <div class="row form_list_three clear">
+        <ul>
+            <li>
+                <div class="col-lg-4 col-md-4 col-sm-4">装修类型：</div>
+                <div class="col-lg-3 col-md-3 col-sm-3">
+                <input type="radio" name="1" class="checkboxa" value="0">
+                <span>自装</span>
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-3">
+                <input type="radio" name="1" class="checkboxa" value="1">
+                <span>工装</span>
+                </div>
+                <div class="clear"></div>
+            </li>
+            <li>
+                <span>拆墙面积：</span>
+                <input>m2
+            </li>
+        </ul>
+    </div>
+    <div class="form_list_three clear">
+        <ul>
+            <li>
+                <span>选择装修单位：</span>
+                <select>
+                    <option>中国电信</option>
+                    <option>中国联通</option>
+                    <option>中国移动</option>
+                </select>
+            </li>
+            <li>
+                <span>现场负责人：</span>
+                <select>
+                    <option>脑残</option>
+                    <option>脑抽</option>
+                    <option>脑缺</option>
+                </select>
+            </li>
+            <li>
+                <span>公式法人：脑残</span>
+            </li>
+        </ul>
+    </div>
+    </div>
+    <!--条件搜索 结束-->
+
+    <!--装修人员-->
+    <div class="table">
+        <span>现场装修人员：</span>
+        <table width="100%">
+            <tr class="table_nav">
+                <td>装修人员姓名</td>
+                <td>装修人员电话</td>
+            </tr>
+            <tr>
+                <td>脑残</td>
+                <td>1311111111</td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <span class="glyphicon glyphicon-plus"  data-toggle="modal" data-target="#free" style="cursor:pointer"></span>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <!--装修人员 结束-->
+
+    <!--装修单位-->
+    <div class="table">
+        <span>装修单位提交资料：</span>
+        <table width="100%">
+            <tr class="table_nav">
+                <td></td>
+                <td>消防批文</td>
+                <td>装修图纸</td>
+                <td>动火协议</td>
+                <td>合同文件</td>
+                <td>其他</td>
+            </tr>
+            <tr>
+                <td>文件</td>
+                <td><span class="glyphicon glyphicon-plus" data-toggle="modal" data-target="#ddd" style="cursor:pointer"  ng-click="QuoteOrdersfile()"></span></td>
+                <td><span class="glyphicon glyphicon-plus" data-toggle="modal" data-target="#ddd" style="cursor:pointer"  ng-click="QuoteOrdersfile()"></span></td>
+                <td><span class="glyphicon glyphicon-plus" data-toggle="modal" data-target="#ddd" style="cursor:pointer"  ng-click="QuoteOrdersfile()"></span></td>
+                <td><span class="glyphicon glyphicon-plus" data-toggle="modal" data-target="#ddd" style="cursor:pointer"  ng-click="QuoteOrdersfile()"></span></td>
+                <td><span class="glyphicon glyphicon-plus" data-toggle="modal" data-target="#ddd" style="cursor:pointer"  ng-click="QuoteOrdersfile()"></span></td>
+            </tr>
+        </table>
+    </div>
+    <!--装修单位  结束-->
+    <div class="form_list_three clear">
+        <ul>
+            <li>
+                <span>装修预计开始时间：</span>
+               <input type="datetime-local" >
+            </li>
+            <li>
+                <span>装修预计结束时间：</span>
+                <input type="datetime-local" >
+            </li>
+
+        </ul>
+    </div>
+    <!--下一步按钮-->
+    <div class="save_concel_botton contract_detail_botton">
+        <a href="" class="radius_all button_bule">取消</a>
+        <a href="" class="radius_all button_bule">下一步</a>
+        <div class="clear"></div>
+    </div>
+    <!--下一步按钮  结束-->
+</div>
+</div>
+<!--附件-->
+<div class="modal fade" id="ddd" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 80%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    上传
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div id="zyupload" class="zyupload"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal"  ng-click="updateRollOut()">提交</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!--添加装修人员-->
+<div class="modal fade" id="free" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                   添加装修人员
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+
+                    <div  col-md-4>
+                        <div>装修人员姓名：<input placeholder="请输入内容"></div>
+                        <label></label>
+                    </div>
+                    <div  col-md-4>
+                        <div>装修人员电话：<input placeholder="请输入内容"></div>
+
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal"  ng-click="updateRollOut()">提交</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+</body>
+</html>

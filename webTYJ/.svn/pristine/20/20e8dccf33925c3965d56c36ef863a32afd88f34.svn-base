@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>子公司管理</title>
+</head>
+<body>
+<div id="content-first">
+<!--tab页切换开始-->
+<div id="tab">
+    <a ui-sref="index.baseManagement.subCompanyManagement.subCompanyList" ng-class="{'this_action':btnIndex==1}" ng-click="doClick(1)">子公司列表</a>
+    <a lang="no" ui-sref="index.baseManagement.subCompanyManagement.newSubCompany" ng-class="{'this_action':btnIndex==2}" ng-click="doClick(2)">新建子公司</a>
+</div>
+<!--tab页切换结束-->
+<!--视图加载-->
+<div ui-view></div>
+<!--视图加载结束-->
+</div>
+</body>
+</html>

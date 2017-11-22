@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="css/ztree/demo.css" type="text/css">
+    <link rel="stylesheet" href="css/ztree/zTreeStyle.css" type="text/css">
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.core-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.excheck-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.exedit-3.5.js"></script>
+
+</head>
+<body>
+<form id="css_form" name="mainForm" novalidate>
+    <div class="sel_top">
+        <div class="row">
+            <div class="col-lg-5 col-md-9 col-sm-6">
+                <button type="button" class="btn btn-default btn-primary" data-target="#myModal" ng-click="newPlan()" data-toggle="modal">
+                    <span class="glyphicon glyphicon-plus btn_icon"></span>
+                    新建
+                </button>
+                <button type="button" class="btn btn-default btn-primary" ng-click="updatePlans(item2)">
+                    <span class="glyphicon glyphicon-edit btn_icon"></span>
+                    编辑
+                </button>
+                <button type="button" class="btn btn-default btn-primary" ng-click="exportExcelHouse()">
+                    <span class="glyphicon glyphicon-log-out btn_icon"></span>
+                    导出
+                </button>
+                <button type="button" class="btn btn-default btn-primary" ng-click="execute()">
+                    <span class="glyphicon glyphicon-play-circle btn_icon"></span>
+                    执行
+                </button>
+                <input type="hidden" value="{{fileUrl}}" id="fileurl">
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-4"></div>
+            <div class="col-lg-2 col-md-2 col-sm-4">
+                <input ng-model="searchMeter.projectName" type="text" class="form-control" placeholder="请输入计划名称">
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-4">
+                <input ng-model="searchMeter.startTime" type="month" class="form-control" placeholder="请输入开始时间">
+            </div>
+            <div class="col-lg-1 col-md-1 col-sm-2">
+                <button type="button" class="btn btn-default btn-primary" ng-click="waterChecks._load()">
+                    <span class="glyphicon glyphicon-search btn_icon"></span>
+                    查询
+                </button>
+            </div>
+        </div>
+
+    </div>
+    <div class="row padding">
+        <div class="col-lg-12">
+            <table>
+                <thead>
+                <tr>
+                    <th><input type="checkbox" id="executeAll" ng-click="executeAll()"/></th>
+                    <th>计划名称</th>
+                    <th>执行人</th>
+                    <th>执行月份</th>
+                    <th>表数</th>
+                    <th>审核时长（天）</th>
+                    <th>是否循环执行</th>
+                    <!--<th>月结日</th>-->
+                    <th>项目</th>
+                    <th>开始日期</th>
+                    <!--<th>结束日期</th>-->
+                    <th>状态</th>
+                </tr>
+                </thead>
+                <tbody id="executeInput">
+                <tr ng-class="{'this_info ':btnIndex==item}" ng-click="check(item)"
+                    ng-repeat="item in waterChecks.object['meterReadingProgram']"
+                    ng-if="item['meterReadingProgramId'] != null">
+                    <td><input type="checkbox" id="{{item.meterReadingProgramId}}"/></td>
+                    <td>{{item['projectName']}}</td>
+                    <td>{{item['currentExecutor']}}</td>
+                    <td>{{item['executionFrequency']}}</td>
+                    <td>{{item['allNum']}}</td>
+                    <td>{{item['auditTime']}}</td>
+                   <!-- <td>{{item['automaticExecution']}}</td>-->
+                    <td ng-switch on="item['automaticExecution']">
+                            <span ng-switch-when="0">
+                                否
+                            </span>
+                            <span ng-switch-when="1">
+                                是
+                            </span>
+                    </td>
+                    <!--<td>{{item['settlementDay']}}</td>-->
+                    <td>{{item.project.projectName}}</td>
+                    <td>{{item['startTime'] | date:'yyyy-MM-dd'}}</td>
+                    <!--<td>{{item['endTime'] | date:'yyyy-MM-dd'}}</td>-->
+                    <td ng-switch on="item['programExecutionStatus']">
+                            <span ng-switch-when="0">
+                                休眠中
+                            </span>
+                            <span ng-switch-when="1">
+                                执行中
+                            </span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <!--<div class="bill_paging">
+                <ul class="pagination">
+                    <li><a style="cursor:pointer;" ng-click="waterChecks.go(1)">首页</a></li>
+                    <li><a style="cursor:pointer;" ng-show="waterChecks.hasPrevious()"
+                           ng-click="waterChecks.previous()">上一页</a></li>
+                    <li><a style="cursor:pointer;" ng-repeat="i in waterChecks.pages"
+                           ng-click="waterChecks.go(i)">{{i}}</a></li>
+                    <li><a style="cursor:pointer;" ng-show="waterChecks.hasNext()" ng-click="waterChecks.next()">下一页</a>
+                    </li>
+                    <li><a style="cursor:pointer;" ng-click="waterChecks.go(waterChecks.page.totalPage)">尾页</a></li>
+                </ul>
+            </div>-->
+            <div class="bill_paging">
+                <span>共{{waterChecks.object.page.totalResult}}条</span>
+                <ul class="pagination">
+                    <li ng-class="{true:'disabled'}[waterChecks.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-click="waterChecks.go(1)">首页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[waterChecks.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-show="waterChecks.hasPrevious()" ng-click="waterChecks.previous()">上一页</a>
+                    </li>
+                    <li ng-class="{true:'active'}[waterChecks.page.currentPage==i]" ng-repeat="i in waterChecks.pages">
+                        <a href="javascript:void(0)"  ng-click="waterChecks.go(i)">{{i}}</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[waterChecks.page.currentPage==waterChecks.page.totalPage]">
+                        <a href="javascript:void(0)" ng-show="waterChecks.hasNext()" ng-click="waterChecks.next()">下一页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[waterChecks.page.currentPage==waterChecks.page.totalPage]">
+                        <a href="javascript:void(0)" ng-click="waterChecks.go(waterChecks.page.totalPage)">尾页</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document" style="width: 800px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">抄表计划</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="padding">
+                        <div class="text-center">
+                            <h4>计划详情</h4>
+                        </div>
+                        <div class="sel1">
+                            <span>1、填写计划内容</span>
+
+                            <div class="accordion" id="">
+                                <div class="row search-padding">
+                                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                        计划名称：
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-3">
+                                        <input type="text" class="form-control" placeholder="请输入"
+                                               ng-model="waterAddSave.projectName" name="projectName" required>
+                                    </div>
+                                    <div class="col-lg-1 col-md-1 col-sm-1 ">
+                                        <span style="color: red">*</span>
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                        项目：
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-3">
+                                        <select class="form-control"
+                                                ng-change="getBuildingList(waterAddSave.projectId)"
+                                                ng-model="waterAddSave.projectId"
+                                                ng-options="c.projectId as c.projectName for c in currentObject"
+                                                name="projectId" required>
+                                            <option value="">请选择</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-1 col-md-1 col-sm-1 ">
+                                        <span style="color: red">*</span>
+                                    </div>
+                                </div>
+                                <div class="row search-padding">
+                                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                        抄表人：
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-3">
+                                        <!--<input type="text" class="form-control"
+                                               ng-model="waterAddSave.currentExecutor" name="" ng-disabled="true">-->
+                                        <select class="form-control"
+                                                name=""
+                                                ng-model="waterAddSave.currentExecutor">
+                                                <!--ng-options="a.staffId as a.staffName for a in currentPeople"-->
+                                            <option value="">请选择</option>
+                                            <option ng-repeat="item in currentPeople" value="{{item.staffId}}">{{item.staffName}}</option>
+                                            <!--<option ng-repeat="item in waterAddSave.currentExecutor" value="{{item.staffId}}">{{item.staffName}}</option>-->
+                                        </select>
+                                        <!--<select name="" class="form-control" ng-model="waterAddSave.meterReadingPeople">
+                                        <option value="">--请选择--</option>
+                                        <option value="张三">张三</option>
+                                        <option value="王五">王五</option>
+                                         </select>-->
+                                    </div>
+                                    <div class="col-lg-1 col-md-1 col-sm-1 ">
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                        审核人员：
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-3">
+                                        <select class="form-control"
+                                                ng-change=""
+                                                name=""
+                                                ng-model="waterAddSave.reviewers">
+                                               <!-- ng-options="b.staffId as b.staffName for b in currentStaff"-->
+                                            <option value="">请选择</option>
+                                            <option ng-repeat="item in currentStaff" value="{{item.staffName}}">{{item.staffName}}</option>
+                                        </select>
+                                       <!-- <select name="" class="form-control" ng-model="waterAddSave.reviewers">
+                                            <option value="">--请选择--</option>
+                                            <option value="张三">张三</option>
+                                            <option value="王五">王五</option>
+                                        </select>-->
+                                    </div>
+                                </div>
+                               <!-- <div class="row search-padding">
+                                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                        创建人：
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-3">
+                                        &lt;!&ndash; <span>张三</span>&ndash;&gt;
+                                        <select name="" class="form-control" ng-model="waterAddSave.creationPeople">
+                                            <option value="">--请选择--</option>
+                                            <option value="张三">张三</option>
+                                            <option value="王五">王五</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-1 col-md-1 col-sm-1 ">
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                        创建时间：
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-3">
+                                        <input type="date"/>
+                                        &lt;!&ndash;<input type="text" onclick="WdatePicker({readOnly:true})"  placeholder="创建时间"  class="Wdate form-control"   ng-model="waterAddSave.creationTime " >&ndash;&gt;
+                                    </div>
+                                </div>-->
+                                <!--<div class="row search-padding">
+                                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                        修改人：
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-3">
+                                        <input type="text" class="form-control"
+                                               ng-model="waterAddSave.modifiedPerson" name="" ng-disabled="true">
+                                        &lt;!&ndash;<input type="text" class="form-control"
+                                               ng-model="loginName" name="" ng-disabled="true">&ndash;&gt;
+                                       &lt;!&ndash; <select name="" class="form-control" ng-model="waterAddSave.modifyPeople">
+                                            <option value="">--请选择--</option>
+                                            <option value="张三">张三</option>
+                                            <option value="王五">王五</option>
+                                        </select>&ndash;&gt;
+                                    </div>
+                                    <div class="col-lg-1 col-md-1 col-sm-1 ">
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                        最后修改时间：
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-3">
+                                        <input type="date"/>
+                                        &lt;!&ndash;<input type="text" onclick="WdatePicker({readOnly:true})"  placeholder="最后修改时间"  class="Wdate form-control"   ng-model="waterAddSave.lastModificationTime " >&ndash;&gt;
+                                    </div>
+                                </div>-->
+                            </div>
+                        </div>
+                        <div class="sel1">
+                            <span>2、填写计划执行</span>
+
+                            <div class="row search-padding">
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                    开始时间：
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-sm-3">
+                                    <input class="form-control" type="date" ng-model="waterAddSave.startTime"
+                                           name="startTime" required>
+                                    <!--<input type="text" onclick="WdatePicker({readOnly:true})"  placeholder="开始时间"  class="Wdate form-control"   ng-model="waterAddSave.startTime "  onchange="">-->
+                                </div>
+                                <div class="col-lg-1 col-md-1 col-sm-1 ">
+                                    <span style="color: red">*</span>
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                    结束时间：
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-sm-3">
+                                    <input class="form-control" type="date" ng-model="waterAddSave.endTime"
+                                           name="endTime" required>
+                                    <!-- <input type="text" onclick="WdatePicker({readOnly:true})"  placeholder="结束时间"  class="Wdate form-control"   ng-model="waterAddSave.endTime " onchange="">-->
+                                </div>
+                                <div class="col-lg-1 col-md-1 col-sm-2 ">
+                                    <span style="color: red">*</span>
+                                </div>
+                            </div>
+                            <div class="row search-padding">
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                    审核时长：
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-sm-3">
+                                    <select name="" class="form-control" ng-model="waterAddSave.auditTime" >
+                                        <option value="1">1天</option>
+                                        <option value="2">2天</option>
+                                        <option value="3">3天</option>
+                                        <option value="4">4天</option>
+                                        <option value="5">5天</option>
+                                        <option value="6">6天</option>
+                                        <option value="7">7天</option>
+                                        <option value="8">8天</option>
+                                        <option value="9">9天</option>
+                                        <option value="10">10天</option>
+                                        <option value="11">11天</option>
+                                        <option value="12">12天</option>
+                                        <option value="13">13天</option>
+                                        <option value="14">14天</option>
+                                        <option value="15">15天</option>
+                                        <option value="16">16天</option>
+                                        <option value="17">17天</option>
+                                        <option value="18">18天</option>
+                                        <option value="19">19天</option>
+                                        <option value="20">20天</option>
+                                        <option value="21">21天</option>
+                                        <option value="22">22天</option>
+                                        <option value="23">23天</option>
+                                        <option value="24">24天</option>
+                                        <option value="25">25天</option>
+                                        <option value="26">26天</option>
+                                        <option value="27">27天</option>
+                                        <option value="28">28天</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-1 col-md-1 col-sm-1 ">
+                                    <span style="color: red">*</span>
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                    自动执行：
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-sm-3">
+                                    <!--<input class="form-control" type="checkbox" value="1">-->
+                                    <input class="form-control" type="radio"  value="1" ng-model="waterAddSave.automaticExecution"
+                                           ng-init="waterAddSave.automaticExecution=1">
+                                </div>
+                            </div>
+                            <div class="row search-padding">
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                    执行频率：
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-sm-3">
+                                    <select name="" class="form-control" ng-model="waterAddSave.executionFrequency">
+                                        <option value="1">1月</option>
+                                        <option value="2">2月</option>
+                                        <option value="3">3月</option>
+                                        <option value="4">4月</option>
+                                        <option value="5">5月</option>
+                                        <option value="6">6月</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-1 col-md-1 col-sm-2 ">
+                                    <span style="color: red">*</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sel1">
+                            <span>3、选择抄表地点</span>
+                        </div>
+                        <div class="sel1">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="component_select" style="overflow:auto;height:400px">
+                                        <div class="row search-padding">
+                                            <div class="col-lg-8 col-md-8 col-sm-8">
+                                                <input class="form-control" ng-model="region" placeholder="区域">
+                                            </div>
+                                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                                <button type="button" class="btn btn-primary" ng-click="searchTree1()">
+                                                    查询
+                                                </button>
+                                            </div>
+                                            <div class="clearfix"></div>
+                                        </div>
+                                        <ul id="buildingTree" class="ztree"></ul>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="component_select" style="overflow:auto;height:400px">
+                                        <div class="row search-padding">
+                                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                                <input class="form-control" ng-model="tableNumber1" placeholder="表编号">
+                                            </div>
+                                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                                <input class="form-control" ng-model="tableName1" placeholder="表名称">
+                                            </div>
+                                            <div class="col-lg-3 col-md-3 col-sm-3 text-right" style="float: right;">
+                                                <button type="button" class="btn btn-primary" ng-click="searchTree2()">
+                                                    查询
+                                                </button>
+                                            </div>
+                                            <div class="clearfix"></div>
+                                        </div>
+                                        <ul id="treeDemo" class="ztree">
+                                            <li>
+                                                <table id="houses">
+                                                    <tr ng-repeat="item in houses">
+                                                        <td><input id="{{item.waterMeterRecordsId}}" type="checkbox"/></td>
+                                                        <td><label style="display: block;" for="{{item.waterMeterRecordsId}}">{{item.waterMeterNum}}</label></td>
+                                                        <td><label style="display: block;" for="{{item.waterMeterRecordsId}}">{{item.fullName}}</label></td>
+                                                    </tr>
+                                                </table>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-md-1 text-center" style="position: relative;padding: 0 10px;">
+                                    <div style="display: table-cell;vertical-align: middle;height: 400px;">
+                                        <button class="glyphicon glyphicon-menu-right btn btn-sm btn-info"
+                                                aria-hidden="true" ng-click="addWaterReading()"></button>
+                                        <button class="glyphicon glyphicon-menu-left btn btn-sm btn-info"
+                                                aria-hidden="true" ng-click="removeWaterReading()"></button>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="component_select" style="overflow:auto;height:400px">
+                                        <div class="row search-padding">
+                                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                                <input class="form-control" ng-model="tableNumber2" placeholder="表编号">
+                                            </div>
+                                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                                <input class="form-control" ng-model="tableName2" placeholder="表名称">
+                                            </div>
+                                            <div class="col-lg-3 col-md-3 col-sm-3 text-right" style="float: right;">
+                                                <button type="button" class="btn btn-primary" ng-click="searchTree3()">
+                                                    查询
+                                                </button>
+                                            </div>
+                                            <div class="clearfix"></div>
+                                        </div>
+                                        <ul class="ztree">
+                                            <li>
+                                                <table id="selected">
+                                                    <tr ng-repeat="items11 in addWaterCheck">
+                                                        <td><input id="{{items11.id+'s'}}" type="checkbox" value="{{items11.id}}"/></td>
+                                                        <td><label for="{{items11.id+'s'}}">{{items11.waterMeterNum}}&nbsp;{{items11.fullName}}</label></td>
+                                                    </tr>
+                                                </table>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancelWater()">关闭
+                    </button>
+                    <button type="button" class="btn btn-primary" ng-click="submitWater()">确定
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--<div class="modal fade" id="myModals" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">编辑抄表计划</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="padding">
+                        <div class="text-center">
+                            <h4>计划详情</h4>
+                        </div>
+                        <div class="sel1">
+                            <span>1、填写计划内容</span>
+
+                            <div class="accordion">
+                                <div class="row search-padding">
+                                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                        计划名称：
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-3">
+                                        <input type="text" class="form-control" placeholder="请输入"
+                                               ng-model="currentProjectPlan.projectName">
+                                    </div>
+                                    <div class="col-lg-1 col-md-1 col-sm-1 ">
+                                        <span style="color: red">*</span>
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                        项目：
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-3">
+                                        <select class="form-control" ng-model="currentProjectPlan.projectId"
+                                                ng-options="c.projectId as c.projectName for c in currentObject">
+                                            <option value="">请选择</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-1 col-md-1 col-sm-1 ">
+                                        <span style="color: red">*</span>
+                                    </div>
+                                </div>
+                                <div class="row search-padding">
+                                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                        月结日：
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-3">
+                                        <select class="form-control" ng-model="currentProjectPlan.settlementDay">
+                                            <option value="">-- 请选择 --</option>
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5">5</option>
+                                            <option value="6">6</option>
+                                            <option value="7">7</option>
+                                            <option value="8">8</option>
+                                            <option value="9">9</option>
+                                            <option value="10">10</option>
+                                            <option value="11">11</option>
+                                            <option value="12">12</option>
+                                            <option value="13">13</option>
+                                            <option value="14">14</option>
+                                            <option value="15">15</option>
+                                            <option value="16">16</option>
+                                            <option value="17">17</option>
+                                            <option value="18">18</option>
+                                            <option value="19">19</option>
+                                            <option value="20">20</option>
+                                            <option value="21">21</option>
+                                            <option value="22">22</option>
+                                            <option value="23">23</option>
+                                            <option value="24">24</option>
+                                            <option value="25">25</option>
+                                            <option value="26">26</option>
+                                            <option value="27">27</option>
+                                            <option value="28">28</option>
+                                            <option value="29">29</option>
+                                            <option value="30">30</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-1 col-md-1 col-sm-1 ">
+                                        <span style="color: red">*</span>
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                        审核人员：
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-3">
+                                        <select name="" class="form-control" ng-model="currentProjectPlan.reviewers">
+                                            <option value="">--请选择--</option>
+                                            <option value="张三">张三</option>
+                                            <option value="王五">王五</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sel1">
+                            <span>2、填写计划执行</span>
+
+                            <div class="row search-padding">
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                    开始时间：
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-sm-3">
+                                    <input class="form-control" type="date" ng-model="currentProjectPlan.startTime">
+                                </div>
+                                <div class="col-lg-1 col-md-1 col-sm-1 ">
+                                    <span style="color: red">*</span>
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                    结束时间：
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-sm-3">
+                                    <input class="form-control" type="date" ng-model="currentProjectPlan.endTime">
+                                </div>
+                                <div class="col-lg-1 col-md-1 col-sm-2 ">
+                                    <span style="color: red">*</span>
+                                </div>
+                            </div>
+                            <div class="row search-padding">
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                    抄表人：
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-sm-3">
+                                    <input class="form-control" ng-model="currentProjectPlan.currentExecutor">
+                                </div>
+                                <div class="col-lg-1 col-md-1 col-sm-1 ">
+                                    <span style="color: red">*</span>
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                    自动执行：
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-sm-3">
+                                    <input class="form-control" type="checkbox" value="1" ng-true-value="1"
+                                           ng-true-false="0" ng-model="currentProjectPlan.automaticExecution">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sel1">
+                            <span>3、选择抄表地点</span>
+
+                            <div class="accordion" id="accordion2">
+                                <div class="row search-padding">
+                                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                        区域：
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-3">
+                                        <input class="form-control">
+                                    </div>
+                                    <div class="col-lg-1 col-md-1 col-sm-1 ">
+
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                        表编号：
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-3">
+                                        <input class="form-control">
+                                    </div>
+                                    <div class="col-lg-1 col-md-1 col-sm-1 text-right">
+                                        <button type="button" class="btn btn-primary">
+                                            查询
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sel1">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="component_select" style="overflow:auto;height:400px">
+                                        <ul id="buildingTree" class="ztree"></ul>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="component_select" style="overflow:auto;height:400px">
+                                        <ul id="treeDemo" class="ztree">
+                                            <li>
+                                                <table id="houses">
+                                                    <tr ng-repeat="item in houses">
+                                                        <td><input id="{{item.waterMeterRecordsId}}" type="checkbox"/></td>
+                                                        <td><label style="display: block;" for="{{item.waterMeterRecordsId}}">{{item.waterMeterNum}}</label></td>
+                                                        <td><label style="display: block;" for="{{item.waterMeterRecordsId}}">{{item.fullName}}</label></td>
+                                                    </tr>
+                                                </table>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-md-1 text-center" style="position: relative;padding: 0 10px;">
+                                    <div style="display: table-cell;vertical-align: middle;height: 400px;">
+                                        <button class="glyphicon glyphicon-menu-right btn btn-sm btn-info"
+                                                aria-hidden="true" ng-click="addWaterReading()"></button>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="component_select" style="overflow:auto;height:400px">
+                                        <ul class="ztree">
+                                            <li>
+                                                <table>
+                                                    <tr ng-repeat="items11 in addWaterCheck">
+                                                        <td>{{items11.fullname}}</td>
+                                                    </tr>
+                                                </table>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancelUpdatePlan()">
+                        关闭
+                    </button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal"
+                            ng-click="submitUpdatePlan(currentProjectPlan.meterReadingProgramId)">确定
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>-->
+</form>
+</body>
+</html>

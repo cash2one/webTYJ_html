@@ -1,0 +1,6 @@
+/**--停车卡页面小车图片-*/
+.car_Img {
+    width: 130px;
+    height:115px;
+    margin-right:30px;
+}

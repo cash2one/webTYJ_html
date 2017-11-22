@@ -1,0 +1,23 @@
+<!--
+    页面名称：物业合同管理
+    创建人：刘洋   创建时间：2015/4/17
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>物业合同管理</title>
+</head>
+<body >
+<div id="content-first">
+    <div id="tab">
+        <a ui-sref="index.businessManagement.propertyManagementContract.contractNew" ng-class="{'this_action ':btnIndex==1}" ng-click="doClick(1)">新增合同</a>
+        <a lang="no" ui-sref="index.businessManagement.propertyManagementContract.contractList" ng-class="{'this_action ':btnIndex==2}" ng-click="doClick(2)">合同列表</a>
+        <div class="clear"></div>
+    </div>
+    <div ui-view></div>
+</div>
+</body>
+</html>
+
+

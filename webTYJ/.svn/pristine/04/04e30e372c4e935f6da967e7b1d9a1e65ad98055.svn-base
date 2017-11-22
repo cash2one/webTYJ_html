@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>房屋初验</title>
+    <link rel="stylesheet" href="css/ztree/ztreedf.css" type="text/css">
+    <link rel="stylesheet" href="css/ztree/zTreeStyle.css" type="text/css">
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.core-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.excheck-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.exedit-3.5.js"></script>
+    <SCRIPT type="text/javascript">
+        var setting = {
+            check:{
+                enable:true
+            },
+            view: {
+                selectedMulti: false
+            },
+            edit: {
+                enable: false,
+                editNameSelectAll: false
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            }
+        };
+    </SCRIPT>
+
+    <style>
+        .navigation_info{
+            background:#ffe48d;        border-left:1px solid #bbbbbb;
+            border-right:1px solid #bbbbbb;
+            border-bottom:1px solid #dddddd;
+        }
+    </style>
+
+    <script type="text/javascript">
+        function bgChange(obj) {
+            obj.innerHTML = obj.innerHTML== "√" ? "" : "√";
+        }
+    </script>
+
+</head>
+<body>
+
+<div ng-show="houseStart">
+
+    <div class="sel">
+        <div class="row" >
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right input_text">
+                验房活动开始日期：
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-3">
+                <input class="form-control" type="date" ng-model="acceptanceHouse.startDate">
+            </div>
+            <div class="col-lg-1 col-md-1 col-sm-1">
+                <span style="color: red">*</span>
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right input_text">
+                验房活动结束日期：
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-3">
+                <input class="form-control" type="date" ng-model="acceptanceHouse.endDate" ng-blur="cheakTime()">
+            </div>
+            <div class="col-lg-1 col-md-1 col-sm-1">
+                <span style="color: red">*</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="padding">
+
+        <div id="pannel">
+            <div class="title">
+                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                    <h3>负责人</h3>
+                </div>
+                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 text-right">
+                    <span class="glyphicon glyphicon-edit" ng-click="openLeader()"></span>添加负责人
+                </div>
+            </div>
+            <div class="pannel_content_user">
+                <div class="user_information_nobor">
+                    <div class="user_information_img">
+                        <img src="images/project/user/user_3.png">
+                    </div>
+                    <!--修改性别显示，数字改为对应文字 王洲 2015.12.24-->
+                    <div class="user_information_body">
+                        <div class="user_information_name">
+                            负责人：{{personone.staffName}}
+                        </div>
+                        <div class="user_information_info">
+                            性别：<span ng-if="personone.sex == 1">女</span><span ng-if="personone.sex == 0">男</span><br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="pannel">
+            <div class="title">
+                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                    <h3>团队成员</h3>
+                </div>
+                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 text-right">
+                    <span class="glyphicon glyphicon-edit" ng-click="openMember()"></span>添加团队成员
+                </div>
+            </div>
+            <div class="pannel_content_user">
+                <div class="user_information_nobor">
+                    <div class="user_information_img">
+                        <img src="images/project/user/user_3.png">
+                    </div>
+                    <!--修改性别显示，数字改为对应文字 王洲 2015.12.24-->
+                    <div class="user_information_body">
+                        <div class="user_information_name">
+                            <span class="user_group_name_grey">{{items.staffName}}</span>
+                        </div>
+                        <div class="user_information_info">
+                            性别：<span ng-if="personone.sex == 1">女</span><span ng-if="personone.sex == 0">男</span><br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <button type="button" class="btn btn-default btn-primary" ng-click="goOne()">
+                下一步
+            </button>
+        </div>
+
+    </div>
+
+
+
+</div>
+
+<div ng-show="houseOne">
+
+    <div class="sel">
+        <div class="row search-padding-10">
+            <div class="col-lg-1 col-md-2 col-sm-2">选择项目</div>
+            <div class="col-lg-3 col-md-4 col-sm-5">
+                <select class="form-control" ng-model="currentProject" ng-options="p.projectName for p in allProjects">
+                    <option value="">请选择</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="padding">
+
+            <div class="search-padding-10">
+                <ul id="buildingNewtreeDemo"  class="ztree"></ul>
+            </div>
+
+            <div class="text-center">
+                <button type="button" class="btn btn-default btn-primary" ng-click="goBack()">
+                    上一步
+                </button>
+                <button type="button" class="btn btn-default btn-primary"  ng-click="goTwo()">
+                    下一步
+                </button>
+            </div>
+
+    </div>
+
+</div>
+
+<div ng-show="houseEnd">
+    <div class="padding">
+           <h4>入伙活动日程表</h4>
+            <table>
+                <thead>
+                    <th>地址</th>
+                    <th ng-repeat="person in personAll">{{person.staffName}}</th>
+                </thead>
+                <tbody>
+                <tr ng-repeat="item in chooseData">
+                    <td>{{item.fullName}}</td>
+                    <td  name="tds" ng-repeat="person in personAll" onclick="bgChange(this)" ng-click="test1(item.id,person.staffId,person.staffName)">
+                </tr>
+                </tbody>
+            </table>
+
+        <div class="text-center">
+            <button type="button" class="btn btn-default btn-primary"  ng-click="goBack1()">
+                上一步
+            </button>
+            <button type="button" class="btn btn-default btn-primary"  ng-click="save();">
+                保存
+            </button>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- 选择负责人模态框 王洲 2015.12.22 -->
+<div class="modal fade" id="chooseStaff" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog" style="width: 60%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>人员选择列表</span>
+            </div>
+            <div class="modal-body">
+                <div class="sel">
+                        <div class="col-lg-1 col-md-1 col-sm-1 text-right">姓名：</div>
+                        <div class="col-lg-2 col-md-2 col-sm-2"><input type="text" class="form-control" ng-model="staff.staffName"></div>
+                        <div class="col-lg-1 col-md-1 col-sm-1 text-right">编号：</div>
+                        <div class="col-lg-2 col-md-2 col-sm-2"><input type="text" class="form-control" ng-model="staff.staffNumber"></div>
+                        <div class="col-lg-1 col-md-1 col-sm-1 text-right">部门：</div>
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            <select class="form-control" ng-model="staff.postId" ng-options="pli.specialtyId as pli.specialtyName for pli in speciatyList">
+                                <option value="">请选择员工部门</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 text-right">
+                            <button type="button" class="btn btn-primary" ng-click="getPageStaff._load()">查询</button>
+                        </div>
+                        <div class="clear" style="margin: 0; padding: 0"></div>
+                </div>
+                <div class="padding">
+                    <div class="rh" ng-repeat="items in getPageStaff.object.staffs" ng-show="items.staffId!=null" ng-class="{'this_info':chocieCss(items)}" ng-click="choiceStaff(items)">
+                        <div class="col-lg-1 col-md-1 col-sm-1">
+                            <img src="images/project/user/user_2.png"  width="55" height="55">
+                        </div>
+                        <div class="col-lg-11 col-md-11 col-sm-11">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                员工姓名：{{items.staffName}}
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3">
+                                身份证：{{items.cardNum}}
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                年龄：{{items.birthday | date:'yyyy-MM-dd'}}
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                联系电话：{{items.telphone}}
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                员工编号：{{items.staffNumber}}
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3">
+                                家家号：{{items.cardNum}}
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                性别：<span ng-if="items.sex == 0">男</span>
+                                <span ng-if="items.sex == 1">女</span>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                QQ号码：{{items.QQ}}
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+
+                    <div class="bill_paging">
+                        <ul class="pagination">
+                            <li><a style="cursor:pointer;" ng-click="getPageStaff.go(1)">首页</a></li>
+                            <li><a style="cursor:pointer;" ng-show="getPageStaff.hasPrevious()" ng-click="getPageStaff.previous()">上一页</a></li>
+                            <li><a style="cursor:pointer;" ng-repeat="i in getPageStaff.pages"  ng-click="getPageStaff.go(i)">{{i}}</a></li>
+                            <li><a style="cursor:pointer;" ng-show="getPageStaff.hasNext()" ng-click="getPageStaff.next()">下一页</a></li>
+                            <li><a style="cursor:pointer;" ng-click="getPageStaff.go(getPageStaff.page.totalPage)">尾页</a></li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="addLeader()">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 选择成员模态框 王洲 2015.12.22 -->
+<!--<div class="modal fade" id="chooseMember" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog" style="width: 60%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>人员选择列表</span>
+            </div>
+            <div class="modal-body">
+                <div class="sel">
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div class="col-lg-1 col-md-1 col-sm-1 text-right">姓名：</div>
+                        <div class="col-lg-2 col-md-2 col-sm-2"><input type="text" class="form-control" ng-model="staff.staffName"></div>
+                        <div class="col-lg-1 col-md-1 col-sm-1 text-right">编号：</div>
+                        <div class="col-lg-2 col-md-2 col-sm-2"><input type="text" class="form-control" ng-model="staff.staffNumber"></div>
+                        <div class="col-lg-1 col-md-1 col-sm-1 text-right">部门：</div>
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            <select class="form-control">
+                                <option>请选择部门</option>
+                                <option>售后</option>
+                                <option>安保</option>
+                                <option>维修</option>
+                                <option>园林</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 text-right">
+                            <button type="button" class="btn btn-primary" ng-click="getPageStaff._load()">查询</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="padding">
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div class="row padding">
+                            <div class="rh" ng-repeat="items in getPageStaff.object.staffs" ng-show="items.staffId!=null" ng-class="{'this_info':chocieCss(items)}" ng-click="choiceStaff(items)">
+                                <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <img src="images/company/u416.jpg"  width="55" height="55">
+                                </div>
+                                <div class="col-lg-11 col-md-11 col-sm-11">
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        员工姓名：{{items.staffName}}
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-3">
+                                        身份证：{{items.cardNum}}
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        年龄：{{items.birthday | date:'yyyy-MM-dd'}}
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-4">
+                                        联系电话：{{items.telphone}}
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        所属部门：{{items.staffName}}
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-3">
+                                        家家号：{{items.cardNum}}
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        性别：<span ng-if="items.sex == 0">男</span>
+                                        <span ng-if="items.sex == 1">女</span>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-4">
+                                        QQ号码：{{items.QQ}}
+                                    </div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+                        </div>
+                        <div class="bill_paging">
+                            <ul class="pagination">
+                                <li><a style="cursor:pointer;" ng-click="getPageStaff.go(1)">首页</a></li>
+                                <li><a style="cursor:pointer;" ng-show="getPageStaff.hasPrevious()" ng-click="getPageStaff.previous()">上一页</a></li>
+                                <li><a style="cursor:pointer;" ng-repeat="i in getPageStaff.pages"  ng-click="getPageStaff.go(i)">{{i}}</a></li>
+                                <li><a style="cursor:pointer;" ng-show="getPageStaff.hasNext()" ng-click="getPageStaff.next()">下一页</a></li>
+                                <li><a style="cursor:pointer;" ng-click="getPageStaff.go(getPageStaff.page.totalPage)">尾页</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">确定</button>
+            </div>
+        </div>
+    </div>
+</div>-->
+
+</body>
+</html>

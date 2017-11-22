@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div id="content-first">
+    <!--<div id="tab">-->
+    <!--<a lang="no">产品初始化</a>-->
+    <!--</div>-->
+    <div id="tab">
+        <a ng-class="{'this_action ':btnIndex==1}" ng-click="doClick(1)" ui-sref="index.accountManagement.productAndProperty.product">产品初始化</a>
+        <a ng-class="{'this_action ':btnIndex==2}" ng-click="doClick(2)" ui-sref="index.accountManagement.productAndProperty.product.propertyProject.plan.detailPlan" lang="no">计费模版初始化</a>
+    </div>
+    <!--条件搜索-->
+    <div class="sel_top ">
+        <div class="row">
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                产品类型：
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                <select id="productTypes" ng-model="product.producttype" class="form-control" ng-Change="toPage();">
+                    <option value="">请选择产品类型</option>
+                    <option value="0">建筑租赁</option>
+                    <option value="1">停车优惠卡</option>
+                    <option value="2">门禁卡</option>
+                    <option value="3">装修服务</option>
+                    <option value="4">固定车位</option>
+                    <option value="5">广告租赁</option>
+                    <option value="6">普通服务</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <!--视图加载-->
+    <div ui-view class="sel_height"></div>
+    <!--视图加载开始-->
+</div>
+
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>商业智能</title>
+</head>
+<body>
+
+<!--员工行为分析开始-->
+<div class="col-lg-4 col-md-6 col-sm-6">
+    <div id="pannel">
+        <div class="title">
+            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                <h3>员工行为分析</h3>
+            </div>
+            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                <span class="glyphicon glyphicon-remove"></span>
+                <span class="glyphicon glyphicon-unchecked"></span>
+            </div>
+        </div>
+        <div class="content-main">
+            <!--数据图 -->
+            <img src="images/chart/chart_2.png" width="100%" height="auto">
+            <!--数据图 结束-->
+        </div>
+    </div>
+</div>
+<!--员工行为分析开始 结束-->
+
+<!--业务行为分析-->
+<div class="col-lg-4 col-md-6 col-sm-6">
+    <div id="pannel">
+        <div class="title">
+            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                <h3>业务行为分析</h3>
+            </div>
+            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                <span class="glyphicon glyphicon-remove"></span>
+                <span class="glyphicon glyphicon-unchecked"></span>
+            </div>
+        </div>
+        <div class="content-main">
+            <!--数据图 -->
+            <img src="images/chart/chart_2.png" width="100%" height="auto">
+            <!--数据图 结束-->
+        </div>
+    </div>
+</div>
+<!--业务行为分析 结束-->
+
+<!--客户分析-->
+<div class="col-lg-4 col-md-6 col-sm-6">
+    <div id="pannel">
+        <div class="title">
+            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                <h3>客户分析</h3>
+            </div>
+            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                <span class="glyphicon glyphicon-remove"></span>
+                <span class="glyphicon glyphicon-unchecked"></span>
+            </div>
+        </div>
+        <div class="content-main">
+            <!--数据图 -->
+            <img src="images/chart/chart_2.png" width="100%" height="auto">
+            <!--数据图 结束-->
+        </div>
+    </div>
+</div>
+<!--客户分析 结束-->
+
+<!--经济业务分析-->
+<div class="col-lg-4 col-md-6 col-sm-6">
+    <div id="pannel">
+        <div class="title">
+            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                <h3>经济业务分析</h3>
+            </div>
+            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                <span class="glyphicon glyphicon-remove"></span>
+                <span class="glyphicon glyphicon-unchecked"></span>
+            </div>
+        </div>
+        <div class="content-main">
+            <!--数据图 -->
+            <img src="images/chart/chart_6.png" width="100%" height="auto">
+            <!--数据图 结束-->
+        </div>
+    </div>
+</div>
+<!--经济业务分析 结束-->
+
+<!--战略地图-->
+<div class="col-lg-4 col-md-6 col-sm-6">
+    <div id="pannel">
+        <div class="title">
+            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                <h3>战略地图</h3>
+            </div>
+            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                <span class="glyphicon glyphicon-remove"></span>
+                <span class="glyphicon glyphicon-unchecked"></span>
+            </div>
+        </div>
+        <div class="content-main">
+            <!--数据图 -->
+            <img src="images/chart/chart_6.png" width="100%" height="auto">
+            <!--数据图 结束-->
+        </div>
+    </div>
+</div>
+<!--战略地图 结束-->
+
+<!--绩效分析-->
+<div class="col-lg-4 col-md-6 col-sm-6">
+    <div id="pannel">
+        <div class="title">
+            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                <h3>绩效分析</h3>
+            </div>
+            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                <span class="glyphicon glyphicon-remove"></span>
+                <span class="glyphicon glyphicon-unchecked"></span>
+            </div>
+        </div>
+        <div class="content-main">
+            <!--数据图 -->
+            <img src="images/chart/chart_6.png" width="100%" height="auto">
+            <!--数据图 结束-->
+        </div>
+    </div>
+</div>
+<!--绩效分析 结束-->
+
+</body>
+</html>

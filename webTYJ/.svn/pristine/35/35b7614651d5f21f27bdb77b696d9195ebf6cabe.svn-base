@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>我的团队</title>
+</head>
+<body>
+<div id="content-first">
+    <div id="tab">
+        <a lang="no" class="this_action" ng-click="addCheck()">我的团队</a>
+    </div>
+    <div class="row padding">
+        <div class="col-lg-5 col-md-5 col-sm-6">
+            <div class="user_team_height">
+                <!--人员面版1-->
+                <div class="col-lg-12 col-md-12 col-sm-12 search-padding-10">
+                    <div id="pannel">
+                        <div class="title">
+                            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                {{teamwork.teamName}}
+                            </div>
+                        </div>
+                        <div class="pannel_content">
+                            <div class="user_information">
+                                <div class="user_information_img">
+                                    <img src="images/project/user/user_3.png">
+                                </div>
+                                <div class="user_information_body">
+                                    <div class="user_information_name">
+                                        团队经理：{{teamwork.staff.staffName}}
+                                    </div>
+                                    <div class="user_information_info">
+                                        {{items.SpecialtyInfo.specialtyName}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <!--人员面版1结束-->
+                <!--人员面版1-->
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                    <div id="pannel">
+                        <div class="title">
+                            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                团队成员
+                            </div>
+                        </div>
+                        <div class="pannel_content">
+                            <div class="col-lg-6 col-md-6 col-sm-6" ng-repeat="items in staffs" ng-show="staffs.length != 0">
+                                <div class="user_information">
+                                    <div class="user_information_img">
+                                        <img src="images/project/user/user_3.png">
+                                    </div>
+                                    <div class="user_information_body">
+                                        <div class="user_information_name">
+                                                <span ng-if="items.post != null" style="background-color: lime">
+                                                    {{items.staffName}}
+                                                </span>
+                                                <span ng-if="items.post == null" style="background-color: yellow">
+                                                    {{items.staffName}}
+                                                </span>
+                                        </div>
+                                        <div class="user_information_info">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6" ng-show="staffs.length == 0">
+                                <div class="user_information">
+                                    <div class="user_information_img">
+                                        <img src="images/project/user/user_3.png">
+                                    </div>
+                                    <div class="user_information_body">
+                                        <div class="user_information_name">
+                                                暂无成员！
+                                        </div>
+                                        <div class="user_information_info">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6" ng-repeat="itemstaff in staffNotin" ng-show="leadertype == 1">
+                                <div class="user_information">
+                                    <div class="user_information_img">
+                                        <img src="images/project/user/user_3.png">
+                                    </div>
+                                    <div class="user_information_body">
+                                        <div class="user_information_name">
+                                                 <span style="background-color: gainsboro">
+                                                    {{itemstaff.staffName}}
+                                                </span>
+                                        </div>
+                                        <div class="user_information_info">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                    </div>
+                </div>
+                <!--人员面版1结束-->
+            </div>
+        </div>
+        <div class="col-lg-7 col-md-7 col-sm-6">
+            <div class="padding">
+                <h4>岗位配置列表</h4>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>项目名称</th>
+                        <th ng-repeat="items in title">{{items.SpecialtyInfo.specialtyName}}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="data in data1">
+                        <td>{{data.tr.project.projectName}}</td>
+                        <td style="cursor: pointer" ng-repeat="td in data.td" ng-click="showPost($index,$parent.$index,td.TeamPermissions)" >
+                            <span ng-show="td.count != 0"> 缺编{{td.count}}人</span>
+                            <span  ng-show="td.count==0">满编</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="padding" ng-show="leadertype == 1">
+                <div class="sel1">
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <button type="button" class="btn btn-default btn-primary" ng-click="openChildTeam()">新增子团队</button>
+                        <button type="button" class="btn btn-default btn-primary" ng-click="updateTeam()">编辑子团队</button>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-center" ng-repeat="ct in ChildTeam" ng-click="pitchOn(ct.id)" ng-class="{'this_info':pitchOnTeam== ct.id}">
+                            <div class="text-right"><a style="font-size: 20px;cursor: pointer"ng-click="delTeam(ct.id)">×</a></div>
+                            <img src="images/project/user/user_3.png" style="margin-top:-15px;cursor: pointer" width="100%"><br>
+                            <span>{{ct.teamName}}</span><br>
+                            <span>{{ct.staffName}}</span><br>
+                            <span ng-if="ct.teamworkAmount != null">{{ct.teamworkAmount}}人</span>
+                            <span ng-if="ct.teamworkAmount == null">0人</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--岗位模态框开始-->
+<!--<div class="modal fade" id="postShow" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content" >
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" id="ImpClient">
+                    岗位添加人数
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="user_group_height">
+                    &lt;!&ndash;人员面版1&ndash;&gt;
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div class="row building_padding">
+                            <div class="pannel">
+                                <div class="panel_title">
+                                    <span class="panel_title_left">岗位</span>
+                                </div>
+                                <div class="user_scher_pannel_text building_padding">
+                                    <div class="print_table overflow_y">
+                                        <div ng-repeat="post in posts">
+                                            <span>{{post.nameOfCustom}}</span><span ng-if="post.postNum == 0">(满编)</span><span ng-if="post.postNum != 0">(缺编{{post.postNum}}人)</span>
+                                            <input type="radio" id="{{post.postId}}" name="chickenEgg" class="checkboxa" ng-click="choicePost(post,$index)"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    &lt;!&ndash;人员面版1结束&ndash;&gt;
+                    &lt;!&ndash;人员面版1&ndash;&gt;
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div class="row building_padding">
+                            <div class="pannel">
+                                <div class="panel_title">
+                                   <p>选择成员</p>
+                                </div>
+                                <div class="user_guoupa_pannel_text">
+                                    <div class="row">
+                                    <div class="col-lg-3 text-center" ng-repeat="items in staffs track by $index" ng-class="{'this_info':chocieCss(items)}" ng-click="choiceStaff(items,$index)" >
+                                        <img src="images/project/user/user_3.png" width="100%"><br>
+                                        <span>{{items.staffName}}</span>
+                                    </div>
+                                    <div class="clear"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="save_concel_botton icon_float_else">
+                    <button type="button" class="btn btn-default btn-primary" ng-click="save()">保存</button>
+                    <button type="button" data-dismiss="modal" class="btn btn-default">取消</button>
+                    <div class="clear"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>-->
+<!--岗位模态框结束-->
+<!--岗位模态框开始-->
+<!--<div class="modal fade" id="postShow" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">-->
+    <div class="modal fade" id="postShow" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog" style="width:900px">
+        <div class="modal-content" >
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true" ng-click="frameclose()">
+                    &times;
+                </button>
+                <h4 class="modal-title" id="ImpClient">
+                    岗位添加人数
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                    <div class="search-padding-10">
+                        岗位
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-3 col-md-3 col-sm-3 text-center" ng-repeat="post in posts" style="margin-top:4px;cursor:pointer;" ng-click="choicePost(post,$index)">
+                            <li class="gw">
+
+                                <input ng-if="$index!=postIndex" type="radio" id="{{post.postId}}" name="chickenEgg" class="checkboxa" ng-click="choicePost(post,$index)"/>
+                                <input ng-if="$index==postIndex" type="radio" checked id="{{post.postId}}" name="chickenEgg" class="checkboxa" ng-click="choicePost(post,$index)"/>
+                                <span>{{post.nameOfCustom}}</span><span ng-if="post.postNum == 0">(满编)</span><span ng-if="post.postNum != 0">(缺编{{post.postNum}}人)</span>
+                            </li>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="col-lg-3 col-md-3 col-sm-3"  ng-repeat="items in staffs track by $index" ng-class="{'this_info':chocieCss(items)}" ng-click="choicePerson(items)">
+                            <div class="user_information">
+                                <div class="user_information_img">
+                                    <img src="images/project/user/user_3.png">
+                                </div>
+                                <div class="user_information_body">
+                                    <div class="user_information_name">
+                                        {{items.staffName}}
+                                    </div>
+                                    <div class="user_information_info">
+                                        二级信息显示
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div>
+                        <div class="user_pannel_title_a">
+                            已分配到岗位的员工
+                        </div>
+                        <div>
+                            <div class="col-lg-3 col-md-3 col-sm-3"  ng-click="shanchufenpei(items)" ng-repeat="items in fenpeiStaffs ">
+                                <div class="user_information">
+                                    <div class="user_information_img">
+                                        <img src="images/project/user/user_3.png">
+                                    </div>
+                                    <div class="user_information_body">
+                                        <div class="user_information_name">
+                                            {{items.staff.staffName}}
+                                        </div>
+                                        <!--<div class="user_information_info">
+                                            二级信息显示
+                                        </div>-->
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default btn-primary" ng-click="save()">保存</button>
+                <button type="button" data-dismiss="modal" class="btn btn-default">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<!--岗位模态框结束-->
+<!-- 新增子团队模态框 -->
+<div class="modal fade" id="childteam" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content" >
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" ng-if="staffToTeam.id == null">
+                    新增子团队
+                </h4>
+                <h4 class="modal-title" ng-if="staffToTeam.id != null">
+                    编辑子团队
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                    <div class="sel1">
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <table>
+                                <thead>
+                                <th>子团队名称</th>
+                                <th>子团队负责人</th>
+                                <th>子团队成员</th>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td><input type="text" class="form-control" ng-model="staffToTeam.teamName"></td>
+                                    <td ng-click="chooseStaff(1)" ng-if="staffToTeam.leader.staffName != null">{{staffToTeam.leader.staffName}}</td>
+                                    <td ng-click="chooseStaff(1)" ng-if="staffToTeam.leader.staffName == null">暂无</td>
+                                    <td ng-click="chooseStaff(2)">{{staffToTeam.teamMember.length}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="text-center">
+                    <button type="button" class="btn btn-default btn-primary" ng-click="sumbitTeam()">提交</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 选择成员 -->
+<div class="modal fade" id="chooseStaffs" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content" >
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" ng-if="membertypes == 1">
+                    选择子团队负责人
+                </h4>
+                <h4 class="modal-title" ng-if="membertypes == 2">
+                    选择子团队成员
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                    <div class="sel1">
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-center" ng-class="{'this_info':choocieCss(items)}" ng-repeat="items in staffs track by $index" ng-click="addToTeam(items)">
+                                <img src="images/project/user/user_3.png" width="50px"><br>
+                                <span>{{items.staffName}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="text-center">
+                    <button type="button" class="btn btn-default btn-primary" data-dismiss="modal">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

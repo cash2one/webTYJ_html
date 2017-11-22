@@ -1,0 +1,444 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 产品初始化--广告租赁js
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../app');
+
+    app.controller('AdvertisingLeaseCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        /*****************************  变量定义start  ********************************************/
+
+        var url = $rootScope.url;                   //定义路径
+        $scope.productId = $rootScope.productId;    //获取传入的产品id
+        $scope.Product = {};                        //定义一个product对象
+        $scope.AreaDivision = {};                   //定义一个面积划分对象
+        $scope.AreaDivisionList = [];               //定义一个面积划分对象集合
+        $scope.editIndex = null;                    //新增行序列号
+        $scope.editItem = false;                    //新增AreaDivision行
+        var filePath='';
+        var fileUrl=$rootScope.fileUrl;             //上传的文件路径
+        $scope.annexs = [];
+        $scope.Product.annexs = $scope.annexs;
+        $scope.addWaterCheck = [];
+
+
+        /*****************************  变量定义end    ********************************************/
+
+        /*****************************  载入时执行方法start  ***************************************/
+
+            //如果传入的产品id不为空，根据id查询对象
+        $http.post(url + '/Product/getProductByProductId/' + $scope.productId).success(function(data){
+            $scope.Product = data.Product;
+
+            //判断预付时间是否为空
+            if(angular.isDefined($scope.Product)){
+                $scope.Product.prepaidDate = new Date($scope.Product.prepaidDate);
+
+                //判断面积划分数据是对象还是数组
+                if(angular.isObject($scope.Product.areadivisionlist)){
+                    $scope.AreaDivision = $scope.Product.areadivisionlist;
+                    $scope.AreaDivisionList.push($scope.AreaDivision);
+                }
+                if(angular.isArray($scope.Product.areadivisionlist)){
+
+                    $scope.AreaDivisionList = $scope.Product.areadivisionlist;
+                }
+
+                //判断产品对象的附件是否存在，存在是赋值给annexs,是否是对象还是数组
+                if(angular.isDefined($scope.Product.annexs)){
+                    if(angular.isObject($scope.Product.annexs)){
+                        $scope.annex = {annexAddress:$scope.Product.annexs.annexAddress,annexName:$scope.Product.annexs.annexName,areas:$scope.Product.annexs.areas};
+                        $scope.annexs.push($scope.annex);
+                    }if(angular.isArray($scope.Product.annexs)){
+                        $scope.annexs = $scope.Product.annexs;
+                    }
+                }
+
+                //判断产品关联的建筑是否存在，并判断是否为对象，如果是对象则转成数组
+                if(angular.isDefined($scope.Product.buildingstructruenewlist)){
+                    if(angular.isArray($scope.Product.buildingstructruenewlist)){
+                        $scope.addWaterCheck = $scope.Product.buildingstructruenewlist;
+                    }else{
+                        $scope.addWaterCheck.push($scope.Product.buildingstructruenewlist);
+                    }
+                }
+            }
+        }).error(function(data){
+            layer.alert('没有对应的产品信息！',{icon : 2});
+        });
+
+        /*****************************  载入时执行方法end    ***************************************/
+
+
+        /*****************************  方法start  ***********************************************/
+
+            //显示新增行
+        $scope.addItem = function(){
+            $scope.editItem = true;
+            $scope.editIndex = null;
+        };
+        //隐藏新增行
+        $scope.addCancel = function(){
+            $scope.editItem = false;
+        };
+
+        //修改新增行
+        $scope.updateItem = function(index){
+            $scope.editItem=true;
+            $scope.editIndex = index;
+            var current=$scope.AreaDivisionList[index];
+            $scope.AreaDivision = {
+                areaDivisionNum:current.areaDivisionNum,
+                areaDivisionName:current.areaDivisionName,
+                areas:current.areas,
+                unitPrice:current.unitPrice,
+                sum:current.sum
+            };
+        };
+
+        //删除新增行
+        $scope.deleteItem = function(index){
+            $scope.AreaDivisionList.splice(index,1);
+        };
+
+        //将新增行的数据保存到集合中
+        //增加判断 王洲 2015.12.26
+        $scope.addSave = function(){
+            if($scope.AreaDivision.areaDivisionNum == null || $scope.AreaDivision.areaDivisionNum == ''){
+                layer.msg('序号不能为空！',{icon : 0,time : 1000});
+                return;
+            }
+            if($scope.AreaDivision.areaDivisionName == null || $scope.AreaDivision.areaDivisionName == ''){
+                layer.msg('名称不能为空！',{icon : 0,time : 1000});
+                return;
+            }
+            if($scope.AreaDivision.areas == null || $scope.AreaDivision.areas == ''){
+                layer.msg('面积不能为空！',{icon :0,time : 1000});
+                return;
+            }
+            if($scope.AreaDivision.unitPrice == null || $scope.AreaDivision.unitPrice == ''){
+                layer.msg('单价不能为空！',{icon : 0,time : 1000});
+                return;
+            }
+            if($scope.AreaDivision.sum == null || $scope.AreaDivision.sum == ''){
+                layer.msg('总价不能为空！',{icon : 0,time : 1000});
+                return;
+            }
+            if(isNaN($scope.AreaDivision.areas)){
+                layer.msg('面积只能为数字！',{icon : 0,time : 1000});
+                return;
+            }
+            if(isNaN($scope.AreaDivision.unitPrice)){
+                layer.msg('单价只能为数字！',{icon : 0,time : 1000});
+                return;
+            }
+            if(isNaN($scope.AreaDivision.sum)){
+                layer.msg('总价只能为数字！',{icon : 0,time : 1000});
+                return;
+            }
+            if($scope.editIndex!=null){
+                $scope.AreaDivisionList[$scope.editIndex]={
+                    areaDivisionNum:$scope.AreaDivision.areaDivisionNum,
+                    areaDivisionName:$scope.AreaDivision.areaDivisionName,
+                    areas:$scope.AreaDivision.areas,
+                    unitPrice:$scope.AreaDivision.unitPrice,
+                    sum:$scope.AreaDivision.sum
+                };
+            }
+            else {
+                $scope.AreaDivisionList.push($scope.AreaDivision);
+            }
+            $scope.editItem = false;
+            $scope.AreaDivision = {};
+        };
+
+        //新增产品--广告租赁
+        $scope.addProduct = function (){
+            if(angular.isUndefined($scope.Product)){
+                layer.msg('不能提交空数据！',{icon : 0,time : 1000});
+                return;
+            }
+            if($scope.Product.productName == null || $scope.Product.productName == ''){
+                layer.msg('产品名称不能为空！',{icon : 0,time : 1000});
+                return;
+            }
+            if($scope.Product.productAttributes == null || $scope.Product.productAttributes == ''){
+                layer.msg('产品属性不能为空！',{icon : 0,time : 1000});
+                return;
+            }
+            if(angular.isDefined($scope.Product.price)){
+                if($scope.Product.price != null || $scope.Product.price != ''){
+                    if(isNaN($scope.Product.price)){
+                        layer.msg('租赁价格只能是数字！',{icon : 0,time : 1000});
+                        return;
+                    }
+                }
+            }
+            if(angular.isDefined($scope.Product.averagePrice)){
+                if($scope.Product.averagePrice != null || $scope.Product.averagePrice != ''){
+                    if(isNaN($scope.Product.averagePrice)){
+                        layer.msg('均价只能是数字！',{icon : 0,time : 1000});
+                        return;
+                    }
+                }
+            }
+
+            if($scope.Product.freeTime != null && $scope.Product.freeTime != ''){
+                if(isNaN($scope.Product.freeTime)){
+                    layer.msg('免租期时长只能为数字！',{icon : 0,time : 1000});
+                    return;
+                }
+            }
+            $scope.Product.productType = 5;
+            $scope.Product.areadivisionlist = $scope.AreaDivisionList;
+            $scope.Product.annexs = $scope.annexs;
+            if(angular.isUndefined($scope.productId) || $scope.productId == null){
+                $http.post(url + '/Product/addProduct',{Product : $scope.Product}).success(function(){
+                    layer.alert('新增成功！',{icon : 1});
+                    $location.path("/index/accountManagement/product");
+                }).error(function(){
+                    layer.alert('新增失败！',{icon : 2});
+                });
+            }else{
+                $http.post(url + '/Product/updateProduct',{Product : $scope.Product}).success(function(){
+                    layer.alert('修改成功！',{icon : 1});
+                    $location.path("/index/accountManagement/product");
+                }).error(function(){
+                    layer.alert('修改失败！',{icon : 2});
+                });
+            }
+        };
+
+
+        //取消新增，返回产品列表
+        $scope.backToProduct = function(){
+            $location.path("/index/accountManagement/product");
+        };
+
+
+        //图片上传
+        $scope.annex = {annexAddress:'',annexName:'',isMain:''};
+
+        //上传主图方法
+        $scope.uploadMainPic=function(){
+            $scope.annex = {annexAddress:'',annexName:'',isMain:''};
+            $("#zyupload").remove();
+            $("#remove").append("<div id='zyupload' class='zyupload'></div>");
+            $(function(){
+                $("#remove").html('');
+                $("#remove").append('<div id="zyupload" class="zyupload"></div>');
+                // 初始化插件
+                $("#zyupload").zyUpload({
+                    //width            :   "900px",                 // 宽度
+                    //height           :   "400px",                 // 宽度
+                    itemWidth        :   "140px",                 // 文件项的宽度
+                    itemHeight       :   "115px",                 // 文件项的高度
+                    url              :   fileUrl+"/FileService",  // 上传文件的路径
+                    fileType         :   ["jpg","png","jpeg","gif","xls","docx","xlsx","pdf","txt","doc","ppt"],// 上传文件的类型
+                    fileSize         :   51200000,                // 上传文件的大小
+                    multiple         :   true,                    // 是否可以多个文件上传
+                    dragDrop         :   true,                    // 是否可以拖动上传文件
+                    tailor           :   true,                    // 是否可以裁剪图片
+                    del              :   true,                    // 是否可以删除文件
+                    finishDel        :   false,  				  // 是否在上传文件完成后删除预览
+                    /* 外部获得的回调接口 */
+                    onSelect: function(selectFiles, allFiles){    // 选择文件的回调方法  selectFile:当前选中的文件  allFiles:还没上传的全部文件
+                        console.info(selectFiles);
+                    },
+                    onDelete: function(file, files){
+                        console.info(file.name);
+                    },
+                    onSuccess: function(file, response){          // 文件上传成功的回调方法
+                        //console.info("此文件上传成功：");
+                        //console.info(file.name);
+                        //console.info("此文件上传到服务器地址：");
+                        filePath=response;
+                        $scope.annex.annexAddress=filePath;
+                        $scope.annex.annexName=file.name;
+                        if($scope.annex.isMain != 1){
+                            $scope.annex.isMain = 0;
+                        }
+                        $scope.annexs.push($scope.annex);
+                        //console.info(filePath);
+                        console.log($scope.annexs);
+                    },
+                    onFailure: function(file, response){          // 文件上传失败的回调方法
+                        //console.info("此文件上传失败：");
+                        //console.info(file.name);
+                    },
+                    onComplete: function(response){           	  // 上传完成的回调方法
+                        //console.info("文件上传完成");
+                        //console.info(response);
+                    }
+                });
+            });
+        };
+
+        //上传辅图方法
+        $scope.uploadPic=function(){
+            $scope.annex = {annexAddress:'',annexName:'',isMain:''};
+            $("#zyupload").remove();
+            $("#remove").append("<div id='zyupload' class='zyupload'></div>");
+            $(function(){
+                $("#remove").html('');
+                $("#remove").append('<div id="zyupload" class="zyupload"></div>');
+                // 初始化插件
+                $("#zyupload").zyUpload({
+                    //width            :   "900px",                 // 宽度
+                    //height           :   "400px",                 // 宽度
+                    itemWidth        :   "140px",                 // 文件项的宽度
+                    itemHeight       :   "115px",                 // 文件项的高度
+                    url              :   fileUrl+"/FileService",  // 上传文件的路径
+                    fileType         :   ["jpg","png","jpeg","gif","xls","docx","xlsx","pdf","txt","doc","ppt"],// 上传文件的类型
+                    fileSize         :   51200000,                // 上传文件的大小
+                    multiple         :   true,                    // 是否可以多个文件上传
+                    dragDrop         :   true,                    // 是否可以拖动上传文件
+                    tailor           :   true,                    // 是否可以裁剪图片
+                    del              :   true,                    // 是否可以删除文件
+                    finishDel        :   false,  				  // 是否在上传文件完成后删除预览
+                    /* 外部获得的回调接口 */
+                    onSelect: function(selectFiles, allFiles){    // 选择文件的回调方法  selectFile:当前选中的文件  allFiles:还没上传的全部文件
+                        console.info(selectFiles);
+                    },
+                    onDelete: function(file, files){
+                        console.info(file.name);
+                    },
+                    onSuccess: function(file, response){          // 文件上传成功的回调方法
+                        console.info("此文件上传成功：");
+                        console.info(file.name);
+                        console.info("此文件上传到服务器地址：");
+                        filePath=response;
+                        $scope.annex.annexAddress=filePath;
+                        $scope.annex.annexName=file.name;
+                        if($scope.annex.isMain == ""){
+                            $scope.annex.isMain = 1;
+                        }
+                        $scope.annexs.push($scope.annex);
+                        //console.info(filePath);
+                        console.log($scope.annexs);
+                    },
+                    onFailure: function(file, response){          // 文件上传失败的回调方法
+                        //console.info("此文件上传失败：");
+                        //console.info(file.name);
+                    },
+                    onComplete: function(response){           	  // 上传完成的回调方法
+                        //console.info("文件上传完成");
+                        //console.info(response);
+                    }
+                });
+            });
+        };
+
+        //移除图片
+        $scope.delPic = function(item){
+            $scope.picItem = [];
+            $scope.picItem = $scope.annexs;
+            $scope.annexs = [];
+            for(var i = 0; i <$scope.picItem.length; i ++){
+                if(item.annexAddress != $scope.picItem[i].annexAddress){
+                    $scope.annexs.push($scope.picItem[i]);
+                }
+            }
+        };
+
+        /**
+         * 打开选择建筑模态框
+         * 王洲
+         * 2015.12.26
+         */
+        $scope.openBuilding = function(){
+            $("#chooseBuild").modal("show");
+        };
+
+        //查询所有建筑结构信息.
+        $http.get(url+'/BuildingStructureNew/listAllBuildingStructureNewByAllIdOptimize/'+$scope.id).success(function(data){
+            $scope.zNodes =[{}];
+            //获取json数据
+            $scope.buildingStructureNews = data.BuildingStructureNew;
+            var tasks =  $scope.buildingStructureNews;
+            if(tasks!=null){
+                for(var i=0;i<tasks.length;i++){
+                    $scope.zNode ={ id:tasks[i].id, pId:tasks[i].parentId, name:tasks[i].nodeName,fullName:tasks[i].fullName,checked:tasks[i].checked};
+                    $scope.zNodes.push($scope.zNode);
+                }
+                $.fn.zTree.init($("#treeDemo"), setting, $scope.zNodes);
+
+                var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+                var nodes = zTree.getNodes();
+                nodes[0].name = "建筑信息";
+                zTree.updateNode(nodes[0]);
+                if($scope.addWaterCheck.length > 0){
+                    for(var j = 0; j < $scope.addWaterCheck.length; j++){
+                        var node = zTree.getNodeByParam("id",$scope.addWaterCheck[j].id);
+                        zTree.checkNode(node);
+                        zTree.selectNode(node);
+                    }
+                }
+            }
+        }).error(function(data,status,headers,config){
+            alert("建筑信息查询失败！")
+        });
+
+        var zTreeOnCheck=function(event, treeId, treeNode) {
+            var treeObj=$.fn.zTree.getZTreeObj("treeDemo");
+            var nodes=treeObj.getCheckedNodes(true);
+            $scope.treeResult={treeList:[]};
+            for(var i=0;i<nodes.length;i++){
+                if(nodes[i].isParent==false) {
+                    $scope.treeResult.treeList.push(nodes[i]);
+                }
+                if(nodes[i].check_Child_State == -1)
+                {
+                    $rootScope.addressIdT=nodes[i].id;
+                }
+            }
+        };
+        /**
+         * 显示选中的树状数据
+         */
+        $scope.addWaterReading = function(){
+            $scope.addWaterCheck = $scope.treeResult.treeList;
+        };
+
+        $scope.addBuildingToProduct = function(){
+            $scope.Product.BuildingList = $scope.addWaterCheck;
+        };
+
+        var setting = {
+            check:{
+                enable:true
+            },
+            view: {
+                selectedMulti: false
+            },
+            edit: {
+                enable: false,
+                editNameSelectAll: false
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            },
+            callback: {
+                onCheck:zTreeOnCheck
+            }
+        };
+
+        function selectAll() {
+            var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+            zTree.setting.edit.editNameSelectAll =  $("#selectAll").attr("checked");
+        }
+
+        $(document).ready(function(){
+            $("#selectAll").bind("click", selectAll);
+        });
+
+        /*****************************  方法end    ***********************************************/
+
+    }]);
+});

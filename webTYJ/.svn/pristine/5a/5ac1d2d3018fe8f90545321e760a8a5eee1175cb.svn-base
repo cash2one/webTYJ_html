@@ -1,0 +1,164 @@
+<!--
+    页面名称：装修管理新建任务
+    创建人：倪明    创建时间：2015/8/19
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>装修管理新建任务</title>
+    <link rel="stylesheet" href="css/externalProfession/waterMeterInfo.css" type="text/css">
+    <link rel="stylesheet" href="css/ztree/demo.css" type="text/css">
+    <link rel="stylesheet" href="css/ztree/zTreeStyle.css" type="text/css">
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.core-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.excheck-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.exedit-3.5.js"></script>
+</head>
+<body>
+<div class="row">
+    <div class="architecturepadding">
+        <div class="contract_panner charge_project">
+            <div class="contract_detail_nav">
+                <a>新增装修任务</a>
+                <div class="clear"></div>
+            </div>
+                <div class="rightpadding">
+                    <p>
+                        <span>任务类型：</span>
+                        <select class="s" ng-model="Tasks.taskType" ng-options="a.id as a.name for a in Datil.taskType" >
+                            <option>请选择任务类型</option>
+                        </select>
+                        </p>
+                        <span>选择执行团队</span>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <ul id="treeDemo" class="ztree"><li id="treeDemo_1" class="level0" tabindex="0" hidefocus="true" treenode=""><span id="treeDemo_1_switch" title="" class="button level0 switch roots_close" treenode_switch=""></span><span id="treeDemo_1_check" class="button chk checkbox_false_full" treenode_check=""></span><a id="treeDemo_1_a" class="level0" treenode_a="" onclick="" target="_blank" style="" title="建筑信息"><span id="treeDemo_1_ico" title="" treenode_ico="" class="button ico_close" style=""></span><span id="treeDemo_1_span">建筑信息</span></a></li><li id="treeDemo_1925" class="level0" tabindex="0" hidefocus="true" treenode=""><span id="treeDemo_1925_switch" title="" class="button level0 switch center_close" treenode_switch=""></span><span id="treeDemo_1925_check" class="button chk checkbox_false_full" treenode_check=""></span><a id="treeDemo_1925_a" class="level0" treenode_a="" onclick="" target="_blank" style="" title="深圳多奇"><span id="treeDemo_1925_ico" title="" treenode_ico="" class="button ico_close" style=""></span><span id="treeDemo_1925_span">深圳多奇</span></a></li><li id="treeDemo_1937" class="level0" tabindex="0" hidefocus="true" treenode=""><span id="treeDemo_1937_switch" title="" class="button level0 switch bottom_docu" treenode_switch=""></span><span id="treeDemo_1937_check" class="button chk checkbox_false_full" treenode_check=""></span><a id="treeDemo_1937_a" class="level0" treenode_a="" onclick="" target="_blank" style="" title="桃源居国际花园三区33幢"><span id="treeDemo_1937_ico" title="" treenode_ico="" class="button ico_docu" style=""></span><span id="treeDemo_1937_span">桃源居国际花园三区33幢</span></a></li></ul>
+                                </div>
+                                <div class="col-md-2">
+                                    <div style="margin-top: 180px">
+                                        <span style="cursor:pointer;font-size: 34px" class="glyphicon glyphicon-menu-right" aria-hidden="true" ng-click="addWaterReading()"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <ul class="ztree">
+                                        <li>
+                                            <table>
+                                                <tr ng-repeat="items11 in addWaterCheck ">
+                                                    <td>{{items11.fullname}}</td>
+                                                </tr>
+                                            </table>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                    <div class="row">
+                        <div class="form_list_three">
+                            <ul>
+                                <li>
+                                    <span>检查时间：</span>
+                                    <input type="date" class="radius_all">
+                                </li>
+                                <li>
+                                    <span>预计完成时间：</span>
+                                    <input type="date" class="radius_all" ng-model="Tasks.estimatedTime">
+                                </li>
+                                <li>
+                                    <span>负责人：</span>
+                                      <select ng-model="Tasks.principal" ng-options="optiontype.staffId as optiontype.staffName for optiontype in dutyPerson">
+                                         <option>--请选择--</option>
+                                      </select>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="building_padding">
+                        <p>备注：</p>
+                        <textarea id="taskDescription" class="textarea_modal" ng-model="Tasks.taskDescription"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="save_concel_botton contract_detail_botton">
+                            <a class="radius_all button_bule" ng-click="cancelDecoration()">取消</a>
+                            <a class="radius_all button_bule" ng-click="submitDecoration(Tasks.serverId)">确定</a>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>
+<!--<div class="architecturepadding" >-->
+    <!--<div class="meter_plan_execut">-->
+        <!--<div id="divOne_1" class="tab-pane fade in active">-->
+            <!--<div class="meter_plan_execut_head radius_left_right">-->
+                <!--新增装修任务-->
+            <!--</div>-->
+            <!--<div class="meter_plan_execut_body radius_bottom_left_right" style="height: 650px">-->
+                <!--<div class="meter_plan_revise_top">-->
+                    <!--<div class="col-md-12">-->
+                        <!--<div class="col-md-6"><p>任务类型：-->
+                            <!--<select class="s" ng-model="Tasks.taskType" ng-options="a.id as a.name for a in Datil.taskType" >-->
+                                <!--<option value="">请选择任务类型</option>-->
+                            <!--</select>-->
+                        <!--</p>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                    <!--<div class="clear"></div>-->
+                <!--</div>-->
+                <!--<div class="meter_plan_revise_medium">-->
+                    <!--选择执行团队<br>-->
+                    <!--<div class="clear"></div>-->
+                <!--</div>-->
+                <!--<div class="meter_plan_revise_bottom">-->
+                    <!--<div class="row">-->
+                        <!--<div class="col-md-4">-->
+                            <!--<ul id="treeDemo"  class="ztree"></ul>-->
+                        <!--</div>-->
+                        <!--<div class="col-md-2">-->
+                            <!--<div style="margin-top: 180px">-->
+                                <!--<span style="cursor:pointer;font-size: 34px" class="glyphicon glyphicon-menu-right" aria-hidden="true" ng-click="addWaterReading()"></span>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                        <!--<div class="col-md-4" >-->
+                            <!--<ul class="ztree" >-->
+                                <!--<li >-->
+                                    <!--<table >-->
+                                        <!--<tr ng-repeat="items11 in addWaterCheck">-->
+                                            <!--<td>{{items11.fullname}}</td>-->
+                                        <!--</tr>-->
+                                    <!--</table>-->
+                                <!--</li>-->
+                            <!--</ul>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                    <!--<div class="clear"></div>-->
+                <!--</div>-->
+                <!--<div class="meter_plan_revise_top">-->
+                    <!--<div class="meter_plan_revise_top_left">-->
+                        <!--检查时间：-->
+                        <!--<input type="date" class="radius_all"><br>-->
+                        <!--负责人&nbsp;&nbsp;&nbsp;：-->
+                        <!--<label>-->
+                            <!--<select ng-model="Tasks.principal" ng-options="optiontype.staffId as optiontype.staffName for optiontype in dutyPerson">-->
+                                <!--<option value="">--请选择--</option>-->
+                            <!--</select>-->
+                        <!--</label>-->
+                    <!--</div>-->
+                    <!--<div class="meter_plan_revise_top_right">-->
+                        <!--预计完成时间：-->
+                        <!--<input type="date" class="radius_all" ng-model="Tasks.estimatedTime">-->
+                    <!--</div>-->
+                    <!--<div class="col-md-12">-->
+                        <!--备注：-->
+                        <!--<textarea id="taskDescription" style="width:450px;resize:none;border: 1px solid #ddd;" cols="3"  ng-model="Tasks.taskDescription"></textarea>-->
+                    <!--</div>-->
+                    <!--<div class="clear"></div>-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<div class="meter_plan_excute_bottom_botton">-->
+                <!--<a href="" class="radius_all" ng-click="cancelDecoration()">取消</a>-->
+                <!--<a href="" class="radius_all" ng-click="submitDecoration(Tasks.serverId)">确定</a>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->
+</body>
+</html>

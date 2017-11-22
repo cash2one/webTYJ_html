@@ -1,0 +1,177 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 宠物登记js
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../../app');
+
+    app.controller('historyPetCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        var url = $rootScope.url;
+        //根据条件查询宠物信息
+        $scope.PetRegistrations={};
+        $scope.PetRegistrations.custId=$scope.personCust.custId;
+
+        var currentFunction = function (page, callback){
+            $scope.PetRegistrations.page = page;
+            $http.post(url + '/PetRegistration/listPagePetRegistration', {PetRegistration : $scope.PetRegistrations}).success(callback);
+        };
+        $scope.searchPet = app.get('Paginator').list(currentFunction, 6);
+
+
+        /**
+         * <p>修改宠物信息</p>
+         * @param petRegistration
+         */
+        $scope.view=function(petId)
+        {
+            $http.get(url + '/PetRegistration/getPetRegistrationbyId/' + petId).success(function(data){
+                $scope.pet=data.PetRegistration;
+                console.log($scope.pet.buildingStructureNew)
+                $scope.pet.registrationTime = new Date($scope.pet.registrationTime);
+                $scope.personParam.buildingStructureId = $scope.pet.buildingStructureNew.id;
+                $scope.personParam.projectType = "56ede32b-7fe0-434c-95c1-0051bc5cf44e";
+                $scope.personParam.custId = $rootScope.user.custId;
+                $http.post(url + '/PersonCustNew/getPersonCustNew',{Search:$scope.personParam}).success(function(data){
+                    $scope.PersonCustNewList = data.PersonCustNew;
+                    console.log($scope.PersonCustNewList);
+                });
+
+                $http.get(url + '/DataDictionarySlaveService/getDataDictionarySlave/pet_sex/' + $scope.pet.buildingStructureNew.id).success(function(data){
+                    $scope.petSexList = data.DataDictionarySlave;
+                    console.log($scope.petSexList);
+                });
+            }).error(function(data){
+                layer.alert('没有对应的宠物信息，请重试',{icon : 2, time : 2000});
+            });
+        };
+
+        $scope.update=function()
+        {
+            if(angular.isUndefined($scope.pet.petName)||angular.equals($scope.pet.petName,'')){
+                layer.alert('请输入宠物名称！',{icon : 0});
+                return;
+            }else if(angular.isUndefined($scope.pet.petType)||angular.equals($scope.pet.petType,'')){
+                layer.alert('请输入宠物类型！',{icon : 0});
+                return;
+            }else if(angular.isUndefined($scope.pet.personBuildingId)||angular.equals($scope.pet.personBuildingId,'')){
+                layer.alert('请关联房屋！',{icon : 0});
+                return;
+            }else if(angular.isUndefined($scope.pet.custId)||angular.equals($scope.pet.custId,'')){
+                layer.alert('请选择登记人！',{icon : 0});
+                return;
+            }else if(angular.isUndefined($scope.pet.petSex)||angular.equals($scope.pet.petSex,'')){
+                layer.alert('请选择宠物性别！',{icon : 0});
+                return;
+            }
+            $http.put(url+'/PetRegistration/updatePetRegistration',{PetRegistration:$scope.pet}).success(function()
+            {
+                layer.alert('修改成功！',{icon : 1});
+                $("#editModal").modal("hide");
+                $scope.searchPet._load();
+            }).error(function(data, status, headers, config){
+                layer.alert('修改失败！',{icon : 2});
+            }) ;
+        };
+
+
+        /**
+         * 宠物记录删除（逻辑删除，修改状态为0）
+         * @param petId
+         */
+        $scope.deletePet=function(petId) {
+            layer.confirm('确定要删除该记录？',{
+                btn : ['是','否']
+            },function(){
+                $scope.toDeletePet(petId);
+            },function(){
+            })
+        };
+
+        $scope.toDeletePet = function(petId){
+            $http.put(url + '/PetRegistration/deletePetRegistration/' + petId).success(function(data){
+                layer.msg('删除成功',{icon : 1, time : 2000});
+                $scope.searchPet._load();
+            });
+        };
+
+
+        /**
+         * <p>关联房屋信息查询</p>
+         * @Time 9:30
+         */
+        $scope.searchPersonBuilding = function(){
+            /*var custId = $scope.personCust.custId;
+             $http.get(url + '/PersonBuildingNew/listPersonBuildingNewByCustId/'+custId).success(function(data){
+             $scope.PersonBuildingNewList = data.PersonBuildingNew;
+             }).error(function(data, status,headers, config){
+
+             });*/
+            $scope.PersonBuildingNew = {};
+            $scope.PersonBuildingNew.custId = $scope.personCust.custId;
+            $http.post(url + '/PersonBuildingNew/selectPersonBuildingNewByCustId',{PersonBuildingNew : $scope.PersonBuildingNew}).success(function(data){
+                $scope.PersonBuildingNewList = data.PersonBuildingNew;
+            }).error(function(data){
+                layer.alert('没有关联的建筑',{icon : 0});
+            });
+        };
+
+
+        /**
+         * <p>将房屋信息放入输入框</P>
+         * @Time 10:30
+         */
+        $scope.personParam = {};//根据房屋id获取关联的人员
+        $scope.buildingInfo={};
+        $scope.addHouseName=function(pbn){
+            $scope.btnIndex = pbn.buildingStructureId;
+            $scope._buildingStructureId = pbn.buildingStructureId;
+            $scope.pet.personBuildingId = pbn.buildingStructureId;
+            if(pbn.houseNew != null){
+                $scope.buildingInfo.fullName = pbn.houseNew.fullName;
+                $scope.buildingInfo.id = pbn.houseNew.buildingStructureId;
+                $scope.personParam.houseId = pbn.houseNew.id;
+            }else if(pbn.stallNew != null){
+                $scope.buildingInfo.id = pbn.stallNew.buildingStructureId;
+                $scope.buildingInfo.fullName = pbn.stallNew.fullName;
+                $scope.personParam.houseId = pbn.stallNew.stallId;
+            }else if(pbn.storeNew != null){
+                $scope.buildingInfo.id = pbn.storeNew.buildingStructureId;
+                $scope.buildingInfo.fullName = pbn.storeNew.fullName;
+                $scope.personParam.houseId = pbn.storeNew.storeId;
+            }
+            $scope.personParam.buildingStructureId = pbn.buildingStructureId;
+            $scope.personParam.projectType = "56ede32b-7fe0-434c-95c1-0051bc5cf44e";
+            $scope.personParam.custId = $rootScope.user.custId;
+            $http.post(url + '/PersonCustNew/getPersonCustNew',{Search:$scope.personParam}).success(function(data){
+                $scope.PersonCustNewList = data.PersonCustNew;
+            });
+
+            $http.get(url + '/DataDictionarySlaveService/getDataDictionarySlave/pet_sex/' + $scope._buildingStructureId).success(function(data){
+                $scope.petSexList = data.DataDictionarySlave;
+            });
+            console.log(pbn)
+            $scope.pet.buildingStructureNew.fullName = pbn.buildingStructureNew.fullName;
+            console.log($scope.pet.buildingStructureNew.fullName);
+        };
+
+        /**
+         * 查看详情
+         * @param items
+         */
+        $scope.showItem = function(items){
+            $scope.pets = {};
+            //查询宠物信息以及关联的房屋信息
+            $http.get(url + '/PetRegistration/getPetRegistrationbyId/' + items.petId).success(function(data){
+                $scope.pets = data.PetRegistration;
+                $("#showModal").modal("show");
+            }).error(function(data){
+                layer.alert('宠物信息查询失败！',{icon : 2});
+            });
+        };
+
+    }]);
+});

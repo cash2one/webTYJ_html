@@ -1,0 +1,268 @@
+<!--
+    页面名称：【建筑组件初始化】组件详情
+    撰写人：朱伟
+    js路径：js/controllers/internalProfession/buildingInitialization/buildingDetails.js
+    创建时间：2015/06/29
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>组件新增(建筑组件初始化)</title>
+    <link rel="stylesheet" href="bower_components/skins/zyupload-1.0.0.min.css " type="text/css">
+    <!--<script type="text/javascript" src="bower_components/zyupload-1.0.0.min.js"></script>-->
+    <link rel="stylesheet" href="css/ztree/ztreeAssets.css" type="text/css">
+    <link rel="stylesheet" href="css/ztree/zTreeStyle.css" type="text/css">
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.core-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.excheck-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.exedit-3.5.js"></script>
+
+    <script type="text/javascript">
+
+        var setting = {
+            view: {
+                dblClickExpand: false
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            },
+            callback: {
+                beforeClick: beforeClick,
+                onClick: onClick
+            }
+
+        };
+
+        function beforeClick(treeId, treeNode) {
+            var check = (treeNode && !treeNode.isParent && treeNode.types != 'pt');
+            if (!check){
+                //修改提示方式，保证下拉树不会隐藏  王洲  2016.1.11
+                layer.msg("只能选择资产！",{icon:0,time : 1000});
+            }
+            return check;
+        }
+
+        function onClick(e, treeId, treeNode) {
+            var zTree = $.fn.zTree.getZTreeObj("treeDemo"),
+
+                    nodes = zTree.getSelectedNodes(),
+                    v = "";
+                    var t ="";
+            nodes.sort(function compare(a,b){return a.id-b.id;});
+            for (var i=0, l=nodes.length; i<l; i++) {
+                v += nodes[i].name + ",";
+                t+= nodes[i].id + ",";
+            }
+            if (v.length > 0 ) v = v.substring(0, v.length-1);
+            if (t.length > 0 ) t = t.substring(0, t.length-1);
+            $("#citySel").val(v);
+            $("#propertyId").val(t);
+        }
+        /*Bug 570
+         修改人：陈浪
+         2016年2月19*/
+        var num=1;
+        function showMenu() {
+            var cityObj = $("#citySel");
+            var cityOffset = $("#citySel").offset();
+            num++;
+            if(num%2==0){
+                $("#menuContent").css({left:cityOffset.left + "px", top:cityOffset.top + cityObj.outerHeight() + "px"}).slideDown("fast");
+            }else{
+                hideMenu();
+            }
+            $("body").bind("mousedown", onBodyDown);
+        }
+        function hideMenu() {
+            $("#menuContent").fadeOut("fast");
+            $("body").unbind("mousedown", onBodyDown);
+        }
+        function onBodyDown(event) {
+            if (!(event.target.id == "menuBtn" || event.target.id == "menuContent" || $(event.target).parents("#menuContent").length>0)) {
+                hideMenu();
+            }
+        }
+
+    </script>
+</head>
+<body ng-controller="buildingDetailsCtrl">
+<form id="css_form" name="mainForm" novalidate>
+    <div class="sel">
+        <div class="row search-padding-10">
+            <!--<div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                组件编号：
+            </div>
+            <div class="col-lg-4 col-md-3 col-sm-3">
+                <input name="componentNum" type="text" class="form-control" ng-pattern="/^[0-9]*$/" required ng-model="buildingComponents.componentNum"/>
+            </div>
+            <div class="col-lg-1 col-md-1 col-sm-1">
+                <span style="color: red">*</span>
+            </div>-->
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                组件名称：
+            </div>
+            <div class="col-lg-4 col-md-3 col-sm-3">
+                <input name="componentName" class="form-control" type="text" required ng-model="buildingComponents.componentName"/>
+            </div>
+            <div class="col-lg-1 col-md-1 col-sm-1">
+                <span style="color: red">*</span>
+            </div>
+
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                组件类型：
+            </div>
+            <div class="col-lg-4 col-md-3 col-sm-3">
+                <input id="componentType" type="hidden" />
+                <select id="areaType" ng-model="componentTypeId" class="form-control"  ng-change="getAreaTypeId();" required>
+                    <option value="">请选择组件类型</option>
+                    <option ng-repeat="a in areatypenews" value="{{a.id}}">{{a.areaTypeName}}</option>
+                </select>
+            </div>
+            <div class="col-lg-1 col-md-1 col-sm-1">
+                <span style="color: red">*</span>
+            </div>
+            <div class="col-lg-5 col-md-5 col-sm-5 text-right">
+
+
+            </div>
+        </div>
+    </div>
+</form>
+<div class="row padding">
+    <div class="col-lg-12">
+        <div class="search-padding-10">
+            <button type="button" class="btn btn-default btn-primary" ng-click="addPropertyRs()" data-toggle="modal" href="#choosePropertyRs">
+                <span class="glyphicon glyphicon-plus btn_icon"></span>追加 </button>
+        </div>
+        <table>
+            <thead>
+            <tr>
+                <th>功能区</th>
+                <th>名称</th>
+                <th>规格</th>
+                <th>数量</th>
+                <th>单位</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="item in componentPropertyLists">
+
+                <td>{{item.functionalName}}
+                </td>
+                <td>{{item.propertyName}}</td>
+                <td>{{item.property.propertySpecification}}</td>
+                <td>{{item.propertyNumber}}</td>
+                <td>{{item.propertyAreaType}}</td>
+                <td>
+                    <button type="button" class="btn btn-default btn-primary" ng-click="updatePropertyRs($index)">修改</button>
+                    <button type="button" class="btn btn-default btn-primary" ng-click="deletePropertyRs($index)">删除</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="text-center">
+            <button type="button" class="btn btn-default btn-primary" data-toggle="modal" ng-disabled="bcForm.$invalid" ng-click="addBuildingComponent();">
+                <span class="glyphicon glyphicon-floppy-disk btn_icon"></span>提交 </button>
+        </div>
+    </div>
+</div>
+<!--<input type="button"  class="authorizationb" value="册除">-->
+<!--右侧结束-->
+<div class="modal fade" id="choosePropertyRs" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true" ng-show="propertyRsEdit" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content" style="width: 700px">
+            <div class="modal-header">
+                组件与资产关系
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+            <div class="modal-body">
+                <div class=" padding">
+                    <table style="table-layout: fixed">
+                        <thead>
+                            <tr>
+                                <th style="width: auto">功能区</th>
+                                <th>资产</th>
+                                <th>数量</th>
+                                <th>单位</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td  valign="top" style="width: 25%; overflow: hidden;text-overflow: ellipsis">
+                                    <input id="functionalId" type="hidden" class="form-control" />
+                                    <input id="functionalName" type="hidden" class="form-control" />
+                                    <select class="form-control" id="functional"  ng-model="FunctionalId" ng-change="selectFunctional()">
+                                        <option value="">请选择功能区</option>
+                                        <option ng-repeat="functional in functionals" value="{{functional.functionalId}}">{{functional.functionalName}}</option>
+                                    </select>
+                                    <span style="color: red">*</span>
+                                </td>
+                                <td>
+                                    <input id="propertyId" type="hidden" class="form-control" />
+                                    <input id="propertyName" type="hidden" class="form-control" />
+
+                                    <div >
+                                        <ul class="list">
+                                            <li class="title" id="menuBtnTwo"   ><input id="citySel" type="text" class="form-control" readonly value=""  onclick="showMenu(); return false;" />
+                                        </ul>
+                                        <div id="menuContent" class="menuContent" style="display:none; ">
+                                            <ul id="treeDemo" class="ztree" ></ul>
+                                        </div>
+                                    </div>
+                                    <span style="color: red">*</span>
+
+                                </td>
+                                <td  valign="top">
+                                    <input id="propertyNumber" class="form-control" type="text"><span style="color: red">*</span>
+                                </td>
+                                <td  valign="top">
+                                    <select class="form-control" id="propertyAreaType"  ng-model="propertyAreaType">
+                                        <option value="">---请选择---</option>
+                                        <option ng-repeat="a in unitList" value="{{a.description}}">{{a.description}}</option>
+                                    </select>
+                                    <span style="color: red">*</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="closeCom()">关闭</button>
+                <button type="button" class="btn btn-primary" ng-click="addComponentProperty()">确认</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!--excel导入-->
+<div class="modal fade" id="importExcel" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 80%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    上传
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div id="excelupload" class="zyupload"></div>
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
+</body>
+</html>

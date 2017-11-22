@@ -1,0 +1,183 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 重点客户申请js
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../app');
+
+    app.controller('importantClientsCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        $scope.changeShowNum(2);
+        $scope.doClick(17);
+        var url = $rootScope.url;
+        $scope.id={};//得到登录人信息
+        $scope.id=JSON.parse(sessionStorage.getItem("person_property")).custId;
+
+        $scope.personVip={};
+        $scope.personEmphasis={};
+        $scope.btnIndex = 1;
+        $http.get(url + '/PersonEmphasis/getPersonEmphasisState/'+$scope.id).success(function(data) {
+            $scope.personEmphasis = data.PersonEmphasis;
+        });
+        $http.get(url + '/PersonVip/getPersonVipState/'+$scope.id).success(function(data) {
+            $scope.personVip = data.PersonVip;
+        });
+
+        //点击切换
+        $scope.doClick=function(index){
+            $scope.btnIndex=index;
+            $scope.personVip={};
+            $scope.personEmphasis={};
+            $http.get(url + '/PersonEmphasis/getPersonEmphasisState/'+$scope.id).success(function(data) {
+                $scope.personEmphasis = data.PersonEmphasis;
+                $http.get(url + '/PersonVip/getPersonVipState/'+$scope.id).success(function(data) {
+                    $scope.personVip = data.PersonVip;
+                    if( $scope.btnIndex ==1){
+                        $location.path("/index/propertyService/staffHome/importantClients/request");
+                        return;
+                    }else if($scope.btnIndex ==2){
+                        if($scope.personVip!=null&&$scope.personEmphasis!=null){
+                            if($scope.personVip.vipEnd>$scope.personEmphasis.applyeddate){
+                                layer.alert('该客户不符合申请条件！',{icon : 0});
+                                $location.path("/index/propertyService/staffHome/importantClients/request");
+                                return;
+                            }else{
+                                $scope.checkPersonEmphasisFailApply($scope.personEmphasis);
+                            }
+                        }else if($scope.personVip==null&&$scope.personEmphasis==null){
+                            layer.alert('该客户不符合申请条件！',{icon : 0});
+                            $location.path("/index/propertyService/staffHome/importantClients");
+                            return;
+                        }else  if($scope.personVip!=null&&$scope.personEmphasis==null){
+                            layer.alert('该客户不符合申请条件！',{icon : 0});
+                            $location.path("/index/propertyService/staffHome/importantClients")
+                            return;
+                        }else if($scope.personVip==null&&$scope.personEmphasis!=null){
+                            $scope.checkPersonEmphasisFailApply($scope.personEmphasis);
+
+                        }
+                    }
+                });
+            });
+        };
+
+        /*$scope.doClick = function(index){
+            $scope.btnIndex = index;
+            if( $scope.btnIndex ==1){
+                if($scope.personVip!=null&&$scope.personEmphasis!=null){
+                    if($scope.personVip.vipEnd>$scope.personEmphasis.applyeddate){
+                        $scope.checkVIP($scope.personVip);
+                    }else{
+                        $scope.checkPersonEmphasis($scope.personEmphasis);
+                    }
+                }else if($scope.personVip==null&&$scope.personEmphasis==null){
+                    $location.path("/index/propertyService/staffHome/importantClients/request");
+                }else  if($scope.personVip!=null&&$scope.personEmphasis==null){
+                    $scope.checkVIP($scope.personVip);
+                }else if($scope.personVip==null&&$scope.personEmphasis!=null){
+                    $scope.checkPersonEmphasis($scope.personEmphasis);
+                }
+            }else if($scope.btnIndex ==2){
+                if($scope.personVip!=null&&$scope.personEmphasis!=null){
+                    if($scope.personVip.vipEnd>$scope.personEmphasis.applyeddate){
+                        layer.alert('该客户不符合申请条件！',{icon : 0});
+                        $location.path("/index/propertyService/staffHome/importantClients/request");
+                        return;
+                    }else{
+                        $scope.checkPersonEmphasisFailApply($scope.personVip);
+                    }
+                }else if($scope.personVip==null&&$scope.personEmphasis==null){
+                    layer.alert('该客户不符合申请条件！',{icon : 0});
+                    $location.path("/index/propertyService/staffHome/importantClients");
+                }else  if($scope.personVip!=null&&$scope.personEmphasis==null){
+                    layer.alert('该客户不符合申请条件！',{icon : 0});
+                    $location.path("/index/propertyService/staffHome/importantClients");
+                }else if($scope.personVip==null&&$scope.personEmphasis!=null){
+                    $scope.checkPersonEmphasisFailApply($scope.personVip);
+                }
+            }
+
+        };*/
+
+       /* $scope.checkVIP=function(personVip){
+            if(personVip.applystype==0){
+                if(personVip.reviewState==0){
+                    layer.alert('该客户不符合申请条件！',{icon : 0});
+                    $location.path("/index/propertyService/staffHome/importantClients");
+                    return;
+                }else if(personVip.reviewState==1){
+                    layer.alert('该客户已经是VIP客户！',{icon : 0});
+                    $location.path("/index/propertyService/staffHome/importantClients");
+                    return;
+                }else if(personVip.reviewState==2){
+                    $location.path("/index/propertyService/staffHome/importantClients/request");
+                }
+            }else if(personVip.applystype==1){
+                if(personVip.reviewState==0){
+                    layer.alert('该客户不符合申请条件！',{icon : 0});
+                    $location.path("/index/propertyService/staffHome/importantClients");
+                    return;
+                }else if(personVip.reviewState==1){
+                    $location.path("/index/propertyService/staffHome/importantClients/request");
+                }else if(personVip.reviewState==2){
+                    layer.alert('该客户已经是VIP客户！',{icon : 0});
+                    $location.path("/index/propertyService/staffHome/importantClients");
+                    return;
+                }
+            }
+        }
+        $scope.checkPersonEmphasis=function(personEmphasis){
+            if(personEmphasis.applystype==2){
+                if(personEmphasis.applystatus==0){
+                    layer.alert('该客户已提交重点客户申请！',{icon : 0});
+                    $location.path("/index/propertyService/staffHome/importantClients");
+                    return;
+                }else if(personEmphasis.applystatus==1){
+                    layer.alert('该客户已经是重点客户！',{icon : 0});
+                    $location.path("/index/propertyService/staffHome/importantClients");
+                    return;
+                }else if(personEmphasis.applystatus==2){
+                    $location.path("/index/propertyService/staffHome/importantClients/request");
+                }
+            }else if(personEmphasis.applystype==3){
+                if(personEmphasis.applystatus!=2){
+                    layer.alert('该客户不符合申请条件！',{icon : 0});
+                    $location.path("/index/propertyService/staffHome/importantClients");
+                    return;
+                }else{
+                    layer.alert('该客户已经是重点客户！',{icon : 0});
+                    $location.path("/index/propertyService/staffHome/importantClients");
+                    return;
+                }
+            }
+        }*/
+
+        $scope.checkPersonEmphasisFailApply=function(personEmphasis){
+            if(personEmphasis.applystype==2){
+                if(personEmphasis.applystatus!=1){
+                    layer.alert('该客户不符合申请条件！',{icon : 0});
+                    $location.path("/index/propertyService/staffHome/importantClients");
+                    return;
+                }else{
+                    $location.path("/index/propertyService/staffHome/importantClients/failRequest");
+                }
+            }else if(personEmphasis.applystype==3){
+                if(personEmphasis.applystatus==0){
+                    layer.alert('该客户已提交申请！',{icon : 0});
+                    $location.path("/index/propertyService/staffHome/importantClients");
+                    return;
+                }else if(personEmphasis.applystatus==1){
+                    layer.alert('该客户不符合申请条件！',{icon : 0});
+                    $location.path("/index/propertyService/staffHome/importantClients");
+                    return;
+                }else if(personEmphasis.applystatus==2){
+                    $location.path("/index/propertyService/staffHome/importantClients/failRequest");
+                }
+            }
+        }
+
+    }]);
+});

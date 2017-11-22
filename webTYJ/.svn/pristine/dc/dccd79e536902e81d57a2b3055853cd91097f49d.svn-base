@@ -1,0 +1,189 @@
+<!--
+    撰写人：朱伟
+    创建日期：2015/7/2
+    页面名称：建筑组件绑定
+-->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>建筑组件绑定</title>
+    <link rel="stylesheet" href="css/ztree/ztreedf.css" type="text/css">
+    <link rel="stylesheet" href="css/ztree/zTreeStyle.css" type="text/css">
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.core-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.excheck-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.exedit-3.5.js"></script>
+    <script type="text/javascript">
+        <!--
+        var setting = {
+            check:{
+                enable:true
+            },
+            view: {
+                selectedMulti: false
+            },
+            edit: {
+                enable: false,
+                editNameSelectAll: false
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            },
+            callback: {
+                onCheck:zTreeBuildingBindingCheck
+            }
+        };
+
+        function selectAll() {
+            var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+            zTree.setting.edit.editNameSelectAll =  $("#selectAll").attr("checked");
+        }
+
+        $(document).ready(function(){
+            $("#selectAll").bind("click", selectAll);
+        });
+
+        //-->
+    </script>
+</head>
+<body>
+
+<div id="content-first">
+
+    <div id="tab"><!-- 修改tab页样式  王洲  2016.1.8 -->
+        <a  lang="no" href="" class="this_action">组件绑定</a>
+    </div>
+    <!--右侧内容-->
+    <div class="row">
+
+        <div class="col-lg-3 col-md-6 col-sm-12">
+            <div class="list-one">
+                <h3>组件列表</h3>
+                <ul><!-- 合并传值与样式方法  王洲  2016.1.8 -->
+                    <li ng-class="{'this_info':btnIndex==c}" ng-click="selectBcDetails(c)" ng-repeat="c in buildingComponentss | orderBy: 'componentNum'">
+                        <p style="cursor: default">{{c.componentName}}</p><!-- 修改鼠标样式  王洲  2016.1.8 -->
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-lg-6 col-md-6 col-sm-12">
+            <div class="row padding">
+                <div class="col-lg-4 col-md-4 col-sm-4">
+                    组件编号：<input ng-model="buildingComponent.componentNum" type="hidden">{{ buildingComponent.componentNum }}
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4">
+                    组件名称：<input ng-model="buildingComponent.componentName" type="hidden">{{ buildingComponent.componentName }}
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4">
+                    组件类型：<input ng-model="buildingComponent.areaTypeName" type="hidden">{{ buildingComponent.areaTypeName }}
+                </div>
+            </div>
+
+            <div class="table-height">
+                <div class="professional_initialize">
+                    <ul>
+                        <li class="professional_width_20">编号</li>
+                        <li class="professional_width_20">名称</li>
+                        <li class="professional_width_20">规格</li>
+                        <li class="professional_width_20">数量</li>
+                        <li class="professional_width_20">面积</li>
+                        <div class="clear"></div>
+                    </ul>
+                </div>
+                <div class="professional_initialize_height" ng-repeat="item in componentpropertys">
+                    <ul>
+                        <li class="professional_width_20_left"><b>{{item.functionals.functionalNo}}</b></li>
+                        <li class="professional_width_20_left"><b>{{item.functionals.functionalName}}</b></li>
+                        <li class="professional_width_20"></li>
+                        <li class="professional_width_20"></li>
+                        <li class="professional_width_20"></li>
+                        <div class="clear"></div>
+                    </ul>
+                    <!--</div>
+                    <div class="professional_initialize_height">-->
+                    <ul ng-show="item1.propertyTypeId!= null" ng-repeat="item1 in item.propertytype">
+                        <li class="professional_width_20_left"><span>&nbsp;{{item1.propertyTypeNumber}}</span></li>
+                        <li class="professional_width_20_left"><span>&nbsp;{{item1.propertyTypeName}}</span></li>
+                        <li class="professional_width_20"></li>
+                        <li class="professional_width_20"></li>
+                        <li class="professional_width_20"></li>
+                        <div class="clear"></div>
+
+                        <div class="professional_initialize_height" ng-repeat="iteme2 in item1.propertyTypes" ng-show="iteme2.propertyTypeId!= null">
+                            <ul>
+                                <li class="professional_width_20"><span>{{iteme2.propertyTypeNumber}}</span></li>
+                                <li class="professional_width_20"><span>{{iteme2.propertyTypeName}}</span></li>
+                                <li class="professional_width_20"></li>
+                                <li class="professional_width_20"></li>
+                                <li class="professional_width_20"></li>
+                                <div class="clear"></div>
+                            </ul>
+                            <div class="professional_initialize_height">
+                                <ul ng-repeat="itemses in iteme2.propertys" ng-show="itemses.propertyId!= null">
+                                    <li class="professional_width_20_right"><span>{{itemses.propertyNumber}}</span></li>
+                                    <li class="professional_width_20_right"><span>{{itemses.propertyName}}</span></li>
+                                    <li class="professional_width_20_right"><span>{{itemses.propertySpecification}}</span></li>
+                                    <li class="professional_width_20_right"><span>{{itemses.num}}</span></li>
+                                    <li class="professional_width_20_right"><span>{{itemses.area}}</span></li>
+                                    <div class="clear"></div>
+                                </ul>
+                            </div>
+                        </div>
+                    </ul>
+                </div>
+                <!--            <table>
+                                <thead>
+                                <tr>
+                                    <th>功能区</th>
+                                    <th>名称</td>
+                                    <th>规格</th>
+                                    <th>数量</th>
+                                    <th>面积</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="item in componentpropertys" >
+                                    <td>{{item.functionalName}}</td>
+                                    <td>{{item.property.propertyName}}</td>
+                                    <td>{{item.property.propertySpecification}}</td>
+                                    <td>{{item.propertyNumber}}</td>
+                                    <td>{{item.propertyArea}}</td>
+                                </tr>
+                                </tbody>
+                            </table>-->
+            </div>
+
+            <div class="text-center">
+                <button type="button" class="btn btn-default btn-primary" data-dismiss="modal" ng-click="buildingBindMethod();">绑定 </button>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-12 col-sm-12">
+            <div class="padding">
+                <div class="component_select">
+                    <div class="component_select_title">
+                        <span>选择项目：</span>
+                        <select id="projects" class="form-control" ng-model="projectId"  ng-change="selectBuildingStructure();">
+                            <option value="">请选择项目</option>
+                            <option ng-repeat="bp in buildingProjects" value="{{bp.projectId}}">{{bp.projectName}}</option>
+                        </select>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="component_select_height">
+                        <input type="hidden" id="buildingbindingId">
+                        <ul id="treeBC"  class="ztree"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!--右侧内容结束-->
+
+</div>
+
+</body>
+</html>

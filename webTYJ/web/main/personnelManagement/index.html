@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>人事管理</title>
+</head>
+<body>
+<div id="content-first">
+    <div class="col-lg-12">
+        <div class="user_navtion">
+            <a class="first" ng-class="{'shownum':shownum==true}" ng-click="change(0)"><span class="glyphicon glyphicon-chevron-left"></span></a>
+            <div ng-show="shownum == true">
+                <a style="cursor: pointer" ng-class="{'this_action':btnIndex==0}" ng-click="checkPer(0)">员工</a>
+                <!-- <a style="cursor: pointer" ng-class="{'this_action':btnIndex==1}" ng-click="checkPer(1)">员工</a> -->
+                <a style="cursor: pointer" ng-class="{'this_action':btnIndex==2}" ng-click="checkPer(2)">核心岗位任命</a>
+
+<!--                <a style="cursor: pointer" ng-class="{'this_action':btnIndex==3}" ng-click="checkPer(3)">人员管理设置</a>
+                <a style="cursor: pointer" ng-class="{'this_action':btnIndex==4}" ng-click="checkPer(4)">项目团队管理</a>&lt;!&ndash;Bug713 修改人：陈浪 2016年2月23号&ndash;&gt;
+                <a style="cursor: pointer" ng-class="{'this_action':btnIndex==5}" ng-click="checkPer(5)">岗位员工设置</a>-->
+
+                <a style="cursor: pointer" ng-class="{'this_action':btnIndex==3}" ng-click="checkPer(3)">项目管理权限配置</a>
+                <a style="cursor: pointer" ng-class="{'this_action':btnIndex==4}" ng-click="checkPer(4)">项目团队配置</a><!--Bug713 修改人：陈浪 2016年2月23号-->
+                <!-- <a style="cursor: pointer" ng-class="{'this_action':btnIndex==5}" ng-click="checkPer(5)">岗位员工设置</a> -->
+
+                <!--<a ui-sref="index.personnelManagement.myTeamProfession" ng-class="{'this_action':btnIndex==6}" ng-click="doClick(6)">我的团队(专业)</a>
+                <a ui-sref="index.personnelManagement.myTeamProjectManager" ng-class="{'this_action':btnIndex==7}" ng-click="doClick(7)">我的团队(项目经理)</a>-->
+                <a style="cursor: pointer" ng-class="{'this_action':btnIndex==8}" ng-click="checkPer(8)">我的团队</a>
+            </div>
+            <div ng-show="shownum == false">
+
+            </div>
+            <a class="last" ng-class="{'shownum':shownum==true}" ng-click="change(1)"><span class="glyphicon glyphicon-chevron-right"></span></a>
+        </div>
+        <div class="clear"></div>
+        <!--视图加载-->
+        <div ui-view></div>
+        <!--视图加载开始-->
+    </div>
+</div>
+</body>
+</html>

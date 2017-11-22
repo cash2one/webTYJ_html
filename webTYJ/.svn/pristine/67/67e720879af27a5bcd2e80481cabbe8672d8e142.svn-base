@@ -1,0 +1,118 @@
+<!--
+    创建人：彭婷婷
+    创建时间：2015-10-10
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>收款台</title>
+  <!--  <script>
+        setInterval("linkweb.innerHTML=new Date().toLocaleString()+''.charAt(new Date().getDay());",1000);
+    </script>-->
+</head>
+<body>
+<div class="sel">
+    <div class="row search-padding-10">
+        <div class="col-lg-4 col-md-6 col-sm-6 text-center">
+            收款单号：{{timestamp}}
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-6 text-center">
+            收银员：{{financial.financialStaffName}}
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-6 text-center" id="linkweb">
+
+        </div>
+    </div>
+</div>
+<div class="row padding">
+<div class="col-lg-12">
+    <div  class="search-padding-10">
+        <button type="button" class="btn btn-default btn-primary" ng-click="toDelete($index);">
+            <span class="glyphicon  glyphicon-remove btn_icon"></span>删除
+        </button>
+    </div>
+
+    <table id="tblMain">
+        <thead>
+        <tr>
+            <th></th>
+            <th>交易单号</th>
+            <th>收费项目</th>
+            <th>单价</th>
+            <th>数量</th>
+            <th>折扣</th>
+            <th>金额</th>
+        </tr>
+        </thead>
+        <tbody>
+         <tr ng-repeat="itemd in data1.list">
+             <td><input type="checkbox" name="chk"></td>
+             <td>{{itemd.billNum}}</td>
+             <td>{{itemd.chargeItemName}}</td>
+             <td>{{itemd.noCollectSum|number:2}}</td>
+             <td>1</td>
+             <td>1</td>
+             <td>{{itemd.noCollectSum*1|number:2}}</td>
+         </tr>
+        <tr>
+            <td colspan="7">合计：{{totals|number:2}}</td>
+        </tr>
+
+        </tbody>
+    </table>
+
+    <div>
+        <button type="button" class="btn btn-default btn-primary" ng-click="count()">
+            结算
+        </button>
+    </div>
+
+    <!--交账模态框-->
+    <div class="modal fade" id="showAccount" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-lg-12 col-md-12 col-sm-12 com-xs-12">
+                        <table>
+                            <tbody>
+                            <tr>
+                                <td>现金</td>
+                                <td><input type="text" id="money" placeholder="请输入现金金额" ng-model="paymentDetails.cashSum"></td>
+                            </tr>
+                            <tr>
+                                <td>刷卡</td>
+                                <td><input type="text" id="credit" placeholder="请输入刷卡金额" ng-model="paymentDetails.creditCardSum"></td>
+                            </tr>
+                            <tr>
+                                <td>预付款</td>
+                                <td><input type="text" id="transaction" placeholder="请输入预付款金额" ng-model="advancePaymentsDetails.transactionAmount "></td>
+                            </tr>
+                            <tr>
+                                <td>微信</td>
+                                <td><input type="text" id="wechat" placeholder="请输入微信金额" ng-model="paymentDetails.wechatSum"></td>
+                            </tr>
+                            <tr ng-show="show1">
+                                <td>授权码</td>
+                                <td><input type="text" placeholder="请用扫描枪扫描条形码"/>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" ng-click="insertAccount()">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</div>
+</body>
+</html>

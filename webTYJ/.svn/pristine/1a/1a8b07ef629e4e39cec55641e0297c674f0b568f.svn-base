@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>添加APP用户</title>
+</head>
+<body>
+<div id="content-first">
+    <!--tab页切换开始-->
+    <div id="tab">
+        <a ui-sref="index.personnelManagement.appPersonManagement.appUserCheck" ng-class="{'this_action':secondViewIndex==1}" ng-click="doChange(1)">查询信息</a>
+        <a ui-sref="index.personnelManagement.appPersonManagement.appUserAdd" ng-class="{'this_action':secondViewIndex==2}" ng-click="doChange(2)">添加员工</a>
+        <a ui-sref="index.personnelManagement.appPersonManagement.appWorkingStaff" ng-class="{'this_action':secondViewIndex==3}" ng-click="doChange(3)">在职员工</a>
+        <a ui-sref="index.personnelManagement.appPersonManagement.appStaffEmployed" ng-class="{'this_action':secondViewIndex==4}" ng-click="doChange(4)">员工入职</a>
+        <a lang="no" ui-sref="index.personnelManagement.appPersonManagement.appOffStaff" ng-class="{'this_action':secondViewIndex==5}" ng-click="doChange(5)">离职员工</a>
+        <!--<a lang="no" style="cursor: pointer" ng-class="{'this_action':btnIndex==1}"> &lt;!&ndash;ng-click="doClick(1) ui-sref="index.personnelManagement.staffsuperviseIT.staffsuperviseITAdd""&ndash;&gt;新建员工</a>
+        -->
+    </div>
+    <!--tab页切换结束-->
+    <!--视图加载-->
+    <div ui-view></div>
+
+    <!--视图加载开始-->
+</div>
+</body>
+</html>

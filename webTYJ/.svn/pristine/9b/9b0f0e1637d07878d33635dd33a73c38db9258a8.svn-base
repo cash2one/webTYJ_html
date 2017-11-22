@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div class="sel">
+    <div class="row">
+        <div class="col-lg-6 col-md-12 col-sm-12">
+            <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="getAllId()" ng-show="grid == true">
+                <span class="glyphicon glyphicon-check btn_icon"></span>
+                全选
+            </button>
+            <button type="button" class="btn btn-default btn-primary" ng-click="updateFaqs(-1)" ng-show="grid == true">
+                <span class="glyphicon glyphicon-edit btn_icon"></span>
+                修改
+            </button>
+            <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="loseFaqs(-1)" ng-show="grid == true">
+                <span class="glyphicon glyphicon-ban-circle btn_icon"></span>
+                失效
+            </button>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2">
+
+        </div>
+        <div class="col-lg-2 col-md-4 col-sm-4">
+            <input class="form-control" type="text" ng-model="Faqs.condition" placeholder="输入关键字搜索" />
+        </div>
+        <div class="col-lg-1 col-md-6 col-sm-6 text-right">
+            <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="searchFaq._load();">
+                <span class="glyphicon glyphicon-search btn_icon"></span>
+                搜索
+            </button>
+        </div>
+        <div class="col-lg-2 col-md-6 col-sm-6 text-right">
+            <button type="button" class="btn btn-default btn-primary" ng-click="showGrid(1)" >
+                <span class="glyphicon glyphicon-th-large btn_icon"></span>
+                网格
+            </button>
+            <button type="button" class="btn btn-default btn-primary" ng-click="showGrid(2)">
+                <span class="glyphicon glyphicon-th-list btn_icon"></span>
+                列表
+            </button>
+        </div>
+    </div>
+</div>
+<div class="row padding">
+    <div class="col-lg-12">
+        <div class="search-padding-10">
+            <div class="info_lista" ng-repeat="faq in searchFaq.object.faqnew" ng-show="faq.faqQuestionId != null" ng-class="{'this_info ':choiceCss(faq.faqQuestionId)}">
+                <table class="table_lists"  ng-show="grid == false">
+                    <tbody class="lists_left">
+                    <tr>
+                        <td width="5%" rowspan="2"><input type="checkbox" id="{{faq.faqQuestionId}}" name="faqquestionid" ng-click="getFaqId(faq.faqQuestionId)"></td>
+                        <td width="25%">客户：{{faq.personCustNew.name}}</td>
+                        <td width="25%"></td>
+                        <td width="20%">联系电话：{{faq.personCustNew.phoneNum}}</td>
+                        <td width="20%">创建时间：{{faq.creTime | date : 'yyyy-MM-dd'}}</td>
+                        <td width="5%">
+                            <div class="downList_table">
+                                <a class="glyphicon glyphicon-chevron-down"id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></a>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                    <li><a ng-click="editFaq(faq)">编辑</a></li>
+                                    <li><a ng-click="failFaqAlone(faq.faqQuestionId)">失效</a></li>
+                                    <li><a href="#">回拨</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="5">问：{{faq.faqQuestionName}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-lg-12" ng-show="searchFaq.object.faqnew.length == null && grid == false">
+                <span class="col-lg-6 col-md-4 col-sm-4 text-right" >暂无数据！</span>
+            </div>
+            <!-- 增加网格的显示与隐藏 zhuqi 2016.03.14 -->
+            <div class="col-lg-12" ng-show="grid == true">
+                <div class="col-lg-4 col-md-4 col-sm-4 " ng-repeat="faq in searchFaq.object.faqnew" ng-show="faq.crePersonId != null">
+                    <div id="pannel">
+                        <div class="title">
+                            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">FAQ</div>
+                            <div class="downList">
+                                <div class="col-xs-12 col-lg-12 col-md-12 col-sm-12 text-right">
+                                    <span class="glyphicon glyphicon-chevron-down" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ></span>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                        <li><a data-toggle="modal" ng-click="updateFaqs(faq.faqQuestionId)">编辑</a></li>
+                                        <li><a data-toggle="modal" ng-click="loseFaqs(faq.faqQuestionId)">失效</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pannel_content">
+                            <div class="col-lg-12">
+                                <div class="col-lg-3 col-md-6 col-sm-6 text-right">序号：</div>
+                                <div class="col-lg-9 col-md-6 col-sm-6">{{$index}}</div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="col-lg-3 col-md-6 col-sm-6 text-right">问：</div>
+                                <div class="col-lg-9 col-md-6 col-sm-6">{{faq.faqQuestionName}}</div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="col-lg-3 col-md-6 col-sm-6 text-right">答：</div>
+                                <div class="col-lg-9 col-md-6 col-sm-6">{{faq.faqQuestionAnswer}}</div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="col-lg-3 col-md-6 col-sm-6 text-right">创建人：</div>
+                                <div class="col-lg-9 col-md-6 col-sm-6">{{faq.staff.staffName}}</div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="col-lg-3 col-md-6 col-sm-6 text-right">创建时间：</div>
+                                <div class="col-lg-9 col-md-6 col-sm-6">{{faq.creTime | date : 'yyyy-MM-dd'}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-6" ng-show="searchFaq.object.faqnew.length == null && grid == true">
+                <div id="pannel">
+                    <div class="title">
+                        <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                            <h3>FAQ</h3>
+                        </div>
+                        <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                            <span class="glyphicon glyphicon-search"></span>
+                        </div>
+                    </div>
+                    <div class="pannel_content">
+                        <div class="row">
+                            <div class="col-xs-8 col-lg-8 col-md-8">
+                                <div class="row search-padding 10">
+                                    暂无数据！
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12 col-md-12 col-sm-12">
+        <div class="padding">
+            <div class="bill_paging">
+                <ul class="pagination">
+                    <li ng-class="{true:'disabled'}[searchFaq.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-click="searchFaq.go(1)">首页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchFaq.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-show="searchFaq.hasPrevious()" ng-click="searchFaq.previous()">上一页</a>
+                    </li>
+                    <li ng-class="{true:'active'}[searchFaq.page.currentPage==i]" ng-repeat="i in searchFaq.pages">
+                        <a href="javascript:void(0)"  ng-click="searchFaq.go(i)">{{i}}</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchFaq.page.currentPage==searchFaq.page.totalPage]">
+                        <a href="javascript:void(0)" ng-show="searchFaq.hasNext()" ng-click="searchFaq.next()">下一页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchFaq.page.currentPage==searchFaq.page.totalPage]">
+                        <a href="javascript:void(0)" ng-click="searchFaq.go(searchFaq.page.totalPage)">尾页</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+<!--右侧正文内容 END-->
+
+<!--新建信息模态框-->
+<div class="modal fade" id="new" role="dialog" aria-label="personDatil" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span ng-if="faqs.faqQuestionId == null">新增</span>
+                <span ng-if="faqs.faqQuestionId != null">修改</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="padding15">
+                    <form id="css_form" name="mainForm" novalidate>
+                        <div class="sel1">
+                            <div class="row search-padding-10">
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">问题名称</div>
+                                <div class="col-lg-9 col-md-9 col-sm-9"><input type="text" class="form-control" ng-model="faqs.faqQuestionName" name="faqname" required>
+                                </div>
+                                <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <span style="color: red">*</span>
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">问题类型</div>
+                                <div class="col-lg-9 col-md-9 col-sm-9"><select name="typeid" id="faqtypeid" class="form-control" ng-model="faqs.faqTypeId" ng-options="o.faqTypeId as o.faqTypeName for o in FaqTypesList"></select>
+                                </div>
+                                <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <span style="color: red">*</span>
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">问题回答</div>
+                                <div class="col-lg-9 col-md-9 col-sm-9"><textarea name="answer" class="text_min" ng-model="faqs.faqQuestionAnswer" required></textarea>
+                                </div>
+                                <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <span style="color: red">*</span>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" ng-click="closeFaq()">取消</button>
+                <button type="button" class="btn bg-primary" ng-click="insertFaqs()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--新建信息模态框 END-->
+</body>
+</html>

@@ -1,0 +1,403 @@
+<!--
+    pageName:【车辆登记记录】物业服务人员主页中车辆管理
+    Author:钟加诚
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>新增车辆</title>
+     <script>
+/*           function click_a(divDisplay)
+         {
+             if(document.getElementById(divDisplay).style.display != "block")
+             {
+                 document.getElementById(divDisplay).style.display = "block";
+             }
+             else
+             {
+                 document.getElementById(divDisplay).style.display = "none";
+             }
+         }*/
+             function kp() {
+                 if (event.keyCode == 8) return true
+                 if (event.keyCode >= 96 && event.keyCode <= 105) return true
+                 if (event.keyCode <= 47 || event.keyCode >= 65) {
+                     event.returnValue = false;
+
+                 }
+             }
+     </script>
+    <script type="text/javascript">
+
+        $(document).ready(function(){
+            $("#each").click(
+                    function() {
+                        $(this).css("background","#FF0000").siblings().css("background","#ffffff");
+                    });
+
+        });
+    </script>
+</head>
+<link rel="stylesheet" href="bower_components/skins/zyupload-1.0.0.min.css " type="text/css">
+<body>
+<div class="sel">
+    <button type="button" class="btn btn-default btn-primary" ui-sref="index.propertyService.staffHome.vehicleManagement.vehicleManagementCheck">
+        <span class="glyphicon glyphicon-chevron-left btn_icon"></span>
+        返回
+    </button>
+</div>
+<div class="padding">
+    <div id="myTabContent">
+        <div id="divOne_2" class="tab-pane fade in active">
+            <form id="css_form" name="mainForm" novalidate>
+                <div class="sel1">
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    房屋地址：
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-4 ">
+                    <input type="text" class="form-control" ng-model="houseone.fullName" disabled="disabled" />
+                </div>
+                <div class="col-lg-9 col-md-6 col-sm-6 blankSpace">
+                  <span style="color: red">*</span>
+                    <span>    <button type="button" class="btn btn-default btn-primary"  ng-click="openHouse()">
+                        选择关联房屋
+                    </button></span>
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    所有人：
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-4">
+                    <select class="form-control"  ng-model="selectPerson" ng-options="p.name for p in personCustNewList">
+                        <option value="">--请选择车辆所有人--</option>
+                    </select>
+                </div>
+                <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                    <span style="color: red">*</span>
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    车牌号码：
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-4">
+                    <input type="text" class="form-control"  name="cardnum1" maxlength="15"  ng-model="addCarInfo.carNum" required/>
+                          <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.cardnum1.$dirty && mainForm.cardnum1.$invalid">
+                <p class="alter" ng-show="mainForm.cardnum1.$error.required">
+                    不能为空
+                </p>
+                <p class="alter" ng-show="mainForm.cardnum1.defined ">
+                    正确
+                </p>
+            </span>
+                </div>
+                <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                    <span style="color: red">*</span>
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    行驶证号：
+                </div>
+                    <div class="col-lg-2 col-md-4 col-sm-4">
+                        <input type="text" class="form-control"  name="cardnum8" maxlength="24"  onkeyup="value=value.replace(/[\W]/g,'') "onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[\W]/g,''))" ng-model="addCarInfo.drivingLicense" required/>
+                <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.cardnum8.$dirty && mainForm.cardnum8.$invalid">
+                <p class="alter" ng-show="mainForm.cardnum8.$error.required">
+                    不能为空
+                </p>
+                <p class="alter" ng-show="mainForm.cardnum8.defined ">
+                    正确
+                </p>
+                    </span>
+                    </div>
+                <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                    <span style="color: red">*</span>
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    车辆类型：
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-4">
+                    <select type="text" class="form-control"  name="cardnum2" ng-model="addCarInfo.carType" required>
+                        <option value="">请选择</option>
+                        <option>微型车</option>
+                        <option>两厢车</option>
+                        <option>三厢车</option>
+                        <option>SUV</option>
+                        <option>MPV</option>
+                        <option>皮卡</option>
+                        <option>跑车</option>
+                        <option>新能源车</option>
+                        <option>大型车</option>
+                        <option>面包车</option>
+
+                    </select>
+
+                          <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.cardnum2.$dirty && mainForm.cardnum2.$invalid">
+                <p class="alter" ng-show="mainForm.cardnum2.$error.required">
+                    不能为空
+                </p>
+                <p class="alter" ng-show="mainForm.cardnum2.defined ">
+                    正确
+                </p>
+            </span>
+                </div>
+                <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                    <span style="color: red">*</span>
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    车辆品牌：
+                </div>
+                    <div class="col-lg-2 col-md-4 col-sm-4 ">
+                        <select class="form-control"  name="cardnum3" ng-model="addCarInfo.carBrand" required>
+                            <option value="">请选择</option>
+                            <option>大众</option>
+                            <option>奥迪</option>
+                            <option>别克</option>
+                            <option>宝马</option>
+                            <option>奔驰</option>
+                            <option>本田</option>
+                            <option>丰田</option>
+                            <option>现代</option>
+                            <option>长安</option>
+                            <option>福特</option>
+                            <option>起亚</option>
+                            <option>比亚迪</option>
+                            <option>雪佛兰</option>
+                            <option>雪铁龙</option>
+                            <option>东风</option>
+                            <option>标志</option>
+                            <option>Jeep</option>
+                            <option>马自达</option>
+                            <option>中华</option>
+                            <option>吉利</option>
+                            <option>保时捷</option>
+                            <option>法拉利</option>
+                            <option>路虎</option>
+                            <option>兰博基尼</option>
+                            <option>玛莎拉蒂</option>
+                            <option>莲花</option>
+                            <option>其它</option>
+                        </select>
+                          <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.cardnum3.$dirty && mainForm.cardnum3.$invalid">
+                <p class="alter" ng-show="mainForm.cardnum3.$error.required">
+                    不能为空
+                </p>
+                <p class="alter" ng-show="mainForm.cardnum3.defined ">
+                    正确
+                </p>
+
+            </span>
+
+                </div>
+
+                <div class="col-lg-2 col-md-2 col-sm-2  text-right">
+                    行驶证发证日期：
+                </div>
+                    <div class="col-lg-2 col-md-3 col-sm-3 ">
+                        <input type="date" class="form-control" name="certificationDate" ng-model="addCarInfo.certificationDate"/>
+                </div>
+                <div class="col-lg-1 col-md-6 col-sm-6 blankSpace ">
+                    <span style="color: red">*</span>
+                </div>
+                    <div class="col-lg-1 col-md-1 col-sm-1  text-right">
+                        车辆颜色：
+                    </div>
+                    <!--禅道BUG 204 -->
+                    <!--修改人：陶勇超-->
+                    <!--2016年1月6日 17:45:33-->
+                    <div class="col-lg-2 col-md-4 col-sm-4 ">
+                        <input type="text" class="form-control"  name="cardnum"  maxlength="6" ng-model="addCarInfo.carColor" required/>
+                     <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.cardnum.$dirty && mainForm.cardnum.$invalid">
+                <p class="alter" ng-show="mainForm.cardnum.$error.required">
+                    不能为空
+                </p>
+                <p class="alter" ng-show="mainForm.cardnum.defined ">
+                    正确
+                </p>
+            </span>
+                    </div>
+                    <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                        <span style="color: red">*</span>
+                    </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    发动机号：
+                </div>
+                    <div class="col-lg-2 col-md-4 col-sm-4">
+                        <input type="text" class="form-control" name="cardnum6" maxlength="24" onkeyup="value=value.replace(/[\W]/g,'') "onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[\W]/g,''))"  ng-model="addCarInfo.engineNum" required/>
+                </div>
+
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    车辆登记日期：
+                </div>
+                <div class="col-lg-2 col-md-3 col-sm-3">
+                    <input type="date" class="form-control" name="regeditDate" ng-model="addCarInfo.regeditDate"/>
+                </div>
+                <div class="col-lg-1 col-md-1 col-sm-1 blankSpace">
+                    <span style="color: red">*</span>
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    车辆型号：
+                </div>
+                    <div class="col-lg-2 col-md-4 col-sm-4">
+                        <input type="text" class="form-control"  name="cardnum4" maxlength="16" ng-model="addCarInfo.carStyle" required/>
+                          <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.cardnum4.$dirty && mainForm.cardnum4.$invalid">
+                <p class="alter" ng-show="mainForm.cardnum4.$error.required">
+                    不能为空
+                </p>
+                <p class="alter" ng-show="mainForm.cardnum4.defined ">
+                    正确
+                </p>
+            </span>
+
+                </div>
+                <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                    <span style="color: red">*</span>
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    核定载客：
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-4">
+                    <input type="text" class="form-control"  name="cardnum7" maxlength="2" ng-model="addCarInfo.passengers"   onkeydown="kp()" required/>
+                </div>
+
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    车辆识别代号：
+                </div>
+                    <div class="col-lg-2 col-md-4 col-sm-4">
+                        <input type="text" class="form-control"  name="cardnum5" maxlength="24"  onkeyup="value=value.replace(/[\W]/g,'') "onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[\W]/g,''))" ng-model="addCarInfo.discriminateCode" required/>
+                    </div>
+
+                    <div class="col-lg-1 col-md-2 col-sm-2">
+
+                    </div>
+                    </div>
+                <!--    <div class="col-lg-1 col-md-2 col-sm-2 search-padding-10 text-right">
+                        登记人
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4 search-padding-10">
+                        <input type="text" class="form-control" ng-model="name"/>
+                    </div>-->
+                <div class="clear"></div>
+                <div class="row search-padding-10">
+                    <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                        关联精拍仪：
+                    </div>
+                <div class="col-lg-2 col-md-2 col-sm-2 ">&nbsp;&nbsp;
+                    <button type="button" class="btn btn-default btn-primary" >精拍仪 </button>
+                </div>
+                    </div>
+                <div class="row search-padding-10">
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    上传附件：
+                </div>
+                <div class="col-lg-10 col-md-10 col-sm-10">
+                    <div id="zyupload" class="zyupload" style="overflow: auto;"></div>
+                </div>
+
+                <div class="clear"></div>
+
+                <div class="text-center">
+                    <button type="button" class="btn btn-default btn-primary" ng-click="resetAddCar()">取消</button>
+                    <button type="button" class="btn btn-default btn-primary" >打印 </button>
+                    <button type="button" id="btnSubmit" class="btn btn-default btn-primary" ng-click="insertCar();">提交</button>
+                </div>
+                    </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="file" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 70%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>关联房屋</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row padding">
+                    <div class="rh" ng-class="{'this_info':btnIndex==house.houseNew}"  ng-click="choiceHouse(house.houseNew)" ng-repeat="house in buildingStructure" ng-show="house.houseNew!=null">
+                          <div id="each">
+                        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                            <a href="#">
+                                <img src="images/project/bud/b_01.png" width="80px;" height="50px">
+                            </a>
+                        </div>
+                              <div class="row">
+                                  <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                      业主姓名：
+                                  </div>
+                                  <div class="col-lg-1 col-md-2 col-sm-2" ng-show="house.personCustNew.name!=null">
+                         {{house.personCustNew.name}}
+                                  </div>
+                                  <div class="col-lg-1 col-md-2 col-sm-2" ng-show="house.personCustNew.name==null">
+                                      <b>暂无数据</b>
+                                  </div>
+               <!--         <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            销售状态：
+                        </div>
+                        <div class="col-lg-1 col-md-2 col-sm-2" ng-show="house.houseNew.marketState!=null">
+                            <span ng-switch on="house.houseNew.marketState">
+                                <span ng-switch-when="0">未售</span>
+                                <span ng-switch-when="1">已售</span>
+                            </span>
+                          </div>
+                        <div class="col-lg-1 col-md-2 col-sm-2" ng-show="house.houseNew.marketState==null">
+                              <b>暂无数据</b>
+                          </div>-->
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            入伙状态：
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2" ng-show="house.houseNew.joinState!=null">
+                           <span ng-switch on="house.houseNew.joinState">
+                                <span ng-switch-when="0">未入伙</span>
+                                <span ng-switch-when="1">已入伙</span>
+                            </span>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2" ng-show="house.houseNew.joinState==null">
+                           <b>暂无数据</b>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            竣工面积：
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 " ng-show="house.houseNew.completionArea!=null">
+                           {{house.houseNew.completionArea}}
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 " ng-show="house.houseNew.completionArea==null">
+                            <b>暂无数据</b>
+                        </div>
+
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            房屋户型：
+                        </div>
+                        <div class="col-lg-1 col-md-2 col-sm-2 " ng-show="house.houseNew.houseType!=null">
+                            {{house.houseNew.houseType}}
+                        </div>
+                        <div class="col-lg-1 col-md-2 col-sm-2"  ng-show="house.houseNew.houseType==null">
+                            <b>暂无数据</b>
+                        </div>
+                          <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                              房屋地址：
+                          </div>
+                          <div class="col-lg-4 col-md-4 col-sm-4" ng-show="house.houseNew.fullName!=null">
+                              {{house.houseNew.fullName}}
+                          </div>
+                          <div class="col-lg-4 col-md-4 col-sm-4" ng-show="house.houseNew.fullName==null">
+                              <b>暂无数据</b>
+                          </div>
+
+                              </div>
+                          </div>
+                    </div>
+
+            </div>
+                </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" >取消</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="selectPersonBuilding1()">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+</body>
+</html>

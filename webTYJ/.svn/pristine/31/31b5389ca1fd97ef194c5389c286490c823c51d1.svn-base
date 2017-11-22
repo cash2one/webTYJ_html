@@ -1,0 +1,103 @@
+<!--
+    创建人:Hardy  创建时间：2016/1/30
+    页面名称:硬件日志
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>硬件日志</title>
+</head>
+<body>
+<div class="row padding">
+    <div class="sel">
+        <div class="row search-padding-10">
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                设备账号：
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2">
+                <input class="form-control"  ng-model="gateUplog.equipmentcount" placeholder="请输入设备账号"/>
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                开门方式：
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2">
+                <input class="form-control"  ng-model="gateUplog.openstyle" placeholder="请输入开门方式"/>
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                操作时间：
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-4">
+                <input  class="form-control" type="date" ng-model="gateUplog.startTime" />
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2 text-center">
+                至
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-4">
+                <input  class="form-control"  type="date" ng-model="gateUplog.endTime" />
+            </div>
+        </div>
+        <div class="row search-padding-10">
+            <div class="col-lg-12 col-md-4 col-sm-4 text-right">
+                <button type="button" class="btn btn-default btn-primary" ng-click="load()" >
+                    <span class="glyphicon glyphicon-search btn_icon"></span>
+                    查询
+                </button>
+                <button type="button" class="btn btn-default btn-primary" ng-click="exportGateUplog();" >
+                    导出
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="search-padding-10">
+        <table>
+            <thead>
+            <tr>
+               <!-- <th><span style="width: 15px">&nbsp;</span></th>-->
+                <th>操作时间</th>
+                <th>设备账号</th>
+                <th>设备名称</th>
+                <th>呼叫房间</th>
+                <th>开门方式</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr style="cursor:pointer;" ng-repeat="items in currentGateUplog.object.gateUplogList" ng-show="items.id!=null" ng-dblclick="toShow(items);">
+                <!--<td><input type="checkbox" id="{{items.id}}"  ng-click="getData(items)" onclick="if(this.checked){this.parentNode.parentNode.style.background='#f6f8fa'}else{this.parentNode.parentNode.style.background=''}"></td>-->
+                <td>{{items.operatedate | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                <td>{{items.equipmentcount}}</td>
+                <td>{{items.equipmentname}}</td>
+                <td>{{items.callto}}</td>
+                <td>{{items.openstyle}}</td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="padding">
+            <div class="bill_paging">
+                <span>共{{currentGateUplog.object.page.totalResult}}条</span>
+                <ul class="pagination">
+                    <li ng-class="{true:'disabled'}[currentGateUplog.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-click="currentGateUplog.go(1)">首页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[currentGateUplog.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-show="currentGateUplog.hasPrevious()" ng-click="currentGateUplog.previous()">上一页</a>
+                    </li>
+                    <li ng-class="{true:'active'}[currentGateUplog.page.currentPage==i]" ng-repeat="i in currentGateUplog.pages">
+                        <a href="javascript:void(0)"  ng-click="currentGateUplog.go(i)">{{i}}</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[currentGateUplog.page.currentPage==currentGateUplog.page.totalPage]">
+                        <a href="javascript:void(0)" ng-show="currentGateUplog.hasNext()" ng-click="currentGateUplog.next()">下一页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[currentGateUplog.page.currentPage==currentGateUplog.page.totalPage]">
+                        <a href="javascript:void(0)" ng-click="currentGateUplog.go(currentGateUplog.page.totalPage)">尾页</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</div>
+</div>
+
+</body>
+</html>

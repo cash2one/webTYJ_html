@@ -1,0 +1,152 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 装修管理
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../app');
+
+    app.controller('newDecorateServiceManagementCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        $scope.show1=true;
+        $scope.show2=false;
+
+        $scope.test='newDecorateServiceManagement';
+        $scope.btnIndex1=1;
+
+        $scope.decorate1=function(index){
+            $scope.show1=true;
+            $scope.show2=false;
+            $scope.btnIndex1=index;
+        }
+        $scope.addDecorate1=function(index){
+            $scope.show1=false;
+            $scope.show2=true;
+            $scope.btnIndex1=index;
+        }
+        var url=$rootScope.url;
+        $scope.DecorationInspectionPlans = {page:{}};
+        $scope.load = function(){
+
+            var fetchFunction = function (page, callback) {
+                $scope.DecorationInspectionPlans.page = page;
+                $http.post(url + '/DecorationInspectionPlans/listPageDecorationInspectionPlans', {DecorationInspectionPlans:$scope.DecorationInspectionPlans}).success(callback)
+
+            };
+            $scope.searchPaginator = app.get('Paginator').list(fetchFunction,6);
+            console.log($scope.searchPaginator);
+
+        };
+
+        $scope.load();
+
+        $scope.demand={
+            /**任务类型**/
+            frequency:[
+                { id: '0',name:'日检' },
+                { id: '1',name:'周检' },
+                { id: '2',name:'半月检' },
+                { id: '3',name:'月检' }
+            ]
+        };
+        //全选
+
+        $scope.selectAll=function(name)
+        {
+            var el=document.getElementsByName("checkb");
+            var s="";
+            for (var i=0;i<el.length;i++) {
+                if(el[i].type=="checkbox"&&el[i].name==name) {
+                    el[i].checked=true;
+                }
+                if(el[i].checked) s+=el[i].value+',';  //如果选中，将value添加到变量s中
+            }
+
+
+            //那么现在来检测s的值就知道选中的复选框的值了
+            //alert(s==''?'你还没有选择任何内容0000！':s);
+        };
+        //取消
+        $scope.clearAll=function (name)
+        {
+            var el=document.getElementsByName("checkb");
+            for (var i=0;i<el.length;i++)
+            {
+                if(el[i].type=="checkbox"&&el[i].name==name)
+                {
+                    el[i].checked=false;
+                }
+            }
+        };
+
+        /*********************************新建方案**********************************************/
+        /**
+         * 添加行
+         */
+        $scope.itemRecord2=[{}];
+        $scope.add=function(){
+            var item1={};
+            $scope.itemRecord2.push(item1)
+        };
+
+        $scope.DecorationInspectionPlan={};
+        $scope.DecorationInspectionPlan.frequencyRecord={};
+        $scope.DecorationInspectionPlan.executionTimeRecords={executiveNumTime:'',executiveNum:''};
+
+
+        var getTd = document.getElementById("artificial");
+        var rowsLength = getTd.rows.length;
+        var bsh;
+        var bch;
+        //console.log( getTd.rows.length);
+        for (var i = 1; i < rowsLength; i++) {
+            bsh = getTd.rows[i].cells[1].getElementsByTagName("INPUT")[0].value;
+            bch=i +1
+        }
+        $scope.DecorationInspectionPlan.executionTimeRecords.executiveNumTime=bsh;
+        $scope.DecorationInspectionPlan.executionTimeRecords.executiveNum=bch;
+        $scope.addDecoration=function(){
+            var   text = $("input:checkbox[name='checkb']:checked").map(function(index,elem) {
+                return $(elem).val();
+            }).get().join(',');
+            //alert("选中的checkbox的值为："+text);
+            $scope.DecorationInspectionPlan.frequencyRecord.executionFrequency =text;
+
+            $http.post(url + '/DecorationInspectionPlans/AddDecorationInspectionPlans', {
+                DecorationInspectionPlans: $scope.DecorationInspectionPlan
+            }).success(function (data) {
+                $scope.show1=true;
+                $scope.show2=false;
+                $scope.DecorationInspectionPlan={};
+                $scope.DecorationInspectionPlan.frequencyRecord={};
+                $scope.DecorationInspectionPlan.executionTimeRecords={};
+                $scope.load();
+            }).error(function (data) {
+                alert("服务器请求失败！");
+            });
+        }
+
+        /**
+         * 方案全选按钮功能
+         */
+        $scope.isAllChecked=false;//判断是否全选,默认否
+        $scope.forChangeSR = {decorationInspectionPlanIds:[]};
+        $scope.allChecked = function(){
+            //console.log($scope.currentMeterReadingSR);
+            $scope.forChangeSR.decorationInspectionPlanIds=[];
+            $scope.isAllChecked = true;
+            var items = $scope.searchPaginator.object.decorationInspectionPlan;
+            if(items!=null && items.length>0){
+                for(var i=0;i<items.length;i++){
+                    if(items[i].decorationInspectionPlanId != null){
+                        $scope.forChangeSR.decorationInspectionPlanIds.push(items[i].decorationInspectionPlanId);
+                    }
+                }
+            }
+            console.log($scope.forChangeSR.decorationInspectionPlanIds);
+        }
+
+    }]);
+});

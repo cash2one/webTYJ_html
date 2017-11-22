@@ -1,0 +1,1272 @@
+/**
+ * Created by wangzhou on 2016/1/25.
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../app');
+
+    app.controller('projectConstructionCtrl', ['$scope', '$http','$rootScope',
+        function ($scope,$http,$rootScope) {
+
+            $scope.doClick(3);//增加tab高亮显示  王洲  2016.2.2
+
+            var projectid = '';//
+            var projectids = JSON.parse(localStorage.getItem("project_id"));
+            $scope.projectIds = projectids?projectids:projectid;
+
+            $scope.show1 = true;
+            $scope.show2 = false;
+            $scope.show3 = false;
+            $scope.show4 = false;
+            $scope.show5 = false;
+            /*列表页面*/
+            var url= $rootScope.url;           //访问路径
+            $scope.fileUrl = $rootScope.fileUrl;   //文件路径
+            $scope.allProjects=[];              //所有项目信息
+            $scope.currentProject={};           //当前所选项目
+            $scope.buildingMap={};             //建筑对象映射
+            $scope.buildingList=[];             //建筑对象列表(包含树形结构)
+            $scope.currentBuilding={            //当前操作的建筑对象
+                id:'',                          //建筑ID
+                buildingName:'',                //建筑名称
+                totalArea:0,                    //总建筑面积
+                totalAreas:0,                       //用地总面积
+                areaNew:[],                       //面积属性详情列表
+                nodes:[],                        //子建筑
+                parcelId:''                     //宗地id  王洲  2016.2.2
+            };
+            /*第一步编辑建筑面积*/
+            $scope.editArea=false;             //控制面积属性编辑框的显示
+            $scope.areaTypes=[];                //面积属性列表
+            $scope.currentEditArea={};          //当前编辑(选择)面积
+            $scope.currentEditIndex=null;      //当前编辑框(初始为空)
+            $scope.areaTypeMap={};              //存放当前建筑已经设置的面积属性
+            /*第二步编辑建筑结构*/
+            $scope.currentBuildingNode={};      //当前建筑节点
+            $scope.unsaveBuildingList=[];       //未提交建筑映射
+            /*第三步编辑住宅信息*/
+            $scope.buildingDetailList=[];       //建筑详情集合
+            $scope.buildingDetailMap={};        //建筑详情映射对象
+            $scope.buildingDetailNew={};        //新建筑详情对象
+            $scope.exceltype = "";              //excel导入时判断excel对应对象
+            $scope.showUp = '';                 //判断是否显示上一步  王洲   2016.1.7
+            $scope.areaTypeToSelect = [];       //用于创建建筑结构时存放选择的面积类型  王洲  2016.1.12
+
+            /**---------------------------------------项目建筑列表--------------------------------------------------**/
+
+            /**
+             * 初始化方法
+             */
+            var init=function(){
+                //加载项目信息
+                //$scope.loadProject();
+                //监测项目下拉框的变化
+               // $scope.$watch('currentProject',function(){
+                    $scope.loadBuilding();
+                //});
+            };
+            /**
+             * 加载下拉框中的项目信息  allProjects
+             */
+            /*$scope.loadProject=function(){
+                //从后台接口获取项目id
+                $scope.projectId = JSON.parse(localStorage.getItem("project_id"));    //获取项目id
+
+                *//**
+                 * 根据项目id获取项目信息
+                 *//*
+                $http.get(url + '/Project/getProjectbyId/' + $scope.projectId).success(function(data) {
+                    console.log(data);
+                    $scope.currentObject = data.Project;
+                }).error(function(data, status, headers, config){
+                    layer.alert('查询失败',{icon:2});
+                });
+            };*/
+            /**
+             * 根据选中项目加载建筑信息
+             */
+            $scope.loadBuilding=function(){
+
+                if($scope.projectIds==null||$scope.projectIds==""){
+                    return;
+                }
+                if($scope.projectIds!=null&&$scope.projectIds!=""){
+
+                    //根据项目id获取宗地信息  王洲  2016.2.2
+                    $scope.Parcel = [];
+                    $http.get(url + '/Parcel/getParcelByprojectId/' + $scope.projectIds).success(function(data){
+                        $scope.Parcel = data.Parcel;
+                    }).error(function(data){
+                        layer.msg('无有效宗地信息！',{icon : 0,time : 1000});
+                    });
+
+                    $http.get(url+'/BuildingStructureNew/listAllBuildingStructureNewRest/'+$scope.projectIds).success(function(data){
+                        var nodes=data.BuildingStructureNew;
+
+                        var idMap={};           //id和对象的映射
+                        var nodeList=nodes;
+
+                        var tempList=[];
+                        //以ID为key，对象为值定义IdMap
+                        for(var i=0;i<nodeList.length;i++){
+                            idMap[nodeList[i].id]=nodeList[i];
+                        }
+                        for(i=0;i<nodeList.length;i++){
+                            if(nodeList[i].parentId!=null){
+                                var parent=nodeList[i].parentId;
+                            }else{
+                                var parent=null;
+                            }
+
+                            if(parent!=null && parent!=$scope.projectIds){
+                                if(!idMap[parent].nodes){
+                                    idMap[parent].nodes=[];
+                                    idMap[parent].collapse=false;
+                                }
+                                idMap[parent].nodes.push(nodeList[i]);
+                            }
+                            else{
+                                tempList.push(nodeList[i]);
+                            }
+                        }
+                        $scope.buildingMap=idMap;
+                        $scope.buildingList=tempList;
+                    });
+                    $scope.buildingToTree = {id : '',name : '',buildingId : '',parcelId : ''};//修改对象，改变查询的条件 王洲  2016.1.21//增加宗地id  王洲  2016.2.2
+                    $scope.building='';
+                    $scope.buildingprice = '';
+                    $scope.areaNews=[];
+                    $scope.showUp = '';
+                }
+            };
+
+            /**
+             * 根据所选建筑显示右侧详情
+             * @param id     建筑ID
+             */
+            var areaNews=new Array();                   //建筑面积属性
+            $scope.building={};                         //建筑信息
+            $scope.buildingToTree = {id : '',name : ''};
+            $scope.showBuildingInfo=function(item){
+                //var id = item.buildingId;
+                if($scope.buildingToTree.name == item.nodeName){
+                    $scope.buildingToTree = {id : '',name : '',buildingId : '',parcelId : ''};
+                    $scope.showUp = '';
+                }else{
+                    $scope.buildingToTree.id = item.id;
+                    $scope.buildingToTree.name = item.nodeName;
+                    $scope.buildingToTree.buildingId = item.buildingId;
+                    $scope.buildingToTree.parcelId = item.parcelId;
+                    $scope.showUp = $scope.buildingToTree.id;
+                }
+                $http.get(url+'/BuildingNew/getBuildingbyId/'+ item.buildingId).success(function(data){
+                    $scope.building=data.BuildingNew;
+                    areaNews=[];
+                    $scope.buildingprice = '';
+
+                    if(angular.isUndefined(data.BuildingNew)){
+                        return;
+                    }
+
+                    if(angular.isArray(data.BuildingNew.areaNew)==false){
+                        areaNews.push(eval(data.BuildingNew.areaNew));
+                        $scope.buildingprice = data.BuildingNew.areaNew.buildingArea;
+                    }else{
+                        areaNews=$scope.building.areaNew;
+
+                        var areas = 0;
+                        for(var i=0;i<areaNews.length;i++){
+                            var area = parseInt(areaNews[i].buildingArea);
+                            areas += area;
+                        }
+                        $scope.buildingprice=areas;
+                    }
+                    $scope.areaNews=areaNews;
+                    //在现有建筑下新建建筑时，将建筑的面积类型去重放入面积类型选择数组  王洲  2016.1.12
+                    $scope.areaTypeToSelect = [];
+                    for(var i = 0,len = $scope.areaNews.length; i < len; i++){
+                        var t = 0;
+                        for(var j = 0,lens = $scope.areaTypeToSelect.length; j < lens; j++){
+                            if($scope.areaNews[i].areaTypeId == $scope.areaTypeToSelect[j].id){
+                                t ++;
+                            }
+                        }
+                        if(t == 0){
+                            $scope.areaTypeToSelect.push($scope.areaNews[i].areaTypeNew);
+                        }
+                    }
+                });
+            };
+            /**
+             * 展开/收起树形结构
+             * @param id    建筑ID
+             */
+            $scope.toggleNode=function(id){
+                $scope.buildingMap[id].collapse=!$scope.buildingMap[id].collapse;
+            };
+
+            /**---------------------------------------新增建筑(建筑面积配置)--------------------------------------------------**/
+
+
+
+                // 新增建筑(模态框初始化方法)
+
+            $scope.addBuilding=function(){
+                var projectCons = JSON.parse(localStorage.getItem("project_id"));
+                if(projectCons == null||projectCons==""){
+                    layer.alert('请选择项目！',{icon : 0});
+                    return;
+                }
+
+                // 初始化面积属性
+                $scope.areaTypes={};
+                $http.get(url+'/AreaTypeNew/listAllAreaTypeNew').success(function(data){
+                    $scope.areaTypes=data.AreaTypeNew;
+                });
+
+                $scope.currentBuilding={            //新建筑对象
+                    id:'',                          //建筑ID
+                    buildingName:'',                //建筑名称
+                    buildingArea:'',                    //总建筑面积
+                    projectId:$scope.projectIds,  //项目id
+                    areaNew:[],                      //面积属性详情列表
+                    parcelId:''                     //宗地id  王洲  2016.2.2
+                };
+                $scope.editArea = false;
+                $scope.currentEditArea = {};
+                if($scope.buildingToTree.id != ''){
+                    $scope.currentBuilding.id = $scope.buildingToTree.id;
+                    $scope.currentBuilding.buildingName = $scope.buildingToTree.name;
+                    $scope.currentBuilding.areaNew = [{areaTypeId : 1}];
+                    $scope.currentBuilding.totalArea = 10;
+                    $scope.currentBuilding.totalAreas = 10;
+                    $scope.currentBuilding.parcelId = $scope.buildingToTree.parcelId;
+                    $scope.saveBuildingArea();
+                }else{
+                    $scope.show1 = true;
+                    $scope.show2 = false;
+                }
+                $scope.show3 = false;
+                $scope.show4 = false;
+                $scope.show5 = false;
+                $("#neworlostModal").modal({backdrop: 'static',keyboard: false});
+                $scope.selectHouse();   //打开新增的模态框时查询住宅、商铺、车位  王洲  2016.1.7
+                $scope.selectParking();
+                $scope.selectBusiness();
+            };
+
+            /**
+             * 新增面积详情
+             * 增加判断，当有数据正在修改时给出提示，不执行新增操作
+             * 王洲
+             * 2016.1.6
+             */
+            $scope.newArea=function(){
+                if(angular.isUndefined($scope.currentEditArea.buildingArea)){
+                    $scope.editArea=true;
+                    $scope.currentEditIndex=null;
+                }else{
+                    layer.msg('请先保存正在修改的数据！',{icon : 0,time : 1000});
+                }
+
+            };
+            /**
+             * 修改面积详情
+             * @param index 面积详情下标
+             */
+            $scope.updateArea=function(index,item){
+                //增加验证，有数据修改时修改别的数据给出保存提示，王洲 2016.02.24
+                if(angular.isDefined($scope.currentEditArea.buildingArea)){
+                    layer.msg('请先保存正在修改的数据！',{icon : 0,time : 1000});
+                    return;
+                }
+                $scope.editArea=true;
+                $scope.currentEditIndex=index;
+                var areatype = null;
+                for(var i = 0,len = $scope.areaTypes.length; i < len; i++){
+                    if($scope.areaTypes[i].id == item.areaTypeId){
+                        areatype = $scope.areaTypes[i];
+                    }
+                }
+                var current=$scope.currentBuilding.areaNew[index];
+                $scope.currentEditArea={
+                    areaType:areatype,
+                    buildingArea:current.buildingArea,
+                    commonalityArea:current.commonalityArea,
+                    insideArea:current.insideArea,
+                    utilityRatio:current.utilityRatio
+                };
+            };
+            /**
+             * 删除面积详情
+             * 增加删除前的询问
+             * 王洲
+             * 2016.1.12
+             * @param index  面积详情下标
+             */
+            $scope.deleteArea=function(index){
+                layer.confirm('是否删除该面积？',function(){
+                    $scope.currentBuilding.areaNew.splice(index,1);
+                    recountArea();
+                    layer.msg('删除成功！',{icon : 0,time : 1000});
+                    $scope.$apply($scope.currentBuilding.areaNew);
+                });
+            };
+
+            /**
+             * 重算总建筑面积
+             */
+            var recountArea= function(){
+                var total=0;
+                for(var i=0;i<$scope.currentBuilding.areaNew.length;i++){
+                    total+=parseInt($scope.currentBuilding.areaNew[i].buildingArea);
+                }
+                $scope.currentBuilding.totalArea=total;
+            };
+            /**
+             * 保存面积详情
+             */
+            $scope.saveArea=function(){
+                if(angular.isUndefined($scope.currentEditArea)){
+                    layer.alert('请先输入面积数据！',{icon : 0});
+                    return;
+                }
+                if(angular.isUndefined($scope.currentEditArea.areaType) || $scope.currentEditArea.areaType == null ||
+                    $scope.currentEditArea.buildingArea == null || $scope.currentEditArea.buildingArea == "" ||
+                    $scope.currentEditArea.commonalityArea == null || $scope.currentEditArea.commonalityArea == "" ||
+                    $scope.currentEditArea.insideArea == null || $scope.currentEditArea.insideArea == "" ||
+                    $scope.currentEditArea.utilityRatio == null || $scope.currentEditArea.utilityRatio == ""){
+                    layer.alert('请先完成必填项！',{icon : 0});
+                    return;
+                }
+                if(isNaN($scope.currentEditArea.buildingArea)){
+                    layer.msg('建筑面积必须为数字！',{icon : 0,time : 1000});
+                    return;
+                }
+                if(isNaN($scope.currentEditArea.commonalityArea)){
+                    layer.msg('公摊面积必须为数字！',{icon : 0,time : 1000});
+                    return;
+                }
+                if(isNaN($scope.currentEditArea.utilityRatio)){
+                    layer.msg('实用率必须为数字！',{icon : 0,time : 1000});
+                    return;
+                }
+                if(isNaN($scope.currentEditArea.insideArea)){
+                    layer.msg('套内面积必须为数字！',{icon : 0,time : 1000});
+                    return;
+                }
+
+                if($scope.currentEditIndex!=null){
+                    $scope.currentBuilding.areaNew[$scope.currentEditIndex]={
+                        areaTypeId:$scope.currentEditArea.areaType.id,
+                        areaTypeName:$scope.currentEditArea.areaType.areaTypeName,
+                        buildingArea:$scope.currentEditArea.buildingArea,
+                        commonalityArea:$scope.currentEditArea.commonalityArea,
+                        insideArea:$scope.currentEditArea.insideArea,
+                        utilityRatio:$scope.currentEditArea.utilityRatio
+                    };
+                }
+                else{
+
+                    $scope.currentBuilding.areaNew.push({
+                        areaTypeId:$scope.currentEditArea.areaType.id,
+                        areaTypeName:$scope.currentEditArea.areaType.areaTypeName,
+                        buildingArea:$scope.currentEditArea.buildingArea,
+                        commonalityArea:$scope.currentEditArea.commonalityArea,
+                        insideArea:$scope.currentEditArea.insideArea,
+                        utilityRatio:$scope.currentEditArea.utilityRatio
+                    });
+                }
+                $scope.currentEditArea={};
+                $scope.editArea=false;
+                recountArea();
+            };
+            /**
+             * 保存建筑面积信息
+             */
+            $scope.saveBuildingArea=function(){
+                if($scope.currentBuilding.buildingName == null || $scope.currentBuilding.buildingName == ""){
+                    layer.alert('请输入建筑名称！',{icon : 0});
+                    return;
+                }
+                //增加建筑名称长度验证  王洲  2016.02.24
+                if($scope.currentBuilding.buildingName.length > 25){
+                    layer.alert('建筑名称不能超过25个汉字！',{icon : 0});
+                    return;
+                }
+                //增加建筑总面积为空验证  王洲  2016.1.21
+                if(angular.isUndefined($scope.currentBuilding.totalArea) || $scope.currentBuilding.totalArea == ""){
+                    layer.alert('建筑总面积不能为空！',{icon : 0});
+                    return;
+                }
+                //bug613 用地总面积输入长度不能超过20！周恒 2016.2.18
+                if($scope.currentBuilding.totalAreas.length>20){
+                    layer.alert('用地总面积长度不能超过20！',{icon : 0});
+                    return;
+                }
+                if(isNaN($scope.currentBuilding.totalArea)){
+                    layer.alert('建筑总面积必须为数字！',{icon : 0});
+                    return;
+                }
+                //增加用地总面积的判断  王洲  2016.1.7
+                //修改判断方法  王洲  2016.1.8
+                //增加用地总面积为空判断  王洲  2016.1.21
+                if(angular.isUndefined($scope.currentBuilding.totalAreas) || $scope.currentBuilding.totalAreas == ""){
+                    layer.alert('用地总面积不能为空！',{icon : 0});
+                    return;
+                }
+                if(isNaN($scope.currentBuilding.totalAreas)){
+                    layer.alert('用地总面积必须为数字！',{icon : 0});
+                    return;
+                }
+                if($scope.editArea == true){//增加判断面积类型输入table是否有数据在输入  王洲  2016.1.8
+                    layer.alert('请先保存面积信息！',{icon : 0});
+                    return;
+                }
+                if($scope.currentBuilding.areaNew.length == 0){
+                    layer.alert('请添加建筑面积类型信息！',{icon : 0});
+                    return;
+                }
+                if(angular.isUndefined($scope.currentBuilding.parcelId) || $scope.currentBuilding.parcelId == ""){
+                    layer.alert('宗地号不能为空！',{icon : 0});
+                    return;
+                }
+                $scope.show1 = false;
+                $scope.show2 = true;
+                //初始化当前建筑
+                if($scope.currentBuilding.id == null || $scope.currentBuilding.id == ''){
+                    $scope.currentBuilding.id = app.get('tyjUtil').uuid();
+                }
+                $scope.currentBuilding.parentId=null;
+                $scope.currentBuilding.collapse=false;
+                $scope.currentBuilding.subNodeName='';
+                $scope.currentBuilding.editing=false;
+                //保存当前建筑currentBuilding
+                $scope.buildingMap[$scope.currentBuilding.id]=$scope.currentBuilding;
+                $scope.buildingList.push($scope.currentBuilding);
+                //默认当前操作节点为currentBuilding
+                $scope.currentBuildingNode=$scope.currentBuilding;
+
+                if($scope.buildingToTree.id == ''){
+                    //将建筑的面积类型去重放入面积类型选择数组  王洲  2016.1.12
+                    $scope.areaTypeToSelect = [];
+                    for(var i = 0,len = $scope.currentBuilding.areaNew.length; i < len; i++){
+                        var t = 0;
+                        for(var j = 0,lens = $scope.areaTypeToSelect.length; j < lens; j++){
+                            if($scope.currentBuilding.areaNew[i].areaTypeId == $scope.areaTypeToSelect[j].areaTypeId){
+                                t++;
+                            }
+                        }
+                        if(t == 0){
+                            $scope.areaTypeToSelect.push($scope.currentBuilding.areaNew[i]);
+                        }
+                    }
+                }
+                pcTree();
+            };
+
+            var pcTree = function(){
+                var setting = {
+                    view: {
+                        addDiyDom: addDiyDom,
+                        addHoverDom: addHoverDom,
+                        removeHoverDom: removeHoverDom,
+                        selectedMulti: false
+                    },
+                    edit: {
+                        enable: true,
+                        editNameSelectAll: true,
+                        showRemoveBtn: showRemoveBtn,
+                        showRenameBtn: showRenameBtn
+                    },
+                    data: {
+                        simpleData: {
+                            enable: true
+                        }
+                    },
+                    callback: {
+                        beforeDrag: beforeDrag,
+                        beforeEditName: beforeEditName,
+                        beforeRemove: beforeRemove,
+                        beforeRename: beforeRename,
+                        onRemove: onRemove,
+                        onRename: onRename
+                    }
+                };
+
+                var zNodes =[
+                    { id:"root", pId:"0", name:$scope.currentBuilding.buildingName,types:"",open:true,checked:true}
+                ];
+                $.fn.zTree.init($("#treeProjectConstruction"), setting, zNodes);
+            };
+
+            /**
+             * 获取树的选中节点
+             */
+            $scope.tempbuilding = {id : '',name : ''};//如果选定了建筑，重新查询时用于存放建筑信息  王洲  2016.1.7
+            $scope.zTreeGetAllNodes =  function(){
+
+                $scope.pcNodes = [{}];
+                var treeObj=$.fn.zTree.getZTreeObj("treeProjectConstruction");
+                var znodes=treeObj.getCheckedNodes(true);
+                for(var i=1;i<znodes.length;i++){
+                    $scope.pcNode ={id:znodes[i].id,pId:znodes[i].pId,name:znodes[i].name,types:znodes[i].types};
+                    $scope.pcNodes.push($scope.pcNode);
+                }
+                $scope.currentBuilding.treeList =  $scope.pcNodes;
+                $scope.currentBuilding.buildingArea = $scope.currentBuilding.totalArea;
+                $scope.currentBuilding.totalArea = $scope.currentBuilding.totalAreas;//将用地总面积传到后台  王洲 2016.1.7
+                $http.post(url+'/BuildingNew/AddBuildingNew', {BuildingNew:$scope.currentBuilding}).success(function(data){
+                    $scope.zTreevisible = !$scope.zTreevisible;
+                    layer.alert('添加建筑及结构成功！',{icon : 1});
+                    $scope.tempbuilding = $scope.buildingToTree;
+                    $scope.loadBuilding();
+                    $scope.selectHouse();   //新增建筑时重新查询住宅、商铺、车位  王洲  2016.1.7
+                    $scope.selectParking();
+                    $scope.selectBusiness();
+                    $scope.showUp = $scope.currentBuilding.id;
+                });
+            };
+
+            /**
+             * 返回到新建建筑页面
+             */
+            $scope.gotoFirst = function(){
+                $scope.show1 = true;
+                $scope.show2 = false;
+                $scope.show3 = false;
+                $scope.show4 = false;
+                $scope.show5 = false;
+            };
+
+            /**
+             * 查询该项目住宅类型的数据
+             */
+            $scope.getBuildingStructureHouse = function(){
+                $scope.show1 = false;
+                $scope.show2 = false;
+                $scope.show3 = true;
+            };
+
+            /**
+             * 查询住宅方法  王洲  2016.1.7
+             */
+            $scope.selectHouse = function(){
+                $scope.BuildingStructureHouse = [];
+                var projectId = $scope.projectIds;
+                //查询该项目住宅类型的数据
+                $scope.build1 = {};
+                $scope.build1.projectId = projectId;
+                $scope.build1.areaId = '0';
+                if($scope.tempbuilding.id != ''){
+                    $scope.build1.buildingId = $scope.tempbuilding.buildingId;
+                }else{
+                    $scope.build1.buildingId = $scope.buildingToTree.buildingId;
+                }
+                $http.post(url + '/BuildingStructureNew/listAllBuildingStructureNewByProjectIdAndAreaId',{BuildingStructureNew : $scope.build1}).success(function (data) {
+                    $scope.BuildingStructureHouse = [];
+                    if(angular.isArray(data.BuildingStructureNew.houseList)){
+                        $scope.BuildingStructureHouse = data.BuildingStructureNew.houseList;
+                    }else{
+                        $scope.BuildingStructureHouse.push(data.BuildingStructureNew.houseList);
+                    }
+                    for(var i = 0, len = $scope.BuildingStructureHouse.length; i < len; i ++){
+                        $scope.BuildingStructureHouse[i].joinGangState = $scope.BuildingStructureHouse[i].joinGangState.toString();
+                    }
+                });
+            };
+
+            /**
+             * 返回上一步
+             */
+            $scope.close = function(){
+                $scope.show1 = false;
+                $scope.show2 = true;
+                $scope.show3 = false;
+            };
+
+            /**
+             * 查询该项目车位类型的数据
+             */
+            $scope.getBuildingStructureParking = function(){
+                $scope.show1 = false;
+                $scope.show2 = false;
+                $scope.show3 = false;
+                $scope.show4 = true;
+            };
+
+            /**
+             * 查询车位方法  王洲  2016.1.7
+             */
+            $scope.selectParking = function(){
+                $scope.BuildingStructureParking = [];
+                var projectId =$scope.projectIds;
+                //查询该项目车位类型的数据
+                $scope.build2 = {};
+                $scope.build2.projectId = projectId;
+                $scope.build2.areaId = '2';
+                if($scope.tempbuilding.id != ''){
+                    $scope.build2.buildingId = $scope.tempbuilding.buildingId;
+                }else{
+                    $scope.build2.buildingId = $scope.buildingToTree.buildingId;
+                }
+                $http.post(url + '/BuildingStructureNew/listAllBuildingStructureNewByProjectIdAndAreaId',{BuildingStructureNew : $scope.build2}).success(function (data) {
+                    $scope.BuildingStructureParking = [];
+                    if(angular.isArray(data.BuildingStructureNew.stallList)){
+                        $scope.BuildingStructureParking = data.BuildingStructureNew.stallList;
+                    }else{
+                        $scope.BuildingStructureParking.push(data.BuildingStructureNew.stallList);
+                    }
+                    for(var i = 0, len = $scope.BuildingStructureParking.length; i < len; i ++){
+                        $scope.BuildingStructureParking[i].isMechanicalStall = $scope.BuildingStructureParking[i].isMechanicalStall.toString();
+                        $scope.BuildingStructureParking[i].intakeState = $scope.BuildingStructureParking[i].intakeState.toString();
+                    }
+                });
+            };
+
+            /**
+             * 返回上一步
+             */
+            $scope.close1 = function(){
+                $scope.show1 = false;
+                $scope.show2 = false;
+                $scope.show3 = true;
+                $scope.show4 = false;
+            };
+
+            /**
+             * 查询该项目商业类型的数据
+             */
+            $scope.getBuildingStructureBusiness = function(){
+                $scope.show1 = false;
+                $scope.show2 = false;
+                $scope.show3 = false;
+                $scope.show4 = false;
+                $scope.show5 = true;
+            };
+
+            /**
+             * 查询商铺方法  王洲 2016.1.7
+             */
+            $scope.selectBusiness = function(){
+                $scope.BuildingStructureBusiness = [];
+                var projectId =$scope.projectIds;
+                //查询该项目商业类型的数据
+                $scope.build3 = {};
+                $scope.build3.projectId = projectId;
+                $scope.build3.areaId = '1';
+                if($scope.tempbuilding.id != ''){
+                    $scope.build3.buildingId = $scope.tempbuilding.buildingId;
+                }else{
+                    $scope.build3.buildingId = $scope.buildingToTree.buildingId;
+                }
+                $http.post(url + '/BuildingStructureNew/listAllBuildingStructureNewByProjectIdAndAreaId',{BuildingStructureNew : $scope.build3}).success(function (data) {
+                    $scope.BuildingStructureBusiness = [];
+                    if(angular.isArray(data.BuildingStructureNew.storeList)){
+                        $scope.BuildingStructureBusiness = data.BuildingStructureNew.storeList;
+                    }else {
+                        $scope.BuildingStructureBusiness.push(data.BuildingStructureNew.storeList);
+                    }
+                    console.log($scope.BuildingStructureBusiness);
+                    for(var i = 0, len = $scope.BuildingStructureBusiness.length; i < len; i++){
+                        $scope.BuildingStructureBusiness[i].intakeState = $scope.BuildingStructureBusiness[i].intakeState.toString();
+                    }
+                });
+            };
+
+            /**
+             * 添加住宅详情
+             * @type {{}}
+             */
+            $scope.houseNew={};
+
+            $scope.addBuildingStructureHouse = function(){
+                $scope.BuildingStructureHouseLists = [];
+                var getTd=document.getElementById("houseTable");
+                var rowsLength=getTd.rows.length;
+                for(var i=1;i<rowsLength;i++)
+                {
+                    $scope.BuildingStructureHouselist ={
+                        buildingStructureId:"",
+                        buildingId:"",
+                        projectId:"",
+                        houseAddress:"",
+                        houseAttribute:"",
+                        houseType:"",
+                        houseArea:"",
+                        usableArea:"",
+                        shareArea:"",
+                        completeArea:"",
+                        completeDate:"",
+                        houseNum:"",
+                        joinGangState:"",
+                        id:"",
+                    };
+                    //住宅新增功能调整   王洲  2016.02.25
+                    var bsh1 = getTd.rows[i].cells[0].getElementsByTagName("INPUT")[0].value;
+                    $scope.BuildingStructureHouselist.buildingStructureId = bsh1;
+                    var bsh9 = getTd.rows[i].cells[0].getElementsByTagName("INPUT")[1].value;
+                    $scope.BuildingStructureHouselist.buildingId = bsh9;
+                    var bsh10 = getTd.rows[i].cells[0].getElementsByTagName("INPUT")[2].value;
+                    $scope.BuildingStructureHouselist.projectId = bsh10;
+                    var bsh11 = getTd.rows[i].cells[0].getElementsByTagName("INPUT")[3].value;
+                    $scope.BuildingStructureHouselist.houseAddress = bsh11;
+                    var houseId = getTd.rows[i].cells[0].getElementsByTagName("INPUT")[4].value;
+                    $scope.BuildingStructureHouselist.id = houseId;
+                    var bsh2 =getTd.rows[i].cells[8].getElementsByTagName("SELECT")[0].value;
+                    $scope.BuildingStructureHouselist.houseAttribute = bsh2;
+                    var bsh3 = getTd.rows[i].cells[9].getElementsByTagName("SELECT")[0].value;
+                    $scope.BuildingStructureHouselist.houseType = bsh3;
+                    var bsh12 = getTd.rows[i].cells[10].getElementsByTagName("SELECT")[0].value;
+                    $scope.BuildingStructureHouselist.joinGangState = bsh12;
+                    var bsh13 = getTd.rows[i].cells[2].getElementsByTagName("INPUT")[0].value;
+                    $scope.BuildingStructureHouselist.houseNum = bsh13;
+                    var bsh4 =getTd.rows[i].cells[3].getElementsByTagName("INPUT")[0].value;
+                    if(isNaN(bsh4)){
+                        layer.msg('建筑面积必须为数字！',{icon : 0,time : 1000});
+                        return;
+                    }
+                    $scope.BuildingStructureHouselist.houseArea = bsh4;
+                    var bsh5 =getTd.rows[i].cells[4].getElementsByTagName("INPUT")[0].value;
+                    if(isNaN(bsh5)){
+                        layer.msg('套内面积必须为数字！',{icon : 0,time : 1000});
+                        return;
+                    }
+                    $scope.BuildingStructureHouselist.usableArea = bsh5;
+                    var bsh6 =getTd.rows[i].cells[5].getElementsByTagName("INPUT")[0].value;
+                    if(isNaN(bsh6)){
+                        layer.msg('分摊面积必须为数字！',{icon : 0,time : 1000});
+                        return;
+                    }
+                    $scope.BuildingStructureHouselist.shareArea = bsh6;
+                    var bsh7 =getTd.rows[i].cells[6].getElementsByTagName("INPUT")[0].value;
+                    if(isNaN(bsh7)){
+                        layer.msg('竣工面积必须为数字！',{icon : 0,time : 1000});
+                        return;
+                    }
+                    $scope.BuildingStructureHouselist.completeArea = bsh7;
+                    var bsh8 =getTd.rows[i].cells[7].getElementsByTagName("INPUT")[0].value;
+                    $scope.BuildingStructureHouselist.completeDate = bsh8;
+                    $scope.BuildingStructureHouseLists.push($scope.BuildingStructureHouselist);
+                }
+                $scope.houseNew.hnList = $scope.BuildingStructureHouseLists;
+                $http.post(url+'/HouseNew/updateHouse',{HouseNew: $scope.houseNew}).success(function(){
+                    layer.alert('住宅信息修改成功！',{icon : 1});
+                    //$scope.visible = !$scope.visible;
+                    $scope.BuildingStructureHouseLists={};
+                    $scope.selectHouse();
+                }).error(function(data,status,headers,config){
+                    layer.alert('住宅信息修改失败！',{icon : 2});
+                });
+            };
+
+            /**
+             * 添加车位详情
+             * @type {{}}
+             */
+            $scope.stallNew={};
+            $scope.addBuildingStructureStall = function(){
+                $scope.BuildingStructureStallLists = [];
+                var getTd=document.getElementById("stallTable");
+                var rowsLength=getTd.rows.length;
+                for(var i=1;i<rowsLength;i++)
+                {
+                    $scope.BuildingStructureStalllist ={
+                        buildingStructureId:"",
+                        buildingId:"",
+                        projectId:"",
+                        stallProperty:"",
+                        isMechanicalStall:"",
+                        intakeDate:"",
+                        stallCoding:"",
+                        stallNumber:"",
+                        intakeState:"",
+                        stallId:""
+                    };
+                    //车位新增功能调整  王洲  2016.02.25
+                    var stallId = getTd.rows[i].cells[0].getElementsByTagName("INPUT")[0].value;
+                    $scope.BuildingStructureStalllist.stallId = stallId;
+                    var bsh1 = getTd.rows[i].cells[0].getElementsByTagName("INPUT")[2].value;
+                    $scope.BuildingStructureStalllist.buildingStructureId = bsh1;
+                    var bsh9 = getTd.rows[i].cells[0].getElementsByTagName("INPUT")[1].value;
+                    $scope.BuildingStructureStalllist.buildingId = bsh9;
+                    var bsh10 = getTd.rows[i].cells[0].getElementsByTagName("INPUT")[3].value;
+                    $scope.BuildingStructureStalllist.projectId = bsh10;
+                    var bsh2 =getTd.rows[i].cells[3].getElementsByTagName("SELECT")[0].value;
+                    $scope.BuildingStructureStalllist.stallProperty = bsh2;
+                    var bsh3 = getTd.rows[i].cells[5].getElementsByTagName("SELECT")[0].value;
+                    $scope.BuildingStructureStalllist.isMechanicalStall = bsh3;
+                    var bsh7 = getTd.rows[i].cells[7].getElementsByTagName("SELECT")[0].value;
+                    $scope.BuildingStructureStalllist.intakeState = bsh7;
+                    var bsh4 = getTd.rows[i].cells[2].getElementsByTagName("INPUT")[0].value;
+                    /*if(bsh4 == null || bsh4 == ""){
+                        layer.msg('车位编码必须填写完整！',{icon : 0,time : 1000});
+                        return;
+                    }*/
+                    $scope.BuildingStructureStalllist.stallCoding = bsh4;
+                    var bsh6 = getTd.rows[i].cells[4].getElementsByTagName("INPUT")[0].value;
+                    /*if(bsh6 == null || bsh6 == ""){
+                        layer.msg('车位号必须填写完整！',{icon : 1000,time : 1000});
+                        return;
+                    }*/
+                    $scope.BuildingStructureStalllist.stallNumber = bsh6;
+                    var bsh5 =getTd.rows[i].cells[6].getElementsByTagName("INPUT")[0].value;
+                    if(bsh5 == null || bsh5 == ""){
+                        layer.msg('竣工日期必须填写完整！',{icon : 0,time : 2000});
+                        return;
+                    }
+                    $scope.BuildingStructureStalllist.intakeDate = bsh5;
+                    $scope.BuildingStructureStallLists.push($scope.BuildingStructureStalllist);
+                }
+                $scope.stallNew.stallNews = $scope.BuildingStructureStallLists;
+                $http.post(url+'/StallNew/updateStallNew',{StallNew: $scope.stallNew}).success(function(){
+                    layer.alert('车位信息修改成功！',{icon : 1});
+                    //$scope.visibleStall = !$scope.visibleStall;
+                    $scope.BuildingStructureStallLists = {};
+                    $scope.selectParking();
+                }).error(function(data,status,headers,config){
+                    layer.alert('车位信息修改失败！',{icon : 2});
+                });
+            };
+
+            /**
+             * 返回上一步
+             */
+            $scope.close2 = function(){
+                $scope.show1 = false;
+                $scope.show2 = false;
+                $scope.show3 = false;
+                $scope.show4 = true;
+                $scope.show5 = false;
+            };
+
+            /**
+             * 增加商铺详情
+             * @type {{}}
+             */
+            $scope.storeNew={};
+            $scope.addBuildingStructureStore = function(){
+                $scope.BuildingStructureStoreLists = [];
+                var getTd=document.getElementById("storeTable");
+                var rowsLength=getTd.rows.length;
+                for(var i=1;i<rowsLength;i++)
+                {
+                    $scope.BuildingStructureStorelist ={
+                        buildingStructureId:"",
+                        buildingId:"",
+                        projectId:"",
+                        storeTyoe:"",
+                        storeNumber:"",
+                        buildingArea:"",
+                        insideArea:"",
+                        commonalityArea:"",
+                        completionArea:"",
+                        intakeDate:"",
+                        storeCode:"",
+                        intakeState:"",
+                        storeId:""
+                    };
+                    //商铺新增功能调整  王洲  2016.02.25
+                    var bsh1 = getTd.rows[i].cells[0].getElementsByTagName("INPUT")[0].value;
+                    $scope.BuildingStructureStorelist.buildingStructureId = bsh1;
+                    var bsh9 = getTd.rows[i].cells[0].getElementsByTagName("INPUT")[1].value;
+                    $scope.BuildingStructureStorelist.buildingId = bsh9;
+                    var bsh10 = getTd.rows[i].cells[0].getElementsByTagName("INPUT")[2].value;
+                    $scope.BuildingStructureStorelist.projectId = bsh10;
+                    var storeId = getTd.rows[i].cells[0].getElementsByTagName("INPUT")[3].value;
+                    $scope.BuildingStructureStorelist.storeId = storeId;
+                    var bsh2 =getTd.rows[i].cells[2].getElementsByTagName("SELECT")[0].value;
+                    $scope.BuildingStructureStorelist.storeTyoe = bsh2;
+                    var bsh11 = getTd.rows[i].cells[10].getElementsByTagName("SELECT")[0].value;
+                    $scope.BuildingStructureStorelist.intakeState = bsh11;
+                    var bsh12 = getTd.rows[i].cells[3].getElementsByTagName("INPUT")[0].value;
+                    /*if(bsh12 == null || bsh12 == ""){
+                        layer.msg('商铺编码必须填写完整！',{icon : 0,time : 1000});
+                        return;
+                    }*/
+                    $scope.BuildingStructureStorelist.storeCode = bsh12;
+                    var bsh3 = getTd.rows[i].cells[4].getElementsByTagName("INPUT")[0].value;
+                    /*if(bsh3 == null || bsh3 == ""){
+                        layer.msg('商铺号必须填写完整！',{icon : 0,time : 2000});
+                        return;
+                    }*/
+                    $scope.BuildingStructureStorelist.storeNumber = bsh3;
+                    var bsh4 =getTd.rows[i].cells[5].getElementsByTagName("INPUT")[0].value;
+                    /*if(bsh4 == null || bsh4 == ""){
+                        layer.msg('建筑面积必须填写完整！',{icon : 0,time : 2000});
+                        return;
+                    }*/
+                    if(isNaN(bsh4)){
+                        layer.msg('建筑面积必须为数字！',{icon : 0,time : 2000});
+                        return;
+                    }
+                    $scope.BuildingStructureStorelist.buildingArea = bsh4;
+                    var bsh5 =getTd.rows[i].cells[6].getElementsByTagName("INPUT")[0].value;
+                    /*if(bsh5 == null || bsh5 == ""){
+                        layer.msg('套内面积必须填写完整！',{icon : 0,time : 2000});
+                        return;
+                    }*/
+                    if(isNaN(bsh5)){
+                        layer.msg('套内面积必须为数字！',{icon : 0,time : 2000});
+                        return;
+                    }
+                    $scope.BuildingStructureStorelist.insideArea = bsh5;
+                    var bsh6 =getTd.rows[i].cells[7].getElementsByTagName("INPUT")[0].value;
+                    /*if(bsh6 == null || bsh6 == ""){
+                        layer.msg('分摊面积必须填写完整！',{icon : 0,time : 2000});
+                        return;
+                    }*/
+                    if(isNaN(bsh6)){
+                        layer.msg('分摊面积必须为数字！',{icon : 0,time : 2000});
+                        return;
+                    }
+                    $scope.BuildingStructureStorelist.commonalityArea = bsh6;
+                    var bsh7 =getTd.rows[i].cells[8].getElementsByTagName("INPUT")[0].value;
+                    /*if(bsh7 == null || bsh7 == ""){
+                        layer.msg('竣工面积必须填写完整！',{icon : 0,time : 2000});
+                        return;
+                    }*/
+                    if(isNaN(bsh7)){
+                        layer.msg('竣工面积必须为数字！',{icon : 0,time : 2000});
+                        return;
+                    }
+                    $scope.BuildingStructureStorelist.completionArea = bsh7;
+                    var bsh8 =getTd.rows[i].cells[9].getElementsByTagName("INPUT")[0].value;
+                    /*if(bsh8 == null || bsh8 == ""){
+                        layer.msg('竣工日期必须填写完整！',{icon : 0,time : 2000});
+                        return;
+                    }*/
+                    $scope.BuildingStructureStorelist.intakeDate = bsh8;
+                    $scope.BuildingStructureStoreLists.push($scope.BuildingStructureStorelist);
+                }
+                $scope.storeNew.storeList = $scope.BuildingStructureStoreLists;
+                $http.post(url+'/StoreNew/addStoreNew',{StoreNew: $scope.storeNew}).success(function(){
+                    layer.alert('商铺信息修改成功！',{icon : 1});
+                    $scope.visibleStore = !$scope.visibleStore;
+                    $scope.BuildingStructureStoreLists={};
+                    $scope.selectBusiness();
+                }).error(function(data,status,headers,config){
+                    layer.alert('商铺信息修改失败！',{icon : 2});
+                });
+            };
+
+
+
+
+            /**---------------------------------------新增建筑(建筑结构配置)--------------------------------------------------**/
+            /**
+             * 新增子建筑(开始新增)显示文本框和保存按钮
+             * @param id  父建筑ID
+             */
+            $scope.enterSubNodeName=function(id){
+                $scope.currentBuildingNode=$scope.buildingMap[id];
+                $scope.currentBuildingNode.subNodeName='';
+                $scope.currentBuildingNode.editing=!$scope.currentBuildingNode.editing;
+            };
+            /**
+             * 新增子建筑(新增保存)
+             * @param id 父建筑ID
+             */
+            $scope.addBuildingNode=function(id){
+                var newBuilding={
+                    id:app.get('tyjUtil').uuid(),
+                    parentId:id,
+                    collapse:false,
+                    subNodeName:'',
+                    editing:false,
+                    buildingName:$scope.currentBuildingNode.subNodeName,
+                    /* areaNew:[],*/
+                    nodes:[]
+                };
+
+                //在映射中保存当前新增的子建筑
+                $scope.buildingMap[newBuilding.id]=newBuilding;
+                //当前新增的子建筑放入父建筑的nodes里面
+
+                $scope.buildingMap[id].nodes.push(newBuilding);
+                //收起保存栏
+                $scope.currentBuildingNode.editing=!$scope.currentBuildingNode.editing;
+                //新增加的结构信息
+                $scope.unsaveBuildingList.push(newBuilding);
+            };
+
+            $scope.saveBuildingStructure=function(){
+            };
+            /**---------------------------------------新增建筑(建筑详情配置)--------------------------------------------------**/
+            /**
+             * 建筑详情子项新增
+             */
+            $scope.buildingDetailItemAdd=function(){
+                $scope.buildingDetailNew.editing=true;
+            };
+            /**
+             * 建筑详情子项新增保存
+             */
+            $scope.buildingDetailNewItemSave=function(){
+                //生成主键
+                $scope.buildingDetailNew.id=app.get('tyjUtil').uuid();
+                //设置为非编辑状态
+                $scope.buildingDetailNew.editing=false;
+                //分别添加到Map和List中
+                $scope.buildingDetailList.push($scope.buildingDetailNew);
+                $scope.buildingDetailMap[$scope.buildingDetailNew.id]=$scope.buildingDetailNew;
+                //重置
+                $scope.buildingDetailNew={};
+            };
+            /**
+             * 建筑详情子项修改
+             * @param id 建筑详情子项ID
+             */
+            $scope.buildingDetailItemUpdate=function(id){
+                $scope.buildingDetailMap[id].editing=true;
+            };
+            /**
+             * 建筑详情子项删除
+             * @param id 建筑详情子项ID
+             */
+            $scope.buildingDetailItemDelete=function(id){
+                var temp=$scope.buildingDetailMap[id];
+                var index=$scope.buildingDetailList.indexOf(temp);
+                $scope.buildingDetailList.splice(index,1);
+                delete $scope.buildingDetailMap[id];
+            };
+            /**
+             * 建筑详情子项修改保存
+             * @param id 建筑详情子项ID
+             */
+            $scope.buildingDetailItemSave=function(id){
+                $scope.buildingDetailMap[id].editing=false;
+            };
+            /**
+             * 建筑详情的上一步按钮
+             * @param index 当前建筑详情页面下标
+             */
+            $scope.buildingDetailPrev=function(index){
+                $scope.buildingDetailList=[];
+                $scope.buildingDetailMap={};
+            };
+            /**
+             *
+             * 建筑详情的保存按钮
+             * @param index 当前建筑详情页面下标
+             */
+            $scope.buildingDetailSave=function(index){
+
+            };
+            /**
+             * 建筑详情的下一步按钮
+             * @param index 当前建筑详情页面下标
+             */
+            $scope.buildingDetailNext=function(index){
+                $scope.buildingDetailList=[];
+                $scope.buildingDetailMap={};
+            };
+            init();
+
+            /**
+             * 导入Excel数据文档
+             */
+            var fileUrl=$rootScope.fileUrl;    //上传的文件路径
+            var filePath='';          //上传文件的路径
+            $scope.annex={
+                annexAddress:'',
+                annexName:'',
+                relationId:''
+            };
+
+            $scope.inportExcel = function(){
+                $scope.exceltype = "house";
+                $scope.uploadPic();//修改上传图片模态框  王洲  2016.1.13
+            };
+            $scope.inportExcelStall = function(){
+                $scope.exceltype = "stall";
+                $scope.uploadPic();//修改上传图片模态框  王洲  2016.1.13
+            };
+            $scope.inportExcelStore = function(){
+                $scope.exceltype = "store";
+                $scope.uploadPic();//修改上传图片模态框  王洲  2016.1.13
+            };
+
+
+            //修改上传图片模态框  王洲  2016.1.13
+            $scope.uploadPic=function() {
+                $("#excelupload").remove();
+                $("#remove").append("<div id='excelupload' class='zyupload'></div>");
+                $(function () {
+                    // 初始化插件
+                    $("#excelupload").zyUpload({
+                        itemWidth: "140px",                 // 文件项的宽度
+                        itemHeight: "115px",                 // 文件项的高度
+                        url: fileUrl + "/FileService",  // 上传文件的路径
+                        fileType: ["xls", "xlsx"],          // 上传文件的类型
+                        fileSize: 51200000,                // 上传文件的大小
+                        multiple: true,                    // 是否可以多个文件上传
+                        dragDrop: true,                    // 是否可以拖动上传文件
+                        tailor: true,                    // 是否可以裁剪图片
+                        del: true,                    // 是否可以删除文件
+                        finishDel: false,  				  // 是否在上传文件完成后删除预览
+                        /* 外部获得的回调接口 */
+                        onSelect: function (selectFiles, allFiles) {    // 选择文件的回调方法  selectFile:当前选中的文件  allFiles:还没上传的全部文件
+                        },
+                        onDelete: function (file, files) {
+                        },
+                        onSuccess: function (file, response) {          // 文件上传成功的回调方法
+
+                            filePath = response;
+                            $scope.annex.annexAddress = filePath;
+                            $scope.annex.annexName = file.name;
+                            if ($scope.exceltype != "") {
+                                if ($scope.exceltype == "house") {
+                                    $http.post(url + "/HouseNew/importExcelFile", {Annex: $scope.annex}).success(function (data) {
+                                        layer.msg('导入成功！等待数据刷新！', {icon: 1, time: 2000});
+                                        $("#ddd").hide();
+                                        $scope.selectHouse();
+                                    });
+                                } else if ($scope.exceltype == "stall") {
+                                    $http.post(url + '/StallNew/importExcelFile', {Annex: $scope.annex}).success(function (data) {
+                                        layer.msg('导入成功！等待数据刷新！', {icon: 1, time: 2000});
+                                        $("#ddd").hide();
+                                        $scope.selectParking();
+                                    });
+                                } else if ($scope.exceltype == "store") {
+                                    $http.post(url + '/StoreNew/importExcelFile', {Annex: $scope.annex}).success(function (data) {
+                                        layer.msg('导入成功！等待数据刷新！', {icon: 1, time: 2000});
+                                        $("#ddd").hide();
+                                        $scope.selectBusiness();
+                                    });
+                                }
+                            } else {
+                                layer.msg('尚未选择excel需要导入的建筑结构类型', {icon: 0, time: 2000});
+                            }
+
+                        },
+                        onFailure: function (file, response) {          // 文件上传失败的回调方法
+                            layer.alert('此文件上传失败：', {icon: 2});
+                        },
+                        onComplete: function (response) {           	  // 上传完成的回调方法
+                        }
+                    });
+
+                });
+            };
+
+            /**
+             * 修改建筑结构名称
+             * 王洲
+             * 2016.02.24
+             * @param item
+             */
+            $scope.changeName = function(item){
+                layer.prompt({
+                    title : '请输入修改后的建筑名称',
+                    formType : 0
+                },function(val){
+                    if(val.replace(/\s/g,"").length == 0){
+                        layer.msg('输入的名字不能为空格！',{icon : 0,time : 1000});
+                    }else{
+                        $http.post(url + '/BuildingStructureNew/changeBuildName/' + item.id + '/' + val).success(function(data){
+                            if(data.Info.state == 'success'){
+                                layer.msg('修改成功！',{icon : 1,time : 1000});
+                                $scope.loadBuilding();
+                            }else{
+                                layer.msg('修改失败，请重试',{icon : 0,time : 1000});
+                            }
+                        }).error(function(data){
+                            layer.msg('修改出错，请重试！',{icon : 0,time : 1000});
+                        });
+                    }
+                });
+            };
+
+            $scope.finishBuilding = function(){
+                layer.confirm('是否完成建筑新增？',
+                    {btn : ['确定','取消']},
+                    function(){
+                        $http.post(url + '/projectCompletion/changeStateByProjectIdAndParamTypes/' + $scope.projectIds + '/' + 'building').success(function(data){
+                            if(data.Info.state == 'success'){
+                                layer.msg('操作成功！',{icon : 1,time : 1000});
+                                $scope.loadBuilding();
+                            }else {
+                                layer.msg('操作异常，请重试！',{icon : 0,time : 1000});
+                            }
+                        }).error(function(data){
+                            layer.msg('操作异常，请重试！',{icon : 0,time : 1000});
+                        });
+                    },function(){});
+            };
+
+            $scope.refeashHtml = function(){
+                window.location.reload();
+            };
+
+            var IDMark_A = "_a";
+            //var newCount = 1;
+            function addDiyDom(treeId, treeNode){
+                if (treeNode.parentNode && treeNode.parentNode.id!=2) return;
+                if(treeNode.id == 'root') return;
+                var aObj = $("#" + treeNode.tId + IDMark_A);
+                var editStr = "<select class='selDemo' id='diyBtn_" +treeNode.id+ "'><option value=0>无类型</option>";
+                //循环遍历面积类型数组，用于选择建筑面积类型  王洲  2016.1.12
+                if($scope.areaTypeToSelect.length > 0){
+                    for(var j = 0,lens = $scope.areaTypeToSelect.length; j < lens; j++){
+                        if($scope.areaTypeToSelect[j].areaTypeName == '住宅'){
+                            $scope.areaTypeToSelect[j].id = '1';
+                        }else if($scope.areaTypeToSelect[j].areaTypeName == '商铺'){
+                            $scope.areaTypeToSelect[j].id = '2';
+                        }else if($scope.areaTypeToSelect[j].areaTypeName == '车位'){
+                            $scope.areaTypeToSelect[j].id = '3';
+                        }else if($scope.areaTypeToSelect[j].areaTypeName == '公摊'){
+                            $scope.areaTypeToSelect[j].id = '4';
+                        }else if($scope.areaTypeToSelect[j].areaTypeName == '公建'){
+                            $scope.areaTypeToSelect[j].id = '5';
+                        }else {
+                            $scope.areaTypeToSelect[j].id = '';
+                        }
+                    }
+                    for(var i = 0,len = $scope.areaTypeToSelect.length; i < len; i++){
+                        editStr += "<option value ="+$scope.areaTypeToSelect[i].id+">"+$scope.areaTypeToSelect[i].areaTypeName+"</option>";
+                    }
+                }
+                editStr += "</select>";
+                aObj.after(editStr);
+                var btn = $("#diyBtn_"+treeNode.id);
+                if (btn) btn.bind("change", function(){
+                    // alert("diy Select value="+btn.find("option:selected").val()+" for " + treeNode.name);
+                    var zTree = $.fn.zTree.getZTreeObj("treeProjectConstruction");
+                    treeNode.types = btn.find("option:selected").val();
+                    zTree.updateNode(treeNode,true);
+                    return true;
+                });
+            };
+
+            //修改删除提示，删除确认，增加删除成功的提示  王洲  2016.1.21
+            function beforeRemove(treeId, treeNode) {
+                className = (className === "dark" ? "":"dark");
+                var zTree = $.fn.zTree.getZTreeObj("treeProjectConstruction");
+                zTree.selectNode(treeNode);
+                layer.msg('删除成功！',{icon : 1,time : 1000});
+            }
+
+
+            var newCount = 1;
+            function addHoverDom(treeId, treeNode) {
+                var sObj = $("#" + treeNode.tId + "_span");
+                if (treeNode.editNameFlag || $("#addBtn_"+treeNode.tId).length>0) return;
+                var addStr = "<span class='button add' id='addBtn_" + treeNode.tId
+                    + "' title='add node' onfocus='this.blur();'></span>";
+                sObj.after(addStr);
+                var btn = $("#addBtn_"+treeNode.tId);
+                if (btn) btn.bind("click", function(){
+                    var zTree = $.fn.zTree.getZTreeObj("treeProjectConstruction");
+                    zTree.addNodes(treeNode, {id:(1000 + newCount), pId:treeNode.id, name:"new node" + (newCount++),types:"",checked:true});
+                    return true;
+                });
+            };
+
+            function removeHoverDom(treeId, treeNode) {
+                $("#addBtn_"+treeNode.tId).unbind().remove();
+            };
+        }]);
+});

@@ -1,0 +1,2991 @@
+<!--
+    页面名称：任务详情【主页】
+    负责人：刘洋
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>任务详情</title>
+    <link rel="stylesheet" href="css/externalProfession/waterMeterInfo.css" type="text/css">
+    <link rel="stylesheet" href="bower_components/skins/zyupload-1.0.0.min.css " type="text/css">
+    <style type="text/css">
+        .rder_form_list{
+            width:100%;
+            overflow:auto;
+        }
+    </style>
+    <script type="text/javascript">
+        function bgChange(obj) {
+            obj.innerHTML = obj.innerHTML== "☆" ? "★" : "☆";
+        }
+    </script>
+
+</head>
+<body>
+<div>
+    <!--任务详情-->
+    <div class="user_information">
+        <table width="100%" border="0" cellpadding="0" cellspacing="0" style=" margin-top:5px; margin-bottom:5px;">
+            <tr>
+                <td align="center" valign="middle" bgcolor="#F4F4F4"><img src="images/staffHome/addCar.png" width="55" height="58"></td>
+                <td valign="top" bgcolor="#F4F4F4">
+                    <ul>
+                        <li> 客户姓名：{{Tasks.personCustNew.name}}</li>
+                        <li>创建时间：{{Tasks.createTime}}</li>
+                        <li>负责人&nbsp;&nbsp;&nbsp;：{{Tasks.staff.staffName}}</li>
+                    </ul>
+                </td>
+                <td valign="top" bgcolor="#F4F4F4">
+                    <ul>
+                        <li> 地&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;址：{{Tasks.buildingStructureNew.fullName}}</li>
+                        <li ng-switch on="Tasks.taskType">任务类型：      <span ng-switch-when="0">园林</span>
+                            <span ng-switch-when="1">维修</span>
+                            <span ng-switch-when="2">护管</span>
+                            <!--<span ng-switch-when="3">部门质检</span>-->
+                            <!--<span ng-switch-when="4">装修巡检</span>-->
+                            <!--<span ng-switch-when="5">装修验收</span>-->
+                            <!--<span ng-switch-when="6">施工巡检</span>-->
+                            <!--<span ng-switch-when="7">施工核查</span>-->
+                            <!--<span ng-switch-when="8">施工验收</span>-->
+                            <span ng-switch-when="9">赔偿给业主</span>
+                            <span ng-switch-when="10">向业主索赔</span>
+                            <span ng-switch-when="11">清洁</span>
+                            <span ng-switch-when="12">回访</span>
+                            <span ng-switch-when="13">咨询</span>
+                            <span ng-switch-when="22">维修</span>
+                        </li>
+                        <li ng-switch on="Tasks.taskState">任务状态：   <span ng-switch-when="0">关闭</span>
+                            <span ng-switch-when="1">重启</span>
+                            <span ng-switch-when="2">已完</span>
+                            <span ng-switch-when="3">已接</span>
+                            <span ng-switch-when="4">未接</span>
+                            <span ng-switch-when="5">转出</span>
+                            <span ng-switch-when="6">提交完成</span>
+                            <span ng-switch-when="7">处理</span>
+                            <span ng-switch-when="8">合并</span>
+                            <span ng-switch-when="9">转专项</span>
+                            <span ng-switch-when="10">转集中处理</span></li>
+                    </ul>
+                </td>
+                <td valign="top" bgcolor="#F4F4F4" class="word-wrap" style="max-width:300px;">
+                    <ul>
+                        <li>催办次数：<a data-toggle="modal" data-target="#showUrgeTask" style="cursor:pointer" ng-click="showUrgeTask()">{{UrgeTaskRecordsCount}}次</a></li>
+                        <li>延时次数：<a data-toggle="modal" data-target="#showApplicationDelay" style="cursor:pointer" ng-click="showApplicationDelay()">{{ApplicationDelayRecordsCount}}次</a></li>
+                        <li>描述：{{Tasks.taskDescription}}</li>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <!--任务详情 end-->
+    <!--处理进度-->
+    <div class="complaint_user" style="width:100%" >
+        <div class="rder_form_list  back_white radius border">
+
+        <table  border="0" cellspacing="0" cellpadding="0"width="100%" >
+            <tr>
+                <td style="width: 135px;text-align: center;"  ng-repeat="item in TasksJournal" ng-switch on="item.creOrderType" >
+                    <span ng-switch-when="0">报价</span>
+                    <span ng-switch-when="1">处理</span>
+                    <span ng-switch-when="2">验收</span>
+                    <span ng-switch-when="3">检测</span>
+                    <span ng-switch-when="4">结算</span>
+                    <span ng-switch-when="5">赔偿给业主</span>
+                    <span ng-switch-when="17">表扬</span>
+                    <span ng-switch-when="6">部门质检</span>
+                    <span ng-switch-when="8">申诉</span>
+                    <span ng-switch-when="7">回访</span>
+                    <span ng-switch-when="9">查抄水表</span>
+                    <span ng-switch-when="10">查抄电表</span>
+                    <span ng-switch-when="11">投诉</span>
+                    <span ng-switch-when="12">咨询</span>
+                    <span ng-switch-when="22">维修</span>
+                    <!--<span ng-switch-when="13">固定车位</span>-->
+                </td>
+                <td width="50" align="center">&nbsp;</td>
+                <td width="140">&nbsp;</td>
+                <td >&nbsp;</td>
+            </tr>
+            <tr>
+               <td ng-repeat="item in TasksJournal" style=" text-align: center;width: 135px;"  >
+                   <table width="150" border="0" cellspacing="0" cellpadding="0" id="tableTime">
+                       <tr class="progress_bar">
+                           <td align="center" valign="middle" width="50"><span class="line_blue"></span></td>
+                           <td align="center" valign="middle" width="25"  ><a ng-click="item1(item)" class="radius_25 back_blue  icon" ></a></td>
+                           <td align="center" valign="middle" width="50"><span class="line_blue"></span></td>
+                       </tr>
+                   </table>
+                </td>
+                <td width="140">&nbsp;</td>
+                <td >&nbsp;</td>
+            </tr>
+            <tr >
+                <td style="width: 135px; text-align: center" ng-repeat="item in TasksJournal">
+                    <span>{{item.operationTime }}</span>
+                </td>
+                <td width="50" align="center">&nbsp;</td>
+                <td width="140">&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+        </table>
+        </div>
+        <!--<div class="progress_bar   overflow_x">-->
+             <!--<a href="#" class="radius_25  back_blue  boder_white  icon"></a>-->
+            <!--<span class="line_blue"></span>-->
+            <!--<a href="#" class="radius_25  back_blue  boder_white  icon"></a>-->
+            <!--<span class="line_grey"></span>-->
+        <!--</div>-->
+        <div class="clear"></div>
+    </div>
+    <!--处理进度 end-->
+<!--新建工单-->
+    <div class="search_panner">
+        <!--新建工单选择-->
+        <div class="row rightpadding">
+            <div class="new_order_left "  ng-click="addTask()">
+                <a class="icon back_dark_black glyphicon glyphicon-plus white"></a>
+                <span >新建工单</span>
+            </div>
+            <div  ng-show="order"   class="col-md-4" >
+                <span>工单类型：</span>
+                <select  id="s">
+                    <option value="" >请选择工单类型</option>
+                    <option name="option2" id="option2" value="报价单" >报价单</option>
+                    <option name="option3" id="option3" value="检测" >检测</option>
+                    <option name="option4" id="option4" value="处理" >处理</option>
+                    <option name="option5" id="option5" value="验收" >验收</option>
+                    <option name="option6" id="option6" value="向业主索赔" >向业主索赔</option>
+                    <option name="option7" id="option7" value="表扬" >表扬</option>
+                    <option name="option8" id="option8" value="结算">结算</option>
+                    <option name="option9" id="option9" value="回访">回访</option>
+                    <option name="option10" id="option10" value="验房">验房</option>
+                    <option name="option11" id="option11" value="查抄水表">查抄水表</option>
+                    <option name="option16" id="option16" value="查抄电表">查抄电表</option>
+                    <option name="option12" id="option12" value="申诉工单">申诉工单</option>
+                    <option name="option13" id="option13" value="投诉工单">投诉工单</option>
+                    <option name="option14" id="option14" value="咨询工单">咨询工单</option>
+                    <option name="option15" id="option15" value="固定车位工单">固定车位工单</option>
+                    <option name="option17" id="option17" value="维修">维修</option>
+                    <option name="option18" id="option18" value="部门质检">部门质检单</option>
+                </select>
+            </div>
+            <div class="clear"></div>
+        </div>
+        <!--新建工单选择  END-->
+        <!--工单信息-->
+        <div class="row rightpadding" ng-show="order1" >
+            <!--新增报价单-->
+            <div class="col-lg-12 col-md-12 col-sm-6" id="div1" style="display:none;" >
+                <div class="re_panel">
+                    <div class="panel_title">
+                        <span class="panel_title_left">报价单</span>
+                        <span class="panel_title_right">
+                            <span class="icon glyphicon glyphicon-th-list back_dark_grey white"></span>
+                        </span>
+                    </div>
+                    <div class="panel_info">
+                        <div class="dot"></div>
+                        <div class="order_list">
+                            <ul>
+                                <li >
+                                    <a class="icon back_dark_black glyphicon glyphicon-plus" ng-click="addRow()"></a>
+                                    <span  >人工费添加行</span>
+                                    <div class="clear"></div>
+                                </li>
+                                <li>
+                                    <div class="table">
+                                        <table width="100%" border="0" cellpadding="0" cellspacing="0" id="artificial">
+                                            <tr class="table_nav">
+                                                <td>工种名称</td>
+                                                <td>数量</td>
+                                                <td>价格</td>
+                                                <td>操作</td>
+                                            </tr>
+                                            <tr ng-repeat="item1 in itemRecord0 ">
+                                            <td height="40" valign="middle"><input  type="text"  ></td>
+                                            <td height="40" valign="middle"><input  type="text" ></td>
+                                            <td height="40" valign="middle"><input  type="text"></td>
+                                            <td  height="40px" align="center" valign="middle">
+                                                <!--<input type="button"    ng-click="updateArea($index)" value="修改">-->
+                                                <a type="button"    ng-click="deleteArea1($index)" value="删除" class="del"></a>
+                                            </td>
+                                        </tr>
+                                        </table>
+                                    </div>
+                                </li>
+
+                                <li></li>
+                                <li >
+                                    <a class="icon back_dark_black glyphicon glyphicon-plus" ng-click="addRow1()"></a>
+                                    <span>物料费添加行</span>
+                                    <div class="clear"></div>
+                                </li>
+                                <li>
+                                    <div class="table">
+                                        <table width="100%" border="0" cellpadding="0" cellspacing="0" id="addIte">
+                                            <tr class="table_nav">
+                                                <td>物品名称</td>
+                                                <td>数量</td>
+                                                <td>价格</td>
+                                                <td>操作</td>
+                                            </tr>
+                                            <tr  ng-repeat="item2 in itemRecord1">
+                                                <td height="40" valign="middle"><input type="text"></td>
+                                                <td height="40" valign="middle"><input type="text"></td>
+                                                <td height="40" valign="middle"><input  type="text"></td>
+                                                <td   height="40px" align="center" valign="middle">
+
+                                                    <a type="button"    ng-click="deleteArea2($index)" value="删除" class="del"></a>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </li>
+
+                                <li></li>
+                                <li >
+                                    <a class="icon back_dark_black glyphicon glyphicon-plus" ng-click="add1()"></a>
+                                    <span >工具费添加行</span>
+                                    <div class="clear"></div>
+                                </li>
+                                <li>
+                                    <div class="table">
+                                        <table width="100%" border="0" cellpadding="0" cellspacing="0" id="tool">
+                                            <tr class="table_nav">
+                                                <td>工具名称</td>
+                                                <td>数量</td>
+                                                <td>价格</td>
+                                                <td>操作</td>
+                                            </tr>
+                                            <tr   ng-repeat="item3 in itemRecord2">
+                                                <td height="40" valign="middle"><input  type="text"></td>
+                                                <td height="40" valign="middle"><input  type="text"></td>
+                                                <td height="40" valign="middle"><input  type="text"></td>
+                                                <td height="40" valign="middle">
+                                                    <a type="button"  ng-click="deleteArea3($index)" value="删除" class="del"></a>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </li>
+                                <li></li>
+                                <li>
+                                    <div class="table">
+                                        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                            <tr class="table_nav">
+                                                <td></td>
+                                                <td>总额</td>
+                                                <td>折扣</td>
+                                                <td>最终价格</td>
+                                            </tr>
+                                            <tr >
+                                                <td height="40" valign="middle"><input type="button"  ng-click="calculation()" value="合计"></td>
+                                                <td height="40" valign="middle"><input ng-model="QuoteOrders.allTotal"></td>
+                                                <td height="40"  style="width: 30% " ><select style="align-content: center" ng-model="QuoteOrders.discount"  ng-options="a.id as a.value for a in at.ot" ><option value="">请选择折扣</option></select></td>
+                                                <td height="40" valign="middle"><input ng-model="QuoteOrders.finalPrice"></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span>备注</span>
+                                    <textarea ng-model="QuoteOrders.remarks"></textarea>
+                                    <div class="clear"></div>
+                                </li>
+
+                                <li>
+                                   <span> 附件上传：<button role="presentation" data-toggle="modal" data-target="#ddd" style="cursor:pointer" tabindex="-1" data-toggle="tab" ng-click="QuoteOrdersfile()">上传</button></span>
+
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!--提交按钮-->
+                    <div class="save_concel_botton contract_detail_botton">
+                        <a href="" class="radius_all button_bule" ng-click="cancel()">取消</a>
+                        <a href="" class="radius_all button_bule" ng-click="AddOrUpdateQuoteOrders(QuoteOrders.taskId)">保存</a>
+                        <div class="clear"></div>
+                    </div>
+                    <!--提交按钮 end-->
+                </div>
+            </div>
+            <!--新增报价单结束-->
+            <!--新建检测单-->
+            <div class="col-lg-12 col-md-12 col-sm-6"  ng-repeat="item in CheckOrdersService.checkItemRecords " id="div2" style="display:none;" >
+                <div class="re_panel">
+                    <div class="panel_title">
+                        <span class="panel_title_left">检测单</span>
+                        <span class="panel_title_right">
+                            <span class="icon glyphicon glyphicon-th-list back_dark_grey white"></span>
+                        </span>
+                    </div>
+                    <div class="panel_info">
+                        <div class="dot"></div>
+                        <div class="order_list">
+                            <ul>
+                                <li ng-click="addJian()">
+                                    <a class="icon back_dark_black glyphicon glyphicon-plus"></a>
+                                    <span>添加检测项目</span>
+                                    <div class="clear"></div>
+                                </li>
+                                <li>
+                                    <div  ng-repeat="item in CheckOrdersService.checkItemRecords track by $index" >
+
+                                        <div class="col-md-12">
+                                            <div class="col-md-2">检测项目：</div>
+                                            <div class="col-md-8"><input ng-model="item.checkItemName" style="width:100%">
+                                            </div><div class="col-md-1"><a type="button"  ng-click="deleteSonArea($index)" value="删除" class="icon back_dark_black glyphicon glyphicon-trash"></a></div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="col-md-2">检测结果：</div>
+                                            <div class="col-md-8"><textarea   ng-model="item.checkItemResult"  style="resize: none;width:100%">
+                                            </textarea></div></div>
+                                        <!--<table width="100%" cellpadding="0" cellspacing="0"  ng-repeat="item in CheckOrdersService.checkItemRecords track by $index" >-->
+                                            <!--<tr >-->
+                                                <!--<td><label>检测项目：</label></td>-->
+                                                <!--<td><input ng-model="item.checkItemName" ></td>-->
+                                                <!--<td width="10%">  <input type="button"    ng-click="deleteSonArea($index)" value="删除"></td>-->
+                                            <!--</tr>-->
+
+                                            <!--<tr>-->
+                                                <!--<td><label>检测结果：</label></td>-->
+                                                <!--<td><textarea   ng-model="item.checkItemResult"  style="resize: none;"></textarea></td>-->
+                                                <!--<td>&nbsp;&nbsp;</td>-->
+                                            <!--</tr>-->
+                                            <!--<tr><td>&nbsp;&nbsp;</td>-->
+                                                <!--<td>&nbsp;&nbsp;</td>-->
+                                                <!--<td>&nbsp;&nbsp;</td>-->
+                                            <!--</tr>-->
+                                        <!--</table>-->
+                                    </div>
+                                </li>
+                                <!--<li>-->
+                                    <!--<span>检测项目：</span>-->
+                                    <!--<input ng-model="item.checkItemName">-->
+                                    <!--<div class="clear"></div>-->
+                                <!--</li>-->
+                                <!--<li>-->
+                                    <!--<span>检测结果</span>-->
+                                    <!--<textarea  ng-model="item.checkItemResult"></textarea>-->
+                                    <!--<div class="clear"></div>-->
+                                <!--</li>-->
+                                <li>
+                                    <div class="col-md-12"><div class="col-md-2">意见建议：</div><div class="col-md-8"><textarea ng-model="CheckOrdersService.remarks"  style="resize: none;width: 100%"></textarea></div></div>
+                                    <!--<span>意见建议：</span>-->
+                                    <!--<textarea  ng-model="CheckOrdersService.remarks" style="resize: none;"></textarea>-->
+                                    <div class="clear"></div>
+                                </li>
+                                <li>
+                                    <span> 附件上传：<button role="presentation" data-toggle="modal" data-target="#ddd" style="cursor:pointer" tabindex="-1" data-toggle="tab" ng-click="CheckOrdersServicefile()">上传</button></span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!--提交按钮-->
+                    <div class="save_concel_botton contract_detail_botton">
+                        <a href="" class="radius_all button_bule"ng-click="cancel()">取消</a>
+                        <a href="" class="radius_all button_bule" ng-click="AddOrUpdateCheckOrdersService(CheckOrdersService.taskId)">保存</a>
+                        <div class="clear"></div>
+                    </div>
+                    <!--提交按钮 end-->
+                </div>
+            </div>
+            <!--新建检测单结束-->
+            <!--新建处理单-->
+            <div class="col-lg-12 col-md-12 col-sm-6" id="div3"style="display:none;" ng-repeat="item in DisposeOrder.informationRecords " >
+                <div class="re_panel">
+                    <div class="panel_title">
+                        <span class="panel_title_left">处理单</span>
+                        <span class="panel_title_right">
+                            <span class="icon glyphicon glyphicon-th-list back_dark_grey white"></span>
+                        </span>
+                    </div>
+                    <div class="panel_info">
+                        <div class="dot"></div>
+                        <div class="order_list">
+                            <ul>
+                                <li ng-click="addChu()">
+                                    <a class="icon back_dark_black glyphicon glyphicon-plus"></a>
+                                    <span  >添加处理项目</span>
+                                    <div class="clear"></div>
+                                </li>
+                                <li>
+                                    <div  ng-repeat="item in DisposeOrder.informationRecords track by $index" >
+                                        <div class="col-md-12"><div class="col-md-2">处理项名称：</div><div class="col-md-8"><input ng-model="item.checkItemName"  style="width:100%"></div><div class="col-md-1"><a type="button"  ng-click="deleteArea($index)" value="删除" class="icon back_dark_black glyphicon glyphicon-trash"></a></div></div>
+                                        <div class="col-md-12"><div class="col-md-2">处理结果&nbsp;&nbsp;&nbsp;：</div><div class="col-md-8"><textarea  ng-model="item.checkItemResult"  style="resize: none;width:100%"></textarea></div></div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="col-md-12"><div class="col-md-2">描述备注：</div><div class="col-md-8"><textarea ng-model="DisposeOrder.remarks"  style="resize: none;width:100%"></textarea></div></div>
+                                    <div class="clear"></div>
+                                </li>
+                                <li>
+                                    <span> 附件上传：<button role="presentation" data-toggle="modal" data-target="#ddd" style="cursor:pointer" tabindex="-1" data-toggle="tab"  ng-click="DisposeOrderfile()">上传</button></span>
+                                </li>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!--提交按钮-->
+                    <div class="save_concel_botton contract_detail_botton">
+                        <a href="" class="radius_all button_bule" ng-click="cancel()">取消</a>
+                        <a href="" class="radius_all button_bule"  ng-click="AddOrUpdateDisposeOrder(DisposeOrder.taskId)">保存</a>
+                        <div class="clear"></div>
+                    </div>
+                    <!--提交按钮 end-->
+                </div>
+            </div>
+            <!--新建处理单结束-->
+            <!--新建验收单-->
+            <div class="col-lg-12 col-md-12 col-sm-6" id="div4"style="display:none;" >
+                <div class="re_panel">
+                    <div class="panel_title">
+                        <span class="panel_title_left">验收单</span>
+                        <span class="panel_title_right">
+                            <span class="icon glyphicon glyphicon-th-list back_dark_grey white"></span>
+                        </span>
+                    </div>
+                    <div class="panel_info">
+                        <div class="dot"></div>
+                        <div class="order_list">
+                            <ul>
+                                <li>
+                                    <span>验收结果：</span>
+                                    <select select ng-options="a.id as a.value for a in apt.op" ng-model="AcceptanceOrders.acceptanceItemResult">
+                                        <option value="">请选择</option>
+                                    </select>
+                                    <div class="clear"></div>
+                                </li>
+                                <li>
+                                    <span>详情描述</span>
+                                    <textarea ng-model="AcceptanceOrders.remarks" name="aporemarks" required placeholder="请输入描述"></textarea>
+                                        <span class="spanInfo" ng-show="mainForm.aporemarks.$dirty && mainForm.aporemarks.$invalid">
+                                            <span ng-show="mainForm.aporemarks.$error.required">* 不能为空</span>
+                                        </span>
+                                    <div class="clear"></div>
+                                </li>
+                                <li>
+                                    <span> 附件上传：<button role="presentation" data-toggle="modal" data-target="#ddd" style="cursor:pointer" tabindex="-1" data-toggle="tab" ng-click="AcceptanceOrdersfile()">上传</button></span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!--提交按钮-->
+                    <div class="save_concel_botton contract_detail_botton">
+                        <a href="" class="radius_all button_bule" ng-click="cancel()">取消</a>
+                        <a href="" class="radius_all button_bule"  ng-click="AddOrUpdateAcceptanceOrders(AcceptanceOrders.taskId)">保存</a>
+                        <div class="clear"></div>
+                    </div>
+                    <!--提交按钮 end-->
+                </div>
+            </div>
+            <!--新建验收单结束-->
+            <!--新建赔偿给业主单-->
+            <div class="col-lg-12 col-md-12 col-sm-6" id="div5"style="display:none;" >
+                <div class="re_panel">
+                    <div class="panel_title">
+                        <span class="panel_title_left">赔偿给业主单</span>
+                        <span class="panel_title_right">
+                            <span class="icon glyphicon glyphicon-th-list back_dark_grey white"></span>
+                        </span>
+                    </div>
+                    <div class="panel_info">
+                        <div class="dot"></div>
+                        <div class="order_list">
+                            <ul>
+                                <li>
+                                    <span>赔付对象：</span>
+                                    <span>{{Tasks.personCustNew.name}}</span>
+                                    <div class="clear"></div>
+                                </li>
+                                <li>
+                                    <span>赔付金额：</span>
+                                    <input ng-model="CompensateOwnerService.compensateMethods.compensateSum">
+                                    <div class="clear"></div>
+                                </li>
+                                <li>
+                                    <span>赔付方式：</span>
+                                    <select ng-options="y.id as y.value for y in way.od" ng-model="CompensateOwnerService.compensateMethods.compensateMeans">
+                                        <option value="">请选择</option>
+                                    </select>
+                                    <div class="clear"></div>
+                                </li>
+                                <li>
+                                    <span>赔付周期：</span>
+                                    <select ng-options="d.id as d.value for d in cycle.oy" ng-model="CompensateOwnerService.compensateMethods.compensateCycle">
+                                        <option value="">请选择</option>
+                                    </select>
+                                    <div class="clear"></div>
+                                </li>
+                                <li>
+                                    <span>赔付时间：</span>
+                                    <input  type="date" class="form-control input-sm"  ng-model="CompensateOwnerService.compensateMethods.compensateStartTime">
+                                    <div class="clear"></div>
+                                </li>
+                                <li>
+                                    <span>详情描述</span>
+                                    <textarea ng-model="CompensateOwnerService.remarks" name="cosremarks" required placeholder="请输入描述"></textarea>
+                                        <span class="spanInfo" ng-show="mainForm.cosremarks.$dirty && mainForm.cosremarks.$invalid">
+                                            <span ng-show="mainForm.cosremarks.$error.required">* 不能为空</span>
+                                        </span>
+                                    <div class="clear"></div>
+                                </li>
+                                <li>
+                                    <span> 附件上传：<button role="presentation" data-toggle="modal" data-target="#ddd" style="cursor:pointer" tabindex="-1" data-toggle="tab" ng-click="CompensateOwnerServicefile()">上传</button></span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!--提交按钮-->
+                    <div class="save_concel_botton contract_detail_botton">
+                        <a href="" class="radius_all button_bule" ng-click="cancel()">取消</a>
+                        <a href="" class="radius_all button_bule"  ng-click="AddOrUpdateCompensateOwner(CompensateOwnerService.taskId)">保存</a>
+                        <div class="clear"></div>
+                    </div>
+                    <!--提交按钮 end-->
+                </div>
+            </div>
+            <!--新建赔偿给业主单结束-->
+            <!-- 新建表扬单 -->
+            <div class="col-lg-12 col-md-12 col-sm-6" id="div6"style="display:none;" >
+                <div class="re_panel">
+                    <div class="panel_title">
+                        <span class="panel_title_left">表扬单</span>
+                        <span class="panel_title_right">
+                            <span class="icon glyphicon glyphicon-th-list back_dark_grey white"></span>
+                        </span>
+                    </div>
+                    <div class="panel_info">
+                        <div class="dot"></div>
+                        <div class="order_list">
+                            <ul>
+
+                                <li>
+                                    <span>表扬对象姓名：</span>
+                                    <input   ng-model="PraiseOrders.praiseObjectName" name="posobjectname" required placeholder="请输入姓名">
+                                        <span class="spanInfo" ng-show="mainForm.posobjectname.$dirty && mainForm.posobjectname.$invalid">
+                                            <span ng-show="mainForm.posobjectname.$error.required">* 不能为空</span>
+                                        </span>
+                                    <div class="clear"></div>
+                                </li>
+                                <li>
+                                    <span>表扬说明</span>
+                                    <textarea ng-model="PraiseOrders.remarks" name="posremarks" required placeholder="请输入说明"></textarea>
+                                        <span class="spanInfo" ng-show="mainForm.posremarks.$dirty && mainForm.posremarks.$invalid">
+                                            <span ng-show="mainForm.posremarks.$error.required">* 不能为空</span>
+                                        </span>
+                                    <div class="clear"></div>
+                                </li>
+                                <li>
+                                    <span> 附件上传：<button role="presentation" data-toggle="modal" data-target="#ddd" style="cursor:pointer" tabindex="-1" data-toggle="tab" ng-click="PraiseOrdersServicefile()">上传</button></span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!--提交按钮-->
+                    <div class="save_concel_botton contract_detail_botton">
+                        <a href="" class="radius_all button_bule" ng-click="cancel()">取消</a>
+                        <a href="" class="radius_all button_bule"  ng-click="AddOrUpdatePraiseOrders(PraiseOrders.taskId)">保存</a>
+                        <div class="clear"></div>
+                    </div>
+                    <!--提交按钮 end-->
+                </div>
+             </div>
+            <!-- 新建表扬单结束 -->
+            <!--新建结算单-->
+            <div class="col-lg-12 col-md-12 col-sm-6" id="div7"style="display:none;" ng-repeat="item in SettleAccountsOrders.saiRecords ">
+                <div class="re_panel">
+                    <div class="panel_title">
+                        <span class="panel_title_left">结算单</span>
+                        <span class="panel_title_right">
+                            <span class="icon glyphicon glyphicon-th-list back_dark_grey white"></span>
+                        </span>
+                    </div>
+                    <div class="panel_info">
+                        <div class="dot"></div>
+                        <div class="order_list">
+                            <ul>
+                                <li>
+                                    <span>收费项目</span>
+                                    <span>收费金额</span>
+                                    <div class="clear"></div>
+                                </li>
+                                <li>
+                                    <span ng-model="item.itemName">人工费：</span>
+                                    <span  >{{personC.personCust1}}</span>元
+                                    <div class="clear"></div>
+                                </li>
+                                <li>
+                                    <span  ng-model="item.itemName">物料费：</span>
+                                    <span  >{{personC.wuLiaoCust1}}</span>元
+                                    <div class="clear"></div>
+                                </li>
+                                <li>
+                                    <span  ng-model="item.itemName">工具费：</span>
+                                    <span  >{{personC.toolCust1}}</span>元
+                                    <div class="clear"></div>
+                                </li>
+                                <li>
+                                    <span>共计：</span>
+                                    <span >{{Alltotall}}</span>元
+                                    <div class="clear"></div>
+                                </li>
+                                <li>
+                                    <span>实收：</span>
+                                    <span >{{personC.FinalPice}}</span>元
+                                    <div class="clear"></div>
+                                </li>
+                                <li>
+                                    <span>备注</span>
+                                    <textarea ng-model="SettleAccountsOrders.remarks"></textarea>
+                                    <div class="clear"></div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!--提交按钮-->
+                    <div class="save_concel_botton contract_detail_botton">
+                        <a href="" class="radius_all button_bule" ng-click="cancel()">取消</a>
+                        <a href="" class="radius_all button_bule"  ng-click="AddOrUpdateSettleAccountsOrders(SettleAccountsOrders.taskId)">保存</a>
+                        <div class="clear"></div>
+                    </div>
+                    <!--提交按钮 end-->
+                </div>
+            </div>
+            <!--新建结算单结束-->
+            <!--新建回访单-->
+            <div class="col-lg-12 col-md-12 col-sm-6" id="div8"style="display:none;">
+                <div class="re_panel">
+                    <div class="panel_title">
+                        <span class="panel_title_left">回访单</span>
+                        <span class="panel_title_right">
+                            <span class="icon glyphicon glyphicon-th-list back_dark_grey white"></span>
+                        </span>
+                    </div>
+                    <div class="panel_info">
+                        <div class="dot"></div>
+                        <div class="order_list">
+                            <ul>
+                                <li>
+                                    <span>完成情况</span>
+                                    <div  style="cursor: pointer">
+                                        <div class="formItemDiff2 formItemDiffFirst"></div>
+                                        <div class="formItemDiff2"></div>
+                                        <div class="formItemDiff2"></div>
+                                        <div class="formItemDiff2"></div>
+                                        <div class="formItemDiff2"></div>
+                                        <p id="pointA" style="float:left; margin-left:20px;"></p>
+                                    </div>
+                                    <div class="clear"></div>
+                                </li>
+                                <li>
+                                    <span>服务态度</span>
+                                    <div  style="cursor: pointer">
+                                        <div class="formItemDiff1 formItemDiffFirst"></div>
+                                        <div class="formItemDiff1"></div>
+                                        <div class="formItemDiff1"></div>
+                                        <div class="formItemDiff1"></div>
+                                        <div class="formItemDiff1"></div>
+
+                                        <p id="pointB" style="float:left; margin-left:20px;"></p>
+                                    </div>
+                                    <div class="clear"></div>
+                                </li>
+                                <li>
+                                    <span>处理时间</span>
+                                    <div  style="cursor: pointer">
+                                        <div class="formItemDiff formItemDiffFirst"></div>
+                                        <div class="formItemDiff"></div>
+                                        <div class="formItemDiff"></div>
+                                        <div class="formItemDiff"></div>
+                                        <div class="formItemDiff"></div>
+
+                                        <p id="pointP" style="float:left; margin-left:20px;"></p>
+                                    </div>
+                                    <div class="clear"></div>
+                                </li>
+
+                                <li>
+                                    <span>备注</span>
+                                    <textarea ng-model="ReturnVisitOrders.remarks"></textarea>
+                                    <div class="clear"></div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!--提交按钮-->
+                    <div class="save_concel_botton contract_detail_botton">
+                        <a href="" class="radius_all button_bule" ng-click="cancel()">取消</a>
+                        <a href="" class="radius_all button_bule"  ng-click="AddOrUpdateReturnVisitOrders(ReturnVisitOrders.taskId)">保存</a>
+                        <div class="clear"></div>
+                    </div>
+                    <!--提交按钮 end-->
+                </div>
+            </div>
+            <!--新建回访单结束-->
+            <!--新建验房单-->
+            <!--<div class="col-lg-12 col-md-12 col-sm-6" id="div9"style="display:none;">-->
+                <!--<div class="re_panel">-->
+                    <!--<div class="panel_title">-->
+                        <!--<span class="panel_title_left">验房单</span>-->
+                        <!--<span class="panel_title_right">-->
+                            <!--<span class="icon glyphicon glyphicon-th-list back_dark_grey white"></span>-->
+                        <!--</span>-->
+                    <!--</div>-->
+                    <!--<div class="panel_info">-->
+                        <!--<div class="dot"></div>-->
+                        <!--<div class="order_list">-->
+                            <!--<ul>-->
+                                <!--<li>-->
+                                    <!--<div class="table">-->
+                                        <!--<table width="100%" border="0" cellpadding="0" cellspacing="0">-->
+                                            <!--<tr class="table_nav">-->
+                                                <!--<td></td>-->
+                                                <!--<td>资产</td>-->
+                                                <!--<td>是否正常</td>-->
+                                                <!--<td>是否过保</td>-->
+                                                <!--<td>是否转售后</td>-->
+                                                <!--<td>问题描述</td>-->
+                                            <!--</tr>-->
+                                            <!--<tr ng-repeat="item1 in itemRecord0 ">-->
+                                                <!--<td height="40" valign="middle" width="20%"></td>-->
+                                                <!--<td height="40" valign="middle" width="20%"></td>-->
+                                                <!--<td height="40" valign="middle" width="15%"><input  type="checkbox" style="width: 15px;height: 15px;float: left">不正常</td>-->
+                                                <!--<td height="40" valign="middle" width="15%"></td>-->
+                                                <!--<td height="40" valign="middle" width="15%"><input  type="checkbox" style="width: 15px;height: 15px;float: left">转售后</td>-->
+                                                <!--<td height="40" valign="middle" width="15%"><select><option>物品缺失</option><option>损坏</option><option>无法使用</option></select></td>-->
+                                            <!--</tr>-->
+                                        <!--</table>-->
+                                    <!--</div>-->
+                                <!--</li>-->
+                                <!--<li>-->
+                                    <!--<span>备注</span>-->
+                                    <!--<textarea ></textarea>-->
+                                    <!--<div class="clear"></div>-->
+                                <!--</li>-->
+                                <!--<li>-->
+                                    <!--<span> 附件上传：<button role="presentation" data-toggle="modal" data-target="#ddd" style="cursor:pointer" tabindex="-1" data-toggle="tab" ng-click="CompensateOwnerServicefile()">上传</button></span>-->
+                                <!--</li>-->
+                            <!--</ul>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                    <!--提交按钮-->
+                    <!--<div class="save_concel_botton contract_detail_botton">-->
+                        <!--<a href="" class="radius_all button_bule" ng-click="cancel()">取消</a>-->
+                        <!--<a href="" class="radius_all button_bule"  ng-click="AddOrUpdateSettleAccountsOrders(SettleAccountsOrders.taskId)">保存</a>-->
+                        <!--<div class="clear"></div>-->
+                    <!--</div>-->
+                    <!--提交按钮 end-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--新建验房单结束-->
+            <!--新建查抄电表-->
+            <div class="col-lg-12 col-md-12 col-sm-6" id="div9" style="display: none">
+                <div class="re_panel">
+                    <div class="panel_title">
+                        <span class="panel_title_left">查抄电表</span>
+                            <span class="panel_title_right">
+                                <span class="icon glyphicon glyphicon-th-list back_dark_grey white"></span>
+                            </span>
+                    </div>
+                    <div class="panel_info">
+                        <div class="dot"></div>
+                        <div class="order_list">
+                            <ul>
+                                <li>
+                                    <span>电表编号：</span>
+                                    <input ng-model="ElectricityMeterRecords.electricityMeter.electricityMeterNum" readonly="true">
+                                    <div class="clear"></div>
+                                </li>
+
+                                <li>
+                                    <span>上次读数：</span>
+                                    <input ng-model="ElectricityMeterRecords.lastTimeReading" readonly="true">
+                                    <div class="clear"></div>
+                                </li>
+                                <li>
+                                    <span>本次读数：</span>
+                                    <input placeholder="本次读数" ng-model="MeterReadingRecords.waterMeterReading" name="mrrReading" required>
+                                        <span class="spanInfo" ng-show="mainForm.mrrReading.$dirty && mainForm.mrrReading.$invalid">
+                                            <span ng-show="mainForm.mrrReading.$error.required">* 不能为空</span>
+                                        </span>
+                                    <div class="clear"></div>
+                                </li>
+
+                                <li>
+                                    <span>备注</span>
+                                    <textarea ng-model="MeterReadingOrders.remarks"></textarea>
+                                    <div class="clear"></div>
+                                </li>
+
+                                <li>
+                                    <span> 附件上传：<button role="presentation" data-toggle="modal" data-target="#ddd" style="cursor:pointer" tabindex="-1" data-toggle="tab" ng-click="MeterReadingOrdersFiles()">上传</button></span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!--提交按钮-->
+                    <div class="save_concel_botton contract_detail_botton">
+                        <a href="" class="radius_all button_bule" ng-click="cancel()">取消</a>
+                        <a href="" class="radius_all button_bule"  ng-click="AddOrUpdateMeterReadingOrders()">保存</a>
+                        <div class="clear"></div>
+                    </div>
+                    <!--提交按钮 end-->
+                </div>
+            </div>
+            <!--新建查抄电表end-->
+            <!--新建查抄水表-->
+            <div class="col-lg-12 col-md-12 col-sm-6" id="div10" style="display: none">
+                <div class="re_panel">
+                    <div class="panel_title">
+                        <span class="panel_title_left">查抄水表</span>
+                            <span class="panel_title_right">
+                                <span class="icon glyphicon glyphicon-th-list back_dark_grey white"></span>
+                            </span>
+                    </div>
+                    <div class="panel_info">
+                        <div class="dot"></div>
+                        <div class="order_list">
+                            <ul>
+                                <li>
+                                    <span>水表编号：</span>
+                                    <input ng-model="WaterMeterRecords.waterMeter.waterMeterNum" readonly="true"/>
+                                    <div class="clear"></div>
+                                </li>
+
+                                <li>
+                                    <span>上次读数：</span>
+                                    <input ng-model="WaterMeterRecords.lastTimeReading" readonly="true"/>
+                                    <div class="clear"></div>
+                                </li>
+                                <li>
+                                    <span>本次读数：</span>
+                                    <input placeholder="本次读数" ng-model="WaterMeterOrderRecords.waterMeterReading" name="wmowmreading" required>
+                                        <span class="spanInfo" ng-show="mainForm.wmowmreading.$dirty && mainForm.wmowmreading.$invalid">
+                                            <span ng-show="mainForm.wmowmreading.$error.required">* 不能为空</span>
+                                        </span>
+                                    <div class="clear"></div>
+                                </li>
+
+                                <li>
+                                    <span>备注</span>
+                                    <textarea ng-model="waterMeterOrders.remarks" name="wmoremarks" required  placeholder="请输入备注"></textarea>
+                                        <span class="spanInfo" ng-show="mainForm.wmoremarks.$dirty && mainForm.wmoremarks.$invalid">
+                                            <span ng-show="mainForm.wmoremarks.$error.required">* 不能为空</span>
+                                        </span>
+                                    <div class="clear"></div>
+                                </li>
+
+                                <li>
+                                    <span> 附件上传：<button role="presentation" data-toggle="modal" data-target="#ddd" style="cursor:pointer" tabindex="-1" data-toggle="tab" ng-click="waterMeterOrderFiles()">上传</button></span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!--提交按钮-->
+                    <div class="save_concel_botton contract_detail_botton">
+                        <a href="" class="radius_all button_bule" ng-click="cancel()">取消</a>
+                        <a href="" class="radius_all button_bule"  ng-click="AddOrUpdateWaterMeterOrders()">保存</a>
+                        <div class="clear"></div>
+                    </div>
+                    <!--提交按钮 end-->
+                </div>
+                </div>
+            <!--新建查抄水表结束-->
+            <!--新建申诉单-->
+            <div class="col-lg-12 col-md-12 col-sm-6" id="div11" style="display: none">
+                <div class="re_panel">
+                    <div class="panel_title">
+                        <span class="panel_title_left">申诉单</span>
+                        <span class="panel_title_right">
+                            <span class="icon glyphicon glyphicon-th-list back_dark_grey white"></span>
+                        </span>
+                    </div>
+                    <div class="panel_info">
+                        <div class="dot"></div>
+                        <div class="order_list">
+                            <ul>
+                                <li>
+                                    <span>申诉说明：</span>
+                                    <textarea ng-model="AppealOrders.remarks" name="aloremarks" required  placeholder="请输入说明"></textarea>
+                                        <span class="spanInfo" ng-show="mainForm.aloremarks.$dirty && mainForm.aloremarks.$invalid">
+                                            <span ng-show="mainForm.aloremarks.$error.required">* 不能为空</span>
+                                        </span>
+                                    <div class="clear"></div>
+                                </li>
+                                <li>
+                                    <span> 附件上传：<button role="presentation" data-toggle="modal" data-target="#ddd" style="cursor:pointer" tabindex="-1" data-toggle="tab" ng-click="AppealOrdersfile()">上传</button></span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!--提交按钮-->
+                    <div class="save_concel_botton contract_detail_botton">
+                        <a href="" class="radius_all button_bule" ng-click="cancel()">取消</a>
+                        <a href="" class="radius_all button_bule"  ng-click="AddOrUpdateAppealOrders(AppealOrders.tasksId)">保存</a>
+                        <div class="clear"></div>
+                    </div>
+                    <!--提交按钮 end-->
+                </div>
+            </div>
+            <!--新建申诉单结束-->
+            <!--新建投诉单-->
+            <div class="col-lg-12 col-md-12 col-sm-6" id="div12" style="display: none">
+                <div class="re_panel">
+                    <div class="panel_title">
+                        <span class="panel_title_left">投诉单</span>
+                        <span class="panel_title_right">
+                            <span class="icon glyphicon glyphicon-th-list back_dark_grey white"></span>
+                        </span>
+                    </div>
+                    <div class="panel_info">
+                        <div class="dot"></div>
+                        <div class="order_list">
+                            <ul>
+                                <li>
+                                    <span>投诉对象姓名：</span>
+                                    <input style="width: 200px" name="closobjectname" type="text" ng-model="ComplainOrders.complaintObjectName" required placeholder="请输入姓名">
+                                        <span class="spanInfo" ng-show="mainForm.closobjectname.$dirty && mainForm.closobjectname.$invalid">
+                                            <span ng-show="mainForm.closobjectname.$error.required">* 不能为空</span>
+                                        </span>
+                                    <div class="clear"></div>
+                                </li>
+                                <li>
+                                    <span>投诉原因：</span>
+                                    <textarea ng-model="ComplainOrders.remarks" name="closremarks" required  placeholder="请输入说明"></textarea>
+                                        <span class="spanInfo" ng-show="mainForm.closremarks.$dirty && mainForm.closremarks.$invalid">
+                                            <span ng-show="mainForm.closremarks.$error.required">* 不能为空</span>
+                                        </span>
+                                    <div class="clear"></div>
+                                </li>
+                                <li>
+                                    <span>附件上传：<button role="presentation" data-toggle="modal" data-target="#ddd" style="cursor:pointer" data-toggle="tab" ng-click="ComplainFile()">上传</button></span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!--提交按钮-->
+                    <div class="save_concel_botton contract_detail_botton">
+                        <a href="" class="radius_all button_bule" ng-click="cancel()">取消</a>
+                        <a href="" class="radius_all button_bule"  ng-click="AddOrUpdateComplainFile(ComplainOrders.tasksId)">保存</a>
+                        <div class="clear"></div>
+                    </div>
+                    <!--提交按钮 end-->
+                </div>
+            </div>
+            <!--新建投诉单结束-->
+            <!--新建咨询单-->
+            <div class="col-lg-12 col-md-12 col-sm-6" id="div13" style="display: none">
+                <div class="re_panel">
+                    <div class="panel_title">
+                        <span class="panel_title_left">咨询单</span>
+                        <span class="panel_title_right">
+                            <span class="icon glyphicon glyphicon-th-list back_dark_grey white"></span>
+                        </span>
+                    </div>
+
+                    <div class="row search-padding-10">
+                        <div class="col-lg-6 col-md-6 col-sm-3">
+                            <div class="col-lg-4 col-md-4 col-sm-2">客户问题</div>
+                            <div class="col-lg-8 col-md-8 col-sm-4">
+                                <input id="faqquestion" type="text" ng-model="ConsultationOrders.problemRemarks" name="cloproblemRemarks" ng-change="changeFaqs()">
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-2">处理说明</div>
+                            <div class="col-lg-8 col-md-8 col-sm-4">
+                                <textarea ng-model="ConsultationOrders.remarks" name="cloremerk" required  placeholder="处理说明"></textarea>
+                                <span class="spanInfo" ng-show="mainForm.cloremerk.$dirty && mainForm.cloremerk.$invalid">
+                                    <span ng-show="mainForm.cloremerk.$error.required">* 不能为空</span>
+                                </span>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-2">引用</div>
+                            <div class="col-lg-8 col-md-8 col-sm-4">
+                                <textarea id="faqId" name="clofaqQuestionId" required  placeholder="引用"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-3">
+                            <div class="col-lg-12 col-md-12 col-sm-6">FAQ检索</div>
+                            <div class="col-lg-8 col-md-8 col-sm-4">
+                                <input type="text" ng-model="Faqs.faqQuestionName" />
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-2">
+                                <button class="btn btn-primary cursor_pointer" ng-click="getFaqs()">查询</button>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-6">查询结果</div>
+                            <div class="col-lg-12 col-md-12 col-sm-6">
+                                <button class="btn btn-primary cursor_pointer" ng-click="addFaqToConsultationOrders()">引用</button>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-6">
+                                <div ng-repeat="item in FaqsList">
+                                    <input type="checkbox" id="{{item.faqQuestionId}}" name="faqQuestionId" ng-click="addfaqType(item.faqQuestionId)" />
+                                    <div>
+                                        问题编号：{{item.faqQuestionNum}}<br/>
+                                        问：{{item.faqQuestionName}}<br/>
+                                        答：{{item.faqQuestionAnswer}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--提交按钮-->
+                    <div class="save_concel_botton contract_detail_botton">
+                        <a href="" class="radius_all button_bule" ng-click="cancel()">取消</a>
+                        <a href="" class="radius_all button_bule"  ng-click="AddOrUpdateConsultationFile(ConsultationOrders.tasksId)">保存</a>
+                        <div class="clear"></div>
+                    </div>
+                    <!--提交按钮 end-->
+                </div>
+            </div>
+            <!--新建咨询单结束-->
+            <!--新建固定车位工单-->
+            <div class="col-lg-12 col-md-12 col-sm-6" id="div14" style="display: none"><form id="css_form" name="mainForm" novalidate>
+                <div class="re_panel">
+                    <div class="panel_title">
+                        <span class="panel_title_left">固定车位工单</span>
+                        <span class="panel_title_right">
+                            <span class="icon glyphicon glyphicon-th-list back_dark_grey white"></span>
+                        </span>
+                    </div>
+                    <div class="panel_info">
+                        <div class="dot"></div>
+                        <div class="order_list">
+                            <ul>
+                                <li>
+                                    <span>操作：</span>
+                                    <form class="form-inline">
+                                        <div class="form-group">
+                                            <input style="width: 15px;height:15px" name="name1" type="radio" value="0" ng-model="FixedParkingOrders.parkingOperation"><span>取消固定车位</span>
+                                            <input style="width: 15px;height:15px" name="name2" type="radio" value="1" ng-model="FixedParkingOrders.parkingOperation">开启固定车位<span></span>
+                                        </div>
+                                    </form>
+                                    <div class="clear"></div>
+                                </li>
+                                <li>
+                                    <span>投诉原因：</span>
+                                    <textarea ng-model="FixedParkingOrders.remarks" name="fpooperator" required  placeholder="请输入投诉原因"></textarea>
+                                        <span class="spanInfo" ng-show="mainForm.fpooperator.$dirty && mainForm.fpooperator.$invalid">
+                                            <span ng-show="mainForm.fpooperator.$error.required">* 不能为空</span>
+                                        </span>
+                                    <div class="clear"></div>
+                                </li>
+                                <li>
+                                    <span>附件上传：</span>
+                                    <button role="presentation" data-toggle="modal" data-target="#ddd" style="cursor:pointer" data-toggle="tab" ng-click="FixedParkingFile()">上传</button>
+                                    <img src={{fileUrl}}/{{FixedParkingOrders.annexs.annexAddress}}>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!--提交按钮-->
+                    <div class="save_concel_botton contract_detail_botton">
+                        <a href="" class="radius_all button_bule" ng-click="cancel()">取消</a>
+                        <a href="" class="radius_all button_bule"  ng-click="AddOrUpdateFixedParkingFile(FixedParkingOrders.tasksId)">保存</a>
+                        <div class="clear"></div>
+                    </div>
+                    <!--提交按钮 end-->
+                </div></form>
+            </div>
+            <!--新建固定车位工单结束-->
+            <!--新增维修单-->
+            <div class="col-lg-12 col-md-12 col-sm-6" id="div15" style="display:none;" >
+                <div class="re_panel">
+                    <div class="panel_title">
+                        <span class="panel_title_left">维修单</span>
+                        <span class="panel_title_right">
+                            <span class="icon glyphicon glyphicon-th-list back_dark_grey white"></span>
+                        </span>
+                    </div>
+                    <div class="panel_info">
+                        <div class="dot"></div>
+                        <div class="order_list">
+                            <ul>
+                                <li >
+                                    <a class="icon back_dark_black glyphicon glyphicon-plus" ng-click="addRow()"></a>
+                                    <span  >人工费添加行</span>
+                                    <div class="clear"></div>
+                                </li>
+                                <li>
+                                    <div class="table">
+                                        <table width="100%" border="0" cellpadding="0" cellspacing="0" id="artificial">
+                                            <tr class="table_nav">
+                                                <td>工种名称</td>
+                                                <td>数量</td>
+                                                <td>价格</td>
+                                                <td>操作</td>
+                                            </tr>
+                                            <tr ng-repeat="item1 in itemRecord0 ">
+                                                <td height="40" valign="middle"><input  type="text"  ></td>
+                                                <td height="40" valign="middle"><input  type="text" ></td>
+                                                <td height="40" valign="middle"><input  type="text"></td>
+                                                <td  height="40px" align="center" valign="middle">
+                                                    <!--<input type="button"    ng-click="updateArea($index)" value="修改">-->
+                                                    <a type="button"    ng-click="deleteArea1($index)" value="删除" class="del"></a>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </li>
+
+                                <li></li>
+                                <li >
+                                    <a class="icon back_dark_black glyphicon glyphicon-plus" ng-click="addRow1()"></a>
+                                    <span>物料费添加行</span>
+                                    <div class="clear"></div>
+                                </li>
+                                <li>
+                                    <div class="table">
+                                        <table width="100%" border="0" cellpadding="0" cellspacing="0" id="addIte">
+                                            <tr class="table_nav">
+                                                <td>物品名称</td>
+                                                <td>数量</td>
+                                                <td>价格</td>
+                                                <td>操作</td>
+                                            </tr>
+                                            <tr  ng-repeat="item2 in itemRecord1">
+                                                <td height="40" valign="middle"><input type="text"></td>
+                                                <td height="40" valign="middle"><input type="text"></td>
+                                                <td height="40" valign="middle"><input  type="text"></td>
+                                                <td   height="40px" align="center" valign="middle">
+
+                                                    <a type="button"    ng-click="deleteArea2($index)" value="删除" class="del"></a>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </li>
+
+                                <li></li>
+                                <li >
+                                    <a class="icon back_dark_black glyphicon glyphicon-plus" ng-click="add1()"></a>
+                                    <span >工具费添加行</span>
+                                    <div class="clear"></div>
+                                </li>
+                                <li>
+                                    <div class="table">
+                                        <table width="100%" border="0" cellpadding="0" cellspacing="0" id="tool">
+                                            <tr class="table_nav">
+                                                <td>工具名称</td>
+                                                <td>数量</td>
+                                                <td>价格</td>
+                                                <td>操作</td>
+                                            </tr>
+                                            <tr   ng-repeat="item3 in itemRecord2">
+                                                <td height="40" valign="middle"><input  type="text"></td>
+                                                <td height="40" valign="middle"><input  type="text"></td>
+                                                <td height="40" valign="middle"><input  type="text"></td>
+                                                <td height="40" valign="middle">
+                                                    <a type="button"  ng-click="deleteArea3($index)" value="删除" class="del"></a>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </li>
+                                <li></li>
+                                <li>
+                                    <div class="table">
+                                        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                            <tr class="table_nav">
+                                                <td></td>
+                                                <td>总额</td>
+                                                <td>折扣</td>
+                                                <td>最终价格</td>
+                                            </tr>
+                                            <tr >
+                                                <td height="40" valign="middle"><input type="button"  ng-click="calculation()" value="合计"></td>
+                                                <td height="40" valign="middle"><input ng-model="QuoteOrders.allTotal"></td>
+                                                <td height="40"  style="width: 30% " ><select style="align-content: center" ng-model="QuoteOrders.discount"  ng-options="a.id as a.value for a in at.ot" ><option value="">请选择折扣</option></select></td>
+                                                <td height="40" valign="middle"><input ng-model="QuoteOrders.finalPrice"></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span>备注</span>
+                                    <textarea ng-model="RepairOrders.remarks"></textarea>
+                                    <div class="clear"></div>
+                                </li>
+
+                                <li>
+                                    <span> 附件上传：<button role="presentation" data-toggle="modal" data-target="#ddd" style="cursor:pointer" tabindex="-1" data-toggle="tab" ng-click="repairOrdersfile()">上传</button></span>
+
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!--提交按钮-->
+                    <div class="save_concel_botton contract_detail_botton">
+                        <a href="" class="radius_all button_bule" ng-click="cancel()">取消</a>
+                        <a href="" class="radius_all button_bule" ng-click="AddOrUpdateRepairOrders(RepairOrders.taskId)">保存</a>
+                        <div class="clear"></div>
+                    </div>
+                    <!--提交按钮 end-->
+                </div>
+            </div>
+
+            <!--新增部门质检单-->
+            <div class="col-lg-12 col-md-12 col-sm-6" id="div16" style="display:none;" >
+                <div id="content-first">
+                    <!--tab页切换开始-->
+                    <div id="tab">
+                        <a lang="no">部门检查</a>
+                    </div>
+                    <div class="padding">
+                        <div class="row search-padding-10">
+                            <div class="col-lg-1 col-md-2 col-sm-2">检查对象</div>
+                            <div class="col-lg-11 col-md-10 col-sm-10">
+                                <select class="form-control" ng-model="DepartmentOrders.orderWriter" ng-options="p.staffName for p in staffs">
+                                    <option>请选择</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row search-padding-10">
+                            <div class="col-lg-1 col-md-2 col-sm-2">乔木</div>
+                            <div  style="cursor: pointer">
+                                <div class="formItemDiff2 formItemDiffFirst"></div>
+                                <div class="formItemDiff2"></div>
+                                <div class="formItemDiff2"></div>
+                                <div class="formItemDiff2"></div>
+                                <div class="formItemDiff2"></div>
+                                <p id="pointP" style="float:left; margin-left:20px;"></p>
+                            </div>
+                        </div>
+
+
+                            <div class="col-lg-1 col-md-2 col-sm-2">备注</div>
+                            <div class="col-lg-11 col-md-10 col-sm-10"><textarea class="form-control" ng-model="DepartmentOrders.remarks"></textarea></div>
+                        </div>
+                        <div class=" search-padding-10">
+                            附件列表：<button class="btn btn-default btn-primary" role="presentation" data-toggle="modal" data-target="#ddd" style="cursor:pointer" tabindex="-1" data-toggle="tab" ng-click="uploadDepartmentOrders()">上传</button>
+                        </div>
+                        <div class=" search-padding-10 text_center">
+                                <a  ng-repeat="item in DepartmentOrders.annexs"  ng-show="item.annexAddress != null">
+                                    <img src={{fileUrl}}/{{item.annexAddress}} width="80px" height="80px">
+                                </a>
+
+                        </div>
+                        <div class="search-padding-10 text_center">
+                            <button type="button" class="btn btn-default btn-primary" >
+                                取消
+                            </button>
+                            <button type="button" class="btn btn-default btn-primary" ng-click="addDepartmentOrders()">
+                                提交
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+
+
+        </div>
+        <!--工单信息END-->
+        <!--工单详情-->
+        <div class="row rightpadding">
+            <!--报价单详情-->
+            <div class="col-lg-12 col-md-12 col-sm-6" ng-show="typeShow==1">
+                <div class="re_panel">
+                    <div class="panel_title">
+                        <span class="panel_title_left" ng-switch on="aa.quoteOrders.orderType">  <span ng-switch-when="0">报价单</span>
+                            <span ng-switch-when="1">处理单</span>
+                            <span ng-switch-when="2">验收单</span>
+                            <span ng-switch-when="3">检测单</span>
+                            <span ng-switch-when="4">结算单</span></span>
+                         <span class="panel_title_right">
+                                                     <ul class="pull-down_menu">
+                                                         <li><span class="icon glyphicon glyphicon-th-list back_dark_grey white"></span>
+                                                             <ul>
+                                                                 <li data-toggle="modal" data-target="#QuoteOrders" style="cursor:pointer" tabindex="-1" data-toggle="tab">关闭</li>
+                                                                 <li>重启</li>
+                                                                 <li>复制</li>
+                                                             </ul>
+                                                         </li>
+                                                     </ul>
+                                                </span>
+
+                    </div>
+                    <div class="panel_info">
+                        <div class="dot"></div>
+                        <div class="form_list">
+                            <ul class="receive_list">
+                                <li ng-switch on="aa.quoteOrders.orderState">
+                                    <span>工单状态：</span>
+                                 <!--<span ng-switch on="aa.quoteOrders.orderState">-->
+                                         <span  ng-switch-when="0">关闭</span>
+                                         <span ng-switch-when="1">已完成</span>
+                                 <!--</span>-->
+
+                                </li>
+                                <!--<li class="merge"><span></span></li>-->
+                                <li><span>人工费：</span><span>{{personCust}}</span></li>
+                                <li><span>物料费：</span><span>{{wuLiaoCust}}</span></li>
+                                <li><span>工具费：</span><span>{{toolCust}}</span></li>
+                                <li><span>总价：</span><span>{{aa.quoteOrders.allTotal}}</span></li>
+                                <li><span>折扣：</span><span>{{aa.quoteOrders.discount}}</span></li>
+                                <li><span>最终价格：</span><span>{{aa.quoteOrders.finalPrice}}</span></li>
+                                <li><span>负责人：</span><span>{{aa.tasks.staff.staffName}}</span></li>
+
+                                <li><span>完成时间：</span><span>{{aa.operationTime}}</span></li>
+                                <li ng-show="closed"><span>关闭时间：</span><span>{{aa.quoteOrders.closeTime}}</span></li>
+                                <li ng-show="closed"><span>关闭操作人：</span><span>{{aa.quoteOrders.closePerson}}</span></li>
+                                <li><span>备注说明：</span><span>{{aa.quoteOrders.remarks}}</span></li>
+                                <li ng-show="closed"><span>关闭原因：</span><span>{{aa.quoteOrders.closeRemarks}}</span></li>
+                                <li >
+                                    <span >业主签名：</span>
+                                    <img src={{fileUrl}}/{{aa.quoteOrders.annexs.annexAddress}}  >
+                                    {{aa.quoteOrders.annexs.annexName}}
+                                </li>
+                                <li><span></span></li>
+                                <li><span></span></li>   <li><span></span></li>
+
+                                <div class="clear"></div>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--报价单详情结束-->
+            <!--检测单详情-->
+            <div class="col-lg-12 col-md-12 col-sm-6"ng-show="typeShow==2">
+                <div class="re_panel">
+                    <div class="panel_title">
+                        <span class="panel_title_left" ng-switch on="aa.checkOrders.orderType">  <span ng-switch-when="0">报价单</span>
+                            <span ng-switch-when="1">处理单</span>
+                            <span ng-switch-when="2">验收单</span>
+                            <span ng-switch-when="3">检测单</span>
+                            <span ng-switch-when="4">结算单</span></span>
+                                 <span class="panel_title_right">
+                             <ul class="pull-down_menu">
+                        <li><span class="icon glyphicon glyphicon-th-list back_dark_grey white"></span>
+                            <ul>
+                                        <li data-toggle="modal" data-target="#CheckOrders" style="cursor:pointer" tabindex="-1" data-toggle="tab">关闭</li>
+                                        <li>重启</li>
+                                        <li>复制</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </span>
+
+                    </div>
+                    <div class="panel_info">
+                        <div class="dot"></div>
+                        <div class="form_list">
+                            <ul class="receive_list">
+                                <li ng-switch on="aa.checkOrders.orderState"><span>工单状态：</span>
+                                    <!--<span ng-switch on="aa.checkOrders.orderState">-->
+                                        <span  ng-switch-when="0">关闭</span >
+                                        <span  ng-switch-when="1">已完成</span >
+                                     <!--</span>-->
+                                </li>
+                                <!--<li class="merge"><span></span></li>-->
+                                <li><span>完成时间：</span><span>{{aa.operationTime}}</span></li>
+                                <li ng-repeat="am in aa.checkOrders.checkItemRecords " ng-show="am.recordId !=null"><span>检测项目：</span><span>{{am.checkItemName}}</span></li>
+                                <li ng-repeat="am in aa.checkOrders.checkItemRecords " ng-show="am.recordId !=null"><span>检测结果：</span><span> {{am.checkItemResult}}</span></li>
+                                <li><span>负责人：</span><span>{{aa.tasks.staff.staffName}}</span></li>
+                                <li><span>意见建议：</span><span>{{aa.checkOrders.remarks}}</span></li>
+                                <li ng-show="closed"><span>关闭时间：</span><span>{{aa.checkOrders.closeTime}}</span></li>
+                                <li ng-show="closed"><span>关闭操作人：</span><span>{{aa.checkOrders.closePerson}}</span></li>
+                                <li ng-show="closed"> <span>关闭原因：</span><span>{{aa.checkOrders.closeRemarks}}</span></li>
+                                <li >
+                                    <span >附件：</span>
+                                    <span>
+                                         <img src={{fileUrl}}/{{aa.checkOrders.annexs.annexAddress}}>
+                                    {{aa.checkOrders.annexs.annexName}}
+                                    </span>
+                                </li>
+                                <div class="clear"></div>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--检测单详情结束-->
+            <!--处理单详情-->
+            <div class="col-lg-12 col-md-12 col-sm-6" ng-show="typeShow==3">
+                <div class="re_panel">
+                    <div class="panel_title">
+                        <span class="panel_title_left" ng-switch on="aa.disposeOrder.orderType">  <span ng-switch-when="0">报价单</span>
+                            <span ng-switch-when="1">处理单</span>
+                            <span ng-switch-when="2">验收单</span>
+                            <span ng-switch-when="3">检测单</span>
+                            <span ng-switch-when="4">结算单</span></span>
+                                <span class="panel_title_right">
+                                                     <ul class="pull-down_menu">
+                                                         <li><span class="icon glyphicon glyphicon-th-list back_dark_grey white"></span>
+                                                             <ul>
+                                                                 <li data-toggle="modal" data-target="#DisposeOrder" style="cursor:pointer" tabindex="-1" data-toggle="tab">关闭</li>
+                                                                 <li>重启</li>
+                                                                 <li>复制</li>
+                                                             </ul>
+                                                         </li>
+                                                     </ul>
+                                                </span>
+                                        <!--<span class="panel_title_right">-->
+                                                                      <!--<span class="complaint1_panel_info_navigation">-->
+                                                                            <!--<ul>-->
+                                                                                       <!--<li><a href="#" class="dropdown-toggle btn-lg" data-toggle="dropdown" role="button" aria-expanded="false"> <span class="icon glyphicon glyphicon-th-list back_dark_grey white" aria-hidden="true"></span></a>-->
+                                                                                               <!--<ul>-->
+                                                                                                        <!--<li role="presentation" data-toggle="modal" data-target="#DisposeOrder" style="cursor:pointer" tabindex="-1" data-toggle="tab" >关闭</li>-->
+                                                                                                        <!--<li role="presentation" tabindex="-1" data-toggle="tab">打印</li><li role="presentation" tabindex="-1" data-toggle="tab">重启</li>-->
+                                                                                                         <!--<li role="presentation"  tabindex="-1" data-toggle="tab">传阅</li>-->
+                                                                                               <!--</ul>-->
+                                                                                       <!--</li>-->
+                                                                              <!--</ul>-->
+                                                                      <!--</span>-->
+                                        <!--</span>-->
+                    </div>
+                    <div class="panel_info">
+                        <div class="dot"></div>
+                        <div class="form_list">
+                            <ul class="receive_list">
+                                <li ng-switch on="aa.disposeOrder.orderState"><span>工单状态：</span>
+                                    <!--<span ng-switch on="aa.disposeOrder.orderState">-->
+                                        <span  ng-switch-when="0">关闭</span>
+                                        <span ng-switch-when="1">已完成</span>
+                                     <!--</span>-->
+                                </li>
+                                <li class="merge">处理时间：{{aa.operationTime|date:"yyyy-MM-dd"}}</li>
+                                <li ng-repeat="ch in aa.disposeOrder.informationRecords" ng-show="ch.recordId !=null">处理项名称：{{ch.checkItemName}}<br>处理结果：{{ch.checkItemResult}}</li>
+                                <!--<li ng-repeat="ch in aa.disposeOrder.informationRecords" ng-show="ch.recordId !=null">处理结果：{{ch.checkItemResult}}</li>-->
+                                <li>负责人：{{aa.tasks.staff.staffName}}</li>
+                                <li>备注说明：{{aa.disposeOrder.remarks}}</li>
+                                <li ng-show="closed">关闭时间：{{aa.disposeOrder.closeTime}}</li>
+                                <li ng-show="closed">关闭操作人：{{aa.disposeOrder.closePerson}}</li>
+                                <li ng-show="closed">关闭原因：{{aa.disposeOrder.closeRemarks}}</li>
+                                <li>
+                                    <span>附件：</span>
+                                    <img src={{fileUrl}}/{{aa.disposeOrder.annexs.annexAddress}}  >
+                                </li>
+                                <div class="clear"></div>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--处理单详情结束-->
+            <!--验收单详情-->
+            <div class="col-lg-12 col-md-12 col-sm-6" ng-show="typeShow==4">
+                <div class="re_panel">
+                    <div class="panel_title">
+                        <span class="panel_title_left" ng-switch on="aa.acceptanceOrders.orderType">
+                            <span ng-switch-when="0">报价单</span>
+                            <span ng-switch-when="1">处理单</span>
+                            <span ng-switch-when="2">验收单</span>
+                            <span ng-switch-when="3">检测单</span>
+                            <span ng-switch-when="4">结算单</span>
+                        </span>
+                         <span class="panel_title_right">
+                                                     <ul class="pull-down_menu">
+                                                         <li><span class="icon glyphicon glyphicon-th-list back_dark_grey white"></span>
+                                                             <ul>
+                                                                 <li data-toggle="modal" data-target="#AcceptanceOrders" style="cursor:pointer" tabindex="-1" data-toggle="tab">关闭</li>
+                                                                 <li>重启</li>
+                                                                 <li>复制</li>
+                                                             </ul>
+                                                         </li>
+                                                     </ul>
+                                                </span>
+
+
+                           <!--<span class="panel_title_right">-->
+                               <!--<span class="complaint1_panel_info_navigation">-->
+                                <!--<ul>-->
+                                    <!--<li><a href="#" class="dropdown-toggle btn-lg" data-toggle="dropdown" role="button" aria-expanded="false"> <span class="icon glyphicon glyphicon-th-list back_dark_grey white" aria-hidden="true"></span></a>-->
+                                        <!--<ul>-->
+                                            <!--<li role="presentation" data-toggle="modal" data-target="#AcceptanceOrders" style="cursor:pointer" tabindex="-1" data-toggle="tab" >关闭</li>-->
+                                            <!--<li role="presentation" tabindex="-1" data-toggle="tab">打印</li><li role="presentation" tabindex="-1" data-toggle="tab">重启</li>-->
+                                            <!--<li role="presentation"  tabindex="-1" data-toggle="tab">传阅</li>-->
+                                        <!--</ul>-->
+                                    <!--</li>-->
+                                <!--</ul>-->
+                               <!--</span>-->
+                           <!--</span>-->
+                    </div>
+                    <div class="panel_info">
+                        <div class="dot"></div>
+                        <div class="form_list">
+                            <ul class="receive_list">
+                                <li ng-switch on="aa.acceptanceOrders.orderState">工单状态：
+
+                                    <b  ng-switch-when="0">关闭</b>
+                                    <b ng-switch-when="1">已完成</b>
+
+                                </li>
+                                <li>验收时间：{{aa.operationTime}}</li>
+                                <li> 负责人：{{aa.tasks.staff.staffName}}</li>
+
+                                <li  ng-switch on="aa.acceptanceOrders.acceptanceItemResult">  处理结果：
+                                 <b ng-switch-when="0">合格</b>
+                                  <b ng-switch-when="1">不合格</b>
+                                   <b  ng-switch-when="2">好</b>
+                                   <b ng-switch-when="3">非常</b></li>
+                                <li>详情描述：{{aa.acceptanceOrders.remarks}}</li>
+                                <li ng-show="closed">关闭时间：{{aa.acceptanceOrders.closeTime}}</li>
+                                <li ng-show="closed">关闭操作人：{{aa.acceptanceOrders.closePerson}}</li>
+                                <li ng-show="closed">关闭原因：{{aa.acceptanceOrders.closeRemarks}}</li>
+
+                                <li>
+                                    <span>附件：</span>
+                                    <img src={{fileUrl}}/{{aa.acceptanceOrders.annexs.annexAddress}}>
+                                </li>
+
+                                <div class="clear"></div>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--验收单详情结束-->
+            <!--赔偿给业主单详情-->
+            <div class="col-lg-12 col-md-12 col-sm-6" ng-show="typeShow==5">
+                <div class="re_panel" >
+                    <div class="panel_title">
+                        <span class="panel_title_left" ng-switch on="aa.compensateOwner.orderType">
+                            <span ng-switch-when="0">报价单</span>
+                            <span ng-switch-when="1">处理单</span>
+                            <span ng-switch-when="2">验收单</span>
+                            <span ng-switch-when="3">检测单</span>
+                            <span ng-switch-when="4">结算单</span>
+                             <span ng-switch-when="5">赔偿给业主单</span>
+                        </span>
+                         <span class="panel_title_right">
+                         <ul class="pull-down_menu">
+                            <li><span class="icon glyphicon glyphicon-th-list back_dark_grey white"></span>
+                                <ul>
+                                    <li data-toggle="modal" data-target="#CloseCompensateOwner" style="cursor:pointer" tabindex="-1" data-toggle="tab" >关闭</li>
+                                    <li>重启</li>
+                                    <li>复制</li>
+                                </ul>
+                            </li>
+                        </ul>
+                        </span>
+
+
+                    </div>
+                    <div class="panel_info">
+                        <div class="dot"></div>
+                        <div class="form_list">
+                            <ul class="receive_list">
+                                <li ng-switch on="aa.compensateOwner.orderState">
+                                    <span>工单状态：</span>
+                                    <span  ng-switch-when="0">关闭</span>
+                                    <span ng-switch-when="1">已完成</span>
+
+                                </li>
+                                <li><span>赔偿对象：</span><span>{{Tasks.personCustNew.name}}</span></li>
+                                <li><span>负责人：</span><span>{{aa.tasks.staff.staffName}}</span></li>
+
+                                <li  ng-switch on="aa.compensateOwner.compensateMethods.compensateMeans">
+                                    <span> 赔付方式：</span>
+                                    <span ng-switch-when="1">水费</span>
+                                    <span ng-switch-when="2">电费</span>
+                                    <span ng-switch-when="3">现金</span>
+                                    <span ng-switch-when="4">停车费</span>
+                                    <span ng-switch-when="5">物业费</span>
+                                    <span ng-switch-when="6">服务费</span>
+                                </li>
+                                <li ng-switch on="aa.compensateOwner.compensateMethods.compensateCycle">
+                                    <span> 赔付周期：</span>
+                                    <span ng-switch-when="0">一次性</span>
+                                    <span ng-switch-when="1">一个月</span>
+                                    <span ng-switch-when="2">二个月</span>
+                                    <span  ng-switch-when="3">三个月</span>
+                                    <span ng-switch-when="4">四个月</span>
+                                    <span ng-switch-when="5">五个月</span>
+                                    <span ng-switch-when="6">六个月</span>
+                                    <span ng-switch-when="6">七个月</span>
+                                    <span ng-switch-when="6">八个月</span>
+                                    <span ng-switch-when="6">九个月</span>
+                                    <span ng-switch-when="6">十个月</span>
+                                    <span ng-switch-when="6">十一个月</span>
+                                    <span ng-switch-when="6">十二个月</span>
+                                </li>
+                                <li><span> 赔付时间：</span><span>{{aa.compensateOwner.compensateMethods.compensateStartTime|date:"yyyy-MM-dd"}}</span></li>
+                                <li><span> 赔付金额：</span><span>{{aa.compensateOwner.compensateMethods.compensateSum}}</span></li>
+                                <li><span>详情描述：</span><span>{{aa.compensateOwner.remarks}}</span></li>
+                                <li ng-show="closed">关闭时间：{{aa.compensateOwner.closeTime}}</li>
+                                <li ng-show="closed">关闭操作人：{{aa.compensateOwner.closePersonId}}</li>
+                                <li ng-show="closed">关闭原因：{{aa.compensateOwner.closeRemarks}}</li>
+
+                                <li>
+                                    <span>附件：</span>
+                                    <img src={{fileUrl}}/{{aa.compensateOwner.annexs.annexAddress}}>
+                                </li>
+
+                                <div class="clear"></div>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--赔偿给业主单详情结束-->
+            <!--结算单详情-->
+            <div class="col-lg-12 col-md-12 col-sm-6" ng-show="typeShow==7">
+                <div class="re_panel">
+                    <div class="panel_title">
+                        <span class="panel_title_left" ng-switch on="aa.settleAccountsOrders.orderType">  <span ng-switch-when="0">报价单</span>
+                            <span ng-switch-when="1">处理单</span>
+                            <span ng-switch-when="2">验收单</span>
+                            <span ng-switch-when="3">检测单</span>
+                              <span ng-switch-when="4">结算单</span></span>
+                            <span class="panel_title_right">
+                                                     <ul class="pull-down_menu">
+                                                         <li><span class="icon glyphicon glyphicon-th-list back_dark_grey white"></span>
+                                                             <ul>
+                                                                 <li data-toggle="modal" data-target="#SettleAccountsOrders" style="cursor:pointer" tabindex="-1" data-toggle="tab">关闭</li>
+                                                                 <li>重启</li>
+                                                                 <li>复制</li>
+                                                             </ul>
+                                                         </li>
+                                                     </ul>
+                                                </span>
+                                        <!--<span class="panel_title_right">-->
+                                                          <!--<span class="complaint1_panel_info_navigation">-->
+                                <!--<ul>-->
+                                    <!--<li><a href="#" class="dropdown-toggle btn-lg" data-toggle="dropdown" role="button" aria-expanded="false"> <span class="icon glyphicon glyphicon-th-list back_dark_grey white" aria-hidden="true"></span></a>-->
+                                        <!--<ul>-->
+                                            <!--<li role="presentation" data-toggle="modal" data-target="#SettleAccountsOrders" style="cursor:pointer" tabindex="-1" data-toggle="tab" >关闭</li>-->
+                                            <!--<li role="presentation" tabindex="-1" data-toggle="tab">打印</li><li role="presentation" tabindex="-1" data-toggle="tab">重启</li>-->
+                                            <!--<li role="presentation"  tabindex="-1" data-toggle="tab">传阅</li>-->
+                                        <!--</ul>-->
+                                    <!--</li>-->
+                                <!--</ul>-->
+                            <!--</span>-->
+
+                                        <!--</span>-->
+                    </div>
+                    <div class="panel_info">
+                        <div class="dot"></div>
+                        <div class="form_list">
+                            <ul class="receive_list">
+                                <li ng-switch on="aa.settleAccountsOrders.orderState">工单状态：
+                                    <b  ng-switch-when="0">关闭</b>
+                                    <b ng-switch-when="1">已完成</b>
+
+                                </li>
+                                <!--<li class="merge"><span></span></li>-->
+                                <li class="merge">处理时间：{{aa.operationTime}}</li>
+                                <li>人工费：{{personC.personCust1}}元</li>
+                                <li>物料费：{{personC.wuLiaoCust1}}元</li>
+                                <li>工具费：{{personC.toolCust1}}元</li>
+                                <li>共计：{{Alltotall}}元</li>
+                                <li>实收：{{personC.FinalPice}}元</li>
+                                <li>负责人：{{aa.tasks.staff.staffName}}</li>
+                                <li>备注说明：{{aa.settleAccountsOrders.remarks}}</li>
+                                <li ng-show="closed">关闭时间：{{aa.settleAccountsOrders.closeTime|date:"yyyy-MM-dd"}}</li>
+                                <li ng-show="closed">关闭操作人：{{aa.settleAccountsOrders.closePerson}}</li>
+                                <li ng-show="closed">关闭原因：{{aa.settleAccountsOrders.closeRemarks}}</li>
+
+                                <div class="clear"></div>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--结算单详情结束-->
+            <!--回访单详情-->
+            <div class="col-lg-12 col-md-12 col-sm-6" ng-show="typeShow==8">
+                <div class="re_panel">
+                    <div class="panel_title">
+                        <span class="panel_title_left" ng-switch on="aa.returnVisitOrders.orderType">  <span ng-switch-when="0">报价单</span>
+                            <span ng-switch-when="1">处理单</span>
+                            <span ng-switch-when="2">验收单</span>
+                            <span ng-switch-when="3">检测单</span>
+                              <span ng-switch-when="4">结算单</span>
+                             <span ng-switch-when="5">赔偿给业主单</span>
+                              <span ng-switch-when="7">回访单</span>
+                        </span>
+                            <span class="panel_title_right">
+                                                     <ul class="pull-down_menu">
+                                                         <li><span class="icon glyphicon glyphicon-th-list back_dark_grey white"></span>
+                                                             <ul>
+                                                                 <li data-toggle="modal" data-target="#ReturnVisitOrders" style="cursor:pointer" tabindex="-1" data-toggle="tab">关闭</li>
+                                                                 <li>重启</li>
+                                                                 <li>复制</li>
+                                                             </ul>
+                                                         </li>
+                                                     </ul>
+                                                </span>
+
+                    </div>
+                    <div class="panel_info">
+                        <div class="dot"></div>
+                        <div class="form_list">
+                            <ul class="receive_list">
+                                <li ng-switch on="aa.returnVisitOrders.orderState">工单状态：
+                                    <b  ng-switch-when="0">关闭</b>
+                                    <b ng-switch-when="1">已完成</b>
+
+                                </li>
+                                <li class="merge">
+                                    <span>完成情况</span>
+                                    <div  >
+                                        <div ng-show="star1"> <span><img src="images/star@2x.png"></span></div>
+                                        <div ng-show="star2"><span><img src="images/star@2x.png"></span></div>
+                                        <div ng-show="star3"><span><img src="images/star@2x.png"></span></div>
+                                        <div ng-show="star4"><span><img src="images/star@2x.png"></span></div>
+                                        <div ng-show="star5"><span><img src="images/star@2x.png"></span></div>
+
+                                        <!--<p id="pointA" style="float:left; margin-left:20px;"></p>-->
+                                    </div>
+                                    <div class="clear"></div>
+                                </li>
+                                <li class="merge">
+                                    <span>服务态度</span>
+                                    <div  >
+                                        <div ng-show="star6"> <span><img src="images/star@2x.png"></span></div>
+                                        <div ng-show="star7"><span><img src="images/star@2x.png"></span></div>
+                                        <div ng-show="star8"><span><img src="images/star@2x.png"></span></div>
+                                        <div ng-show="star9"><span><img src="images/star@2x.png"></span></div>
+                                        <div ng-show="star10"><span><img src="images/star@2x.png"></span></div>
+
+                                        <!--<p id="pointB" style="float:left; margin-left:20px;"></p>-->
+                                    </div>
+                                    <div class="clear"></div>
+                                </li>
+                                <li class="merge">
+                                    <span>处理时间</span>
+                                    <div >
+                                        <div ng-show="star11"> <span><img src="images/star@2x.png"></span></div>
+                                        <div ng-show="star12"><span><img src="images/star@2x.png"></span></div>
+                                        <div ng-show="star13"><span><img src="images/star@2x.png"></span></div>
+                                        <div ng-show="star14"><span><img src="images/star@2x.png"></span></div>
+                                        <div ng-show="star15"><span><img src="images/star@2x.png"></span></div>
+
+                                        <!--<p id="pointP" style="float:left; margin-left:20px;"></p>-->
+                                    </div>
+                                    <div class="clear"></div>
+                                </li>
+                                <!--<li class="merge"><span></span></li>-->
+                                <li class="merge">回访时间：{{aa.operationTime}}</li>
+
+
+                                <li>负责人：{{aa.tasks.staff.staffName}}</li>
+                                <li>备注说明：{{aa.returnVisitOrders.remarks}}</li>
+                                <li ng-show="closed">关闭时间：{{aa.returnVisitOrders.closeTime|date:"yyyy-MM-dd"}}</li>
+                                <li ng-show="closed">关闭操作人：{{aa.returnVisitOrders.closePerson}}</li>
+                                <li ng-show="closed">关闭原因：{{aa.returnVisitOrders.closeRemarks}}</li>
+
+                                <div class="clear"></div>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--回访单详情结束-->
+            <!--申诉单详情-->
+            <div class="col-lg-12 col-md-12 col-sm-6" ng-show="typeShow==9">
+                <div class="re_panel">
+                    <div class="panel_title">
+                        <span class="panel_title_left" ng-switch on="aa.appealOrders.orderType">
+                            <span ng-switch-when="0">报价单</span>
+                            <span ng-switch-when="1">处理单</span>
+                            <span ng-switch-when="2">验收单</span>
+                            <span ng-switch-when="3">检测单</span>
+                            <span ng-switch-when="4">结算单</span>
+                               <span ng-switch-when="8">申诉单</span>
+                        </span>
+                         <span class="panel_title_right">
+                             <ul class="pull-down_menu">
+                                 <li><span class="icon glyphicon glyphicon-th-list back_dark_grey white"></span>
+                                     <ul>
+                                         <li data-toggle="modal" data-target="#AppealOrders" style="cursor:pointer" tabindex="-1" data-toggle="tab">关闭</li>
+                                         <li>重启</li>
+                                         <li>复制</li>
+                                     </ul>
+                                 </li>
+                             </ul>
+                        </span>
+
+
+                    </div>
+                    <div class="panel_info">
+                        <div class="dot"></div>
+                        <div class="form_list">
+                            <ul class="receive_list">
+                                <li ng-switch on="aa.appealOrders.orderState">工单状态：
+
+                                    <b  ng-switch-when="0">关闭</b>
+                                    <b ng-switch-when="1">已完成</b>
+
+                                </li>
+                                <li>申诉时间：{{aa.operationTime}}</li>
+                                <li> 负责人：{{aa.tasks.staff.staffName}}</li>
+
+                                <li>详情描述：{{aa.appealOrders.remarks}}</li>
+                                <li ng-show="closed">关闭时间：{{aa.appealOrders.closeTime}}</li>
+                                <li ng-show="closed">关闭操作人：{{aa.appealOrders.closePerson}}</li>
+                                <li ng-show="closed">关闭原因：{{aa.appealOrders.closeRemarks}}</li>
+
+                                <li>
+                                    <span>附件：</span>
+                                    <img src={{fileUrl}}/{{aa.appealOrders.annexs.annexAddress}}>
+                                </li>
+
+                                <div class="clear"></div>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--申诉单详情结束-->
+            <!--水表单详情-->
+            <div class="col-lg-12 col-md-12 col-sm-6" ng-show="typeShow==10">
+                <div class="re_panel">
+                    <div class="panel_title">
+                        <span class="panel_title_left" ng-switch on="aa.appealOrders.orderType">
+                            <span ng-switch-when="0">报价单</span>
+                            <span ng-switch-when="1">处理单</span>
+                            <span ng-switch-when="2">验收单</span>
+                            <span ng-switch-when="3">检测单</span>
+                            <span ng-switch-when="4">结算单</span>
+                            <span ng-switch-when="8">申诉单</span>
+                        </span>
+                         <span class="panel_title_right">
+                             <ul class="pull-down_menu">
+                                 <li><span class="icon glyphicon glyphicon-th-list back_dark_grey white"></span>
+                                     <ul>
+                                         <li data-toggle="modal" data-target="#WaterOrders" style="cursor:pointer" tabindex="-1" data-toggle="tab">关闭</li>
+                                         <li>重启</li>
+                                         <li>复制</li>
+                                     </ul>
+                                 </li>
+                             </ul>
+                        </span>
+                    </div>
+                    <div class="panel_info">
+                        <div class="dot"></div>
+                        <div class="form_list">
+                            <ul class="receive_list">
+                                <li ng-switch on="aa.waterMeterOrders.orderState">工单状态：
+
+                                    <b  ng-switch-when="0">关闭</b>
+                                    <b ng-switch-when="1">已完成</b>
+
+                                </li>
+                                <li>抄表时间：{{aa.operationTime}}</li>
+                                <li> 负责人：{{aa.tasks.staff.staffName}}</li>
+                                <li> 上次读数：{{aa.waterMeterOrders.waterMeterOrderRecords.waterLastReading}}</li>
+                                <li> 本次读数：{{aa.waterMeterOrders.waterMeterOrderRecords.waterMeterReading}}</li>
+
+                                <li>备注：{{aa.waterMeterOrders.remarks}}</li>
+                                <li ng-show="closed">关闭时间：{{aa.waterMeterOrders.closeTime}}</li>
+                                <li ng-show="closed">关闭操作人：{{aa.waterMeterOrders.closePerson}}</li>
+                                <li ng-show="closed">关闭原因：{{aa.waterMeterOrders.closeRemarks}}</li>
+
+                                <li>
+                                    <span>附件：</span>
+                                    <img src={{fileUrl}}/{{aa.waterMeterOrders.annexs.annexAddress}}>
+                                </li>
+
+                                <div class="clear"></div>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--水表单详情结束-->
+            <!--电表单详情-->
+            <div class="col-lg-12 col-md-12 col-sm-6" ng-show="typeShow==11">
+                <div class="re_panel">
+                    <div class="panel_title">
+                        <span class="panel_title_left" ng-switch on="aa.meterReadingOrders.orderType">
+                            <span ng-switch-when="0">报价单</span>
+                            <span ng-switch-when="1">处理单</span>
+                            <span ng-switch-when="2">验收单</span>
+                            <span ng-switch-when="3">检测单</span>
+                            <span ng-switch-when="4">结算单</span>
+                            <span ng-switch-when="8">申诉单</span>
+                        </span>
+                         <span class="panel_title_right">
+                             <ul class="pull-down_menu">
+                                 <li><span class="icon glyphicon glyphicon-th-list back_dark_grey white"></span>
+                                     <ul>
+                                         <li data-toggle="modal" data-target="#meterReadingOrders" style="cursor:pointer" tabindex="-1" data-toggle="tab">关闭</li>
+                                         <li>重启</li>
+                                         <li>复制</li>
+                                     </ul>
+                                 </li>
+                             </ul>
+                        </span>
+                    </div>
+                    <div class="panel_info">
+                        <div class="dot"></div>
+                        <div class="form_list">
+                            <ul class="receive_list">
+                                <li ng-switch on="aa.meterReadingOrders.orderState">工单状态：
+
+                                    <b  ng-switch-when="0">关闭</b>
+                                    <b ng-switch-when="1">已完成</b>
+
+                                </li>
+                                <li>抄表时间：{{aa.operationTime}}</li>
+                                <li> 负责人：{{aa.tasks.staff.staffName}}</li>
+                                <li> 上次读数：{{aa.meterReadingOrders.meterReadingRecords.waterLastReading}}</li>
+                                <li> 本次读数：{{aa.meterReadingOrders.meterReadingRecords.waterMeterReading}}</li>
+
+                                <li>备注：{{aa.meterReadingOrders.remarks}}</li>
+                                <li ng-show="closed">关闭时间：{{aa.meterReadingOrders.closeTime}}</li>
+                                <li ng-show="closed">关闭操作人：{{aa.meterReadingOrders.closePerson}}</li>
+                                <li ng-show="closed">关闭原因：{{aa.meterReadingOrders.closeRemarks}}</li>
+
+                                <li>
+                                    <span>附件：</span>
+                                    <img src={{fileUrl}}/{{aa.meterReadingOrders.annexs.annexAddress}}>
+                                </li>
+
+                                <div class="clear"></div>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--电表单详情结束-->
+            <!--投诉单详情-->
+            <div class="col-lg-12 col-md-12 col-sm-6" ng-show="typeShow==12">
+                <div class="re_panel">
+                    <div class="panel_title">
+                        <span class="panel_title_left" ng-switch on="aa.complaintOrders.orderType">
+                            <span ng-switch-when="0">报价单</span>
+                            <span ng-switch-when="1">处理单</span>
+                            <span ng-switch-when="2">验收单</span>
+                            <span ng-switch-when="3">检测单</span>
+                            <span ng-switch-when="4">结算单</span>
+                            <span ng-switch-when="8">申诉单</span>
+                            <span ng-switch-when="11">投诉单</span>
+                        </span>
+                         <span class="panel_title_right">
+                             <ul class="pull-down_menu">
+                                 <li><span class="icon glyphicon glyphicon-th-list back_dark_grey white"></span>
+                                     <ul>
+                                         <li data-toggle="modal" data-target="#complaintOrders" style="cursor:pointer" tabindex="-1" data-toggle="tab">关闭</li>
+                                         <li>重启</li>
+                                         <li>复制</li>
+                                     </ul>
+                                 </li>
+                             </ul>
+                         </span>
+                    </div>
+                    <div class="panel_info">
+                        <div class="dot"></div>
+                        <div class="form_list">
+                            <ul class="receive_list">
+                                <li ng-switch on="aa.complaintOrders.orderState">工单状态：
+                                    <b  ng-switch-when="0">关闭</b>
+                                    <b ng-switch-when="1">已完成</b>
+                                </li>
+                                <li>抄表时间：{{aa.operationTime}}</li>
+                                <li>负责人：{{aa.tasks.staff.staffName}}</li>
+                                <li>上次读数：{{aa.tasks.staff.staffName}}</li>
+                                <li>本次读数：{{aa.tasks.staff.staffName}}</li>
+                                <li>投诉对象姓名：{{aa.complaintOrders.complaintObjectName}}</li>
+                                <li>备注：{{aa.complaintOrders.remarks}}</li>
+                                <li ng-show="closed">关闭时间：{{aa.complaintOrders.closeTime | date:'yyyy-MM-dd HH:mm:ss'}}</li>
+                                <li ng-show="closed">关闭操作人：{{aa.complaintOrders.closePersonId}}</li>
+                                <li ng-show="closed">关闭原因：{{aa.complaintOrders.closeRemarks}}</li>
+                                <li>
+                                    <span>附件：</span>
+                                    <img src={{fileUrl}}/{{aa.complaintOrders.annexs.annexAddress}}>
+                                </li>
+                                <div class="clear"></div>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--投诉单详情结束-->
+            <!--咨询单详情-->
+            <div class="col-lg-12 col-md-12 col-sm-6" ng-show="typeShow==13">
+                <div class="re_panel">
+                    <div class="panel_title">
+                        <span class="panel_title_left" ng-switch on="aa.consultationOrders.orderType">
+                            <span ng-switch-when="0">报价单</span>
+                            <span ng-switch-when="1">处理单</span>
+                            <span ng-switch-when="2">验收单</span>
+                            <span ng-switch-when="3">检测单</span>
+                            <span ng-switch-when="4">结算单</span>
+                            <span ng-switch-when="8">申诉单</span>
+                            <span ng-switch-when="11">投诉单</span>
+                            <span ng-switch-when="12">咨询单</span>
+                        </span>
+                         <span class="panel_title_right">
+                             <ul class="pull-down_menu">
+                                 <li><span class="icon glyphicon glyphicon-th-list back_dark_grey white"></span>
+                                     <ul>
+                                         <li data-toggle="modal" data-target="#consultationOrders" style="cursor:pointer" tabindex="-1" data-toggle="tab">关闭</li>
+                                         <li>重启</li>
+                                         <li>复制</li>
+                                     </ul>
+                                 </li>
+                             </ul>
+                         </span>
+                    </div>
+                    <div class="panel_info">
+                        <div class="dot"></div>
+                        <div class="form_list">
+                            <ul class="receive_list">
+                                <li ng-switch on="aa.consultationOrders.orderState">工单状态：
+                                    <b  ng-switch-when="0">关闭</b>
+                                    <b ng-switch-when="1">已完成</b>
+                                </li>
+                                <li>抄表时间：{{aa.operationTime}}</li>
+                                <li>负责人：{{aa.tasks.staff.staffName}}</li>
+                                <li>上次读数：{{aa.tasks.staff.staffName}}</li>
+                                <li>本次读数：{{aa.tasks.staff.staffName}}</li>
+                                <li>客户问题描述：{{aa.consultationOrders.problemRemarks}}</li>
+                                <li>备注：{{aa.consultationOrders.remarks}}</li>
+                                <li ng-show="closed">关闭时间：{{aa.consultationOrders.closeTime | date:'yyyy-MM-dd HH:mm:ss'}}</li>
+                                <li ng-show="closed">关闭操作人：{{aa.consultationOrders.closePersonId}}</li>
+                                <li ng-show="closed">关闭原因：{{aa.consultationOrders.closeRemarks}}</li>
+                                <div class="clear"></div>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--咨询单详情结束-->
+            <!--固定车位单详情-->
+            <div class="col-lg-12 col-md-12 col-sm-6" ng-show="typeShow==14">
+                <div class="re_panel">
+                    <div class="panel_title">
+                        <span class="panel_title_left" ng-switch on="aa.consultationOrders.orderType">
+                            <span ng-switch-when="0">报价单</span>
+                            <span ng-switch-when="1">处理单</span>
+                            <span ng-switch-when="2">验收单</span>
+                            <span ng-switch-when="3">检测单</span>
+                            <span ng-switch-when="4">结算单</span>
+                            <span ng-switch-when="8">申诉工单</span>
+                            <span ng-switch-when="11">投诉工单</span>
+                            <span ng-switch-when="12">咨询工单</span>
+                            <span ng-switch-when="13">固定车位工单</span>
+                        </span>
+                         <span class="panel_title_right">
+                             <ul class="pull-down_menu">
+                                 <li><span class="icon glyphicon glyphicon-th-list back_dark_grey white"></span>
+                                     <ul>
+                                         <li data-toggle="modal" data-target="#fixedParkingOrders" style="cursor:pointer" tabindex="-1" data-toggle="tab">关闭</li>
+                                         <li>重启</li>
+                                         <li>复制</li>
+                                     </ul>
+                                 </li>
+                             </ul>
+                         </span>
+                    </div>
+                    <div class="panel_info">
+                        <div class="dot"></div>
+                        <div class="form_list">
+                            <ul class="receive_list">
+                                <li ng-switch on="aa.fixedParkingOrders.orderState">工单状态：
+                                    <b ng-switch-when="0">关闭</b>
+                                    <b ng-switch-when="1">已完成</b>
+                                </li>
+                                <li ng-switch on="aa.fixedParkingOrders.parkingOperation">操作：
+                                    <b ng-switch-when="0">取消固定车位</b>
+                                    <b ng-switch-when="1">开启固定车位</b>
+                                </li>
+                                <li>备注：{{aa.fixedParkingOrders.remarks}}</li>
+                                <li ng-show="closed">关闭时间：{{aa.fixedParkingOrders.closeTime | date:'yyyy-MM-dd HH:mm:ss'}}</li>
+                                <li ng-show="closed">关闭操作人：{{aa.fixedParkingOrders.closePersonId}}</li>
+                                <li ng-show="closed">关闭原因：{{aa.fixedParkingOrders.closeRemarks}}</li>
+                                <li>
+                                    <span>附件：</span>
+                                    <img src={{fileUrl}}/{{aa.fixedParkingOrders.annexs.annexAddress}}>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--固定车位单详情结束-->
+            <!-- 表扬单详情 -->
+            <div class="col-lg-12 col-md-12 col-sm-6" ng-show="typeShow==17">
+                <div class="re_panel">
+                    <div class="panel_title">
+                        <span class="panel_title_left" ng-switch on="aa.praiseOrders.orderType">
+                            <span ng-switch-when="0">报价单</span>
+                            <span ng-switch-when="1">处理单</span>
+                            <span ng-switch-when="2">验收单</span>
+                            <span ng-switch-when="3">检测单</span>
+                            <span ng-switch-when="4">结算单</span>
+                             <span ng-switch-when="17">表扬单</span>
+                        </span>
+                            <span class="panel_title_right">
+                                                     <ul class="pull-down_menu">
+                                                         <li><span class="icon glyphicon glyphicon-th-list back_dark_grey white"></span>
+                                                             <ul>
+                                                                 <li data-toggle="modal" data-target="#ClosePraiseOrders" style="cursor:pointer" tabindex="-1" data-toggle="tab">关闭</li>
+                                                                 <li>重启</li>
+                                                                 <li>复制</li>
+                                                             </ul>
+                                                         </li>
+                                                     </ul>
+                                                </span>
+
+                    </div>
+                    <div class="panel_info">
+                        <div class="dot"></div>
+                        <div class="form_list">
+                            <ul class="receive_list">
+                                <li ng-switch on="aa.praiseOrders.orderState">工单状态：
+                                    <b  ng-switch-when="0">关闭</b>
+                                    <b ng-switch-when="1">已完成</b>
+
+                                </li>
+                                <!--<li class="merge"><span></span></li>-->
+                                <li>创建人：{{Tasks.personCustNew.name}}</li>
+                                <li>创建时间：{{aa.praiseOrders.finishTime}}</li>
+                                <li>表扬对象id：{{aa.praiseOrders.praiseObjectId}}</li>
+                                <li>表扬对象姓名：{{aa.praiseOrders.praiseObjectName}}</li>
+
+                                <li>表扬说明：{{aa.praiseOrders.remarks}}</li>
+                                <li ng-show="closed">关闭时间：{{aa.praiseOrders.closeTime}}</li>
+                                <li ng-show="closed">关闭操作人：{{aa.praiseOrders.closePerson}}</li>
+                                <li ng-show="closed">关闭原因：{{aa.praiseOrders.closeRemarks}}</li>
+
+                                <li>
+                                    <span>附件：</span>
+                                    <img src={{fileUrl}}/{{aa.praiseOrders.annexs.annexAddress}}>
+                                </li>
+
+                                <div class="clear"></div>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 表扬单详情结束 -->
+            <!--维修单详情-->
+            <div class="col-lg-12 col-md-12 col-sm-6" ng-show="typeShow==22">
+                <div class="re_panel">
+                    <div class="panel_title">
+                        <span class="panel_title_left" ng-switch on="aa.repairOrders.orderType">维修单</span>
+                         <span class="panel_title_right">
+                                                     <ul class="pull-down_menu">
+                                                         <li><span class="icon glyphicon glyphicon-th-list back_dark_grey white"></span>
+                                                             <ul>
+                                                                 <li data-toggle="modal" data-target="#RepairOrders" style="cursor:pointer" tabindex="-1" data-toggle="tab">关闭</li>
+                                                                 <li>重启</li>
+                                                                 <li>复制</li>
+                                                             </ul>
+                                                         </li>
+                                                     </ul>
+                                                </span>
+
+                    </div>
+                    <div class="panel_info">
+                        <div class="dot"></div>
+                        <div class="form_list">
+                            <ul class="receive_list">
+                                <li ng-switch on="aa.repairOrders.orderState">
+                                    <span>工单状态：</span>
+                                    <!--<span ng-switch on="aa.quoteOrders.orderState">-->
+                                    <span  ng-switch-when="0">关闭</span>
+                                    <span ng-switch-when="1">已完成</span>
+                                    <!--</span>-->
+
+                                </li>
+                                <!--<li class="merge"><span></span></li>-->
+                                <li><span>人工费：</span><span>{{personCust}}</span></li>
+                                <li><span>物料费：</span><span>{{wuLiaoCust}}</span></li>
+                                <li><span>工具费：</span><span>{{toolCust}}</span></li>
+                                <li><span>总价：</span><span>{{aa.quoteOrders.allTotal}}</span></li>
+                                <li><span>折扣：</span><span>{{aa.quoteOrders.discount}}</span></li>
+                                <li><span>最终价格：</span><span>{{aa.quoteOrders.finalPrice}}</span></li>
+                                <li><span>负责人：</span><span>{{aa.tasks.staff.staffName}}</span></li>
+
+                                <li><span>完成时间：</span><span>{{aa.operationTime}}</span></li>
+                                <li ng-show="closed"><span>关闭时间：</span><span>{{aa.repairOrders.closeTime}}</span></li>
+                                <li ng-show="closed"><span>关闭操作人：</span><span>{{aa.repairOrders.closePerson}}</span></li>
+                                <li><span>备注说明：</span><span>{{aa.repairOrders.remarks}}</span></li>
+                                <li ng-show="closed"><span>关闭原因：</span><span>{{aa.repairOrders.closeRemarks}}</span></li>
+                                <li >
+                                    <span >业主签名：</span>
+                                    <img src={{fileUrl}}/{{aa.repairOrders.annexs.annexAddress}}  >
+                                    {{aa.repairOrders.annexs.annexName}}
+                                </li>
+                                <li><span></span></li>
+                                <li><span></span></li>   <li><span></span></li>
+
+                                <div class="clear"></div>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--维修单详情结束-->
+
+
+            <!--部门质检单单详情-->
+            <div class="col-lg-12 col-md-12 col-sm-6" ng-show="typeShow==6">
+                <div class="re_panel">
+                    <div class="panel_title">
+                        <span class="panel_title_left" ng-switch on="aa.departmentOrders.orderType">
+                            <span ng-switch-when="0">报价单</span>
+                            <span ng-switch-when="1">处理单</span>
+                            <span ng-switch-when="2">验收单</span>
+                            <span ng-switch-when="3">检测单</span>
+                              <span ng-switch-when="4">结算单</span>
+                             <span ng-switch-when="5">赔偿给业主单</span>
+                              <span ng-switch-when="7">回访单</span>
+                             <span ng-switch-when="6">部门质检单</span>
+                        </span>
+                            <span class="panel_title_right">
+                                                     <ul class="pull-down_menu">
+                                                         <li><span class="icon glyphicon glyphicon-th-list back_dark_grey white"></span>
+                                                             <ul>
+                                                                 <li data-toggle="modal" data-target="#departmentOrders" style="cursor:pointer" tabindex="-1" data-toggle="tab">关闭</li>
+
+                                                             </ul>
+                                                         </li>
+                                                     </ul>
+                                                </span>
+
+                    </div>
+                    <div class="panel_info">
+                        <div class="dot"></div>
+                        <div class="form_list">
+                            <ul class="receive_list">
+                                <li ng-switch on="aa.repairOrders.orderState">工单状态：
+                                    <b  ng-switch-when="0">关闭</b>
+                                    <b ng-switch-when="1">已完成</b>
+
+                                </li>
+                                <li class="merge">
+                                    <span>完成情况</span>
+                                    <div  >
+                                        <div ng-show="star1"> <span><img src="images/star@2x.png"></span></div>
+                                        <div ng-show="star2"><span><img src="images/star@2x.png"></span></div>
+                                        <div ng-show="star3"><span><img src="images/star@2x.png"></span></div>
+                                        <div ng-show="star4"><span><img src="images/star@2x.png"></span></div>
+                                        <div ng-show="star5"><span><img src="images/star@2x.png"></span></div>
+
+                                        <!--<p id="pointA" style="float:left; margin-left:20px;"></p>-->
+                                    </div>
+                                    <div class="clear"></div>
+                                </li>
+                                <li class="merge">
+                                    <span>服务态度</span>
+                                    <div  >
+                                        <div ng-show="star6"> <span><img src="images/star@2x.png"></span></div>
+                                        <div ng-show="star7"><span><img src="images/star@2x.png"></span></div>
+                                        <div ng-show="star8"><span><img src="images/star@2x.png"></span></div>
+                                        <div ng-show="star9"><span><img src="images/star@2x.png"></span></div>
+                                        <div ng-show="star10"><span><img src="images/star@2x.png"></span></div>
+
+                                        <!--<p id="pointB" style="float:left; margin-left:20px;"></p>-->
+                                    </div>
+                                    <div class="clear"></div>
+                                </li>
+                                <li class="merge">
+                                    <span>处理时间</span>
+                                    <div >
+                                        <div ng-show="star11"> <span><img src="images/star@2x.png"></span></div>
+                                        <div ng-show="star12"><span><img src="images/star@2x.png"></span></div>
+                                        <div ng-show="star13"><span><img src="images/star@2x.png"></span></div>
+                                        <div ng-show="star14"><span><img src="images/star@2x.png"></span></div>
+                                        <div ng-show="star15"><span><img src="images/star@2x.png"></span></div>
+
+                                        <!--<p id="pointP" style="float:left; margin-left:20px;"></p>-->
+                                    </div>
+                                    <div class="clear"></div>
+                                </li>
+                                <!--<li class="merge"><span></span></li>-->
+                                <li class="merge">回访时间：{{aa.operationTime}}</li>
+
+
+                                <li>负责人：{{aa.tasks.staff.staffName}}</li>
+                                <li>备注说明：{{aa.departmentOrders.remarks}}</li>
+                                <li ng-show="closed">关闭时间：{{aa.departmentOrders.closeTime|date:"yyyy-MM-dd"}}</li>
+                                <li ng-show="closed">关闭操作人：{{aa.departmentOrders.closePerson}}</li>
+                                <li ng-show="closed">关闭原因：{{aa.departmentOrders.closeRemarks}}</li>
+
+                                <div class="clear"></div>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!--工单详情END-->
+    </div>
+            <!-- 新建表扬单结束 -->
+    <!--新建工单END-->
+</div>
+<!--报价工单关闭模态框-->
+<div class="modal fade" id="QuoteOrders" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    报价关闭
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div  col-md-4>
+                        <div><label>关闭原因:</label></div>
+                        <label><textarea name="qocloseRemarks" class="form-control" style="width:500px" cols="3" placeholder="请输入内容" ng-model="aa.quoteOrders.closeRemarks"></textarea></label>
+                        <label><span class="spanInfo" ng-show="mainForm.qocloseRemarks.$dirty && mainForm.qocloseRemarks.$invalid">
+                            <span ng-show="mainForm.qocloseRemarks.$error.required">* 不能为空</span>
+                        </span></label>
+                    </div>
+                    <div><label >关闭操作人ID：<input  ng-model="aa.quoteOrders.closePerson"></label></div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal"  ng-click="CloseQuoteOrders(aa.checkOrders)">提交</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!--检测工单关闭模态框-->
+<div class="modal fade" id="CheckOrders" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    检测关闭
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div  col-md-4>
+                        <div><label>关闭原因:</label></div>
+                        <label><textarea name="checkordercloseRemarks" class="form-control" style="width:500px" cols="3" placeholder="请输入内容" ng-model="aa.checkOrders.closeRemarks"></textarea></label>
+                        <label><span class="spanInfo" ng-show="mainForm.checkordercloseRemarks.$dirty && mainForm.checkordercloseRemarks.$invalid">
+                            <span ng-show="mainForm.checkordercloseRemarks.$error.required">* 不能为空</span>
+                        </span></label>
+                    </div>
+                    <div><label >关闭操作人ID：<input  ng-model="aa.checkOrders.closePerson"></label></div>
+                    <!--<div><label >工单状态：<input  ng-model="aa.checkOrders.orderState"></label></div>-->
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal"  ng-click="CloseCheckOrders(aa.checkOrders)">提交</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!--处理工单关闭模态框-->
+<div class="modal fade" id="DisposeOrder" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    处理单关闭
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div  col-md-4>
+                        <div><label>关闭原因:</label></div>
+                        <label><textarea name="docloseRemarks" class="form-control" style="width:500px" cols="3" placeholder="请输入内容"  ng-model="aa.disposeOrder.closeRemarks"></textarea></label>
+                        <label><span class="spanInfo" ng-show="mainForm.docloseRemarks.$dirty && mainForm.docloseRemarks.$invalid">
+                            <span ng-show="mainForm.docloseRemarks.$error.required">* 不能为空</span>
+                        </span></label>
+                    </div>
+                    <div><label >关闭操作人ID：<input  ng-model="aa.disposeOrder.closePerson"></label></div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal"  ng-click="CloseDisposeOrder(aa.checkOrders)">提交</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!--验收工单关闭模态框-->
+<div class="modal fade" id="AcceptanceOrders" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    验收单关闭
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div  col-md-4>
+                        <div><label>关闭原因:</label></div>
+                        <label><textarea name="apocloseRemarks" class="form-control" style="width:500px" cols="3" placeholder="请输入内容" ng-model="aa.acceptanceOrders.closeRemarks"></textarea></label>
+                        <label><span class="spanInfo" ng-show="mainForm.apocloseRemarks.$dirty && mainForm.apocloseRemarks.$invalid">
+                            <span ng-show="mainForm.apocloseRemarks.$error.required">* 不能为空</span>
+                        </span></label>
+                    </div>
+                    <div><label >关闭操作人ID：<input  ng-model="aa.acceptanceOrders.closePerson"></label></div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal"  ng-click="CloseAcceptanceOrders(aa.checkOrders)">提交</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!--结算工单关闭模态框-->
+<div class="modal fade" id="SettleAccountsOrders" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    结算单关闭
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div  col-md-4>
+                        <div><label>关闭原因:</label></div>
+                        <label><textarea name="saocloseRemarks" class="form-control" style="width:500px" cols="3" placeholder="请输入内容" ng-model="aa.settleAccountsOrders.closeRemarks"></textarea></label>
+                        <label><span class="spanInfo" ng-show="mainForm.saocloseRemarks.$dirty && mainForm.saocloseRemarks.$invalid">
+                            <span ng-show="mainForm.saocloseRemarks.$error.required">* 不能为空</span>
+                        </span></label>
+                    </div>
+                    <div><label >关闭操作人ID：<input  ng-model="aa.settleAccountsOrders.closePerson"></label></div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal"  ng-click="CloseSettleAccountsOrders(aa.checkOrders)">提交</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!--赔偿给业主工单关闭模态框-->
+<div class="modal fade" id="CloseCompensateOwner" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    赔偿给业主单关闭
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div  col-md-4>
+                        <div><label>关闭原因:</label></div>
+                        <label><textarea name="csocloseRemarks" class="form-control" style="width:500px" cols="3" placeholder="请输入内容" ng-model="aa.compensateOwner.closeRemarks"></textarea></label>
+                        <label><span class="spanInfo" ng-show="mainForm.csocloseRemarks.$dirty && mainForm.csocloseRemarks.$invalid">
+                            <span ng-show="mainForm.csocloseRemarks.$error.required">* 不能为空</span>
+                        </span></label>
+                    </div>
+                    <div><label >关闭操作人ID：<input  ng-model="aa.compensateOwner.closePerson"></label></div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal"  ng-click="CloseCompensateOwner(aa.compensateOwner)">提交</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!-- 表扬工单关闭模态框 -->
+<div class="modal fade" id="ClosePraiseOrders" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    表扬单关闭
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div  col-md-4>
+                        <div><label>关闭原因:</label></div>
+                        <label><textarea name="pocloseRemarks" class="form-control" style="width:500px" cols="3" placeholder="请输入内容" ng-model="aa.praiseOrders.closeRemarks"></textarea></label>
+                        <label><span class="spanInfo" ng-show="mainForm.pocloseRemarks.$dirty && mainForm.pocloseRemarks.$invalid">
+                            <span ng-show="mainForm.pocloseRemarks.$error.required">* 不能为空</span>
+                        </span></label>
+                    </div>
+                    <div><label >关闭操作人ID：<input  ng-model="aa.praiseOrders.closePersonId"></label></div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal"  ng-click="ClosePraiseOrders(aa.praiseOrders)">提交</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!--回访工单关闭模态框-->
+<div class="modal fade" id="ReturnVisitOrders" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                   回访单关闭
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div  col-md-4>
+                        <div><label>关闭原因:</label></div>
+                        <label><textarea name="rvocloseRemarks" class="form-control" style="width:500px" cols="3" placeholder="请输入内容" ng-model="aa.returnVisitOrders.closeRemarks"></textarea></label>
+                        <label><span class="spanInfo" ng-show="mainForm.rvocloseRemarks.$dirty && mainForm.rvocloseRemarks.$invalid">
+                            <span ng-show="mainForm.rvocloseRemarks.$error.required">* 不能为空</span>
+                        </span></label>
+                    </div>
+                    <div><label >关闭操作人ID：<input  ng-model="aa.returnVisitOrders.closePerson"></label></div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal"  ng-click="CloseReturnVisitOrders(aa.returnVisitOrders)">提交</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!--申诉工单关闭模态框-->
+<div class="modal fade" id="AppealOrders" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    回访单关闭
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div  col-md-4>
+                        <div><label>关闭原因:</label></div>
+                        <label><textarea name="aocloseRemarks" class="form-control" style="width:500px" cols="3" placeholder="请输入内容" ng-model="aa.appealOrders.closeRemarks"></textarea></label>
+                        <label><span class="spanInfo" ng-show="mainForm.aocloseRemarks.$dirty && mainForm.aocloseRemarks.$invalid">
+                            <span ng-show="mainForm.aocloseRemarks.$error.required">* 不能为空</span>
+                        </span></label>
+                    </div>
+                    <div><label >关闭操作人ID：<input  ng-model="aa.appealOrders.closePerson"></label></div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal"  ng-click="CloseAppealOrders(aa.appealOrders)">提交</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!--申诉工单关闭模态框-->
+<!--抄录水表关闭模态框-->
+<div class="modal fade" id="WaterOrders" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    水表单关闭
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div  col-md-4>
+                        <div><label>关闭原因:</label></div>
+                        <label><textarea name="wmocloseRemarks" class="form-control" style="width:500px" cols="3" placeholder="请输入内容" ng-model="aa.waterMeterOrders.closeRemarks"></textarea></label>
+                        <label><span class="spanInfo" ng-show="mainForm.wmocloseRemarks.$dirty && mainForm.wmocloseRemarks.$invalid">
+                            <span ng-show="mainForm.wmocloseRemarks.$error.required">* 不能为空</span>
+                        </span></label>
+                    </div>
+                    <div><label >关闭操作人ID：<input  ng-model="aa.waterMeterOrders.closePersonId"></label></div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal"  ng-click="CloseWaterMeterOrders(aa.waterMeterOrders)">提交</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!--申诉工单关闭模态框-->
+<!--报价附件-->
+<div class="modal fade" id="ddd" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 80%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                 上传
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div id="remove">
+                        <div id="zyupload" class="zyupload"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal" >提交</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!--投诉工单模态框开始-->
+<div class="modal fade" id="complaintOrders" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    回访单关闭
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div  col-md-4>
+                        <div><label>关闭原因:</label></div>
+                        <label><textarea name="coscloseRemarks" class="form-control" style="width:500px" cols="3" placeholder="请输入内容" ng-model="aa.complainOrders.closeRemarks"></textarea></label>
+                        <label><span class="spanInfo" ng-show="mainForm.coscloseRemarks.$dirty && mainForm.coscloseRemarks.$invalid">
+                            <span ng-show="mainForm.coscloseRemarks.$error.required">* 不能为空</span>
+                        </span></label>
+                    </div>
+                    <div><label >关闭操作人ID：<input  ng-model="aa.complainOrders.closePersonId"></label></div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal"  ng-click="CloseComplaintOrders(aa.appealOrders)">提交</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--投诉工单模态框结束-->
+<!--咨询工单模态框开始-->
+<div class="modal fade" id="consultationOrders" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    回访单关闭
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div  col-md-4>
+                        <div><label>关闭原因:</label></div>
+                        <label><textarea name="coRemarks" class="form-control" style="width:500px" cols="3" placeholder="请输入内容" ng-model="aa.consultationOrders.closeRemarks"></textarea></label>
+                        <label><span class="spanInfo" ng-show="mainForm.coRemarks.$dirty && mainForm.coRemarks.$invalid">
+                            <span ng-show="mainForm.coRemarks.$error.required">* 不能为空</span>
+                        </span></label>
+                    </div>
+                    <div><label >关闭操作人ID：<input  ng-model="aa.consultationOrders.closePersonId"></label></div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal"  ng-click="CloseConsultationOrders()">提交</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--咨询工单模态框结束-->
+<!--固定车位工单模态框开始-->
+<div class="modal fade" id="fixedParkingOrders" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    回访单关闭
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div  col-md-4>
+                        <div><label>关闭原因:</label></div>
+                        <label><textarea name="fpocloseRemarks" class="form-control" style="width:500px" cols="3" placeholder="请输入内容" ng-model="aa.fixedParkingOrders.closeRemarks"></textarea></label>
+                        <label><span class="spanInfo" ng-show="mainForm.fpocloseRemarks.$dirty && mainForm.fpocloseRemarks.$invalid">
+                            <span ng-show="mainForm.fpocloseRemarks.$error.required">* 不能为空</span>
+                        </span></label>
+                    </div>
+                    <div><label >关闭操作人ID：<input  ng-model="aa.fixedParkingOrders.closePersonId"></label></div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal"  ng-click="CloseFixedParkingOrders()">提交</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--固定车位工单模态框结束-->
+<!--抄录电表关闭模态框-->
+<div class="modal fade" id="meterReadingOrders" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    电表单关闭
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div  col-md-4>
+                        <div><label>关闭原因:</label></div>
+                        <label><textarea name="mrocloseRemarks" class="form-control" style="width:500px" cols="3" placeholder="请输入内容" ng-model="aa.meterReadingOrders.closeRemarks"></textarea></label>
+                        <label><span class="spanInfo" ng-show="mainForm.mrocloseRemrks.$dirty && mainForm.mrocloseRemarks.$invalid">
+                            <span ng-show="mainForm.mrocloseRemarks.$error.required">* 不能为空</span>
+                        </span></label>
+                    </div>
+                    <div><label >关闭操作人ID：<input  ng-model="aa.meterReadingOrders.closePersonId"></label></div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal"  ng-click="CloseMeterReadingOrders(aa.meterReadingOrders)">提交</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!--维修单关闭模态框-->
+<div class="modal fade" id="RepairOrders" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    维修关闭
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div  col-md-4>
+                        <div><label>关闭原因:</label></div>
+                        <label><textarea name="qocloseRemarks" class="form-control" style="width:500px" cols="3" placeholder="请输入内容" ng-model="aa.repairOrders.closeRemarks"></textarea></label>
+                        <label><span class="spanInfo" ng-show="mainForm.qocloseRemarks.$dirty && mainForm.qocloseRemarks.$invalid">
+                            <span ng-show="mainForm.qocloseRemarks.$error.required">* 不能为空</span>
+                        </span></label>
+                    </div>
+                    <div><label >关闭操作人ID：<input  ng-model="aa.repairOrders.closePersonId"></label></div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal"  ng-click="CloseRepairOrders(aa.checkOrders)">提交</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!-- 催促次数详情 -->
+<div class="modal fade" id="showUrgeTask" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div>
+            <div>
+                <div class="row building_padding">
+                    <div class="table">
+                        <table width="100%">
+                            <tr class="table_nav">
+                                <td>序号</td>
+                                <td>催促操作时间</td>
+                                <td>催促原因</td>
+                                <td>操作人</td>
+                            </tr>
+                            <tr ng-repeat="temp in searchPaginator2.object.urgeTaskRecords" ng-show="temp.recordId!=null">
+                                <td>{{$index}}</td>
+                                <td>{{temp.urgeTime | date:"yyyy-MM-dd HH:mm:ss"}}</td>
+                                <td>{{temp.urgeRemarks}}</td>
+                                <td>{{temp.staff.staffName}}</td>
+                            </tr>
+                        </table>
+                        <div class="bill_paging">
+                            <div class="pagination">
+                                <a style="cursor: pointer" ng-show="searchPaginator2.hasPrevious()" ng-click="searchPaginator2.previous()">上一页</a>
+                                <a style="cursor: pointer" ng-repeat="i in searchPaginator2.pages"  ng-click="searchPaginator2.go(i)" class="number">{{i}}</a>
+                                <a style="cursor: pointer" ng-show="searchPaginator2.hasNext()" ng-click="searchPaginator2.next()">下一页</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div>
+</div>
+<!-- 延时次数详情 -->
+<div class="modal fade" id="showApplicationDelay" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div>
+            <div>
+                <div class="row building_padding">
+                    <div class="table">
+                        <table width="100%">
+                            <tr class="table_nav">
+                                <td>序号</td>
+                                <td>延时操作时间</td>
+                                <td>延时到具体时间</td>
+                                <td>延时原因</td>
+                                <td>操作人</td>
+                            </tr>
+                            <tr ng-repeat="temp in searchPaginator1.object.applicationDelayRecords" ng-show="temp.recordId!=null">
+                                <td>{{$index}}</td>
+                                <td>{{temp.operationTime | date:"yyyy-MM-dd HH:mm:ss"}}</td>
+                                <td>{{temp.delayTime | date:"yyyy-MM-dd HH:mm:ss"}}</td>
+                                <td>{{temp.remarks}}</td>
+                                <td>{{temp.staff.staffName}}</td>
+                            </tr>
+                        </table>
+                        <div class="bill_paging">
+                            <div class="pagination">
+                                <a style="cursor: pointer" ng-show="searchPaginator1.hasPrevious()" ng-click="searchPaginator1.previous()">上一页</a>
+                                <a style="cursor: pointer" ng-repeat="i in searchPaginator1.pages"  ng-click="searchPaginator1.go(i)" class="number">{{i}}</a>
+                                <a style="cursor: pointer" ng-show="searchPaginator1.hasNext()" ng-click="searchPaginator1.next()">下一页</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div>
+</div>
+
+<!--部门质检单关闭模态框-->
+<div class="modal fade" id="departmentOrders" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    部门质检单关闭
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div  col-md-4>
+                        <div><label>关闭原因:</label></div>
+                        <label><textarea name="qocloseRemarks" class="form-control" style="width:500px" cols="3" placeholder="请输入内容" ng-model="aa.departmentOrders.closeRemarks"></textarea></label>
+
+                    </div>
+                    <div><label >关闭操作人ID：<input  ng-model="aa.departmentOrders.closePersonId"></label></div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal"  ng-click="CloseDepartmentOrders(aa.departmentOrders)">提交</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
+<div class="row">
+    <div ui-view></div>
+</div>
+</body>
+</html>

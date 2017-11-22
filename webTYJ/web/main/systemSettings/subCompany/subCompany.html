@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>子公司</title>
+</head>
+<body>
+<div id="content-first">
+    <div class="sel">
+        <div class="row search-padding-10">
+
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                <button type="button" class="btn btn-default btn-primary ng-binding" align="right" ui-sref="index.systemSettings">
+                    返回
+                </button>
+            </div>
+
+            <div class="col-lg-5 col-md-4 col-sm-4">
+
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                子公司名称：
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                <input type="text" class="form-control" placeholder="请输入子公司名称" ng-model="searchSubCompany.subCompanyName">
+            </div>
+            <div class="col-lg-1 col-md-4 col-sm-4 text-right">
+                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="currentSubCompany._load();">
+                    <span class="glyphicon glyphicon-search btn_icon" ></span>
+                    查询
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="row padding">
+        <div class="col-lg-12">
+            <div class="search-padding-10">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>子公司名称</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!--| orderBy:'-sortDate'-->
+                    <tr ng-repeat="item in currentSubCompany.object.subCompanies" ng-show="item.subCompanyId != null" ng-click="showProject(item)">
+                        <td>{{$index+(currentSubCompany.page.currentPage-1)*6}}</td>
+                        <td>{{item.subCompanyName}}</td>
+                        <td>{{item.comments}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="padding">
+                <div class="bill_paging">
+                    <span>共{{currentSubCompany.object.page.totalResult}}条</span>
+                    <ul class="pagination">
+                        <li ng-class="{true:'disabled'}[currentSubCompany.page.currentPage==1]">
+                            <a href="javascript:void(0)" ng-click="currentSubCompany.go(1)">首页</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[currentSubCompany.page.currentPage==1]">
+                            <a href="javascript:void(0)" ng-show="currentSubCompany.hasPrevious()"
+                               ng-click="currentSubCompany.previous()">上一页</a>
+                        </li>
+                        <li ng-class="{true:'active'}[currentSubCompany.page.currentPage==i]"
+                            ng-repeat="i in currentSubCompany.pages">
+                            <a href="javascript:void(0)" ng-click="currentSubCompany.go(i)">{{i}}</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[currentSubCompany.page.currentPage==currentSubCompany.page.totalPage]">
+                            <a href="javascript:void(0)" ng-show="currentSubCompany.hasNext()"
+                               ng-click="currentSubCompany.next()">下一页</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[currentSubCompany.page.currentPage==currentSubCompany.page.totalPage]">
+                            <a href="javascript:void(0)"
+                               ng-click="currentSubCompany.go(currentSubCompany.page.totalPage)">尾页</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

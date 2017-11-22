@@ -1,0 +1,79 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 巡检管理
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../../app');
+
+    app.controller('validPlansCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        var url = $rootScope.url;
+        //分页显示
+        $scope.inspectionPlan={page:{}};
+        $scope.load=function(){
+            var fetchFunction = function (page, callback) {
+                $scope.inspectionPlan.page = page;
+                $http.post(url + '/InspectionPlan/listPageInspectionPlanByState', {InspectionPlan: $scope.inspectionPlan}).success(callback);
+            };
+            $scope.searchPaginator = app.get('Paginator').list(fetchFunction, 6);
+        };
+        $scope.load();
+
+        //得到操作的对象
+        $scope.object1={};
+        $scope.open=function(data){
+            $scope.object1=data;
+            if($scope.object1.state==0){
+                alert("该方案已失效");
+            }else if($scope.object1.state==2){
+                alert("该方案已启用");
+            }else{
+                $scope.object1.state=2;
+                $http.put(url+'/InspectionPlan/updateByPrimary',{InspectionPlan:$scope.object1}).success(function(){
+                    alert("修改成功");
+                    $scope.load();
+                }).error(function(data, status, headers, config){
+                    alert("修改失败");
+                }) ;
+            }
+
+        };
+        //查看
+        $scope.inspectionPlanId='';
+        $scope.show=function(data){
+            $scope.inspectionPlanId=data.inspectionPlanId;
+            $http.get(url + '/InspectionPropertyCheckItem/selectInspectionPropertyCheckItemById/'+$scope.inspectionPlanId).success(function(data){
+                $scope.checkItem=data.InspectionPropertyCheckItem;
+            }).error(function(data, status, headers, config) {
+
+            });
+            $("#detail").modal("show");
+        };
+        //失效
+        $scope.close=function(data){
+            $scope.object1=data;
+            if($scope.object1.state==0){
+                alert("该方案已是失效状态");
+            }else{
+                $("#novail").modal("show");
+            }
+
+        };
+
+        //失效保存
+        $scope.saveUpdate=function(data){
+            $scope.object1.state=0;
+            $http.put(url+'/InspectionPlan/updateByPrimary',{InspectionPlan:$scope.object1}).success(function(){
+                alert("修改成功");
+                $scope.load();
+                $scope.object1='';
+            }).error(function(data, status, headers, config){
+                alert("修改失败");
+            }) ;
+        };
+
+    }]);
+});

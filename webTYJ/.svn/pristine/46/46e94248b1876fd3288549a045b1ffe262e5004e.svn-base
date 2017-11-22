@@ -1,0 +1,505 @@
+<!--
+    作者:彭婷婷
+    页面名称:宠物登记--历史记录
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>宠物列表</title>
+</head>
+<body>
+<div class="row padding">
+    <div class="col-lg-12">
+        <div class="search-padding-10">
+            <button type="button" class="btn btn-default btn-primary" ui-sref="index.propertyService.staffHome.petRegistration.newPet" ><span class="glyphicon glyphicon-plus btn_icon"></span>新建宠物 </button>
+        </div>
+
+        <div class="col-lg-4 col-md-6 col-sm-6" ng-repeat="items in searchPet.object.petRegistrations" ng-show="items.petId != null">
+            <div id="pannel">
+                <div class="title">
+                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                        宠物信息
+                    </div>
+                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 text-right">
+                        <span class="glyphicon glyphicon-chevron-down" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                        <ul class="dropdown-menu">
+                            <li><a data-toggle="modal" ng-click="view(items.petId)" data-target="#editModal" >编辑</a></li>
+                            <li><a data-toggle="modal" ng-click="deletePet(items.petId)" data-target="#deleteModal" >删除</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="pannel_content height">
+                    <div class="row">
+                        <div class="col-xs-4 col-lg-4 col-md-4">
+                            <a ng-if="items.petPic != null" ng-click="showItem(items)"><!-- href="#" data-toggle="modal" data-target="#modifyPet"  ng-click="view(items)"-->
+                                <img src={{fileUrl}}/{{items.petPic}}  style="width: 100px">
+                                <!--<img src={{fileUrl}}/{{items.petPic}} style="100px">-->
+                            </a>
+                            <a ng-if="items.petPic == null" ng-click="showItem(items)"><!-- href="#" data-toggle="modal" data-target="#modifyPet"  ng-click="view(items)"-->
+                                <img src="images/project/animal/a_01.png"  style="width: 100px">
+                                <!--<img src={{fileUrl}}/{{items.petPic}} style="100px">-->
+                            </a>
+                        </div>
+                        <div class="col-xs-8 col-lg-8 col-md-8">
+                            <ul>
+                                <li>宠物昵称：{{items.petName}}</li>
+                                <li>宠物类型：{{items.petType}}</li>
+                                <li>宠物性别：
+                                    <span ng-switch on="items.petSex">
+                                        <span ng-switch-when="1">母</span>
+                                        <span ng-switch-when="0">公</span>
+                                    </span>
+                                </li>
+                                <li>宠物编号：{{items.petNo}}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 没有宠物时给出提示  王洲  2016.1.14 -->
+        <div class="col-lg-4 col-md-6 col-sm-6" ng-show="searchPet.object.petRegistrations.length  == null">
+            <div id="pannel">
+                <div class="title">
+                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                        宠物信息
+                    </div>
+                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 text-right">
+                    </div>
+                </div>
+                <div class="pannel_content height">
+                    <div class="row">
+                        <div class="col-xs-4 col-lg-4 col-md-4">
+                            <a>
+                                <img src="images/project/animal/a_01.png" style="width: 100px;">
+                            </a>
+                        </div>
+                        <div class="col-xs-8 col-lg-8 col-md-8">
+                            <ul>
+                                <li>暂无宠物！</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="clear"></div>
+        <div class="padding"><!-- 修改分页样式  王洲  2016.1.14 -->
+            <div class="bill_paging">
+                <span>共{{searchPet.object.page.totalResult}}条</span>
+                <ul class="pagination">
+                    <li ng-class="{true:'disabled'}[searchPet.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-click="searchPet.go(1)">首页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchPet.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-show="searchPet.hasPrevious()" ng-click="searchPet.previous()">上一页</a>
+                    </li>
+                    <li ng-class="{true:'active'}[searchPet.page.currentPage==i]" ng-repeat="i in searchPet.pages">
+                        <a href="javascript:void(0)"  ng-click="searchPet.go(i)">{{i}}</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchPet.page.currentPage==searchPet.page.totalPage]">
+                        <a href="javascript:void(0)" ng-show="searchPet.hasNext()" ng-click="searchPet.next()">下一页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchPet.page.currentPage==searchPet.page.totalPage]">
+                        <a href="javascript:void(0)" ng-click="searchPet.go(searchPet.page.totalPage)">尾页</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editModal" role="dialog" aria-label="myModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                 宠物信息修改
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="padding15">
+                    <form id="css_form" name="mainForm" novalidate>
+                    <div class="col-xs-3 col-lg-3 col-md-3 search-padding-10 text-right">
+                        宠物名称：
+                    </div>
+                    <div class="col-xs-5 col-lg-5 col-md-5 search-padding-10">
+                        <input type="text" class="input-sm form-control" ng-model="pet.petName" name="petName" />
+                       <!-- <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.petName.$dirty && mainForm.petName.$invalid">
+                        <p class="alter">
+                            请输入宠物名称
+                        </p>
+                        <p class="alter" ng-show="mainForm.petName.defined ">
+                            正确
+                        </p>
+                    </span>-->
+                    </div>
+                    <div class="col-lg-1 col-md-1 col-sm-1">
+                        <span style="color: red" >*</span>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-3 blankSpace">
+                        &nbsp;
+                    </div>
+
+                    <div class="col-xs-3 col-lg-3 col-md-3 search-padding-10 text-right">
+                        宠物类型：
+                    </div>
+                    <div class="col-xs-5 col-lg-5 col-md-5 search-padding-10">
+                        <input type="text" class="form-control" ng-model="pet.petType" name="petType" required>
+                        <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.petType.$dirty && mainForm.petType.$invalid">
+                        <p class="alter">
+                            请输入宠物类型
+                        </p>
+                        <p class="alter" ng-show="mainForm.petType.defined ">
+                            正确
+                        </p>
+                    </span>
+                    </div>
+                    <div class="col-lg-1 col-md-1 col-sm-1">
+                        <span style="color: red" >*</span>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-3 blankSpace">
+                        &nbsp;
+                    </div>
+
+                    <div class="col-xs-3 col-lg-3 col-md-3 search-padding-10 text-right">
+                        宠物证件号：
+                    </div>
+                    <div class="col-xs-5 col-lg-5 col-md-5 search-padding-10">
+                        <input type="text" class="form-control" ng-model="pet.petNo" name="petNo" required>
+                        <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.petNo.$dirty && mainForm.petNo.$invalid">
+
+                        <p class="alter" ng-show="mainForm.petNo.defined ">
+                            正确
+                        </p>
+                    </span>
+                    </div>
+
+                    <div class="col-lg-4 col-md-4 col-sm-4 blankSpace">
+                        &nbsp;
+                    </div>
+
+                    <div class="col-xs-3 col-lg-3 col-md-3 search-padding-10 text-right">
+                        关联房屋：
+                    </div>
+                    <div class="col-xs-5 col-lg-5 col-md-5 search-padding-10">
+                        <span name="fullName" ng-model="BuildingStructureNew.fullName" required>{{pet.buildingStructureNew.fullName}}</span>
+                        <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.fullName.$dirty && mainForm.fullName.$invalid">
+                        <p class="alter">
+                            请关联房屋
+                        </p>
+                        <p class="alter" ng-show="mainForm.fullName.defined ">
+                            正确
+                        </p>
+                    </span>
+                    </div>
+                    <div class="col-lg-1 col-md-1 col-sm-1">
+                        <span style="color: red" >*</span>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-3 blankSpace">
+                        &nbsp;<button type="button" class="btn btn-default btn-primary" data-toggle="modal" data-target="#myModal_FW" ng-click="searchPersonBuilding();"><span class="glyphicon glyphicon-search btn_icon"></span>关联房屋</button>
+                    </div>
+
+                    <div class="col-xs-3 col-lg-3 col-md-3 search-padding-10 text-right">
+                        登记人：
+                    </div>
+                    <div class="col-xs-5 col-lg-5 col-md-5 search-padding-10">
+                        <!--<select name="name" required class="form-control" ng-model="pet.custId" required>
+                            <option selected ="selected">{{PersonCustNew.name}}</option>
+                            <option value="{{pcn.custId}}" ng-repeat="pcn in PersonCustNewList">{{pcn.name}}</option>
+                        </select>
+                        <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.name.$dirty && mainForm.name.$invalid">
+                            <p class="alter">
+                                请选择登记人
+                            </p>
+                            <p class="alter" ng-show="mainForm.name.defined ">
+                                正确
+                            </p>
+                        </span>-->
+                        <select name="names" required class="form-control" ng-model="pet.custId">
+                            <option value="{{pcn.custId}}" ng-repeat="pcn in PersonCustNewList">{{pcn.name}}</option>
+                        </select>
+                        <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.names.$dirty && mainForm.names.$invalid">
+                            <p class="alter">
+                                请选择登记人
+                            </p>
+                            <p class="alter" ng-show="mainForm.names.defined ">
+                                正确
+                            </p>
+                        </span>
+                    </div>
+                    <div class="col-lg-1 col-md-1 col-sm-1">
+                        <span style="color: red" >*</span>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-3 blankSpace">
+                        &nbsp;
+                    </div>
+
+                    <div class="col-xs-3 col-lg-3 col-md-3 search-padding-10 text-right">
+                        宠物性别：
+                    </div>
+                    <div class="col-xs-5 col-lg-5 col-md-5 search-padding-10">
+                        <!--<select name="petSex" required class="form-control" ng-model="pet.petSex">
+                            <option value="0">公</option>
+                            <option value="1">母</option>
+                        </select>-->
+                        <select ng-options="a.slaveName as a.description for a in petSexList" required class="form-control" ng-model="pet.petSex">
+                            <option value="">--请选择--</option>
+
+                        </select>
+                        <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.petSex.$dirty && mainForm.petSex.$invalid">
+                            <p class="alter">
+                                请选择宠物性别
+                            </p>
+                            <p class="alter" ng-show="mainForm.petSex.defined ">
+                                正确
+                            </p>
+                        </span>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 blankSpace">
+                        &nbsp;
+                    </div>
+
+                    <div class="col-xs-3 col-lg-3 col-md-3 search-padding-10 text-right">
+                        登记时间：
+                    </div>
+                    <div class="col-xs-5 col-lg-5 col-md-5 search-padding-10">
+                        <span ng-model="pet.registrationTime">{{pet.registrationTime|date:'yyyy-MM-dd'}}</span>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 blankSpace">
+                        &nbsp;
+                    </div>
+
+                    <div class="col-xs-3 col-lg-3 col-md-3 search-padding-10 text-right">
+                        描述：
+                    </div>
+                    <div class="col-xs-5 col-lg-5 col-md-5 search-padding-10">
+                        <textarea class="form-control" ng-model="pet.petDescribe"></textarea>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 blankSpace">
+                        &nbsp;
+                    </div>
+
+
+                    </form>
+                    <div class="clear"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消 </button>
+                <button class="btn btn-primary" ng-click="update()">确认</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!-- 模态窗口 -->
+<div class="modal fade" id="myModal_FW" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 60%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalfees1">查询房屋</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row padding">
+                    <div class="rh" ng-class="{'this_info':btnIndex==pbn.buildingStructureId}" ng-click="addHouseName(pbn)" ng-repeat="pbn in PersonBuildingNewList" ng-show="pbn.houseNew != null">
+                        <div class="col-lg-1 col-md-1 col-sm-1">
+                            <img src="images/project/bud/b_01.pn"  width="55" height="55">
+                        </div>
+                        <div class="col-lg-11 col-md-11 col-sm-11">
+                            <div class="col-lg-8 col-md-8 col-sm-8">
+                                房屋地址：{{pbn.houseNew.fullName}}
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                入伙状态：
+                            <span ng-switch on="pbn.houseNew.joinState">
+                                <span ng-switch-when="0">未入伙</span>
+                                <span ng-switch-when="1">已入伙</span>
+                                <span ng-switch-default>未入伙</span>
+                            </span>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                销售状态：
+                             <span ng-switch on="pbn.houseNew.marketState">
+                                <span ng-switch-when="0">未售</span>
+                                <span ng-switch-when="1">已售</span>
+                                <span ng-switch-default>已售</span>
+                            </span>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                竣工面积：{{pbn.houseNew.houseArea}}
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                房屋户型：{{pbn.houseNew.houseName}}
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="rh" ng-class="{'this_info':btnIndex==stall.buildingStructureId}" ng-click="addHouseName(stall)" ng-repeat="stall in PersonBuildingNewList" ng-show="stall.stallNew != null">
+                        <div class="col-lg-1 col-md-1 col-sm-1">
+                            <img src="images/project/car/c_01.png"  width="55" height="55">
+                        </div>
+                        <div class="col-lg-11 col-md-11 col-sm-11">
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                车位地址：{{stall.stallNew.fullName}}
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                车位编码：
+                                {{stall.stallNew.stallCoding}}
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                车位类型：
+                                {{stall.stallNew.stallType}}
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                车位状态：
+                                <span ng-switch on="stall.stallNew.stallState">
+                                    <span ng-switch-when="1">正常</span>
+                                    <span ng-switch-when="2">欠费</span>
+                                    <span ng-switch-when="3">办卡</span>
+                                    <span ng-switch-default>正常</span>
+                                </span>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                车位面积：{{stall.stallNew.usableArea}}
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                车位管理费：{{stall.stallNew.maintenancePrice}}
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="rh" ng-class="{'this_info':btnIndex==store.buildingStructureId}" ng-click="addHouseName(store)" ng-repeat="store in PersonBuildingNewList" ng-show="store.storeNew != null">
+                        <div class="col-lg-1 col-md-1 col-sm-1">
+                            <img src="images/project/bud/b_05.png"  width="55" height="55">
+                        </div>
+                        <div class="col-lg-11 col-md-11 col-sm-11">
+                            <div class="col-lg-8 col-md-8 col-sm-8">
+                                商铺地址：{{store.storeNew.fullName}}
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                商铺编码：
+                                {{store.storeNew.storeNumber}}
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                销售状态：
+                                 <span ng-switch on="store.storeNew.intakeState">
+                                    <span ng-switch-when="0">未售</span>
+                                    <span ng-switch-when="1">已售</span>
+                                    <span ng-switch-default>已售</span>
+                                </span>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                竣工面积：{{store.storeNew.completionArea}}
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                商铺类型：{{store.storeNew.storeTyoe}}
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"  data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary"  data-dismiss="modal">确认</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- 宠物详情 -->
+<div class="modal fade" id="showModal" role="dialog" aria-label="myModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                宠物详情查看
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="padding15">
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div class="col-xs-3 col-lg-3 col-md-3 search-padding-10 text-right">
+                            宠物名称：
+                        </div>
+                        <div class="col-xs-9 col-lg-9 col-md-9 search-padding-10">
+                            {{pets.petName}}
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div class="col-xs-3 col-lg-3 col-md-3 search-padding-10 text-right">
+                            宠物类型：
+                        </div>
+                        <div class="col-xs-9 col-lg-9 col-md-9 search-padding-10">
+                            {{pets.petType}}
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div class="col-xs-3 col-lg-3 col-md-3 search-padding-10 text-right">
+                            宠物编号：
+                        </div>
+                        <div class="col-xs-9 col-lg-9 col-md-9 search-padding-10">
+                            {{pets.petNo}}
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div class="col-xs-3 col-lg-3 col-md-3 search-padding-10 text-right">
+                            关联房屋：
+                        </div>
+                        <div class="col-xs-9 col-lg-9 col-md-9 search-padding-10">
+                            {{pets.buildingStructureNew.fullName}}
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div class="col-xs-3 col-lg-3 col-md-3 search-padding-10 text-right">
+                            登记人：
+                        </div>
+                        <div class="col-xs-9 col-lg-9 col-md-9 search-padding-10">
+                            {{pets.personCustNew.name}}
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div class="col-xs-3 col-lg-3 col-md-3 search-padding-10 text-right">
+                            宠物性别：
+                        </div>
+                        <div class="col-xs-9 col-lg-9 col-md-9 search-padding-10">
+                            <span ng-switch on="pets.petSex">
+                                <span ng-switch-when="0">公</span>
+                                <span ng-switch-when="1">母</span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div class="col-xs-3 col-lg-3 col-md-3 search-padding-10 text-right">
+                            登记时间：
+                        </div>
+                        <div class="col-xs-9 col-lg-9 col-md-9 search-padding-10">
+                            {{pets.registrationTime|date:'yyyy-MM-dd'}}
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div class="col-xs-3 col-lg-3 col-md-3 search-padding-10 text-right">
+                            描述：
+                        </div>
+                        <div class="col-xs-9 col-lg-9 col-md-9 search-padding-10">
+                            {{pets.petDescribe}}
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

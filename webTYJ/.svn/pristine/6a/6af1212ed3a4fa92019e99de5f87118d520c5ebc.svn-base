@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>产品初始化--门禁卡</title>
+</head>
+<body>
+<div class="row padding">
+    <form id="css_form" name="mainForm">
+    <div class="col-lg-12">
+        <div class="row search-padding-10">
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                产品名称：
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                <input  class="form-control" ng-model="Product.productName" name="productName" placeholder="请输入产品名称" ng-blur="checkName()">
+            </div>
+            <div class="red">*</div>
+            <div class="col-lg-4"></div>
+            <div class="col-lg-4"></div>
+        </div>
+        <div class="row search-padding-10">
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                产品编号：
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                <input class="form-control"   ng-model="Product.productNum" name="productNum" placeholder="请输入产品编号">
+            </div>
+            <div class="red">*</div>
+            <div class="col-lg-4"></div>
+            <div class="col-lg-4"></div>
+        </div>
+        <div class="row search-padding-10">
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                生效日期：
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                <input type="date" class="form-control" ng-model="Product.effectDate" name="effectDate">
+            </div>
+            <div class="red">*</div>
+            <div class="col-lg-4"></div>
+            <div class="col-lg-4"></div>
+        </div>
+        <div class="row search-padding-10">
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                金额：
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                <input class="form-control" ng-model="Product.price" name="price" placeholder="请输入金额">
+            </div>
+            <div class="red">*</div>
+            <div class="col-lg-4"></div>
+            <div class="col-lg-4"></div>
+        </div>
+        <div class="padding text-center">
+            <button type="button" class="btn btn-default tab-btn" ng-click="cancle()">
+                取消
+            </button>
+            <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="addProduct()">
+                提交
+            </button>
+
+        </div>
+    </div>
+    </form>
+</div>
+</body>
+</html>

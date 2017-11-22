@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html ng-app="firstApp" lang="zh-CN">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>设备申购</title>
+</head>
+<body>
+
+<div class="row padding">
+
+    <div class="clear"></div>
+    <div id="content-first">
+        <div class="row sel">
+            <div class="col-lg-1 col-md-2 col-sm-2  text-right">
+                查询：
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                <input type="text" class="form-control" placeholder="请输入搜索条件" ng-model="searchData" ng-keyup="">
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2  text-right">
+                <button ng-click="load()" class="btn btn-primary" style="vertical-align: top;">
+                    <span class="glyphicon glyphicon-search btn_icon"></span>
+                    搜索
+                </button>
+            </div>
+        </div>
+        <div class="padding">
+
+            <div class="search-padding-10">
+                <a ng-click="cartGo()">
+                    <button class="btn btn-primary"><span class="glyphicon glyphicon-shopping-cart btn_icon"></span> 购物车
+                    </button>
+                </a>
+            </div>
+
+            <div class="row" >
+                <div class="col-lg-3 col-md-4 col-sm-4 " ng-repeat="item in currentHouse">
+                    <div id="pannel">
+                        <div class="title">
+                            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">{{item.pName}}</div>
+                        </div>
+                        <div class="pannel_content" style="height:430px;overflow: hidden;">
+                            <div class="pannel-img"><img src="../../images/house.jpg" width="225px" height="174px"></div>
+
+                            <ul class="pannel-list">
+                                <li style="margin:5px 0;">
+                                    <div class="col-lg-6 col-md-6 col-sm-12">价格：<b class="red ">￥{{item.price}}</b></div>
+                                    <div class="col-lg-6 col-md-6 col-sm-12">
+                                        <button ng-class="{'btn-primary':item.state==1,'active':item.state==0}" class="pull-right btn" type="button" ng-click="addCart(item)"><span
+                                                class="glyphicon glyphicon-shopping-cart btn_icon" ></span> 加入购物车
+                                        </button>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="date-list">
+                                        <div class="col-md-4"><label>数量：</label></div>
+                                        <div class="col-md-2" style="margin-right:6px">
+                                            <button class="btn btn-primary"  ng-click="subCount(item)"><span
+                                                class="glyphicon glyphicon-minus btn_icon" style="margin-right:0;"></span></button>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <input class="form-control date-list-input" style="margin:0" oninput="if(value<=0)layer.msg('购物车数量必须大于0!',{icon:0,time:1000});" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" type="text" ng-model="item.count">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button class="btn btn-primary" ng-click="addCount(item)"><span
+                                                    class="glyphicon glyphicon-plus btn_icon" style=""></span></button>
+                                        </div>
+
+                                    </div>
+                                </li>
+                                <li><label>品名：{{item.pName}}</label></li>
+                                <li><label>型号：</label> {{item.pModel}}</li>
+                                <li title="{{item.pType}}"><label>规格：</label><br>
+                                    {{item.pType}}
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bill_paging">
+                <ul class="pagination">
+                    <span>共{{EqProductList.length}}条</span>
+                    <li ng-class="{true:'disabled'}[currentPage==1]"><a href="javascript:void(0)"
+                                                                        ng-click="currentPage=1;loadPage(currentPage)">首页</a></li>
+                    <li ng-class="{true:'disabled'}[currentPage==1]"><a href="javascript:void(0);" ng-click="prev()">上一页</a></li>
+                    <li ng-repeat="page in pages" ng-class="{true:'active'}[currentPage==page]"><a href="javascript:void(0);" ng-click="loadPage(page)">{{ page }}</a></li>
+                    <li ng-class="{true:'disabled'}[currentPage==totalPage]"><a href="javascript:void(0);" ng-click="next()">下一页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[currentPage==totalPage]"><a href="javascript:void(0)" ng-click="currentPage=totalPage;loadPage(currentPage)">末页</a></li>
+                </ul>
+
+            </div>
+        </div>
+
+        <div class="row sel">
+
+        </div>
+
+
+        <div class="padding">
+
+            <div class="row sel">
+                <div class="col-lg-2">
+                    <button class="btn btn-primary" ng-click="unsubscribe()"><span class="glyphicon glyphicon-minus-sign btn_icon"></span> 退订
+                    </button>
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2  text-right">
+                    查询：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <input type="text" class="form-control" placeholder="请输入设备名称" ng-model="eqName">
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2  text-right">
+                    <button ng-click="loadOrder()" class="btn btn-primary" style="vertical-align: top;">
+                        <span class="glyphicon glyphicon-search btn_icon"></span>
+                        搜索
+                    </button>
+                </div>
+            </div>
+            <table>
+                <thead>
+                <th width="60px">
+                    <input type="checkbox" id="chooseed" ng-click="allChoose()"/>
+                </th>
+                <th>订单号</th>
+                <th>设备名称</th>
+                <th>设备型号</th>
+                <th>单价</th>
+                <th>数量</th>
+                <th>总计</th>
+                <th>状态</th>
+                </thead>
+                <tbody>
+                <tr ng-repeat="item in currentOrder">
+                    <td><input type="checkbox" name="choose"  id="{{item.id}}" ng-model="item.isActive" ng-click="getChecked(item.id)"></td>
+                    <td>{{item.eqOrder.orderNum}}</td>
+                    <td>{{item.eqName}}</td>
+                    <td>{{item.eqModel}}</td>
+                    <td>￥{{item.price}}</td>
+                    <td>{{item.number}}</td>
+                    <td>￥{{item.total}}</td>
+                    <td>
+                        <span ng-show="item.eqOrder['state']==4">已退订</span>
+                        <span ng-show="item.eqOrder['state']!=4">正常</span>
+                    </td>
+                </tr>
+                <tr ng-show="orderDetailsList.length==0">
+                    <td colspan="7" style="padding:5px;background:#fff;">暂无数据</td>
+                </tr>
+
+                </tbody>
+            </table>
+            <div ng-show="orderDetailsList.length!=0" class="text-right">
+                    <ul class="pagination">
+                        <span>共{{orderDetailsList.length}}条</span>
+                        <li ng-class="{true:'disabled'}[currentPage1==1]"><a href="javascript:void(0)"
+                                                                            ng-click="currentPage1=1;loadPage1(currentPage1)">首页</a></li>
+                        <li ng-class="{true:'disabled'}[currentPage1==1]"><a href="javascript:void(0);" ng-click="prev1()">上一页</a></li>
+                        <li ng-repeat="page in pages1" ng-class="{true:'active'}[currentPage1==page]"><a href="javascript:void(0);" ng-click="loadPage1(page)">{{ page }}</a></li>
+                        <li ng-class="{true:'disabled'}[currentPage1==totalPage1]"><a href="javascript:void(0);" ng-click="next1()">下一页</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[currentPage1==totalPage1]"><a href="javascript:void(0)" ng-click="currentPage1=totalPage1;loadPage1(currentPage1)">末页</a></li>
+                    </ul>
+            </div>
+
+        </div>
+
+
+    </div>
+</div>
+
+
+<script>
+    $(function () {
+        var wWidth = $(window).width();
+        var wHeight = $(window).height();
+        $(".container-fluid .left").height(wHeight - 75);
+        $(".container-fluid .right").height(wHeight - 105);
+        $(".container-fluid .rightheight").height(wHeight - 105);
+    });
+</script>
+</body>
+</html>

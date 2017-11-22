@@ -1,0 +1,401 @@
+<!--
+    创建人：倪明  日期：2015/8/14
+    页面名称：收费项目
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>收费项目</title>
+    <!-- 实现单选效果 -->
+    <script>
+        function check(obj) {
+            $(':checkbox').each(function () {
+                if (this != obj)
+                    $(this).attr("checked", false);
+                else {
+                    if ($(this).prop("checked")){
+                        $(this).attr("checked", true);
+                    }
+                    else
+                        $(this).attr("checked", false);
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+<div>
+    <div class="sel">
+        <div class="row search-padding-10">
+            <div class="col-lg-1 col-md-2 col-sm-2">
+                物业项目
+            </div>
+            <div class="col-lg-5 col-md-4 col-sm-4">
+                <select class="form-control" ng-model="chargeItemNew.projectId">
+                    <option value="">请选择物业项目</option>
+                    <option ng-repeat="item in projects" value="{{item.projectId}}">{{item.projectName}}</option>
+                </select>
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2">
+                收费项目
+            </div>
+            <div class="col-lg-5 col-md-4 col-sm-4">
+                <input type="text" class="form-control" ng-model="chargeItemNew.ciName">
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2">
+                启用状态
+            </div>
+            <div class="col-lg-5 col-md-4 col-sm-4">
+                <select class="form-control" ng-model="chargeItemNew.startType">
+                    <option value="">请选择</option>
+                    <option value="0">已启用</option>
+                    <option value="1">未启用</option>
+                </select>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+            <button type="button" class="btn btn-default btn-primary" >
+                <span class="glyphicon glyphicon-search btn_icon" ng-click="searchPaginator._load();"></span>
+                查询
+            </button>
+             </div>
+        </div>
+    </div>
+    <!--搜索信息end-->
+    <div class="row padding">
+        <div class="col-lg-12">
+            <div class="search-padding-10">
+                <button type="button" class="btn btn-default btn-primary" data-toggle="modal" data-target="#add">
+                    <span class="glyphicon glyphicon-plus btn_icon"></span>
+                    新建
+                </button>
+                <button type="button" class="btn btn-default btn-primary" data-toggle="modal" data-target="#revise">
+                    <span class="glyphicon glyphicon-edit btn_icon"></span>
+                    修改
+                </button>
+            </div>
+            <table>
+                <thead>
+                <tr>
+                    <td></td>
+                    <th>收费项目</th>
+                    <th>编号</th>
+                    <th>启用状态</th>
+                    <th>账户类型</th>
+                    <th>生效时间</th>
+                    <th>失效时间</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="item in searchPaginator.object.chargeItemNews" ng-show="item.ciId != null">
+                    <td><input type="checkbox" name="name" value="item" onclick="check(this)" ng-click="getData(item)"></td>
+                    <td>{{item.ciName}}</td>
+                    <td>{{item.ciNum}}</td>
+                    <td ng-switch on="item.startType">
+                        <span ng-switch-when="0">已启用</span>
+                        <span ng-switch-when="1">未启用</span>
+                    </td>
+                    <td ng-switch on="item.accountType">
+                        <span ng-switch-when="0">资产账户</span>
+                        <span ng-switch-when="1">押金账户</span>
+                    </td>
+                    <td>{{item.startDate | date:'yyyy-MM-dd'}}</td>
+                    <td>{{item.endDate | date:'yyyy-MM-dd'}}</td>
+                    <td><a style="cursor:pointer;" data-toggle="modal" data-target="#detail" ng-click="checkItem(item)">详情</a></td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="bill_paging">
+                <ul class="pagination">
+                    <li><a class="cursor_pointer" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a></li>
+                    <li><a class="cursor_pointer" ng-repeat="i in searchPaginator.pages"  ng-click="searchPaginator.go(i)">{{i}}</a></li>
+                    <li><a class="cursor_pointer" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!--新增收费 模态框-->
+<div class="modal fade" id="add" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                新增收费项目
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="row padding">
+                <div class="sel1">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            收费项目
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <input type="text" class="form-control" ng-model="chargeItemNewAdd.ciName">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            编号
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <input type="text" class="form-control" ng-model="chargeItemNewAdd.ciNum">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            启用状态
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <select class="form-control" ng-model="chargeItemNewAdd.startType">
+                                        <option value="">请选择</option>
+                                        <option value="0">已启用</option>
+                                        <option value="1">未启用</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            账户类型
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <select class="form-control" ng-model="chargeItemNewAdd.accountType">
+                                        <option value="">请选择</option>
+                                        <option value="0">资产用户</option>
+                                        <option value="1">押金用户</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            <!--修改时间控件
+                                徐文广
+                                2016/5/18
+                            -->
+                            生效日期
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <input type="text" onclick="WdatePicker({readOnly:true})"  class="Wdate form-control" ng-model="chargeItemNewAdd.startDate" onchange=""  ng-blur="checkDates()" ng-change="getStall(stallss.id,false)">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            失效日期
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <input type="text" onclick="WdatePicker({readOnly:true})"  class="Wdate form-control" ng-model="chargeItemNewAdd.endDate" onchange=""  ng-blur="checkDates()" ng-change="getStall(stallss.id,false)">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            优先级
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <input type="text" class="form-control" ng-model="chargeItemNewAdd.priority">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                    <div class="col-lg-12">
+                 <table>
+                            <thead>
+                            <tr>
+                                <th width="50%">收费详情</th>
+                                <th width="50%">编号</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="item in chargingAdd track by $index">
+                                <td><input type="text" ng-model="item.ciName"/></td>
+                                <td><input type="text" ng-model="item.ciNum"/></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="save()">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--新增收费 模态框 END-->
+
+<!--修改收费 模态框-->
+<div class="modal fade" id="revise" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                新增收费项目
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="row padding">
+                <div class="sel1">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            收费项目
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <input type="text" class="form-control" ng-model="updateChargeItem.ciName">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            编号
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <input type="text" class="form-control" ng-model="updateChargeItem.ciNum">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            启用状态
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <select class="form-control" ng-model="updateChargeItem.startType">
+                                        <option value="">请选择</option>
+                                        <option value="0">已启用</option>
+                                        <option value="1">未启用</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            账户类型
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <select class="form-control" ng-model="updateChargeItem.accountType">
+                                        <option value="">请选择</option>
+                                        <option value="0">资产用户</option>
+                                        <option value="1">押金用户</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            生效日期
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <input type="text" ng-model="updateChargeItem.startDate">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            失效日期
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <input type="text" ng-model="updateChargeItem.endDate">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            优先级
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <input type="text" ng-model="updateChargeItem.priority">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                    <div class="col-lg-12">
+                        <div class="search-padding-10">
+                            <button type="button" class="btn btn-default btn-primary" ng-click="addUpdateRow()">
+                                <span class="glyphicon glyphicon-plus btn_icon"></span>
+                                新建
+                            </button>
+                        </div>
+                        <table>
+                            <thead>
+                            <tr>
+                                <th width="50%">收费详情</th>
+                                <th width="50%">编号</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="items in updateChargeItem.chargeItemNewList track by $index">
+                                <td><input type="text" ng-model="items.ciName"/></td>
+                                <td><input type="text" ng-model="items.ciNum"/></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="update()">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--修改收费 模态框 END-->
+
+<!--收费详情模态框-->
+<div class="modal fade" id="detail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                详情
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                        <table width="100%">
+                            <thead>
+                            <tr>
+                                <th width="50%">收费详情</th>
+                                <th width="50%">编号</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="vm in currentCheck">
+                                <td>{{vm.ciName}}</td>
+                                <td>{{vm.ciNum}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--收费详情模态框 END-->
+</body>
+</html>

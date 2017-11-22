@@ -1,0 +1,217 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 产品初始化js
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../app');
+
+    app.controller('productCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        $scope.btnIndex = 1;
+        var url = $rootScope.url;
+        $scope.searchProduct = {page : {},startPrice : '', endPrice : '', productName : '', productType : ''};
+        $scope.indexs='';   //序号
+
+        $scope.productIds = [];     //存放产品id数组
+
+        /**
+         * 高亮显示
+         */
+
+        $scope.doClick = function(item){
+            $scope.btnIndex = item;
+        };
+        /**
+         * 查询所有产品记录（分页）
+         */
+        var checkProduct = function (page, callback) {
+            $scope.productIds = [];//清空
+            $scope.searchProduct.page = page;
+            var startPriceCheck = app.get('valueCheck').isOnlyNumberOrNull($scope.searchProduct.startPrice);
+            if(startPriceCheck.state == false){
+                layer.msg('起始价格' + startPriceCheck.info,{icon : 0,time : 1000});
+                return;
+            }
+            var endPriceCheck = app.get('valueCheck').isOnlyNumberOrNull($scope.searchProduct.endPrice);
+            if(endPriceCheck.state == false){
+                layer.msg('截止价格' + endPriceCheck.info,{icon : 0,time : 1000});
+                return;
+            }
+            //增加当起始价格和截止价格都不为空时，判断起始价格不大于截止价格  王洲  2016.04.22
+            if(app.get('valueCheck').isNull($scope.searchProduct.startPrice).state && app.get('valueCheck').isNull($scope.searchProduct.endPrice).state){
+                if($scope.searchProduct.startPrice > $scope.searchProduct.endPrice){
+                    layer.msg('起始价格不能大于截止价格！',{icon : 0,time : 1000});
+                    return;
+                }
+            }
+            $http.post(url + '/Product/listPageProduct', {Product: $scope.searchProduct}).success(callback);
+        };
+        $scope.currentProduct = app.get('Paginator').list(checkProduct, 6);
+        console.log($scope.currentProduct);
+        $scope.indexs=$scope.currentProduct.page.currentPage*5;
+        /**
+         * 选中一条数据
+         * @param index   一个对象
+         */
+        $scope.currentBuilding = {};
+        $scope.checkProduct = function(index){
+            $scope.btnIndex = index;
+            $scope.currentBuilding = index;
+        };
+
+        $scope.toAdd = function(){
+            $rootScope.productId = null;
+            localStorage.setItem("product_id",JSON.stringify(''));
+            sessionStorage.removeItem('itemType');
+            $location.path("/index/accountManagement/productAndProperty/product/productBanner/buildLease");
+        };
+
+        //多选框点击时选中或取消,将值存入数组
+        /**
+         * 修改点击效果为整行点击有效
+         * @param id
+         */
+        $scope.chargeItem = function(id){
+            if(document.getElementById(id).checked == true){
+                document.getElementById(id).checked = false;
+                document.getElementById(id).parentNode.parentNode.style.background = '';
+                $scope.temp = [];
+                $scope.temp = $scope.productIds;
+                $scope.productIds = [];
+                for(var i = 0; i < $scope.temp.length; i ++){
+                    if($scope.temp[i] != id){
+                        $scope.productIds.push($scope.temp[i]);
+                    }
+                }
+            }else{
+                document.getElementById(id).checked = true;
+                document.getElementById(id).parentNode.parentNode.style.background = '#f6f8fa';
+                $scope.productIds.push(id);
+            }
+        };
+
+        //查看详情
+        $scope.ServiceProjectDetailList = [];
+        $scope.detail = function()
+        {
+            console.log($scope.productids);
+            $scope.ServiceProjectList = [];                         //定义一个装修服务对象集合
+            $scope.BuildingStructureNewList = [];
+            //查看前判断是否产品是否选中，是否只选择了一条记录
+            if($scope.productIds.length == 0){
+                layer.alert('请选择需要查看的产品信息',{icon : 0});
+                return;
+            }else if($scope.productIds.length > 1){
+                layer.alert('一次只能选择一条产品信息进行查看',{icon : 0});
+                return;
+            }else{
+                $rootScope.productId = $scope.productIds[0];
+                $http.post(url + '/Product/getProductByProductId/' + $scope.productIds[0]).success(function(data) {
+                    $scope.Product = data.Product;
+                    console.log(data);
+                    if($scope.Product.productType==3||$scope.Product.productType==1)
+                    {
+
+                        if(angular.isDefined($scope.Product)) {
+                            if(!angular.isDefined($scope.Product.buildingstructruenewlist))
+                            {
+                                $scope.Product.effectDate = new Date($scope.Product.effectDate);
+
+                                //判断装修服务表数据是对象还是数组
+                                if (!angular.isUndefined($scope.Product.serviceprojectlist)) {
+                                    if (angular.isArray($scope.Product.serviceprojectlist)) {
+
+                                        $scope.ServiceProjectList = $scope.Product.serviceprojectlist;
+                                    }
+                                }
+                            }else
+                            {
+
+                                $scope.Product.effectDate = new Date($scope.Product.effectDate);
+                                if(angular.isArray($scope.Product.buildingstructruenewlist)){
+                                    for(var i = 0; i < $scope.Product.buildingstructruenewlist.length; i ++){
+                                        $scope.BuildingStructureNewList.push($scope.Product.buildingstructruenewlist[i]);
+                                    }
+                                }else{
+                                    $scope.BuildingStructureNewList.push($scope.Product.buildingstructruenewlist);
+                                }
+                            }
+                        }
+                    }else
+                    {
+                        layer.alert('只能查看装修服务或停车月卡的详情！',{icon : 0});
+                        return;
+                    }
+                    $('#personDatil').modal('show');
+                }).error(function(data){
+                    layer.alert('没有对应的产品信息！',{icon : 2});
+                });
+            }
+        };
+
+        //产品修改跳转
+        $scope.toUpdate = function(){
+            console.log($scope.productIds);
+            //修改前判断是否产品是否选中，是否只选择了一条记录
+            if($scope.productIds.length == 0){
+                layer.alert('请选择需要修改的产品信息',{icon : 0});
+                return;
+            }else if($scope.productIds.length > 1){
+                layer.alert('一次只能选择一条产品信息进行修改',{icon : 0});
+                return;
+            }else{
+
+                $rootScope.productId = $scope.productIds[0];
+                var productId=$rootScope.productId;
+                $http.post(url + '/ProductCommonservice/checkProduct/'+productId).success(function(data){
+                    if(data.commonserviceName!=null){
+                        var a=data.commonserviceId;
+                        localStorage.setItem("product_id",JSON.stringify(a));
+                        $location.path("/index/accountManagement/productAndProperty/product/productBanner/commonServices");
+                    }
+                    else{
+                    }
+
+                }).error(function(data){
+                    alert('请重试！'+data.toString());
+                });
+                localStorage.setItem("product_id",JSON.stringify($scope.productIds[0]));
+                localStorage.setItem("product_type",JSON.stringify($scope.productIds[0]));
+                $location.path("/index/accountManagement/productAndProperty/product/productBanner");
+            }
+        };
+
+        //修改产品状态为失效
+        $scope.changeState = function(){
+            //修改前判断产品是否选中
+            if($scope.productIds.length == 0){
+                layer.alert('请选择至少一条产品信息',{icon : 0});
+                return;
+            }else {
+                var num = '';
+                num = $scope.productIds.length;
+                $scope.productids = {};
+                $scope.productids = $scope.productIds.join(",");
+                layer.confirm('是否将' + num + '条数据置为失效？',{
+                        btn : ['确定','取消']
+                    },function(){
+                        $http.get(url + '/Product/changeState/' + $scope.productids).success(function(data){
+                            layer.msg('设置成功！',{icon : 1, time : 2000});
+                            $scope.productIds = [];
+                            $scope.currentProduct._load();
+                        }).error(function(){
+                            layer.alert('设置失败，请重新选择！',{icon : 2});
+                            $scope.productIds = [];
+                            $scope.currentProduct._load();
+                        });
+                    },
+                    function(){}
+                );
+            }
+        };
+
+    }]);
+});

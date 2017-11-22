@@ -1,0 +1,55 @@
+/**{left: 0px;*/
+    /*top: 0px;}*/
+
+#info{border-bottom: 1px solid lightgray;width:90%;margin-left: 30px;}
+
+#info td{line-height:30px;font-size: 12px;}
+
+/**人员信息【图片】**/
+.zrf_img {
+    width:70px;
+    height:80px;
+}
+
+/**--消息图标--**/
+.msg_img {
+    width: 32px;
+    height: 31px;
+    margin-right: 5px;
+}
+
+/**人员信息【VIP图标】**/
+.VIP_img {
+    /*position:inherit;*/
+    width: 73px;
+    height:30px;
+}
+/**人员信息【钻石图标】**/
+.u0_img {
+    width: 20px;
+    height: 20px;
+}
+/*--红钻--*/
+.u2_img {
+    width: 20px;
+    height: 20px;
+}
+
+/**--导航和下面部分--*/
+#down{margin-top:20px;}
+
+#nav li{background-color: lightgray;margin-right: 10px;}
+
+.panel-1{
+    /*width:92%; */
+    background:#f0f0f0;
+    border:1px solid #bbbbbb;
+    overflow:hidden;
+    font-size:14px;
+    -moz-border-radius:7px;
+    -webkit-border-radius:7px;
+    border-radius:7px;
+    /*margin:15px auto;*/
+}
+
+.complaint_user_info1{ width:98%; float:left; margin-top:5px; margin-left:10px; position:relative;}

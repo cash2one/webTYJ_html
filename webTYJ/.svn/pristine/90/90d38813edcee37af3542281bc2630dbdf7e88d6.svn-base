@@ -1,0 +1,97 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 巡检管理
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../../app');
+
+    app.controller('newServiceTasksCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        //定义全局变量url,访问数据库接口路径
+        var url = $rootScope.url;
+        $scope.Tasks={};//新增任务对象
+
+        $scope.id=sessionStorage.getItem("data1");
+
+        //负责人信息
+        $scope.Teamworkstaff = {page:{}};
+
+        $scope.load = function(){
+            var fetchFunction = function (page, callback) {
+                $scope.Teamworkstaff.page = page;
+                $http.post(url + '/Teamworkstaff/listPageTeamworkStaff',{Teamworkstaff:$scope.Teamworkstaff}).success(callback)
+
+            };
+            $scope.searchPaginator2 = app.get('Paginator').list(fetchFunction,5);
+            console.log($scope.searchPaginator2);
+        };
+        $scope.load();
+
+        //判断checkbx是否选中
+        $scope.d=false;
+        $scope.getdata=function(item){
+            var chk = document.getElementsByName("aaa");
+            for(var i=0;i<chk.length;i++){
+                if( chk[i].checked==true){
+                    $scope.accountRecord=item;
+                    $scope.d=true;
+                    return;
+                }else{
+                    $scope.d=false;
+                }
+            }
+        };
+
+        $scope.addPerson=function(){
+            $scope.person= $scope.accountRecord;
+            console.log($scope.person)
+        };
+        //获取专业线
+        $http.get(url + "/SpecialtyInfo/listAllSpecialtyInfoRestful").success(function(data){
+            $scope.SpecialtyInfo = data.SpecialtyInfo;
+            console.log($scope.SpecialtyInfo)
+        }).error(function(data,status,headers,config){
+            console.log ("获取信息失败,请稍后重试!");
+        });
+
+        $scope.Datil={
+            /**任务类型**/
+            /*园林0 维修1 护管2 部门质检3 装修巡检4 装修验收5 施工巡检6 施工核查7 施工验收8
+             赔偿给业主9 向业主索赔10 清洁11 回访12 投诉13 验房 14 咨询15 抄水表16 抄电表17 装修核查18固定车位19巡检20*/
+            taskType: [
+                { id: '0',name:'园林' },
+                { id: '1',name:'维修' },
+                { id: '2',name:'护管' },
+                //{ id: '4',name:'部门质检' },
+                //{ id: '5',name:'装修巡检' },
+                //{ id: '7',name:'装修验收' },
+                //{ id: '8',name:'施工巡检' },
+                //{ id: '9',name:'施工核查' },
+                //{ id: '10',name:'施工验收' },
+                { id: '9',name:'赔偿给业主' },
+                { id: '11',name:'清洁' },
+                { id: '10',name:'向业主索赔' },
+                { id: '12',name:'回访'},
+                { id: '13',name:'投诉'}
+            ]
+        };
+
+        $scope.addTask=function(){
+            $scope.Tasks.serverId=$scope.id;//关联服务请求id
+            $http.post(url+'/Tasks/insertTasksRes',{Tasks:$scope.Tasks}).success(function(){
+                alert("添加成功");
+                console.log($scope.Tasks);
+                $location.path("/index/serviceRequest/patrolManagement/serviceTasks/isGoingTasks");
+
+            }).error(function(data, status, headers, config){
+                alert("添加失败");
+            }) ;
+        };
+
+    }]);
+});
+
+

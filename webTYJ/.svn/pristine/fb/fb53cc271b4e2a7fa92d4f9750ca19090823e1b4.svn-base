@@ -1,0 +1,358 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 【专业资产初始化】新增专业
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../app');
+
+    app.controller('newProfessionalCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        $scope.show1 = false;
+        //定义全局变量url,访问数据库接口路径
+        $scope.propertyType = {page: {}};
+        var url = $rootScope.url;
+        $scope.doClick(1);
+        /**
+         * 获取登录人信息
+         * 禅道BUG 145
+         * 修改人：陶勇超
+         * 2016年1月6日 14:12:20
+         */
+        var userId ;
+        var user = {};                                             //设置默认用户信息为空
+        var userCook = JSON.parse(sessionStorage.getItem("USER_LOGIN"));   //从cook中获取用户信息
+        $scope.user = userCook?userCook:user;                      //三目运算获取用户信息
+        userId= $scope.user.loginName;
+
+        $scope.showStatus=1;
+
+        //网格切换
+        $scope.tabview=function(){
+            $scope.showStatus=0;
+        }
+
+        $scope.listview=function(){
+            $scope.showStatus=1;
+        }
+
+
+        //查询所有专业列表方法
+        $scope.load1=function(){
+            var parent = function (page, callback) {
+                $scope.propertyType.page = page;
+                $http.post(url + '/PropertyType/listPageParentPropertyType', {PropertyType: $scope.propertyType}).success(callback);
+            };
+            $scope.currentParentProperty = app.get('Paginator').list(parent, 6);
+        };
+        $scope.load1();
+        //获取专业分类
+        $scope.currentBuilding = {};    //选中的专业
+        $scope.classifyPropertyType={};
+        $scope.currentPropertyType = [];   //选中专业中所有的专业分类
+        $scope.checkShow = function(items){
+            $scope.show1 = true;
+            $scope.currentBuilding = items;
+            $scope.node=items.propertyTypeName;
+            $scope.classifyPropertyType.parentId=items.propertyTypeId;
+            $scope.parentPropertyType.propertyTypeId = $scope.currentBuilding.propertyTypeId;
+            $scope.btnIndex = items.propertyTypeId;
+            /**
+             * 获取专业里所有专业分类
+             */
+            /*
+             * Bug832 陈浪 2016.3.7
+             */
+            $scope.load2=function(){
+                var parent = function (page, callback) {
+                    $scope.propertyType.page = page;
+                    $scope.propertyType.propertyTypeId=items.propertyTypeId;
+                    $scope.propertyType.propertyTypeNumber=$scope.propertyTypeSearchNumber
+                    $scope.propertyType.propertyTypeName=$scope.propertyTypeSearchName;
+                    $http.post(url + '/PropertyType/listPageClassifyPropertyType', {PropertyType: $scope.propertyType}).success(callback);
+                };
+                $scope.currentPropertyType = app.get('Paginator').list(parent, 6)
+            };
+            $scope.load2();
+            //新增分类方法
+
+            $scope.addclassifyPropertyType=function(){
+                if($scope.classifyPropertyType.propertyTypeName==null||$scope.classifyPropertyType.propertyTypeName.replace(/\s+/g,"")==""){
+                    layer.alert("分类名称不能为空",{icon : 0});
+                    return;
+                }else if($scope.currentBuilding.propertyTypeName==undefined||$scope.currentBuilding.propertyTypeName==""){
+                    layer.alert("所属专业不能为空",{icon : 0});
+                    return;
+                }
+                /**
+                 * 获取登录人信息
+                 * 禅道BUG 145
+                 * 修改人：陶勇超
+                 * 2016年1月6日 14:12:20
+                 */
+                $scope.classifyPropertyType.founder=userId;
+                $http.post(url + '/PropertyType/AddPropertyType',{PropertyType:$scope.classifyPropertyType}).success(function(){
+                    layer.alert("添加成功",{icon : 1});
+                    $http.get(url+'/PropertyType/selectByIds/'+ items.propertyTypeId).success(function(data) {
+                        $scope.load2();
+                    }).error(function(data,status,headers,config){
+                        layer.alert("查询专业失败！",{icon : 2})
+                    });
+                    $scope.classifyPropertyType.propertyTypeName=null;
+                    $scope.classifyPropertyType.propertyTypeNumber=null;
+                }).error(function(data, status, headers, config){
+                    layer.alert("error"+status,{icon : 2});
+                });
+            };
+
+            //分类编辑
+            $scope.updatePropertyType=function(){
+                if($scope.parent.propertyTypeName==null||$scope.parent.propertyTypeName==""){
+                    layer.alert("分类名称不能为空",{icon : 0});
+                    return;
+                }
+                /**
+                 * 获取登录人信息
+                 * 禅道BUG 145
+                 * 修改人：陶勇超
+                 * 2016年1月6日 14:12:20
+                 */
+                $scope.parent.modifier=userId;
+                $http.put(url+'/PropertyType/UpdatePropertyType',{PropertyType:$scope.parent}).success(function(){
+                    layer.msg("编辑成功",{icon : 1,time : 2000});
+                    $http.get(url+'/PropertyType/selectByIds/'+ items.propertyTypeId).success(function(data) {
+                        $scope.currentPropertyType = data.PropertyType;
+                    }).error(function(data,status,headers,config){
+                        layer.alert("查询专业失败！",{icon : 2})
+                    });
+                    $("#new2").modal("hide");
+                    $scope.d=false;
+                }).error(function(data, status, headers, config){
+                    layer.msg("编辑失败",{icon : 2,time : 2000});
+                });
+            };
+            //修改取消
+            $scope.cancle1=function(){
+                $http.get(url+'/PropertyType/selectByIds/'+items.propertyTypeId).success(function(data) {
+                    $scope.currentPropertyType = data.PropertyType;
+                }).error(function(data,status,headers,config){
+                    layer.alert("查询专业失败！",{icon : 2})
+                });
+                $("#new2").modal("hide");
+                $scope.d=false
+            };
+            $scope.parentPropertyType1={};
+            //专业编辑
+           /* 修改bug601
+            修改人：陈彪
+            时间：2016/2/19*/
+            $scope.updatePropertyType1=function(){
+
+                if($scope.parentPropertyType1.propertyTypeName==undefined||$scope.parentPropertyType1.propertyTypeName==""||$scope.parentPropertyType1.propertyTypeName==null){
+                    layer.alert("专业名称不能为空",{icon : 0});
+                    return;
+                } else if($scope.parentPropertyType1.propertyTypeName.length>=30){
+                    layer.alert("字数不能大于30",{icon : 0});
+                    return;
+                }
+                /**
+                 * 获取登录人信息
+                 * 禅道BUG 145
+                 * 修改人：陶勇超
+                 * 2016年1月6日 14:12:20
+                 */
+                $scope.parentPropertyType1.modifier=userId
+                $http.put(url+'/PropertyType/UpdatePropertyType',{PropertyType:$scope.parentPropertyType1}).success(function(){
+                    layer.msg("修改成功",{icon : 1,time : 2000});
+                    $scope.propertyType.propertyTypeId=undefined;
+                    $scope.load1();
+                    $("#new3").modal("hide");
+                }).error(function(data, status, headers, config){
+                    layer.msg("编辑失败",{icon : 2,time : 2000});
+                });
+            };
+            //修改取消
+            $scope.cancle=function(){
+                $("#new3").modal("hide");
+                items=null;
+                $scope.propertyType.propertyTypeId=undefined;
+                $scope.load1();
+                $scope.show1=false
+            };
+            //修改
+            $scope.updateData1=function(){
+                if(items==null){
+                    layer.alert('请先选择编辑项！！',{icon : 0});
+                }else if(items !=null){
+                    $("#new3").modal({backdrop: 'static', keyboard: false});
+                    /**
+                     * 禅道BUG 156
+                     * 修改人：陶勇超
+                     * 2016年1月7日 15:41:46
+                     */
+                    $scope.propertyType.propertyTypeId=undefined;
+                    $http.get(url+'/PropertyType/getPropertyTypeByIdRest/'+items.propertyTypeId).success(function(data){
+                        $scope.parentPropertyType1=data.PropertyType;
+                    }).error(function(data,status,headers,config){
+                        layer.alert("查询出错,请重试！",{icon:2});
+                    });
+                }
+            };
+            /**
+             *Bug 840
+             * 修改人：陈浪
+             * 2016年3月3日
+             **/
+            //删除
+            $scope.deleteData1=function(){
+                if(items==null){
+                    layer.alert('请先选择删除项！！',{icon : 0});
+                }else if(items !=null){
+                    layer.confirm("您确定要删除选中专业吗？", {btn: ['是', '否']}, function () {
+                        $http.delete(url + '/PropertyType/DeletePropertyTypeById/'+items.propertyTypeId).success(function () {
+                            layer.msg("删除成功", {icon: 1, time: 2000});
+                            $scope.propertyType.propertyTypeId=undefined;
+                            $scope.currentParentProperty._load();
+                            $scope.show1 = false;
+                        }).error(function () {
+                            layer.msg("删除失败", {icon: 3, time: 2000});
+                        });
+                    })
+                }
+            }
+        };
+
+        $scope.updateMajor=function(item) {
+
+            $scope.chooseData = {datas: []};
+            $scope.chooseData.datas.push(item);
+            $scope.showStatus=1;
+            $scope.updateData1();
+            $scope.showStatus=0;
+        };
+
+
+
+        //新增专业方法
+        $scope.parentPropertyType={};
+        $scope.addParentPropertyType=function(){
+            if($scope.parentPropertyType.propertyTypeName==undefined||$scope.parentPropertyType.propertyTypeName==""||$scope.parentPropertyType.propertyTypeName==null){
+                layer.alert("专业名称不能为空",{icon : 0});
+                return;
+            }else if($scope.parentPropertyType.propertyTypeName.length>=30){
+                layer.alert("字数不能大于30",{icon : 0});
+                return;
+            }
+            /**
+             * 获取登录人信息
+             * 禅道BUG 145
+             * 修改人：陶勇超
+             * 2016年1月6日 14:12:20
+             */
+            $scope.parentPropertyType.founder=userId;
+            $scope.propertyType.propertyTypeId=undefined;
+            $http.post(url + '/PropertyType/AddPropertyType',{PropertyType:$scope.parentPropertyType}).success(function(){
+                layer.alert("添加成功",{icon : 1});
+                /**
+                 *
+                 * 禅道BUG 173
+                 * 修改人：陶勇超
+                 * 2016年1月7日 14:12:20
+                 */
+                $("#new").modal("hide");
+                $scope.load1();
+
+                $http.get(url + '/PropertyType/listParentPropertyType').success(function(data) {
+                    $scope.parentPropertyTypes = data.PropertyType;
+                }).error(function(data,status,headers,config){
+                    layer.alert("查询专业失败！",{icon : 2})
+                });
+                $scope.parentPropertyType={};
+            }).error(function(data, status, headers, config){
+                layer.alert("error"+status,{icon : 2});
+            });
+        };
+
+        //关闭新增专业方法，清空专业对象 王洲 2016.1.22
+        $scope.closeAddType = function(){
+            $scope.parentPropertyType={};
+            $("#new").modal("hide");
+        };
+
+        $scope.load = function(){
+            $http.get(url + '/PropertyType/listClassifyPropertyType').success(function(data) {
+                $scope.classifyPropertyTypes = data.PropertyType;
+            }).error(function(data,status,headers,config){
+                layer.alert("查询分类失败！",{icon : 2});
+            });
+        };
+
+
+        //判断checkbx是否选中
+        $scope.d=false;
+        $scope.getdata=function(items){
+            var chk = document.getElementsByName("aaa");
+            for(var i=0;i<chk.length;i++){
+                if( chk[i].checked==true){
+                    $scope.person=items;
+                    //console.log($scope.person);
+                    $scope.d=true;
+                    return;
+                }else{
+                    $scope.d=false;
+                }
+            }
+        };
+
+        //修改
+        $scope.updateData=function(){
+            if($scope.d==false){
+                layer.alert('请先选择编辑项！！',{icon : 0});
+            }else if($scope.d==true){
+                $("#new2").modal({backdrop: 'static', keyboard: false});
+                /**
+                 * 禅道BUG 156
+                 * 修改人：陶勇超
+                 * 2016年1月7日 15:41:46
+                 */
+
+                $http.get(url+'/PropertyType/getPropertyTypeByIdRest/'+ $scope.person.propertyTypeId).success(function(data){
+                    $scope.parent=data.PropertyType;
+                }).error(function(data,status,headers,config){
+                    layer.alert("查询出错,请重试！",{icon:2});
+                });
+            }
+        };
+        /**
+         *Bug 840
+         * 修改人：陈浪
+         * 2016年3月3日
+         **/
+        //删除
+        $scope.deleteData=function(){
+            if($scope.d==false){
+                layer.alert('请先选择删除项！！',{icon : 0});
+            }else if($scope.d==true){
+                layer.confirm("您确定要删除选中分类吗？", {btn: ['是', '否']}, function () {
+                    $http.delete(url + '/PropertyType/DeletePropertyTypeById/'+$scope.person.propertyTypeId).success(function () {
+                        layer.msg("删除成功", {icon: 1, time: 2000});
+                        $scope.checkShow($scope.currentBuilding);
+                    }).error(function () {
+                        layer.msg("删除失败", {icon: 3, time: 2000});
+                    });
+                })
+            }
+        }
+
+        //修改
+        $scope.updateMajor1=function(item) {
+            $scope.d = true;
+            $scope.chooseData = {datas: []};
+            $scope.chooseData.datas.push(item);
+            $scope.person=item;
+            $scope.updateData();
+        };
+    }]);
+});

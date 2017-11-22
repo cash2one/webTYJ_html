@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>VIP客户申请</title>
+    <link rel="stylesheet" href="bower_components/skins/zyupload-1.0.0.min.css " type="text/css">
+</head>
+<script>
+    function check(obj) {
+        $(':checkbox').each(function () {
+            if (this != obj)
+                $(this).attr("checked", false);
+            else {
+                if ($(this).prop("checked")){
+                    $(this).attr("checked", true);
+                }
+                else
+                    $(this).attr("checked", false);
+            }
+        });
+    }
+</script>
+<body>
+<!--申请表-->
+<div class="sel">
+    <div class="row search-padding-10">
+        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+            推荐人： <span style="color: red">*</span>
+        </div>
+        <div class="col-lg-2 col-md-2 col-sm-2">
+            <span name="staffName" required ng-model="person.staffstaffName">{{accountRecord.staff.staffName}}</span>
+            <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.staffName.$dirty && mainForm.staffName.$invalid">
+                        <p class="alter">
+                            请选择 推荐人
+                        </p>
+                        <p class="alter" ng-show="mainForm.staffName.defined ">
+                            正确
+                        </p>
+            </span>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            联系方式： <span style="color: red">*</span>
+        </div>
+        <div class="col-lg-2 col-md-2 col-sm-4">
+            <span name="telphone" required ng-model="person.telphone">{{accountRecord.telphone}}</span>
+
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            部门： <span style="color: red">*</span>
+        </div>
+        <div class="col-lg-2 col-md-2 col-sm-2">
+            <span name="specialtyName" required ng-model="person.specialtyInfo.specialtyName">{{accountRecord.specialtyInfo.specialtyName}}</span>
+        </div>
+        <div class="col-lg-1 col-md-6 col-sm-6 ">
+
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2" style="margin-left: -50px">
+            <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="search()">
+                <span class="glyphicon glyphicon-search btn_icon"></span>
+                推荐人查询
+            </button>
+        </div>
+    </div>
+</div>
+<div class="row padding">
+    <div class="col-lg-12">
+        <div class="col-lg-2 col-md-6 col-sm-6 text-right">
+            申请理由： <span style="color: red">*</span>
+        </div>
+        <div class="col-lg-9 col-md-9 col-sm-9">
+            <textarea rows="3" cols="107" placeholder="请输入内容"  ng-model="personVip.applyReason" name="applyReason" required></textarea>
+                    <span class="glyphicon glyphicon-exclamation-sign mess" name="applyReason" ng-show="mainForm.applyReason.$dirty && mainForm.applyReason.$invalid">
+                    <p class="alter" ng-show="mainForm.applyReason.$error.required">
+                        不能为空
+                    </p>
+                    <p class="alter" ng-show="mainForm.applyReason.defined ">
+                        正确
+                    </p>
+                    </span>
+        </div>
+        <div class="col-lg-1 col-md-6 col-sm-6 ">
+           
+        </div>
+        <div class="clear"></div>
+        <div class="col-lg-2 col-md-6 col-sm-6 text-right">
+            上传申请资料：
+        </div>
+        <!--合同列表-->
+        <div class="col-lg-9 col-md-9 col-sm-9">
+            <div class="search-padding-10">
+                <div id="remove">
+                    <div id="zyupload" class="zyupload"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="text-center">
+        <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="cancleAll();">
+            <span>取消</span>
+        </button>
+        <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="saveAll();">
+            <span class="glyphicon glyphicon-floppy-disk btn_icon"></span>
+            <span>提交申请</span>
+        </button>
+    </div>
+</div>
+<!--负责人员-->
+<div class="modal fade" id="add" role="dialog" aria-label="personDatil" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>人员</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                    <div class="sel1">
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                姓名：
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input class="form-control"  ng-model="Teamworkstaff.staffName" placeholder="请输入姓名"/>
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                电话：
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input class="form-control" ng-model="Teamworkstaff.telphone" placeholder="请输入电话号码"/>
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                部门：
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <select class="form-control"  ng-model="Teamworkstaff.professionalLineId" ng-options="a.specialtyId as a.specialtyName for a in SpecialtyInfo" >
+                                    <option value="" >选择部门</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+                                <button type="button" class="btn btn-default btn-primary" ng-click="searchPaginator2._load()">
+                                    <span class="glyphicon glyphicon-search btn_icon"></span>搜索
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="search-padding-10">
+                        <table>
+                            <thead>
+                            <th></th>
+                            <th>姓名</th>
+                            <th>部门</th>
+                            <th>电话</th>
+                            <th>状态</th>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="item in searchPaginator2.object.teamworkStaffs" ng-show="item.id != null" ng-click="getdata(item,'aaa',$event)" ng-class="{'this_info ':btnIndex==item.id }">
+                                <td><input type="checkbox"  name="aaa"   id="{{item.id}}" onclick="check(this)" ng-click="getdata(item,'aaa',$event)"></td>
+                                <td>{{item.staff.staffName}}</td>
+                                <td>{{item.specialtyInfo.specialtyName}}</td>
+                                <td>{{item.staff.telphone}}</td>
+                                <td>{{}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="bill_paging">
+                            <ul class="pagination">
+                                <li ng-class="{true:'disabled'}[searchPaginator2.page.currentPage==1]"><a href="javascript:void(0)" ng-click="searchPaginator2.go(1)">首页</a></li>
+                                <li ng-class="{true:'disabled'}[searchPaginator2.page.currentPage==1]"><a href="javascript:void(0)" ng-show="searchPaginator2.hasPrevious()" ng-click="searchPaginator2.previous()">上一页</a></li>
+                                <li ng-class="{true:'active'}[searchPaginator2.page.currentPage==i]" ng-repeat="i in searchPaginator2.pages"><a href="javascript:void(0)"   ng-click="searchPaginator2.go(i)">{{i}}</a></li>
+                                <li ng-class="{true:'disabled'}[searchPaginator2.page.currentPage==searchPaginator2.page.totalPage]"><a href="javascript:void(0)" ng-show="searchPaginator2.hasNext()" ng-click="searchPaginator2.next()">下一页</a></li>
+                                <li ng-class="{true:'disabled'}[searchPaginator2.page.currentPage==searchPaginator2.page.totalPage]"><a href="javascript:void(0)" ng-click="searchPaginator2.go(searchPaginator2.page.totalPage)">尾页</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"  ng-click="canclePerson()">取消</button>
+                <button type="button" class="btn bg-primary"  ng-click="addPerson()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--负责人员 END-->
+
+</body>
+</html>

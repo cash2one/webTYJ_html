@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>内部公告</title>
+    <link href="bower_components/ueditor/themes/default/css/ueditor.css" type="text/css" rel="stylesheet">
+    <style>
+        .border{
+            border: 1px solid #e4e4e4;
+            height: 480px;
+            overflow: scroll;
+            overflow-x: hidden;
+        }
+        .borderTB{
+            border-top: 1px solid #e4e4e4;
+            border-bottom: 1px solid #e4e4e4;
+        }
+    </style>
+</head>
+<body>
+<div class="row padding">
+    <div class="col-md-5 padding20 border">
+        <div class="search-padding-10">
+            <button type="button" class="btn btn-default btn-primary" ng-click="changeNewState()">
+                <span class="glyphicon glyphicon-plus btn_icon"></span>新建
+            </button>
+            <button type="button" class="btn btn-default btn-primary" ng-click="editInternalNotice()">
+                <span class="glyphicon glyphicon-edit btn_icon"></span>编辑
+            </button>
+            <button type="button" class="btn btn-default btn-primary" ng-click="deleteInternalNotice()">
+                <span class="glyphicon glyphicon-remove btn_icon"></span>删除
+            </button>
+        </div>
+        <div class="search-padding-10">
+            <div class="padding10" >
+                <h4 class="title" style="color: #fff;background: #515151;padding: 5px 10px">
+                    标题
+                </h4>
+                <div class="borderTB padding" ng-repeat="item in searchPaginator.object.informs" ng-show="item.id!=null">
+                    <div class="col-md-1"><input type="checkbox" id="{{item.id}}"/></div>
+                    <div class="col-md-11"><strong>{{item.inform}}</strong></div>
+                    <div class="clearfix"></div>
+                </div>
+                <!--<div class="borderTB padding">
+                    <div class="col-md-1"><input type="checkbox"/></div>
+                    <div class="col-md-11"><strong>这是一个标题</strong></div>
+                    <div class="clearfix"></div>
+                </div>-->
+            </div>
+            <!--<div class="padding">
+                <div class="bill_paging">
+                    &lt;!&ndash;<span>共{{currentEnterpriseCustomer.object.page.totalResult}}条</span>&ndash;&gt;
+                    &lt;!&ndash;<ul class="pagination">
+                        <li ng-class="{true:'disabled'}[currentEnterpriseCustomer.page.currentPage==1]">
+                            <a href="javascript:void(0)" ng-click="currentEnterpriseCustomer.go(1)">首页</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[currentEnterpriseCustomer.page.currentPage==1]">
+                            <a href="javascript:void(0)" ng-show="currentEnterpriseCustomer.hasPrevious()" ng-click="currentEnterpriseCustomer.previous()">上一页</a>
+                        </li>
+                        <li ng-class="{true:'active'}[currentEnterpriseCustomer.page.currentPage==i]" ng-repeat="i in currentEnterpriseCustomer.pages">
+                            <a href="javascript:void(0)"  ng-click="currentEnterpriseCustomer.go(i)">{{i}}</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[currentEnterpriseCustomer.page.currentPage==currentEnterpriseCustomer.page.totalPage]">
+                            <a href="javascript:void(0)" ng-show="currentEnterpriseCustomer.hasNext()" ng-click="currentEnterpriseCustomer.next()">下一页</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[currentEnterpriseCustomer.page.currentPage==currentEnterpriseCustomer.page.totalPage]">
+                            <a href="javascript:void(0)" ng-click="currentEnterpriseCustomer.go(currentEnterpriseCustomer.page.totalPage)">尾页</a>
+                        </li>
+                    </ul>&ndash;&gt;
+                </div>
+            </div>-->
+            <div class=" col-md-12 text-left" ng-show="searchPaginator.object.page.totalResult">
+                <ul class="pagination">
+                    <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-click="searchPaginator.go(1)">首页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a>
+                    </li>
+                    <li ng-class="{true:'active'}[searchPaginator.page.currentPage==i]" ng-repeat="i in searchPaginator.pages">
+                        <a href="javascript:void(0)"  ng-click="searchPaginator.go(i)">{{i}}</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                        <a href="javascript:void(0)" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                        <a href="javascript:void(0)" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a>
+                    </li>
+                </ul>
+                <!--<div><span>共{{searchPaginator.object.page.totalResult}}条</span></div>-->
+            </div>
+        </div>
+    </div>
+    <div class="col-md-7 padding20 border" ng-show="newState==1">
+        <div class="row search-padding-10">
+            <div class="search-padding-10">
+                <div class="col-md-2 text-right">标题：</div>
+                <div class="col-md-4">
+                    <input type="text"  class="form-control"  placeholder="请输入标题" ng-model="Inform.inform"/>
+                </div>
+                <div class="col-md-2 text-right">作者：</div>
+                <div class="col-md-4">
+                    <input type="text"  class="form-control" placeholder="请输入作者" ng-model="Inform.writer"/>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="search-padding-10">
+                <div class="col-md-2 text-right">所属部门：</div>
+                <div class="col-md-4">
+                    <input type="text"  class="form-control" placeholder="请输入所属部门" ng-model="Inform.department"/>
+                </div>
+                <div class="col-md-2 text-right">摘要：</div>
+                <div class="col-md-4">
+                    <textarea type="text"  class="form-control" placeholder="请输入摘要" ng-model="Inform.abstracts"></textarea>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="search-padding-10">
+                <div class="col-md-2 text-right">发布项目：</div>
+                <div class="col-md-4">
+                    <select name="project" class="form-control" ng-model="Inform.project">
+                        <option value="0">清水源</option>
+                    </select>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="search-padding-10">
+                <div class="col-md-2 text-right">
+                    正文：
+                </div>
+                <div class="col-md-10"></div>
+                <div class="clearfix"></div>
+                <div class="col-md-12">
+                    <div id="container3">
+
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="search-padding-10 text-center">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#btnPreview" ng-click="showPreview(Inform,1)">预览</button>
+                <button type="button" class="btn btn-primary" ng-click="insertInternalNotice()">发布</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-7 padding20 border" ng-show="editState==1">
+        <div class="row search-padding-10">
+            <div class="search-padding-10">
+                <div class="col-md-2 text-right">标题：</div>
+                <div class="col-md-4">
+                    <input type="text"  class="form-control"  placeholder="请输入标题" ng-model="itemInternal.inform"/>
+                </div>
+                <div class="col-md-2 text-right">作者：</div>
+                <div class="col-md-4">
+                    <input type="text"  class="form-control" placeholder="请输入作者" ng-model="itemInternal.writer"/>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="search-padding-10">
+                <div class="col-md-2 text-right">所属部门：</div>
+                <div class="col-md-4">
+                    <input type="text"  class="form-control" placeholder="请输入所属部门" ng-model="itemInternal.department"/>
+                </div>
+                <div class="col-md-2 text-right">摘要：</div>
+                <div class="col-md-4">
+                    <textarea type="text"  class="form-control" placeholder="请输入摘要" ng-model="itemInternal.abstracts"></textarea>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="search-padding-10">
+                <div class="col-md-2 text-right">发布项目：</div>
+                <div class="col-md-4">
+                    <select name="project" class="form-control" ng-model="itemInternal.project">
+                        <option value="0">清水源</option>
+                    </select>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="search-padding-10">
+                <div class="col-md-2 text-right">
+                    正文：
+                </div>
+                <div class="col-md-10"></div>
+                <div class="clearfix"></div>
+                <div class="col-md-12">
+                    <div id="container4">
+
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="search-padding-10 text-center">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#btnPreview" ng-click="showPreview(itemInternal,2)">预览</button>
+                <button type="button" class="btn btn-primary" ng-click="updateInternalNotice()">发布</button>
+            </div>
+        </div>
+    </div>
+    <!--内部公告预览模态框开始-->
+    <div class="modal fade" id="btnPreview" tabindex="-1" role="dialog"
+         aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close"
+                            data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h5 class="modal-title">
+                        公告信息预览
+                    </h5>
+                </div>
+                <div class="modal-body">
+                    <!-- <div class="sel1">
+                         <div class="row search-padding-10">
+                             <ul>
+                                 <li>
+                                     <a href="#" class="panel_info clear" ng-repeat="item in InformsAll">
+                                         <span style="width: 50%" ng-switch="item.title.length>10">
+                                             <span style="width: 100%" ng-switch-when="true" title="{{item.inform}}">{{item.inform | limitTo:10}}...</span>
+                                             <span style="width: 100%" ng-switch-when="false">{{item.inform}}</span>
+                                         </span>
+                                         <span class="pull-right text-right"> {{item.time | date:"yyyy-MM-dd"}} </span>
+                                         <br/>
+                                     </a>
+                                 </li>
+                             </ul>
+                         </div>
+
+                     </div>-->
+                    <div class="row padding">
+                        <div class="col-md-12" style="padding:10px">
+                            <div class="row" style="border-bottom:2px solid #cccccc">
+                                <div class="col-md-12"><h5><strong>{{preview.inform}}</strong></h5></div>
+                                <div class="row">
+                                    <div class="col-md-5">发布单位：深圳翔恒科技开发有限公司</div>
+                                    <div class="col-md-3 text-right">发布者：{{preview.writer}}</div>
+                                    <div class="col-md-4 text-right">{{preview.time | date:"yyyy-MM-dd"}}</div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12" id="editorPreview" style="padding:10px">
+                                    <!--{{itemInfoCommunity.briefContent}}-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <!--<button class="btn bg-primary" data-dismiss="modal"   ng-click="CloseConsultationOrders()">提交</button>-->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--小区公告预览模态框结束-->
+</div>
+
+<script type="text/javascript" src="bower_components/ueditor/third-party/jquery.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="bower_components/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" charset="utf-8" src="bower_components/ueditor/ueditor.all.js"></script>
+<script type="text/javascript" charset="utf-8" src="bower_components/ueditor/angular-ueditor.js"></script>
+<script type="text/javascript" src="bower_components/ueditor/lang/zh-cn/zh-cn.js"></script>
+</body>
+</html>

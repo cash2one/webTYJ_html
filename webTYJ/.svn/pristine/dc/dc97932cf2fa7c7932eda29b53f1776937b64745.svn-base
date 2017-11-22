@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>企业信息</title>
+    <!--新增-->
+    <link href="bower_components/ueditor/themes/default/css/ueditor.css" type="text/css" rel="stylesheet">
+    <!--<script type="text/javascript" src="bower_components/ueditor/third-party/jquery.min.js"></script>-->
+    <!--<script type="text/javascript" charset="utf-8" src="bower_components/ueditor/ueditor.config.js"></script>-->
+    <!--<script type="text/javascript" charset="utf-8" src="bower_components/ueditor/ueditor.all.js"></script>-->
+    <!--<script type="text/javascript" charset="utf-8" src="bower_components/ueditor/angular-ueditor.js"></script>-->
+    <!--<script type="text/javascript" src="bower_components/ueditor/lang/zh-cn/zh-cn.js"></script>-->
+    <style>
+        .border{
+            border: 1px solid #e4e4e4;
+            /*width:200px;*/
+            /*height: 480px;*/
+            /*overflow: scroll;*/
+            /*overflow-x: scroll;*/
+        }
+        .borderTB{
+            border-top: 1px solid #e4e4e4;
+            border-bottom: 1px solid #e4e4e4;
+        }
+        .borderInfo{
+            height: 480px;
+            border-bottom: 1px solid #e4e4e4;
+        }
+        a:hover{
+            color:cornflowerblue;
+        }
+    </style>
+</head>
+<body>
+<div ng-show="state==1">
+<!--右侧面板1-->
+<div class="col-lg-4 col-md-6 col-sm-6">
+    <div id="pannel">
+        <div class="title">
+            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                <h3>公司信息</h3>
+            </div>
+            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                <span class="glyphicon glyphicon-unchecked"></span>
+            </div>
+        </div>
+        <div class="pannel_content" style="cursor: pointer" ng-click="intoCompany()">
+            <!-- 将项目信息更换为公司信息 -->
+            <ul>
+                <li><a href="javascript:void(0)">公司名称<span class="pull-right">{{company.companyName}}</span></a></li>
+                <li><a href="javascript:void(0)">公司所在地<span class="pull-right">{{company.city}}</span></a></li>
+                <li><a href="javascript:void(0)">公司地址<span class="pull-right">{{company.address}}</span></a></li>
+                <li><a href="javascript:void(0)">项目数量<span class="pull-right">{{company.projectNum}}个</span></a></li>
+                <li><a href="javascript:void(0)">项目总面积<span class="pull-right">{{company.projectArea}}㎡</span></a></li>
+                <li><a href="javascript:void(0)">员工数量<span class="pull-right">{{company.staffNum}}人</span></a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!--右侧面板1 结束-->
+
+<!--右侧面板2-->
+<div class="col-lg-4 col-md-6 col-sm-6">
+    <div id="pannel">
+        <div class="title">
+            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                <h3>规章制度</h3>
+            </div>
+            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                <a ui-sref="index.externalProfession.institution"><span class="glyphicon glyphicon-unchecked"></span></a>
+            </div>
+        </div>
+        <div class="pannel_content">
+            <!-- <div class="dot">
+                 <div class="clear"></div>
+             </div>-->
+            <ul>
+                <li>
+                    <a  href="#"class="panel_info clear" ng-repeat="item in searchPaginatorRules.object.ruless | limitTo:6" ng-show="item.id!=null" ng-click="showRulesInfoInFive(item)" data-toggle="modal" data-target="#rulesInfoFive">
+                        {{item.title}}
+                        <span class="pull-right text-right">
+                            {{item.lastModtime | date:"yyyy-MM-dd"}}
+                        </span>
+                        <br/>
+                    </a>
+                </li>
+            </ul>
+            <a href="#" style="float:right" data-toggle="modal" data-target="#rulesInfo" ng-show="searchPaginatorRules.object.ruless.length>6"><<更多</a>
+        </div>
+    </div>
+</div>
+<!--右侧面板2 结束-->
+
+<!--右侧面板3-->
+<div class="col-lg-4 col-md-6 col-sm-6">
+    <div id="pannel">
+        <div class="title">
+            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                <h3>人事管理</h3>
+            </div>
+            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                <span class="glyphicon glyphicon-unchecked"></span>
+            </div>
+        </div>
+        <div class="pannel_content" style="cursor: pointer" ng-click="intoStaff()">
+            <!--<div class="dot">
+                <div class="clear"></div>
+            </div>-->
+            <ul>
+                <li class="pannel_img"> <img src="images/img/img_01.png" width="234" height="140"></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!--右侧面板3 结束-->
+
+<!--右侧面板4-->
+<div class="col-lg-4 col-md-6 col-sm-6">
+    <div id="pannel">
+        <div class="title">
+            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                <h3>企业新闻</h3>
+            </div>
+            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                <a ui-sref="index.internalProfession.enterpriseNews"> <span class="glyphicon glyphicon-unchecked"></span></a>
+            </div>
+        </div>
+        <div class="pannel_content">
+            <!-- <div class="dot">
+                 <div class="clear"></div>
+             </div>-->
+            <ul>
+                <li>
+                    <a  href="#" class="panel_info clear" ng-repeat="item in Corporatenews | limitTo:5" ng-click="showCorporateDetailInfoInFive(item)" data-target="#CorporateInfoFive" data-toggle="modal">
+                        <!--标题过长则截取部分-->
+                        <span style="width: 50%" ng-switch="item.title.length>10">
+                            <span style="width: 100%" ng-switch-when="true" title="{{item.title}}">{{item.title | limitTo:10}}...</span>
+                            <span style="width: 100%" ng-switch-when="false">{{item.title}}</span>
+                        </span>
+                        <span class="pull-right text-right"> {{item.lastModificationTime | date:"yyyy-MM-dd"}}</span>
+                        <br>
+                    </a>
+                </li>
+            </ul>
+            <br>
+            <a href="#" style="float:right" data-toggle="modal" data-target="#corporateInfo" ng-show="Corporatenews.length>5" ng-click="jumpToCorporateNews()"><<更多</a>
+        </div>
+    </div>
+</div>
+<!--右侧面板4 结束-->
+
+<!--右侧面板5-->
+<div class="col-lg-4 col-md-6 col-sm-6">
+    <div id="pannel">
+        <div class="title">
+            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                <h3>内部公告</h3>
+            </div>
+            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                <a ui-sref="index.externalProfession.communityAnnouncement"> <span class="glyphicon glyphicon-unchecked"></span></a>
+            </div>
+        </div>
+        <div class="pannel_content">
+            <!--<div class="dot">
+                <div class="clear"></div>
+            </div>-->
+            <ul>
+                <li>
+                    <a  href="#"class="panel_info clear" ng-repeat="item in Informs" ng-click="showInternalDetailInfoInFive(item)" data-toggle="modal" data-target="#internalInfoFive">
+                        <span style="width: 50%" ng-switch="item.inform.length>10">
+                            <span style="width: 100%" ng-switch-when="true" title="{{item.inform}}">{{item.inform | limitTo:10}}...</span>
+                            <span style="width: 100%" ng-switch-when="false">{{item.inform}}</span>
+                        </span>
+                        <span class="pull-right text-right">
+                            {{item.time | date:"yyyy-MM-dd"}}
+                        </span>
+                        <br/>
+                    </a>
+                </li>
+            </ul>
+            <br>
+            <a href="#" style="float:right" data-toggle="modal" data-target="#internalInfo" ng-show="InformsAll.length>5" ng-click="jumpToInternalNotice()"><<更多</a>
+        </div>
+    </div>
+</div>
+<!--右侧面板5 结束-->
+
+<!--右侧面板6-->
+<div class="col-lg-4 col-md-6 col-sm-6">
+    <div id="pannel">
+        <div class="title">
+            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                <h3>小区公告</h3>
+            </div>
+            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                <a ui-sref="index.externalProfession.internalAnnouncement"> <span class="glyphicon glyphicon-unchecked"></span></a>
+            </div>
+        </div>
+        <div class="pannel_content">
+            <!--    <div class="dot">
+                    <div class="clear"></div>
+                </div>-->
+            <ul>
+                <li>
+                    <a href="#" class="panel_info clear" ng-repeat="item in Communtitnotice" ng-click="showCommunityDetailInfoInFive(item)" data-toggle="modal" data-target="#CommunityInfoFive">
+                        <span style="width: 50%" ng-switch="item.title.length>10">
+                            <span style="width: 100%" ng-switch-when="true" title="{{item.title}}">{{item.title | limitTo:10}}...</span>
+                            <span style="width: 100%" ng-switch-when="false">{{item.title}}</span>
+                        </span>
+                        <span class="pull-right text-right"> {{item.creationTime | date:"yyyy-MM-dd"}} </span><br/>
+                    </a>
+                </li>
+            </ul>
+            <br>
+            <a href="#" style="float:right" data-toggle="modal" data-target="#communityInfo" ng-show="CommuntitnoticesAll.length>5" ng-click="jumpToCommunityNotice()"><<更多</a>
+        </div>
+    </div>
+</div>
+<!--右侧面板6 结束-->
+
+    <!--列表五个内部公告信息模态框开始-->
+    <div class="modal fade" id="internalInfoFive" tabindex="-1" role="dialog"
+         aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close"
+                            data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h5 class="modal-title">
+                        公告详细信息
+                    </h5>
+                </div>
+                <div class="modal-body">
+                    <!-- <div class="sel1">
+                         <div class="row search-padding-10">
+                             <ul>
+                                 <li>
+                                     <a href="#" class="panel_info clear" ng-repeat="item in InformsAll">
+                                         <span style="width: 50%" ng-switch="item.title.length>10">
+                                             <span style="width: 100%" ng-switch-when="true" title="{{item.inform}}">{{item.inform | limitTo:10}}...</span>
+                                             <span style="width: 100%" ng-switch-when="false">{{item.inform}}</span>
+                                         </span>
+                                         <span class="pull-right text-right"> {{item.time | date:"yyyy-MM-dd"}} </span>
+                                         <br/>
+                                     </a>
+                                 </li>
+                             </ul>
+                         </div>
+
+                     </div>-->
+                    <div class="row padding">
+                        <div class="col-md-12" style="padding:10px">
+                            <div class="row" style="border-bottom:2px solid #cccccc">
+                                <div class="col-md-12"><h5><strong>{{internalDetailInfoInFive.inform}}</strong></h5></div>
+                                <div class="row">
+                                    <div class="col-md-5">发布单位：深圳翔恒科技开发有限公司</div>
+                                    <div class="col-md-3 text-right">发布者：{{internalDetailInfoInFive.writer}}</div>
+                                    <div class="col-md-4 text-right">{{internalDetailInfoInFive.time | date:"yyyy-MM-dd"}}</div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12" id="textInternalFive" style="padding:10px">
+                                    <!--{{itemInfoCommunity.briefContent}}-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <!--<button class="btn bg-primary" data-dismiss="modal"   ng-click="CloseConsultationOrders()">提交</button>-->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--列表五个内部公告信息模态框结束-->
+
+    <!--列表五个小区公告信息模态框开始-->
+    <div class="modal fade" id="CommunityInfoFive" tabindex="-1" role="dialog"
+         aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close"
+                            data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h5 class="modal-title">
+                        公告详细信息
+                    </h5>
+                </div>
+                <div class="modal-body">
+                    <div class="row padding">
+                        <div class="col-md-12" style="padding:10px">
+                            <div class="row" style="border-bottom:2px solid #cccccc">
+                                <div class="col-md-12"><h5><strong>{{CommunityDetailInfoInFive.title}}</strong></h5></div>
+                                <div class="row">
+                                    <div class="col-md-5">发布单位：深圳翔恒科技开发有限公司</div>
+                                    <div class="col-md-3 text-right">发布者：{{CommunityDetailInfoInFive.founder}}</div>
+                                    <div class="col-md-4 text-right">{{CommunityDetailInfoInFive.creationTime | date:"yyyy-MM-dd"}}</div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12" id="textCommunityFive" style="padding:10px">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <!--<button class="btn bg-primary" data-dismiss="modal"   ng-click="CloseConsultationOrders()">提交</button>-->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--列表五个小区公告信息模态框结束-->
+
+    <!--列表五个企业新闻信息模态框开始-->
+    <div class="modal fade" id="CorporateInfoFive" tabindex="-1" role="dialog"
+         aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close"
+                            data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h5 class="modal-title">
+                        企业新闻详细信息
+                    </h5>
+                </div>
+                <div class="modal-body">
+                    <div class="row padding">
+                        <div class="col-md-12" style="padding:10px">
+                            <div class="row" style="border-bottom:2px solid #cccccc">
+                                <div class="col-md-12"><h5><strong>{{CorporateDetailInfoInFive.title}}</strong></h5></div>
+                                <div class="row">
+                                    <div class="col-md-5">发布单位：深圳翔恒科技开发有限公司</div>
+                                    <div class="col-md-3 text-right">发布者：{{CorporateDetailInfoInFive.founder}}</div>
+                                    <div class="col-md-4 text-right">{{CorporateDetailInfoInFive.lastModificationTime | date:"yyyy-MM-dd"}}</div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12" id="textCorporateFive" style="padding:10px">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <!--<button class="btn bg-primary" data-dismiss="modal"   ng-click="CloseConsultationOrders()">提交</button>-->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--列表五个企业新闻信息模态框结束-->
+
+<!--内部公告更多信息模态框开始-->
+<div class="modal fade" id="internalInfo" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width:80%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h5 class="modal-title">
+                    更多信息
+                </h5>
+            </div>
+            <div class="modal-body">
+                <div class="row padding">
+                    <div class="col-md-4 padding20 border">
+                        <div class="search-padding-10 col-md-12">
+                            <div class="padding10" >
+                                <h4 class="title" style="color: #fff;background: #515151;padding: 5px 10px">
+                                    标题
+                                </h4>
+                                <div class="borderTB" ng-repeat="item in searchPaginator.object.informs" style="cursor: pointer;padding:10px" ng-show="item.id!=null" style="cursor: pointer" ng-click="showInternalInfo(item)">
+                                    <div class="col-md-2"><img src="images/people.png" alt="" style="width:30px;height:30px"></div>
+                                    <div class="col-md-10">
+                                        <a href="#">
+                                            <strong>
+                                                <span style="width: 50%" ng-switch="item.inform.length>12">
+                                                    <span style="width: 100%" ng-switch-when="true" title="{{item.inform}}">{{item.inform | limitTo:12}}...</span>
+                                                    <span style="width: 100%" ng-switch-when="false">{{item.inform}}</span>
+                                                </span>
+                                            </strong>
+                                        </a>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class=" col-md-12 text-left" ng-show="searchPaginator.object.page.totalResult">
+                            <ul class="pagination">
+                                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-click="searchPaginator.go(1)">首页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a>
+                                </li>
+                                <li ng-class="{true:'active'}[searchPaginator.page.currentPage==i]" ng-repeat="i in searchPaginator.pages">
+                                    <a href="javascript:void(0)"  ng-click="searchPaginator.go(i)">{{i}}</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a>
+                                </li>
+                            </ul>
+                            <!--<div><span>共{{searchPaginator.object.page.totalResult}}条</span></div>-->
+                        </div>
+                    </div>
+                    <div class="col-md-8" style="padding:10px" ng-show="showInternalTag==1">
+                        <div class="row" style="border-bottom:2px solid #cccccc">
+                            <div class="row"><h5><strong>{{itemInfoInternal.inform}}</strong></h5></div>
+                            <div class="row">
+                                <div class="col-md-5">发布单位：深圳翔恒科技开发有限公司</div>
+                                <div class="col-md-3 text-right">发布者：{{itemInfoInternal.writer}}</div>
+                                <div class="col-md-4 text-right">{{itemInfoInternal.time | date:"yyyy-MM-dd"}}</div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12" id="textInternal"  style="padding:10px">
+                                <!--{{itemInfoCommunity.briefContent}}-->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8" style="padding:10px" ng-show="showInternalTag==0">
+                        <div class="row" style="border-bottom:2px solid #cccccc">
+                            <div class="row"><h5><strong>{{itemInternalFirst.inform}}</strong></h5></div>
+                            <div class="row">
+                                <div class="col-md-5">发布单位：深圳翔恒科技开发有限公司</div>
+                                <div class="col-md-3 text-right">发布者：{{itemInternalFirst.writer}}</div>
+                                <div class="col-md-4 text-right">{{itemInternalFirst.time | date:"yyyy-MM-dd"}}</div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12" id="textInternalFirst"  style="padding:10px">
+                                <!--{{itemInfoCommunity.briefContent}}-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <!--<button class="btn bg-primary" data-dismiss="modal"   ng-click="CloseConsultationOrders()">提交</button>-->
+            </div>
+        </div>
+    </div>
+</div>
+<!--更多信息模态框结束-->
+
+<!--小区公告更多信息模态框开始-->
+<div class="modal fade" id="communityInfo" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width:80%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h5 class="modal-title">
+                    更多信息
+                </h5>
+            </div>
+            <div class="modal-body">
+                <!--<div class="sel1">
+                    <div class="row search-padding-10">
+                        <ul>
+                            <li>
+                                <a href="#" class="panel_info clear" ng-repeat="item in CommuntitnoticesAll">
+                                    <span style="width: 50%" ng-switch="item.title.length>10">
+                                        <span style="width: 100%" ng-switch-when="true" title="{{item.title}}">{{item.title | limitTo:10}}...</span>
+                                        <span style="width: 100%" ng-switch-when="false">{{item.title}}</span>
+                                    </span>
+                                    <span class="pull-right text-right"> {{item.creationTime | date:"yyyy-MM-dd"}} </span>
+                                    <br/>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>-->
+                <div class="row padding">
+                    <div class="col-md-4 padding20 border">
+                        <div class="search-padding-10">
+                            <div class="padding10" >
+                                <h4 class="title" style="color: #fff;background: #515151;padding: 5px 10px">
+                                    标题
+                                </h4>
+                                <div class="borderTB" ng-repeat="item in searchPaginator.object.communtitnotices" ng-show="item.id!=null" style="cursor: pointer;padding:10px" ng-click="showCommunityInfo(item)">
+                                    <div class="col-md-2"><img src="images/people.png" alt="" style="width:30px;height:30px"></div>
+                                    <div class="col-md-10">
+                                        <a href="#" style="">
+                                            <strong>
+                                                <span style="width: 50%" ng-switch="item.title.length>12">
+                                                    <span style="width: 100%" ng-switch-when="true" title="{{item.title}}">{{item.title | limitTo:12}}...</span>
+                                                    <span style="width: 100%" ng-switch-when="false">{{item.title}}</span>
+                                                </span>
+                                            </strong>
+                                        </a>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <!--<div class="borderTB padding">
+                                    <div class="col-md-1"><input type="checkbox"/></div>
+                                    <div class="col-md-11"><strong>这是一个标题</strong></div>
+                                    <div class="clearfix"></div>
+                                </div>-->
+                            </div>
+                        </div>
+                        <div class=" col-md-12 text-left" ng-show="searchPaginator.object.page.totalResult">
+                            <ul class="pagination">
+                                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-click="searchPaginator.go(1)">首页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a>
+                                </li>
+                                <li ng-class="{true:'active'}[searchPaginator.page.currentPage==i]" ng-repeat="i in searchPaginator.pages">
+                                    <a href="javascript:void(0)"  ng-click="searchPaginator.go(i)">{{i}}</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a>
+                                </li>
+                            </ul>
+                            <!--<div><span>共{{searchPaginator.object.page.totalResult}}条</span></div>-->
+                        </div>
+                    </div>
+                    <div class="col-md-8" style="padding:10px" ng-show="showCommunityTag==1">
+                        <div class="row" style="border-bottom:2px solid #cccccc">
+                            <div class="col-md-12"><h5><strong>{{itemInfoCommunity.title}}</strong></h5></div>
+                            <div class="row">
+                                <div class="col-md-5">发布单位：深圳翔恒科技开发有限公司</div>
+                                <div class="col-md-3 text-right">发布者：{{itemInfoCommunity.founder}}</div>
+                                <div class="col-md-4 text-right">{{itemInfoCommunity.creationTime | date:"yyyy-MM-dd"}}</div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12" id="textCommunity"  style="padding:10px">
+                                <!--{{itemInfoCommunity.briefContent}}-->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8" style="padding:10px" ng-show="showCommunityTag==0">
+                        <div class="row" style="border-bottom:2px solid #cccccc">
+                            <div class="col-md-12"><h5><strong>{{itemFirstCom.title}}</strong></h5></div>
+                            <div class="row">
+                                <div class="col-md-5">发布单位：深圳翔恒科技开发有限公司</div>
+                                <div class="col-md-3 text-right">发布者：{{itemFirstCom.founder}}</div>
+                                <div class="col-md-4 text-right">{{itemFirstCom.creationTime | date:"yyyy-MM-dd"}}</div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12" id="textCommunityFirst"  style="padding:10px">
+                                <!--{{itemInfoCommunity.briefContent}}-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <!--<button class="btn bg-primary" data-dismiss="modal"   ng-click="CloseConsultationOrders()">提交</button>-->
+            </div>
+        </div>
+    </div>
+</div>
+<!--更多信息模态框结束-->
+
+<!--企业新闻更多信息模态框开始-->
+<div class="modal fade" id="corporateInfo" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width:80%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h5 class="modal-title">
+                    更多信息
+                </h5>
+            </div>
+            <div class="modal-body">
+                <div class="row padding">
+                    <div class="col-md-4 padding20 border">
+                        <div class="search-padding-10">
+                            <div class="padding10" >
+                                <h4 class="title" style="color: #fff;background: #515151;padding: 5px 10px">
+                                    标题
+                                </h4>
+                                <div class="borderTB" ng-repeat="item in searchPaginator.object.corporatenewss" ng-show="item.id!=null" style="cursor: pointer;padding:10px" ng-click="showCorporateInfo(item)">
+                                    <div class="col-md-2"><img src="images/people.png" alt="" style="width:30px;height:30px"></div>
+                                    <div class="col-md-10">
+                                        <a href="#" style="">
+                                            <strong>
+                                                <span style="width: 50%" ng-switch="item.title.length>12">
+                                                    <span style="width: 100%" ng-switch-when="true" title="{{item.title}}">{{item.title | limitTo:12}}...</span>
+                                                    <span style="width: 100%" ng-switch-when="false">{{item.title}}</span>
+                                                </span>
+                                            </strong>
+                                        </a>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <!--<div class="borderTB padding">
+                                    <div class="col-md-1"><input type="checkbox"/></div>
+                                    <div class="col-md-11"><strong>这是一个标题</strong></div>
+                                    <div class="clearfix"></div>
+                                </div>-->
+                            </div>
+                        </div>
+                        <div class=" col-md-12 text-left" ng-show="searchPaginator.object.page.totalResult">
+                            <ul class="pagination">
+                                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-click="searchPaginator.go(1)">首页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a>
+                                </li>
+                                <li ng-class="{true:'active'}[searchPaginator.page.currentPage==i]" ng-repeat="i in searchPaginator.pages">
+                                    <a href="javascript:void(0)"  ng-click="searchPaginator.go(i)">{{i}}</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a>
+                                </li>
+                            </ul>
+                            <!--<div><span>共{{searchPaginator.object.page.totalResult}}条</span></div>-->
+                        </div>
+                    </div>
+                    <div class="col-md-8" style="padding:10px" ng-show="showCorporateTag==1">
+                        <div class="row" style="border-bottom:2px solid #cccccc">
+                            <div class="col-md-12"><h5><strong>{{itemInfoCorporate.title}}</strong></h5></div>
+                            <div class="row">
+                                <div class="col-md-5">发布单位：深圳翔恒科技开发有限公司</div>
+                                <div class="col-md-3 text-right">发布者：{{itemInfoCorporate.founder}}</div>
+                                <div class="col-md-4 text-right">{{itemInfoCorporate.lastModificationTime | date:"yyyy-MM-dd"}}</div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12" id="textCorporate"  style="padding:10px">
+                                <!--{{itemInfoCommunity.briefContent}}-->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8" style="padding:10px" ng-show="showCorporateTag==0">
+                        <div class="row" style="border-bottom:2px solid #cccccc">
+                            <div class="col-md-12"><h5><strong>{{itemFirstCorporate.title}}</strong></h5></div>
+                            <div class="row">
+                                <div class="col-md-5">发布单位：深圳翔恒科技开发有限公司</div>
+                                <div class="col-md-3 text-right">发布者：{{itemFirstCorporate.founder}}</div>
+                                <div class="col-md-4 text-right">{{itemFirstCorporate.lastModificationTime | date:"yyyy-MM-dd"}}</div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12" id="textCorporateFirst"  style="padding:10px">
+                                <!--{{itemInfoCommunity.briefContent}}-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <!--<button class="btn bg-primary" data-dismiss="modal"   ng-click="CloseConsultationOrders()">提交</button>-->
+            </div>
+        </div>
+    </div>
+</div>
+<!--更多信息模态框结束-->
+</div>
+
+<!--五个规章制度信息模态框开始-->
+<div class="modal fade" id="rulesInfoFive" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h5 class="modal-title">
+                    规章制度详细信息
+                </h5>
+            </div>
+            <div class="modal-body">
+                <div class="row padding">
+                    <div class="col-md-12" style="padding:10px">
+                        <div class="row" style="border-bottom:2px solid #cccccc">
+                            <div class="col-md-12"><h5><strong>{{RulesInFive.title}}</strong></h5></div>
+                            <div class="row">
+                                <div class="col-md-5">发布单位：深圳翔恒科技开发有限公司</div>
+                                <div class="col-md-3 text-right">发布者：{{RulesInFive.recordCreater}}</div>
+                                <div class="col-md-4 text-right">{{RulesInFive.lastModtime | date:"yyyy-MM-dd"}}</div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12" style="padding:10px">
+                                {{RulesInFive.detailInfo}}
+                            </div>
+                        </div>
+                        <div class="row" ng-if="RulesInFive.annexs != null">
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                附件列表：
+                            </div>
+                            <div class="col-lg-10 col-md-10 col-sm-10 text-right">
+                                <!--               <button type="button" class="btn btn-default btn-primary" >删除 </button>-->
+                                <!--<button type="button" class="btn btn-default btn-primary" data-toggle="modal" data-target="#ddd" style="cursor:pointer" tabindex="-1"  ng-click="uploadFile()">上传 </button>-->
+                            </div>
+                            <div class="col-lg-10 col-md-10 col-sm-12 col-lg-offset-2 col-md-offset-2 text-left">
+                            <span>
+                                <span class="" ng-repeat="item in RulesInFive.annexs" style="display:block;margin-right:5px;">
+                                    <span class="glyphicon glyphicon-paperclip" aria-hidden="true"></span>
+                                    <a href="{{fileUrl}}/{{item.annexAddress}}" target="_blank" style="color:#0066cc" title="{{item.annexName}}">{{item.annexName}}</a>
+                                    <!--<a href="{{fileUrl}}/{{item.annexAddress}}" target="_blank" style="display:block;color:#0066cc" title="{{item.annexName}}">{{item.annexName}}</a>-->
+                                    <!--<a href="{{fileUrl}}/{{item.annexAddress}}" target="_Blank"><img src={{fileUrl}}/{{item.annexAddress}} style="display:block;margin-bottom:5px;width: 100px;height: 100px"></a>-->
+                                    <!--<button class="btn btn-default btn-primary tab-btn" ng-click="removePic(item);">移除</button>-->
+                                </span>
+                            </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <!--<button class="btn bg-primary" data-dismiss="modal"   ng-click="CloseConsultationOrders()">提交</button>-->
+            </div>
+        </div>
+    </div>
+</div>
+<!--五个规章制度信息模态框结束-->
+
+<!--规章制度更多信息模态框开始-->
+<div class="modal fade" id="rulesInfo" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width:80%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h5 class="modal-title">
+                    更多信息
+                </h5>
+            </div>
+            <div class="modal-body">
+                <!--<div class="sel1">
+                    <div class="row search-padding-10">
+                        <ul>
+                            <li>
+                                <a href="#" class="panel_info clear" ng-repeat="item in CommuntitnoticesAll">
+                                    <span style="width: 50%" ng-switch="item.title.length>10">
+                                        <span style="width: 100%" ng-switch-when="true" title="{{item.title}}">{{item.title | limitTo:10}}...</span>
+                                        <span style="width: 100%" ng-switch-when="false">{{item.title}}</span>
+                                    </span>
+                                    <span class="pull-right text-right"> {{item.creationTime | date:"yyyy-MM-dd"}} </span>
+                                    <br/>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>-->
+                <div class="row padding">
+                    <div class="col-md-4 padding20 border">
+                        <div class="search-padding-10">
+                            <div class="padding10" >
+                                <h4 class="title" style="color: #fff;background: #515151;padding: 5px 10px">
+                                    标题
+                                </h4>
+                                <div class="borderTB" ng-repeat="item in searchPaginatorRules.object.ruless" ng-show="item.id!=null" style="cursor: pointer;padding:10px" ng-click="showRulesInfo(item)">
+                                    <div class="col-md-2"><img src="images/people.png" alt="" style="width:30px;height:30px"></div>
+                                    <div class="col-md-10">
+                                        <a href="#" style="">
+                                            <strong>
+                                                <span style="width: 50%" ng-switch="item.title.length>12">
+                                                    <span style="width: 100%" ng-switch-when="true" title="{{item.title}}">{{item.title | limitTo:12}}...</span>
+                                                    <span style="width: 100%" ng-switch-when="false">{{item.title}}</span>
+                                                </span>
+                                            </strong>
+                                        </a>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <!--<div class="borderTB padding">
+                                    <div class="col-md-1"><input type="checkbox"/></div>
+                                    <div class="col-md-11"><strong>这是一个标题</strong></div>
+                                    <div class="clearfix"></div>
+                                </div>-->
+                            </div>
+                        </div>
+                        <div class=" col-md-12 text-left" ng-show="searchPaginatorRules.object.page.totalResult">
+                            <ul class="pagination">
+                                <li ng-class="{true:'disabled'}[searchPaginatorRules.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-click="searchPaginatorRules.go(1)">首页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchPaginatorRules.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-show="searchPaginatorRules.hasPrevious()" ng-click="searchPaginatorRules.previous()">上一页</a>
+                                </li>
+                                <li ng-class="{true:'active'}[searchPaginatorRules.page.currentPage==i]" ng-repeat="i in searchPaginatorRules.pages">
+                                    <a href="javascript:void(0)"  ng-click="searchPaginatorRules.go(i)">{{i}}</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchPaginatorRules.page.currentPage==searchPaginatorRules.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-show="searchPaginatorRules.hasNext()" ng-click="searchPaginatorRules.next()">下一页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchPaginatorRules.page.currentPage==searchPaginatorRules.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-click="searchPaginatorRules.go(searchPaginatorRules.page.totalPage)">尾页</a>
+                                </li>
+                            </ul>
+                            <!--<div><span>共{{searchPaginatorRules.object.page.totalResult}}条</span></div>-->
+                        </div>
+                    </div>
+                    <div class="col-md-8" style="padding:10px" ng-show="showRulesTag==1">
+                        <div class="row" style="border-bottom:2px solid #cccccc">
+                            <div class="col-md-12"><h5><strong>{{itemInfoRules.title}}</strong></h5></div>
+                            <div class="row">
+                                <div class="col-md-5">发布单位：深圳翔恒科技开发有限公司</div>
+                                <div class="col-md-3 text-right">发布者：{{itemInfoRules.recordCreater}}</div>
+                                <div class="col-md-4 text-right">{{itemInfoRules.lastModtime | date:"yyyy-MM-dd"}}</div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12" style="padding:10px">
+                            <!--{{itemInfoCommunity.briefContent}}-->
+                                {{itemInfoRules.detailInfo}}
+                            </div>
+                        </div>
+                        <div class="row" ng-if="itemInfoRules.annexs != null">
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                附件列表：
+                            </div>
+                            <div class="col-lg-10 col-md-10 col-sm-10 text-right">
+                                <!--               <button type="button" class="btn btn-default btn-primary" >删除 </button>-->
+                                <!--<button type="button" class="btn btn-default btn-primary" data-toggle="modal" data-target="#ddd" style="cursor:pointer" tabindex="-1"  ng-click="uploadFile()">上传 </button>-->
+                            </div>
+                            <div class="col-lg-10 col-md-10 col-sm-12 col-lg-offset-2 col-md-offset-2 text-left">
+                            <span>
+                                <span class="" ng-repeat="item in itemInfoRules.annexs" style="display:block;margin-right:5px;">
+                                    <span class="glyphicon glyphicon-paperclip" aria-hidden="true"></span>
+                                    <a href="{{fileUrl}}/{{item.annexAddress}}" target="_blank" style="color:#0066cc" title="{{item.annexName}}">{{item.annexName}}</a>
+                                    <!--<a href="{{fileUrl}}/{{item.annexAddress}}" target="_blank" style="display:block;color:#0066cc" title="{{item.annexName}}">{{item.annexName}}</a>-->
+                                    <!--<a href="{{fileUrl}}/{{item.annexAddress}}" target="_Blank"><img src={{fileUrl}}/{{item.annexAddress}} style="display:block;margin-bottom:5px;width: 100px;height: 100px"></a>-->
+                                    <!--<button class="btn btn-default btn-primary tab-btn" ng-click="removePic(item);">移除</button>-->
+                                </span>
+                            </span>
+                            </div>
+                        </div>
+                    </div>
+                    <!--显示第一个的信息由问题-->
+                    <div class="col-md-8" style="padding:10px" ng-show="showRulesTag==2">
+                        <div class="row" style="border-bottom:2px solid #cccccc">
+                            <div class="col-md-12"><h5><strong>{{itemFirstRules.title}}</strong></h5></div>
+                            <div class="row">
+                                <div class="col-md-5">发布单位：深圳翔恒科技开发有限公司</div>
+                                <div class="col-md-3 text-right">发布者：{{itemFirstRules.recordCreater}}</div>
+                                <div class="col-md-4 text-right">{{itemFirstRules.lastModtime | date:"yyyy-MM-dd"}}</div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12" style="padding:10px">
+                                {{itemFirstRules.detailInfo}}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                附件列表：
+                            </div>
+                            <div class="col-lg-10 col-md-10 col-sm-10 text-right">
+                                <!--               <button type="button" class="btn btn-default btn-primary" >删除 </button>-->
+                                <!--<button type="button" class="btn btn-default btn-primary" data-toggle="modal" data-target="#ddd" style="cursor:pointer" tabindex="-1"  ng-click="uploadFile()">上传 </button>-->
+                            </div>
+                            <div class="col-lg-10 col-md-10 col-sm-12 col-lg-offset-2 col-md-offset-2 text-left">
+                            <span ng-if="itemFirstRules.annexs != null">
+                                <span class="text-center" ng-repeat="item in itemFirstRules.annexs" style="display:inline-block;margin-right:5px;">
+                                    <a href="{{fileUrl}}/{{item.annexAddress}}"><img src={{fileUrl}}/{{item.annexAddress}} style="display:block;margin-bottom:5px;width: 100px;height: 100px"></a>
+                                    <!--<button class="btn btn-default btn-primary tab-btn" ng-click="removePic(item);">移除</button>-->
+                                </span>
+                            </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <!--<button class="btn bg-primary" data-dismiss="modal"   ng-click="CloseConsultationOrders()">提交</button>-->
+            </div>
+        </div>
+    </div>
+</div>
+<!--规章制度更多信息模态框结束-->
+<!--小区公告-->
+<!--<div ng-show="state==2">
+    <div class="row padding">
+        <div class="col-md-4 padding20 border">
+            <div class="search-padding-10">
+                <div class="padding10" >
+                    <h4 class="title" style="color: #fff;background: #515151;padding: 5px 10px">
+                        标题
+                    </h4>
+                    <div class="borderTB padding" ng-repeat="item in searchPaginator.object.communtitnotices" ng-show="item.id!=null" style="cursor: pointer" ng-click="showCommunityInfo(item)">
+                        <div class="col-md-2"><img src="images/people.png" alt="" style="width:30px;height:30px"></div>
+                        <div class="col-md-10"><a><strong>{{item.title}}</strong></a></div>
+                        <div class="clearfix"></div>
+                    </div>
+                    &lt;!&ndash;<div class="borderTB padding">
+                        <div class="col-md-1"><input type="checkbox"/></div>
+                        <div class="col-md-11"><strong>这是一个标题</strong></div>
+                        <div class="clearfix"></div>
+                    </div>&ndash;&gt;
+                </div>
+                <div class="padding">
+                <div class="bill_paging">
+                    &lt;!&ndash;<span>共{{currentEnterpriseCustomer.object.page.totalResult}}条</span>&ndash;&gt;
+                    &lt;!&ndash;<ul class="pagination">
+                        <li ng-class="{true:'disabled'}[currentEnterpriseCustomer.page.currentPage==1]">
+                            <a href="javascript:void(0)" ng-click="currentEnterpriseCustomer.go(1)">首页</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[currentEnterpriseCustomer.page.currentPage==1]">
+                            <a href="javascript:void(0)" ng-show="currentEnterpriseCustomer.hasPrevious()" ng-click="currentEnterpriseCustomer.previous()">上一页</a>
+                        </li>
+                        <li ng-class="{true:'active'}[currentEnterpriseCustomer.page.currentPage==i]" ng-repeat="i in currentEnterpriseCustomer.pages">
+                            <a href="javascript:void(0)"  ng-click="currentEnterpriseCustomer.go(i)">{{i}}</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[currentEnterpriseCustomer.page.currentPage==currentEnterpriseCustomer.page.totalPage]">
+                            <a href="javascript:void(0)" ng-show="currentEnterpriseCustomer.hasNext()" ng-click="currentEnterpriseCustomer.next()">下一页</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[currentEnterpriseCustomer.page.currentPage==currentEnterpriseCustomer.page.totalPage]">
+                            <a href="javascript:void(0)" ng-click="currentEnterpriseCustomer.go(currentEnterpriseCustomer.page.totalPage)">尾页</a>
+                        </li>
+                    </ul>&ndash;&gt;
+                </div>
+            </div>
+            </div>
+            <div class=" col-md-12 text-left" ng-show="searchPaginator.object.page.totalResult">
+                <ul class="pagination">
+                    <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-click="searchPaginator.go(1)">首页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a>
+                    </li>
+                    <li ng-class="{true:'active'}[searchPaginator.page.currentPage==i]" ng-repeat="i in searchPaginator.pages">
+                        <a href="javascript:void(0)"  ng-click="searchPaginator.go(i)">{{i}}</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                        <a href="javascript:void(0)" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                        <a href="javascript:void(0)" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a>
+                    </li>
+                </ul>
+                &lt;!&ndash;<div><span>共{{searchPaginator.object.page.totalResult}}条</span></div>&ndash;&gt;
+            </div>
+        </div>
+        <div class="col-md-8" ng-show="showCommunityTag==1">
+            <div class="col-md-12" style="border-bottom:2px solid #cccccc">
+                <div class="col-md-12"><h5><strong>{{itemInfoCommunity.title}}</strong></h5></div>
+                <div class="col-md-12">
+                    <div class="col-md-5">发布单位：深圳翔恒科技开发有限公司</div>
+                    <div class="col-md-3 text-right">发布者：{{itemInfoCommunity.founder}}</div>
+                    <div class="col-md-4 text-right">{{itemInfoCommunity.creationTime | date:"yyyy-MM-dd"}}</div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-12" id="textCommunity">
+                    &lt;!&ndash;{{itemInfoCommunity.briefContent}}&ndash;&gt;
+                </div>
+            </div>
+        </div>
+    </div>
+</div>-->
+<!--内部公告-->
+<!--<div ng-show="state==3">
+    <div class="row padding">
+        <div class="col-md-4 padding20 border">
+            <div class="search-padding-10 col-md-12">
+                <div class="padding10" >
+                    <h4 class="title" style="color: #fff;background: #515151;padding: 5px 10px">
+                        标题
+                    </h4>
+                    <div class="borderTB padding" ng-repeat="item in searchPaginator.object.informs" ng-show="item.id!=null" style="cursor: pointer" ng-click="showInternalInfo(item)">
+                        <div class="col-md-2"><img src="images/people.png" alt="" style="width:30px;height:30px"></div>
+                        <div class="col-md-10"><a><strong>{{item.inform}}</strong></a></div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+                <div class="padding">
+                    <div class="bill_paging">
+                        &lt;!&ndash;<span>共{{currentEnterpriseCustomer.object.page.totalResult}}条</span>&ndash;&gt;
+                        &lt;!&ndash;<ul class="pagination">
+                            <li ng-class="{true:'disabled'}[currentEnterpriseCustomer.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-click="currentEnterpriseCustomer.go(1)">首页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[currentEnterpriseCustomer.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-show="currentEnterpriseCustomer.hasPrevious()" ng-click="currentEnterpriseCustomer.previous()">上一页</a>
+                            </li>
+                            <li ng-class="{true:'active'}[currentEnterpriseCustomer.page.currentPage==i]" ng-repeat="i in currentEnterpriseCustomer.pages">
+                                <a href="javascript:void(0)"  ng-click="currentEnterpriseCustomer.go(i)">{{i}}</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[currentEnterpriseCustomer.page.currentPage==currentEnterpriseCustomer.page.totalPage]">
+                                <a href="javascript:void(0)" ng-show="currentEnterpriseCustomer.hasNext()" ng-click="currentEnterpriseCustomer.next()">下一页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[currentEnterpriseCustomer.page.currentPage==currentEnterpriseCustomer.page.totalPage]">
+                                <a href="javascript:void(0)" ng-click="currentEnterpriseCustomer.go(currentEnterpriseCustomer.page.totalPage)">尾页</a>
+                            </li>
+                        </ul>&ndash;&gt;
+                    </div>
+                </div>
+            </div>
+            <div class=" col-md-12 text-left" ng-show="searchPaginator.object.page.totalResult">
+                <ul class="pagination">
+                    <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-click="searchPaginator.go(1)">首页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a>
+                    </li>
+                    <li ng-class="{true:'active'}[searchPaginator.page.currentPage==i]" ng-repeat="i in searchPaginator.pages">
+                        <a href="javascript:void(0)"  ng-click="searchPaginator.go(i)">{{i}}</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                        <a href="javascript:void(0)" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                        <a href="javascript:void(0)" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a>
+                    </li>
+                </ul>
+                &lt;!&ndash;<div><span>共{{searchPaginator.object.page.totalResult}}条</span></div>&ndash;&gt;
+            </div>
+        </div>
+        <div class="col-md-8" ng-show="showInternalTag==1">
+            <div class="col-md-12" style="border-bottom:2px solid #cccccc">
+                <div class="col-md-12"><h5><strong>{{itemInfoInternal.inform}}</strong></h5></div>
+                <div class="col-md-12">
+                    <div class="col-md-5">发布单位：深圳翔恒科技开发有限公司</div>
+                    <div class="col-md-3 text-right">发布者：{{itemInfoInternal.writer}}</div>
+                    <div class="col-md-4 text-right">{{itemInfoInternal.time | date:"yyyy-MM-dd"}}</div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-md-12" id="textInternal">
+                    &lt;!&ndash;{{itemInfoCommunity.briefContent}}&ndash;&gt;
+                </div>
+            </div>
+        </div>
+    </div>
+</div>-->
+</body>
+</html>

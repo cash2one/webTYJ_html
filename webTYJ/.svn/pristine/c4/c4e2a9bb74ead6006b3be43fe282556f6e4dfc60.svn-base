@@ -1,0 +1,27 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 收款台js
+ */
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../../app');
+
+    app.controller('historyRecordsCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        var url = $rootScope.url;             //IP地址
+        $scope.searchPaymentDetails = {page: {}};      //分页
+        $scope.PaymentDetails={};
+        /**
+         * 查询所有历史记录
+         * @param page
+         * @param callback
+         */
+        var checkPayment = function (page, callback) {
+            $scope.searchPaymentDetails.page=page;
+            $http.post(url + '/PaymentDetails/listPagePaymentDetails', {PaymentDetails: $scope.searchPaymentDetails}).success(callback);
+        };
+        $scope.currentMeter = app.get('Paginator').list(checkPayment, 5);
+
+    }]);
+});

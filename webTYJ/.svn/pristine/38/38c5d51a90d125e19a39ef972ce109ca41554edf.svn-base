@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>收款台</title>
+</head>
+<body>
+<!--<div class="padding">-->
+<div id="content-first">
+    <!--tab页切换开始-->
+    <div id="tab" class="row search-padding-10">
+        <!--有收款台tab的地址配置-->
+        <!--<a ng-class="{'this_action ':btnIndex==6}" ng-click="doClick(6)" ui-sref="index.cashier.cashier.cashierUI.cashiers">收款台</a>
+        <a ng-class="{'this_action ':btnIndex==7}" ng-click="doClick(7)" ui-sref="index.cashier.cashier.cashierUI.billInquiry">账单查询</a>
+        <a ng-class="{'this_action ':btnIndex==8}" ng-click="doClick(8)" ui-sref="index.cashier.cashier.cashierUI.accountManagements">账户管理</a>
+        <a ng-class="{'this_action ':btnIndex==9}" ng-click="doClick(9)" ui-sref="index.cashier.cashier.cashierUI.printReceipt">打印小票</a>
+        <a ng-class="{'this_action ':btnIndex==10}" ng-click="doClick(10)" ui-sref="index.cashier.cashier.cashierUI.accountFor">交账</a>
+        <a ng-class="{'this_action ':btnIndex==11}" ng-click="doClick(11)" ui-sref="index.cashier.cashier.cashierUI.historyRecords">历史记录</a>
+        <a ng-class="{'this_action ':btnIndex==12}" ng-click="doClick(12)" lang="no" ui-sref="index.cashier.cashier.cashierUI.refund">退款</a>-->
+        <div class="col-lg-6 col-md-6 col-sm-6">
+            <a ng-class="{'this_action ':btnIndex==6}" ng-click="doClick(6)" ui-sref="index.cashier.cashier.cashiers">收款台</a>
+            <a ng-class="{'this_action ':btnIndex==7}" ng-click="doClick(7)" ui-sref="index.cashier.cashier.billInquiry">账单查询</a>
+            <a ng-class="{'this_action ':btnIndex==8}" ng-click="doClick(8)" ui-sref="index.cashier.cashier.accountManagements">账户管理</a>
+            <a ng-class="{'this_action ':btnIndex==9}" ng-click="doClick(9)" ui-sref="index.cashier.cashier.printReceipt">打印小票</a>
+            <a ng-class="{'this_action ':btnIndex==10}" ng-click="doClick(10)" ui-sref="index.cashier.cashier.accountFor.accountFors" id="accountRecord">交账</a>
+            <a ng-class="{'this_action ':btnIndex==11}" ng-click="doClick(11)" lang="no" ui-sref="index.cashier.cashier.historyRecords">历史记录</a>
+            <!--<a ng-class="{'this_action ':btnIndex==12}" ng-click="doClick(12)" lang="no" ui-sref="index.cashier.cashier.refund">退款</a>-->
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-6 text-right" >
+            <button type="button" class="btn btn-default btn-primary" align="right" ui-sref="index.accountManagement">
+                {{projectName}}
+            </button>
+        </div>
+    </div>
+    <!--tab页切换结束-->
+    <!--视图加载-->
+    <div ui-view></div>
+    <!--视图加载开始-->
+</div>
+<!--</div>-->
+<!--tab页切换开始-->
+
+</body>
+</html>

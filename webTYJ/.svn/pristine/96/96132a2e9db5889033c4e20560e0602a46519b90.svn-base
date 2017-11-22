@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>合同查询</title>
+</head>
+<body>
+<div class="padding">
+
+    <table>
+        <thead>
+            <tr>
+                <th>序号</th>
+                <th>资产编号</th>
+                <th>签署时间</th>
+                <th>生效时间</th>
+                <th>失效时间</th>
+                <th>录入时间</th>
+                <th>甲方</th>
+                <th>乙方</th>
+                <th>丙方</th>
+                <th>丁方</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="items in searchPaginator.object.propertycontracts" ng-show="items.id!=null">
+                <td>{{items.id}}</td>
+                <td>{{items.propertyId}}</td>
+                <td>{{items.signingTime | date:"yyyy-MM-dd"}}</td>
+                <td>{{items.effectiveTime | date:"yyyy-MM-dd"}}</td>
+                <td>{{items.deadTime | date:"yyyy-MM-dd"}}</td>
+                <td>{{items.enteringTime | date:"yyyy-MM-dd"}}</td>
+                <td>{{items.partyA}}</td>
+                <td>{{items.partyB}}</td>
+                <td>{{items.partyC}}</td>
+                <td>{{items.partyD}}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="pagination">
+        <a href="#" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a>
+        <a href="#" ng-repeat="i in searchPaginator.pages"  ng-click="searchPaginator.go(i)" class="number">{{i}}</a>
+        <a href="#" ng-show="searchPaginator.hasNext()" ng-click="searchPainator.next()">下一页</a>
+    </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,14 @@
+/**
+ * Created by chenl on 2016/7/5.
+ */
+'use strict';
+
+define(function (require) {
+    var app = require('../../../app');
+
+    app.controller('majorEventCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+        $scope.test = '111111';
+
+
+    }]);
+});

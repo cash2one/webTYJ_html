@@ -1,0 +1,129 @@
+<!--
+    创建人：倪明
+    页面名称：人员主页
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>员工主页</title>
+    <link rel="stylesheet" href="css/personnel.css">
+</head>
+<body>
+<div class="row">
+    <!--人员主页开始-->
+    <div class="complaint_user">
+        <div class="row padding">
+            <div class="col-xs-4 col-lg-3 col-md-3" style="width:220px;">
+                <div class="row">
+                    <div class="col-xs-6 col-lg-6 col-md-6">
+                        <img src="images/project/user/user_2.png" width="100" height="100">
+                    </div>
+                    <div class="col-xs-6 col-lg-6 col-md-6">
+                        <img src="images/icon/mn/VIP.png" width="30" height="20"><br>
+                        <img src="images/icon/mn/red.png" width="20" height="15">
+                        <img src="images/icon/mn/yel.png" width="20" height="15">
+                        <img src="images/icon/mn/blue.png" width="20" height="15">
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-8 col-lg-9 col-md-9">
+                <div class="row">
+
+                    <div class="col-xs-4 col-lg-4 col-md-4">
+                        <ul>
+                            <li>客户姓名：{{personCust.name}}</li>
+                            <li>客户编号：{{personCust.custCode}}</li>
+                            <li>身份证号：{{personCust.cardNum.substring(0,personCust.cardNum.length-1)}}</li>
+                            <li>注册电话：{{personCust.registerPhone}}</li>
+                        </ul>
+                    </div>
+                    <div class="col-xs-4 col-lg-2 col-md-4">
+                        <ul>
+                            <li>产业总数：{{countAllBuilding}}</li>
+                            <li>住宅数量：{{houseSum}}</li>
+                            <li>商铺数量：{{storeSum}}</li>
+                            <li>车位数量：{{countStall}}</li>
+                        </ul>
+                    </div>
+                    <div class="col-xs-4 col-lg-3 col-md-4">
+                        <ul>
+                            <li>请求服务：{{sums=count1+count2+count3}}</li>
+                            <li>未&nbsp;处&nbsp;理&nbsp;：{{count1}}</li>
+                            <li>处&nbsp;理&nbsp;中&nbsp;：{{count2}}</li>
+                            <li>处&nbsp;理&nbsp;完&nbsp;：{{count3}}</li>
+                        </ul>
+                    </div>
+                    <div class="col-xs-4 col-lg-3 col-md-4">
+                        <ul>
+                            <li>欠费信息：<span ng-if="personCust.owner == null">无</span>
+                                <span ng-if="personCust.owner != null">{{personCust.owner}}</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <div class="re_complaint_user">
+        <div>
+            <!--人员主页导航开始 ui-sref="index.propertyService.staffHome.serviceRequest"<a class="btn" ng-class="{'complaint__navigation ':btnIndex==2}" ng-click=" GetUser(personCust.custId);">服务请求</a>-->
+            <div class="user_navtion">
+                <a class="first" ng-class="{'shownum':shownum==0}" ng-click="change(0)"><span class="glyphicon glyphicon-chevron-left"></span></a>
+                <div ng-show="shownum == 0">
+                    <a  ui-sref="index.propertyService.staffHome.commonUser" ng-class="{'this_action':btnIndex==1}" ng-click="doClick(1)">常用</a>
+                    <!--<a  ng-class="{'this_action':btnIndex==2}" ng-click="GetUser(personCust.custId);">服务请求</a>-->
+                    <a  ui-sref="index.propertyService.staffHome.serviceRequestNew" ng-class="{'this_action':btnIndex==2}" ng-click="doClick(2);">服务请求</a>
+                    <a  ui-sref="index.propertyService.staffHome.empowerManagement.history" ng-class="{'this_action':btnIndex==3}" ng-click="doClick(3)">授权管理</a>
+
+                    <a  ui-sref="index.propertyService.staffHome.joinGang" ng-class="{'this_action':btnIndex==4}" ng-click="doClick(4)">入伙</a>
+                    <!--<a  ui-sref="index.propertyService.staffHome.parkingManagement" ng-class="{'user_navtion_this ':btnIndex==5}" ng-click="doClick(5)">车位管理</a>-->
+                    <a  ui-sref="index.propertyService.staffHome.newDecorate" ng-class="{'this_action':btnIndex==6}" ng-click="doClick(6)">装修</a>
+                    <a  ui-sref="index.propertyService.staffHome.vehicleManagement.vehicleManagementCheck" ng-class="{'this_action ':btnIndex==7}" ng-click="doClick(7)">车辆管理</a>
+                    <a  ui-sref="index.propertyService.staffHome.parkingCard.historyRecord" ng-class="{'this_action ':btnIndex==8}" ng-click="doClick(8)">停车卡</a>
+                </div>
+                <div ng-show="shownum == 1">
+                    <a  ui-sref="index.propertyService.staffHome.entranceGuard.checkEntranceGuard" ng-class="{'this_action ':btnIndex==9}" ng-click="doClick(9)">门禁卡</a>
+                    <a  ui-sref="index.propertyService.staffHome.changeTitle" ng-class="{'this_action ':btnIndex==10}" ng-click="doClick(10)">产权变更</a>
+                    <a  ui-sref="index.propertyService.staffHome.petRegistration.history" ng-class="{'this_action ':btnIndex==11}" ng-click="doClick(11)">宠物登记</a>
+                    <a  ui-sref="index.propertyService.staffHome.lease.leaseHistory" ng-class="{'this_action ':btnIndex==12}" ng-click="doClick(12)">租赁</a>
+                    <a  ui-sref="index.propertyService.staffHome.releasePass.historicRecords" ng-class="{'this_action ':btnIndex==13}" ng-click="doClick(13)">放行条</a>
+                    <a  ui-sref="index.propertyService.staffHome.relationshipChain.relationshipChainHistory" ng-class="{'this_action ':btnIndex==14}" ng-click="doClick(14)">亲属关系绑定</a>
+                    <a ui-sref="index.propertyService.staffHome.bankCollection" ng-class="{'this_action ':btnIndex==15}" ng-click="doClick(15)" >银行托收办理</a>
+                </div>
+                    <!--<a  ui-sref="index.propertyService.staffHome.vipApplys.vipRequest" ng-class="{'this_action ':btnIndex==15}" ng-click="doClick(15)">VIP客户申请</a>-->
+                <div ng-show="shownum == 2">
+                    <a ui-sref="index.propertyService.staffHome.accountManagement" ng-class="{'this_action ':btnIndex==16}" ng-click="doClick(16)">账户管理</a>
+                    <a ng-class="{'this_action ':btnIndex==17}" ng-click="doClick(17)">重点客户申请</a>
+                    <a ng-class="{'this_action ':btnIndex==18}" ng-click="doClick(18)">VIP客户申请</a>
+                </div>
+                <a class="last" ng-class="{'shownum':shownum==2}" ng-click="change(1)"><span class="glyphicon glyphicon-chevron-right"></span></a>
+                    <!--<div class="dropdown">-->
+                        <!--<a class="btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">-->
+                            <!--更多-->
+                            <!--<span class="caret"></span>-->
+                        <!--</a>-->
+                        <!--<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">-->
+                            <!--<li><a ui-sref="index.propertyService.staffHome.bankCollection">银行托收办理</a></li>-->
+                            <!--<li><a ui-sref="index.propertyService.staffHome.accountManagement">账户管理</a></li>-->
+                            <!--<li><a ui-sref="index.propertyService.staffHome.importantClients" ng-class="{'user_navtion_this ':btnIndex==16}" ng-click="doClick(16)">重点客户申请</a></li>-->
+                            <!--<li><a  ui-sref="index.propertyService.staffHome.vipApplys" ng-class="{'this_action ':btnIndex==15}" ng-click="doClick(15)">VIP客户申请</a></li>-->
+                        <!--</ul>-->
+                    <!--</div>-->
+            </div>
+            <!--人员主页导航结束-->
+        </div>
+        <div class="clear"></div>
+    </div>
+    <!--人员主页结束-->
+</div>
+<div class="row">
+    <!--人员主页导航内容视图加载开始-->
+    <div ui-view></div>
+    <!--人员主页导航内容视图加载结束-->
+</div>
+</body>
+</html>

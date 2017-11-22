@@ -1,0 +1,45 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 收款台js
+ */
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../app');
+
+    app.controller('cashierUICtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        $scope.btnIndex = 7;
+        var userCookie = JSON.parse(sessionStorage.getItem("USER_LOGIN"));
+        var user = {employId : ''};
+        $scope.user = userCookie?userCookie:user;
+        $scope.postName=$scope.user.staff.post
+        $scope.total=0;
+        $scope.doClick = function(index){
+            if(index==10){
+                for(var i=0;i<$scope.postName.length;i++){
+                    if($scope.postName[i].nameOfCustom=='收银员'){
+                        $scope.total++;
+                    }
+                    if($scope.postName[i].nameOfCustom=='收银组长'){
+                        $scope.total++;
+                    }
+                    if($scope.postName[i].nameOfCustom=='出纳'){
+                        $scope.total++;
+                    }
+                    if($scope.postName[i].nameOfCustom=='会计'){
+                        $scope.total++;
+                    }
+                }
+                if( $scope.total==0){
+                    layer.msg('交账相关人员可以操作', {icon: 0, time: 2000});
+                }
+            }
+
+            $scope.btnIndex = index;
+        };
+        $scope.doClickForAccount=function(index){
+            $scope.btnIndex = index;
+        };
+    }]);
+});

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>系统报表</title>
+</head>
+<body>
+    <div id="content-first">
+        <!--tab页切换开始-->
+        <!--<div id="tab">-->
+            <!--<a lang="no">物业项目收费模块启用管理</a>-->
+        <!--</div>-->
+       <!-- <div id="tab">
+            <a ng-class="{'this_action ':btnIndex==1}" ng-click="doClick(1)" ui-sref="index.accountManagement.productAndProperty.product">产品初始化</a>
+            <a ng-class="{'this_action ':btnIndex==2}" ng-click="doClick(2)" ui-sref="index.accountManagement.productAndProperty.product.propertyProject" lang="no">计费模板初始化</a>
+        </div>-->
+        <div class="sel">
+            <div class="row search-padding-10">
+                <div class="col-lg-1 col-md-2 col-sm-2">
+                    项目名称
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <input type="text" class="form-control" placeholder="请输入项目名称" ng-model="searchProject.projectName">
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2">
+                    状态
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <select class="form-control" ng-model="searchProject.isUseSystem">
+                        <option value="">全部</option>
+                        <option value="0">启用</option>
+                        <option value="1">未启用</option>
+                    </select>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4 text-right">
+                     <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="currentProject._load();">
+                        <span class="glyphicon glyphicon-search btn_icon" ></span>
+                        查询
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row padding">
+            <div class="col-lg-12">
+                <div class="row search-padding-10">
+                    <div class="col-lg-4 col-md-6 col-sm-6 text-center">
+                        <b>注册项目：
+                            {{projectCount.totalcount}}&nbsp;&nbsp;项
+                        </b>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-sm-6 text-center">
+                        <b>已启用项目：
+                            {{projectCount.isusecount}}&nbsp;&nbsp;项
+                        </b>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-sm-6 text-center">
+                        <b> 未启用项目：
+                            {{projectCount.notusecount}}&nbsp;&nbsp;项
+                        </b>
+                    </div>
+                </div>
+                <div class="search-padding-10">
+                    <table id="parjectCss">
+                        <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th>项目名称</th>
+                            <th>状态</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <!--| orderBy:'-sortDate'-->
+                        <tr ng-repeat="item in currentProject.object['project'] " ng-class="{'this_info':temp==item}" ng-show="item['projectId'] != null">
+                            <td ng-click="detail(item)">{{$index+(currentProject.page.currentPage-1)*6}}</td>
+                            <td ng-click="detail(item)">{{item['projectName']}}</td>
+                            <td ng-switch on="item['isUseSystem']" ng-click="changeStatus(item)">
+                                <span ng-switch-when="0">已启用</span>
+                                <span ng-switch-when="1">未启用</span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="padding">
+                    <div class="bill_paging">
+                        <span>共{{currentProject.object.page.totalResult}}条</span>
+                        <ul class="pagination">
+                            <li ng-class="{true:'disabled'}[currentProject.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-click="currentProject.go(1)">首页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[currentProject.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-show="currentProject.hasPrevious()"
+                                   ng-click="currentProject.previous()">上一页</a>
+                            </li>
+                            <li ng-class="{true:'active'}[currentProject.page.currentPage==i]"
+                                ng-repeat="i in currentProject.pages">
+                                <a href="javascript:void(0)" ng-click="currentProject.go(i)">{{i}}</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[currentProject.page.currentPage==currentProject.page.totalPage]">
+                                <a href="javascript:void(0)" ng-show="currentProject.hasNext()"
+                                   ng-click="currentProject.next()">下一页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[currentProject.page.currentPage==currentProject.page.totalPage]">
+                                <a href="javascript:void(0)"
+                                   ng-click="currentProject.go(currentProject.page.totalPage)">尾页</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+        </div>
+    </div>
+</body>
+</html>

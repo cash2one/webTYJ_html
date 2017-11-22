@@ -1,0 +1,39 @@
+/**
+ * 创建时间：2015/5/19
+ * jsName:放行条查询
+ */
+'use strict';
+
+/**
+ * Created by NM on 2018/1/18.
+ * 放行条查询js
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../app');
+
+    app.controller('allReleaseCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        var url = $rootScope.url;
+        $scope.itemsone=[{}];
+        $scope.sesrch={};
+        //查询数组
+        $scope.change=function(){
+            $http.post(url + '/ArticleRelease/listAllArticleRelease',{Search:$scope.sesrch}).success(function (data) {
+                console.log("搜索成功");
+                console.log(data.ArticleRelease);
+                $scope.itemsone=data.ArticleRelease;
+            }).error(function(){
+                console.log("搜索失败")
+            });
+        };
+        //模态框数据
+        $scope.rele={};
+        $scope.show = function(item) {
+            $scope.rele=item;
+        };
+
+    }]);
+});

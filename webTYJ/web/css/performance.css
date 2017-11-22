@@ -1,0 +1,84 @@
+
+/*等级属性*/
+.grade{ width:98%; background:#dddddd; border:1px solid #bbbbbb;  -moz-border-radius:7px; -webkit-border-radius:7px; border-radius:7px; min-height:105px; }
+.grade_title{ height:35px; background:#cacaca; color:#666666; padding-left:5px; font-size:14px; padding-top:3px;}
+.grade_info{ min-height:60px;}
+.grade_info_userimg{ float:left;}
+.grade_info_userinfo{ float:left;}
+.grade_info_userinfo_experience{ width:98%; background:#313131; height:18px;  -moz-border-radius:15px; -webkit-border-radius:15px; border-radius:15px; position:relative; margin-left:5px;}
+.grade_info_userinfo_experience_growth{ width:20%; background:#e0831b; height:18px;  -moz-border-radius:15px 0 0 15px; -webkit-border-radius:15px 0 0 15px; border-radius:15px 0 0 15px;  position:absolute; z-index:1; }
+.grade_info_userinfo_experience_font{ width:100%; text-align:center; color:#FFF; line-height:18px;  position:absolute; z-index:2;}
+.grade_info_userinfo_info { margin-left:5px; height:30px;}
+.grade_info_userinfo_info span{ display:block; margin-right:5px; float:left;}
+
+
+.inside_line_navigation{ background:#dddddd;   -moz-border-radius:7px; -webkit-border-radius:7px; border-radius:7px;  padding-top:20px; }
+.inside_line_navigation a{ float:left; display:block; color:#686868;  margin-left:15px; font-size:16px; text-decoration:none; font-weight:bold; height:40px; }
+.inside_line_navigation .inside_line_navigation_this{ float:left; display:block; color:#03a0f1;  margin-left:15px; font-size:16px; text-decoration:none; font-weight:bold; border-bottom:4px solid #03a0f1; height:40px;}
+.inside_line_navigation a:hover{ float:left; display:block; color:#03a0f1;  margin-left:15px; font-size:16px; text-decoration:none; font-weight:bold; border-bottom:4px solid #03a0f1; height:40px;}
+
+
+
+.inside_line_panel{
+    background:#f0f0f0;
+    border:1px solid #bbbbbb;
+    height:355px;
+    overflow:hidden;
+    font-size:14px;
+    -moz-border-radius:7px;
+    -webkit-border-radius:7px;
+    border-radius:7px;
+    margin-bottom:20px;
+}
+.inside_line_panel_title{ height:35px; background:#cacaca; color:#666666;}
+.inside_line_panel_title_left{display:block; float:left; margin-top:5px; margin-left:5px;}
+.inside_line_panel_title_right{ display:block; float:right; margin-top:5px; margin-right:6px; }
+.inside_line_panel_info{ width:100%; font-size:12px; margin:0 auto;}
+.inside_line_experience_img{ text-align:center; height:130px;}
+.inside_line_experience_left{ float:left;}
+.inside_line_experience_background{display:block; float:left; width:70%; background:#313131; height:18px;  -moz-border-radius:15px; -webkit-border-radius:15px; border-radius:15px; height:18px; line-height:18px; position:relative; margin-top:5px; margin-left:5px;}
+.inside_line_experience_background_font{ display:block;  width:100%; text-align:center; height:18px; line-height:18px; z-index:3; position:absolute; color:#FFF; font-size:12px;}
+
+/*熟练度进度条进度样式*/
+.inside_line_experience_background_growth1{ display:block; width:20%; background:#e0831b; height:18px;  -moz-border-radius:15px; -webkit-border-radius:15px; border-radius:15px; position:absolute; z-index:1; height:18px; line-height:18px;}
+.inside_line_experience_background_growth2{ display:block; width:30%; background:#e0831b; height:18px;  -moz-border-radius:15px; -webkit-border-radius:15px; border-radius:15px; position:absolute; z-index:1; height:18px; line-height:18px;}
+.inside_line_experience_background_growth3{ display:block; width:40%; background:#e0831b; height:18px;  -moz-border-radius:15px; -webkit-border-radius:15px; border-radius:15px; position:absolute; z-index:1; height:18px; line-height:18px;}.inside_line_experience_background_growth4{ display:block; width:50%; background:#e0831b; height:18px;  -moz-border-radius:15px; -webkit-border-radius:15px; border-radius:15px; position:absolute; z-index:1; height:18px; line-height:18px;}.inside_line_experience_background_growth5{ display:block; width:60%; background:#e0831b; height:18px;  -moz-border-radius:15px; -webkit-border-radius:15px; border-radius:15px; position:absolute; z-index:1; height:18px; line-height:18px;}
+.inside_line_experience_background_growth6{ display:block; width:70%; background:#e0831b; height:18px;  -moz-border-radius:15px; -webkit-border-radius:15px; border-radius:15px; position:absolute; z-index:1; height:18px; line-height:18px;}
+
+.inside_line_ranking_left{ float:left;}
+.inside_line_ranking_right{ float:left; width:70%; display:block; margin-top:5px; margin-left:5px;}
+
+
+.inside_line_info_left{ float:left; width:30%; }
+.inside_line_info_right{ float:left; width:70%; }
+
+.inside_line_info_left span{ display:block; height:40px; padding-top:6px; text-align:right; margin-right:10px;}
+.inside_line_info_font{ width:100%; text-align:center; height:40px; margin-top:5px;}
+
+/*排名梯队样式*/
+.inside_line_ranking_right_middle1{ display:block; height:40px; color:#FFF; width:30%; background:#bb5500; text-align:center; float:left; padding-top:6px; }
+.inside_line_ranking_right_right1{  display:block; height:40px;  width:35%; float:left; text-align:right ;background:url(../images/ranking.png) left 0 no-repeat; padding-top:6px; }
+.inside_line_ranking_right_middle2{ display:block; height:40px; color:#FFF; width:30%; background:#cc5e02; text-align:center; float:left; padding-top:6px; }
+.inside_line_ranking_right_right2{  display:block; height:40px;  width:40%; float:left; text-align:right ;background:url(../images/ranking.png) left -40px no-repeat; padding-top:6px; }
+.inside_line_ranking_right_middle3{ display:block; height:40px; color:#FFF; width:30%; background:#d56406; text-align:center; float:left;  padding-top:6px; }
+.inside_line_ranking_right_right3{  display:block; height:40px;  width:45%; float:left; text-align:right ;background:url(../images/ranking.png) left -80px no-repeat; padding-top:6px; }
+.inside_line_ranking_right_middle4{ display:block; height:40px; color:#FFF; width:30%; background:#d96e14; text-align:center; float:left;  padding-top:6px; }
+.inside_line_ranking_right_right4{  display:block; height:40px;  width:50%; float:left; text-align:right ;background:url(../images/ranking.png) left -120px no-repeat; padding-top:6px; }
+.inside_line_ranking_right_middle5{ display:block; height:40px; color:#FFF; width:30%; background:#e47b22; text-align:center; float:left; padding-top:6px;  }
+.inside_line_ranking_right_right5{  display:block; height:40px;  width:55%; float:left; text-align:right ;background:url(../images/ranking.png) left -160px no-repeat; padding-top:6px; }
+.inside_line_ranking_right_middle6{ display:block; height:40px; color:#FFF; width:30%; background:#e0831b; text-align:center; float:left; padding-top:6px;  }
+.inside_line_ranking_right_right6{  display:block; height:40px;  width:60%; float:left; text-align:right ;background:url(../images/ranking.png) left -200px no-repeat; padding-top:6px; }
+
+.medal{ width:50%; height:140px; text-align:center; float:left; margin-top:10px;}
+
+/*弹出层文件*/
+.eject{ width:100%; background:#000; filter:alpha(opacity=50); -moz-opacity:0.5; opacity: 0.5; position:absolute; height:100%; }
+.eject_top{ width:80%;  position:absolute;  left:50%; margin-left:-40%; margin-top:110px; z-index:6}
+.eject_button_return{ display:block; width:200px; height:40px; float:right; text-align:center; font-size:16px; font-weight:bold; color:#CCC}
+.eject_button_return:hover{ color:#b6b6b6;}
+
+.eject_button_left{ position:absolute; top:100px; left:15px;}
+.eject_button_right{position:absolute; top:100px; right:15px;}
+
+.achievement_eject_button_left{ position:absolute; top:100px; left:0;}
+.achievement_eject_button_right{position:absolute; top:100px; right:0;}

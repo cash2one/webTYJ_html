@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div class="sel">
+    <div class="row">
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">筛选：</div>
+        <div class="col-lg-1 col-md-2 col-sm-2 ">
+            <label class="checkbox inline">
+                <input type="checkbox" ng-model="achieved" ng-click="clickCheckbox('achieved')">
+                <span>执行中</span>
+            </label>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2 ">
+            <label class="checkbox inline">
+                <input type="checkbox" ng-model="willFail" ng-click="clickCheckbox('willFail')">
+                <span>快失效</span>
+            </label>
+        </div>
+        <div class="col-lg-1 col-md-6 col-sm-6 ">
+            <label class="checkbox inline">
+                <input type="checkbox" ng-model="expired" ng-click="clickCheckbox('expired')">
+                <span>已失效</span>
+            </label>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">租约到期：</div>
+        <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control" type="date" ng-model="param.leaseStartDate"></div>
+        <div class="col-lg-1 col-md-2 col-sm-2 text-center">至</div>
+        <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control" type="date" ng-model="param.leaseEndDate"></div>
+
+
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">项目：</div>
+        <div class="col-lg-3 col-md-4 col-sm-4">  <select ng-model="selectProjects.id" class="form-control" name="name" ng-options="p.id as p.name for p in selectProjects"  required  ng-change="getProject(selectProjects.id)"></select></div>
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">免租期日期：</div>
+        <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control" type="date" ng-model="param.freeStartDate"></div>
+        <div class="col-lg-1 col-md-2 col-sm-2 text-center">至</div>
+        <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control" type="date" ng-model="param.freeEndDate"></div>
+        <div class="clear"></div>
+
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">支付类型：</div>
+        <div class="col-lg-3 col-md-4 col-sm-4"><select ng-model="selectPayTypes.id" class="form-control" name="name" ng-options="p.id as p.name for p in selectPayTypes"  required  ng-change="getPayTypes(selectPayTypes.id)"></select></div>
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">递增类型：</div>
+        <div class="col-lg-3 col-md-4 col-sm-4"><select ng-model="selectIncreaseTypes.id" class="form-control" name="name" ng-options="p.id as p.name for p in selectIncreaseTypes"  required  ng-change="getIncreaseTypes(selectIncreaseTypes.id)"></select></div>
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">承租人：</div>
+        <div class="col-lg-2 col-md-4 col-sm-4"><input class="form-control" ng-model="param.name"></div>
+        <div class="col-lg-1 col-md-6 col-sm-6 text-right">
+            <button type="button" class="btn btn-default btn-primary" ng-click="checkleaseContracts()">
+                <span class="glyphicon glyphicon-search btn_icon"></span>
+                查询
+            </button>
+        </div>
+    </div>
+</div>
+<div class="row padding">
+    <div class="col-lg-12">
+    <div class="search-padding-10">
+        <button type="button" class="btn btn-default btn-primary" ng-click="doClick(1)" ui-sref="index.businessManagement.leaseManagement.leaseContractAdd" >
+            <span class="glyphicon glyphicon-plus btn_icon" ></span>新建合同</button>
+    </div>
+    <div class="row rh" ng-repeat="leaseContract in leaseContracts.object.leaseContracts" ng-show="leaseContract.contractId != null">
+        <div class="col-xs-1 col-lg-1 col-md-1">
+            <a href="#createModal">
+                <img src="images/company/u133.jpg" width="100%">
+            </a>
+        </div>
+        <div class="col-xs-11 col-lg-11 col-md-11">
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                房屋地址：
+            </div>
+            <div class=" col-lg-3 col-md-2 col-sm-2">
+                {{leaseContract.productBs.buildingStruct.fullName}}
+            </div>
+            <div class=" col-lg-2 col-md-2 col-sm-2 text-right">
+                租期开始日期：
+            </div>
+            <div class=" col-lg-1 col-md-2 col-sm-2">
+                {{leaseContract.leaseStartDate | date : 'yyyy-MM-dd'}}
+            </div>
+            <div class=" col-lg-2 col-md-2 col-sm-2 text-right">
+                租期结束日期：
+            </div>
+            <div class=" col-lg-1 col-md-2 col-sm-2">
+                {{leaseContract.leaseEndDate | date : 'yyyy-MM-dd'}}
+            </div>
+            <div class=" col-lg-1 col-md-2 col-sm-2 textt-right">
+                租金递增：
+            </div>
+            <div class=" col-lg-1 col-md-2 col-sm-2">
+                {{leaseContract.productBs.product.rent.description}}
+            </div>
+            <div class=" col-lg-1 col-md-2 col-sm-2 text-right">
+                承租人：
+            </div>
+            <div class=" col-lg-3 col-md-4 col-sm-4">
+                {{leaseContract.person.name}}
+            </div>
+            <div class=" col-lg-2 col-md-2  col-sm-2 text-right">
+                免租开始日期：
+            </div>
+            <div class=" col-lg-1 col-md-2 col-sm-2">
+                {{leaseContract.freeStartDate | date : 'yyyy-MM-dd'}}
+            </div>
+            <div class=" col-lg-2 col-md-2  col-sm-2 text-right">
+                免租结束日期：
+            </div>
+            <div class=" col-lg-1 col-md-2">
+                {{leaseContract.freeEndDate | date : 'yyyy-MM-dd'}}
+            </div>
+            <div class=" col-lg-1 col-md-2 col-sm-2 ">
+                支付类型：
+            </div>
+            <div class=" col-lg-1 col-md-2 col-sm-2 ">
+                {{leaseContract.productBs.product.pay.description}}
+            </div>
+        </div>
+    </div>
+
+        <div class="bill_paging">
+            <ul class="pagination">
+                <li><a style="cursor:pointer;" ng-click="leaseContracts.go(1)">首页</a></li>
+                <li><a style="cursor:pointer;" ng-show="leaseContracts.hasPrevious()" ng-click="leaseContracts.previous()">上一页</a></li>
+                <li><a style="cursor:pointer;" ng-repeat="i in leaseContracts.pages"  ng-click="leaseContracts.go(i)">{{i}}</a></li>
+                <li><a style="cursor:pointer;" ng-show="leaseContracts.hasNext()" ng-click="leaseContracts.next()">下一页</a></li>
+                <li><a style="cursor:pointer;" ng-click="leaseContracts.go(leaseContracts.page.totalPage)">尾页</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+
+
+</body>
+</html>

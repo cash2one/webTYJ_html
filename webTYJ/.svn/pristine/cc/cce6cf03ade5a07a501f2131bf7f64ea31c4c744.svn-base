@@ -1,0 +1,27 @@
+<!--
+    创建人：XC
+    页面名称：人员主页租赁页面
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>人员信息租赁</title>
+</head>
+<body>
+<div class="padding_info">
+    <div  id="content-first">
+        <!--tab页切换开始-->
+        <div id="tab">
+            <a ng-class="{'this_action ':btnIndex==1}" ng-click="doClick(1)" ui-sref="index.propertyService.staffHome.lease.leaseHistory" >租赁列表</a>
+            <a ng-class="{'this_action ':btnIndex==2}" ng-click="doClick(2)" ui-sref="index.propertyService.staffHome.lease.leaseAdd" lang="no">新增租赁信息</a>
+        </div>
+        <!--tab end-->
+
+        <!--模板-->
+        <div ui-view></div>
+        <!--模板 end-->
+        </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!--
+    创建人：彭婷婷  创建时间：2015/6/12
+    页面名称：巡检方案
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div class="padding">
+    <div id="content-first">
+        <div id="tab">
+            <a ng-class="{'this_action':$btnIndex==0}" ng-click="doClick(0)" ui-sref="index.serviceRequest.patrolManagement.plans.newPlans">新建巡检方案</a>
+            <a lang="no" ng-class="{'this_action':$btnIndex==1}" ng-click="doClick(1)" ui-sref="index.serviceRequest.patrolManagement.plans.validPlans">有效巡检方案</a>
+        </div>
+        <div ui-view></div>
+    </div>
+</div>
+
+</body>
+</html>

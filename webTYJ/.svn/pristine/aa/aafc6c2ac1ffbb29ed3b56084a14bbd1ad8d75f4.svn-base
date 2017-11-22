@@ -1,0 +1,402 @@
+<!--
+    创建人:彭婷婷  创建时间：2015/06/08
+    页面名称:核心岗位任命
+    js路径:js/controllers/internalProfession/corePost.js
+    修改人：宋佳   修改时间:2016/01/21
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>核心岗位任命</title>
+</head>
+<body>
+
+<div id="content-first">
+    <!--tab页切换开始-->
+    <div id="tab">
+        <a lang="no" class="this_action">核心岗位任命</a>
+    </div>
+    <!--tab页切换结束-->
+    <!--视图加载-->
+    <div class="row">
+        <div class="sel">
+            <div class="row">
+                <div class="col-xs-5">
+                    <div class="col-xs-2 text-right">
+                        姓名：
+                    </div>
+                    <div class="col-xs-4">
+                        <input class="form-control ng-pristine ng-untouched ng-invalid ng-invalid-required" ng-model="CorePosition.staffName" set-focus="" required="" placeholder="请输入员工姓名" ng-keyup="clickSearch()" type="text">
+                    </div>
+                    <div class="col-xs-2 text-right">
+                        工号：
+                    </div>
+                    <div class="col-xs-4">
+                        <input class="form-control ng-pristine ng-untouched ng-valid" ng-model="CorePosition.staffNo" placeholder="请输入员工工号" ng-keyup="clickSearch()" type="text">
+                    </div>
+                </div>
+                <div class="col-xs-7">
+                    <div class="col-xs-2 text-right">
+                        联系电话：
+                    </div>
+                    <div class="col-xs-3">
+                        <input class="form-control ng-pristine ng-untouched ng-valid" ng-model="CorePosition.telphone" placeholder="请输入员工联系电话" ng-keyup="clickSearch()" type="text">
+                    </div>
+                    <div class="col-xs-2 text-right">
+                        职位：
+                    </div>
+                    <div class="col-xs-3">
+                        <select ng-model="CorePosition.postId" id="nameOfCustom" ng-options="c.postId  as c.nameOfCustom for c in post" class="form-control ng-pristine ng-untouched ng-valid"><option selected="selected" class="" value="">请选择</option><option label="财务经理" value="string:ffe2fdff-dd11-487c-9711-800edd83c43d">财务经理</option><option label="清洁经理" value="number:4">清洁经理</option><option label="项目经理" value="number:19">项目经理</option><option label="门控机经理" value="number:13">门控机经理</option></select>
+                    </div>
+                    <div class="col-xs-1 text-center">
+                        <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="searchPaginator1._load()">
+                            <span class="glyphicon glyphicon-search btn_icon"></span>
+                            查询
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="col-xs-6" style="padding:0;" ng-repeat="item in post | orderBy:nameOfCustom " ng-show="item.postId!=null">
+                <div class="padding">
+                    <div class="user_pannel" style="min-height:365px;position: relative;">
+                        <div class="user_pannel_title">
+                            <div style="padding:0 15px;text-align:left;">
+                                <span>职位：</span>
+                                <span>{{item.nameOfCustom}}</span>
+                                <span style="padding-left:15px;">数量：</span>
+                                <span>{{item.count}}位</span>
+                                <span class="glyphicon glyphicon-plus pull-right" style="line-height: inherit;" ng-click="moreData(item)" aria-hidden="true"></span>
+                            </div>
+                        </div>
+                        <div class="user_pannel_body" style="padding:10px 5px !important;box-shadow:none;border-radius:0;">
+                            <div class="row" ng-switch="item.count"><!--  增加当核心岗位人数为空时的提示  王洲  2016.02.29  -->
+                                <div class="col-xs-6" ng-switch-when="0">
+                                    <div class="user_information pull-right">
+                                        <div class="user_information_img">
+                                            <!--<img src="images/project/user/user_3.png">-->
+                                        </div>
+                                        <div class="user_information_body">
+                                            <div class="user_information_name">
+                                                <!--{{items.staffName}}-->
+                                                暂无人员
+                                            </div>
+                                            <div class="user_information_info">
+                                                <!-- 二级信息显示-->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6"  ng-repeat="items in item.allData" ng-if="items.postId==item.postId">
+                                    <div id="pannel">
+                                        <div class="title">
+                                            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                                <h3 class="text-left">人员信息</h3>
+                                            </div>
+                                            <div class="downList">
+                                                <div class="col-xs-12 col-lg-12 col-md-12 col-sm-12 text-right">
+                                                    <span class="glyphicon glyphicon-chevron-down" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                                        <li><a data-toggle="modal" ng-click="delete(items.corePositionId,items.staffId)" style="cursor: pointer">删除</a></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="user_information">
+                                        <div class="user_information_img">
+                                            <img src="images/project/user/user_3.png">
+                                        </div>
+                                        <div class="user_information_body">
+                                            <div class="user_information_name">
+                                                {{items.staffName}}
+                                            </div>
+                                            <div class="user_information_info">
+                                                二级信息显示
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 padding" style="position: absolute;bottom:15px;right:15px;">
+                                    <div class="bill_paging" ng-show="item.count!=0">
+                                        <span>共{{item.count}}条</span>
+                                        <ul class="pagination" id="{{item.postId}}">
+                                            <li ng-class="{true:'disabled'}[btnIndex1[item.postId]==1]">
+                                                <a href="javascript:void(0)" ng-click="goTo(1,item.postId)">首页</a>
+                                            </li>
+                                            <li ng-repeat="itam in item.pageSize" ng-class="{true:'active'}[btnIndex1[item.postId]==itam]">
+                                                <a href="javascript:void(0)" ng-click="goTo(itam,item.postId)">{{itam}}</a>
+                                            </li>
+                                            <li ng-class="{true:'disabled'}[btnIndex1[item.postId]==item.total]">
+                                                <a href="javascript:void(0)" ng-click="goTo(item.total,item.postId)">尾页</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--<div class="col-lg-6 col-md-6 col-sm-6">-->
+            <!--<div class="padding">-->
+                <!--<table>-->
+                    <!--<thead>-->
+                    <!--<tr>-->
+                        <!--<th>员工工号</th>-->
+                        <!--<th>姓名</th>-->
+                        <!--<th>性别</th>-->
+                        <!--<th>联系电话</th>-->
+                    <!--</tr>-->
+                    <!--</thead>-->
+                    <!--<tbody>-->
+                    <!--<tr  ng-repeat="items in searchPaginator.object.staffs" ng-show="items.staffId!=null" style="cursor: pointer" ng-click="addPost(items.staffId,items.postId)" ng-show="items.staffId!=null" ng-dblclick="show(items)" ng-class="{'this_info':btnIndex==items.staffId}">-->
+                        <!--<td>{{items.staffNo}}</td>-->
+                        <!--<td>{{items.staffName}}</td>-->
+                        <!--<td ng-switch on="items.sex">-->
+                            <!--<span ng-switch-when="0">男</span>-->
+                            <!--<span ng-switch-when="1">女</span>-->
+                        <!--</td>-->
+                        <!--<td>-->
+                         <!--{{items.telphone}}-->
+                        <!--</td>-->
+                    <!--</tr>-->
+                    <!--<tr ng-if="searchPaginator.pages==null || searchPaginator.pages==''">-->
+                        <!--<td colspan="4">暂无数据</td>-->
+                    <!--</tr>-->
+                    <!--</tbody>-->
+                <!--</table>-->
+                <!--<div class="padding">-->
+                    <!--<div class="bill_paging">-->
+                        <!--<span>共{{searchPaginator.object.page.totalResult}}条</span>-->
+                        <!--<ul class="pagination">-->
+                            <!--<li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">-->
+                                <!--<a href="javascript:void(0)" ng-click="searchPaginator.go(1)">首页</a>-->
+                            <!--</li>-->
+                            <!--<li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">-->
+                                <!--<a href="javascript:void(0)" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a>-->
+                            <!--</li>-->
+                            <!--<li ng-class="{true:'active'}[searchPaginator.page.currentPage==i]" ng-repeat="i in searchPaginator.pages">-->
+                                <!--<a href="javascript:void(0)"  ng-click="searchPaginator.go(i)">{{i}}</a>-->
+                            <!--</li>-->
+                            <!--<li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">-->
+                                <!--<a href="javascript:void(0)" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a>-->
+                            <!--</li>-->
+                            <!--<li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">-->
+                                <!--<a href="javascript:void(0)" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a>-->
+                            <!--</li>-->
+                        <!--</ul>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+
+        <!--</div>-->
+
+        <!--<div class="col-lg-6 col-md-6 col-sm-6">-->
+            <!--<div class="padding">-->
+                <!--<div ng-repeat="item in post | orderBy:nameOfCustom " ng-show="item.postId!=null">-->
+                    <!--<div class="user_pannel">-->
+                        <!--<div class="user_pannel_title">-->
+                            <!--{{item.nameOfCustom}}-->
+                            <!--&lt;!&ndash;Bug 651-->
+                            <!--修改人：陈浪-->
+                            <!--2016年2月22号&ndash;&gt;-->
+                            <!--&lt;!&ndash;<div class="user_pannel_title_icon">-->
+                                <!--<span class="glyphicon glyphicon-edit btn_icon"></span>-->
+                            <!--</div>&ndash;&gt;-->
+                        <!--</div>-->
+                        <!--<div class="user_pannel_body">-->
+                            <!--<div class="row" ng-switch="item.count">&lt;!&ndash;  增加当核心岗位人数为空时的提示  王洲  2016.02.29  &ndash;&gt;-->
+                                <!--<div class="col-md-6" ng-switch-when="0">-->
+                                    <!--<div class="user_information">-->
+                                        <!--<div class="user_information_img">-->
+                                            <!--&lt;!&ndash;<img src="images/project/user/user_3.png">&ndash;&gt;-->
+                                        <!--</div>-->
+                                        <!--<div class="user_information_body">-->
+                                            <!--<div class="user_information_name">-->
+                                                <!--&lt;!&ndash;{{items.staffName}}&ndash;&gt;-->
+                                                <!--暂无人员-->
+                                            <!--</div>-->
+                                            <!--<div class="user_information_info">-->
+                                                <!--&lt;!&ndash; 二级信息显示&ndash;&gt;-->
+                                            <!--</div>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                                <!--<div class="col-md-6"  ng-repeat="items in corePositions" ng-if="items.postId==item.postId">-->
+
+                                    <!--<div id="pannel">-->
+                                        <!--<div class="title">-->
+                                            <!--<div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">-->
+                                                <!--<h3 class="text-left">人员信息</h3>-->
+                                            <!--</div>-->
+                                            <!--<div class="downList">-->
+                                                <!--<div class="col-xs-12 col-lg-12 col-md-12 col-sm-12 text-right">-->
+                                                    <!--<span class="glyphicon glyphicon-chevron-down" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>-->
+                                                    <!--<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">-->
+                                                        <!--<li><a data-toggle="modal" ng-click="delete(items.corePositionId,items.staffId)" style="cursor: pointer">删除</a></li>-->
+                                                    <!--</ul>-->
+                                                <!--</div>-->
+                                            <!--</div>-->
+                                        <!--</div>-->
+
+                                    <!--</div>-->
+
+                                    <!--<div class="user_information">-->
+                                        <!--<div class="user_information_img">-->
+                                            <!--<img src="images/project/user/user_3.png">-->
+                                        <!--</div>-->
+                                        <!--<div class="user_information_body">-->
+                                            <!--<div class="user_information_name">-->
+                                                <!--{{items.staffName}}-->
+                                            <!--</div>-->
+                                            <!--<div class="user_information_info">-->
+                                                <!--二级信息显示-->
+                                            <!--</div>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                            <!--</div>-->
+
+
+
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+
+
+        <!--</div>-->
+
+    </div>
+
+    <!--视图加载开始-->
+</div>
+
+<!--弹出层-->
+<div class="modal fade" id="post" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width:900px;margin-left:-150px;">
+            <div class="modal-header">
+                选择员工
+                <button type="button" class="close" aria-label="Close" ng-click="cancle()"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="row padding">
+                    <div class="row search-padding-10">
+                        <div class="col-xs-1 text-right">
+                            姓名：
+                        </div>
+                        <div class="col-xs-2">
+                            <input type="text" class="form-control"  ng-model="Staff.staffName" set-Focus=""  placeholder="请输入员工姓名">
+                        </div>
+                        <div class="col-xs-1 text-right">
+                            电话：
+                        </div>
+                        <div class="col-xs-2">
+                            <input class="form-control" type="text" ng-model="Staff.telphone" placeholder="请输入员工电话"/>
+                        </div>
+                        <div class="col-xs-1 text-right">
+                            工号：
+                        </div>
+                        <div class="col-xs-2">
+                            <input class="form-control" type="text" ng-model="Staff.staffNo"  placeholder="请输入员工工号"/>
+                        </div>
+                        <div class="col-xs-2">
+                            <button type="button" class="btn btn-default btn-primary" ng-click="searchPaginator._load()">
+                                搜索
+                            </button>
+                        </div>
+                    </div>
+                    <div class="rh" ng-repeat="items in searchPaginator.object.staffs" ng-show="items.staffId!=null" style="cursor: pointer" ng-click="addPost(items.staffId)" ng-show="items.staffId!=null" ng-dblclick="show(items)" ng-class="{'this_info':btnIndex==items.staffId}">
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            <img src="images/project/user/user_3.png"  width="55" height="55">
+                        </div>
+                        <div class="col-lg-10 col-md-10 col-sm-10">
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                员工工号：{{items.staffNo}}
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                员工姓名 : {{items.staffName}}
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                员工性别：
+                                     <span ng-switch on="items.sex">
+                                        <span ng-switch-when="0">男</span>
+                                        <span ng-switch-when="1">女</span>
+                                    </span>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                联系电话：{{items.telphone}}
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div ng-show="searchPaginator.object.staffs.length==null" style="padding:15px;text-align:center;">
+                        暂无数据！
+                    </div>
+                    <div ng-show="searchPaginator.object.staffs.length!=null" class="bill_paging">
+                        <span>共{{searchPaginator.object.page.totalResult}}条</span>
+                        <ul class="pagination">
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-click="searchPaginator.go(1)">首页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a>
+                            </li>
+                            <li ng-class="{true:'active'}[searchPaginator.page.currentPage==i]" ng-repeat="i in searchPaginator.pages">
+                                <a href="javascript:void(0)"  ng-click="searchPaginator.go(i)">{{i}}</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                                <a href="javascript:void(0)" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                                <a href="javascript:void(0)" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"  ng-click="cancle()">取消</button>
+                <button type="button" class="btn btn-primary"  ng-click="save()">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--<div class="modal fade" id="post1" role="dialog" aria-label="updateStaff" aria-hidden="true">-->
+    <!--<div class="modal-dialog">-->
+        <!--<div class="modal-content">-->
+            <!--<div class="modal-header" >-->
+                <!--岗位-->
+                <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+                    <!--<span aria-hidden="true">&times;</span>-->
+                <!--</button>-->
+            <!--</div>-->
+            <!--<div class="modal-body">-->
+                <!--<div class="sel1">-->
+                    <!--<div class="col-lg-6 col-md-6 col-sm-6 search-padding-10"  ng-repeat="it in posttouser">-->
+                        <!--<label class="radio inline">-->
+                            <!--<input type="radio"  value="{{it.postId}}" name="post" ng-checked="{{it.postId==postId}}" ng-click="test(it.postId,it.nameOfCustom)" >-->
+                            <!--<span>{{it.nameOfCustom}}</span>-->
+                        <!--</label>-->
+                    <!--</div>-->
+                    <!--<div class="clear"></div>-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<div class="modal-footer">-->
+                <!--<button type="button" class="btn btn-default" ng-click="cancle()">取消-->
+                <!--</button>-->
+                <!--<button type="button"  class="btn btn-default btn-primary" ng-click="save()">确认</button>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->
+
+</body>
+</html>

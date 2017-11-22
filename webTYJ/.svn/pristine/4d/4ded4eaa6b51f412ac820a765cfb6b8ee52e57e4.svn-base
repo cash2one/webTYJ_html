@@ -1,0 +1,244 @@
+/**
+ * Created by LM on 2015/3/11.
+ * 任务池
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../app');
+
+    app.controller('taskPoolsCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        var url = $rootScope.url;
+        $scope.tasks={page:{}};
+
+        $scope.load = function(){
+            var fetchFunction = function (page, callback) {
+                $scope.tasks.page = page;
+                $http.post(url + '/Tasks/listPageTasksbyStateRestful',{Tasks:$scope.tasks}).success(callback)
+
+            };
+            $scope.searchPaginator = app.get('Paginator').list(fetchFunction,6);
+            console.log($scope.searchPaginator);
+        };
+        //进入页面默认加载任务池
+        $scope.load();
+
+
+        //$http.get(url + "/Tasks/listPageTasksbyStateRestful").success(function(data){
+        //    $scope.tasks =  data.Tasks;
+        //    console.log($scope.tasks);
+        //}).error(function(data,status,headers,config){
+        //    alert("获取任务列表失败,");
+        //});
+
+        //获取专项信息
+        $http.get(url + "/SpecialRepairProject/getAllSpecialRepairProject").success(function(data){
+            $scope.specialRepairProjects = data.SpecialRepairProject;
+        }).error(function(data,status,headers,config){
+            alert("获取专项信息失败,请稍后重试!");
+        });
+
+        //获取集中处理项信息
+        $http.get(url + "/CentralizedTreatmentProjects/getAllCentralizedTreatmentProjects").success(function(data){
+            $scope.centralizedTreatmentProjects = data.CentralizedTreatmentProjects;
+        }).error(function(data,status,headers,config){
+            alert("获取集中处理信息失败,请稍后重试!");
+        });
+
+        //获取人员信息
+        $http.get(url + "/staff/listAllStaffRestful").success(function(data){
+            $scope.staffs = data.Staff;
+        }).error(function(data,status,headers,config){
+            alert("获取人员信息失败,请稍后重试!");
+        });
+
+        //传任务ID给工单页面
+        $scope.taskDetailsId = function(taskId){
+            $location.path("/index/serviceRequest/taskDetails/"+taskId);
+        }
+
+        $scope.aaa={};
+
+        //修改状态
+        $scope.change = function(maintain){
+            $scope.aaa=maintain;
+        }
+
+        //集中处理
+        $scope.updateTasks=function(){
+            if($scope.aaa.taskState == 10){
+                alert("任务已经是集中处理状态!");
+                return;
+            }
+            $scope.aaa.taskState=10;
+            $http.put(url+'/Tasks/changeTasksState',{Tasks:$scope.aaa}).success(function(data){
+                alert("任务转集中处理成功!");
+                getTasksbyUserIdAndState();
+                $scope.aaa.remarks = "";
+            }).error(function(data,status,headers,config){
+                alert("任务转集中处理失败,请稍后重试！");
+            })
+        };
+        //转专项处理
+        $scope.updateSpecial=function(){
+            if($scope.aaa.taskState == 9){
+                alert("任务已经是转专项状态!");
+                return;
+            }
+            $scope.aaa.taskState=9;
+            $http.put(url+'/Tasks/changeTasksState',{Tasks:$scope.aaa}).success(function(data){
+                alert("任务转专项成功!")
+                getTasksbyUserIdAndState();
+                $scope.aaa.remarks = "";
+            }).error(function(data,status,headers,config){
+                console.log(data);
+                alert("任务转专项失败,请稍后重试!");
+            })
+        };
+
+        //接受
+        $scope.updateAccept=function(maintain){
+            if(maintain.taskState == 3){
+                alert("任务已经是接受状态！");
+                return;
+            }
+            $scope.aaa =maintain;
+            $scope.aaa.taskState = 3;
+            $http.put(url+'/Tasks/changeTasksState',{Tasks:$scope.aaa}).success(function(data){
+                alert("任务已经接受");
+                getTasksbyUserIdAndState();
+                $scope.aaa.remarks = "";
+            }).error(function(data,status,headers,config){
+                alert("任务接受失败，请稍后重试!");
+            })
+        };
+        //关闭
+        $scope.updateClosed=function(){
+            if($scope.aaa.taskState == 0){
+                alert("任务已经是关闭状态!");
+                return;
+            }
+            $scope.aaa.taskState=0;
+            $http.put(url+'/Tasks/changeTasksState',{Tasks:$scope.aaa}).success(function(data){
+                alert("任务关闭操作成功");
+                getTasksbyUserIdAndState();
+                $scope.aaa.remarks = "";
+            }).error(function(data,status,headers,config){
+                alert("任务关闭失败,请稍后重试!");
+            })
+        };
+
+        //指派
+        $scope.updateAssign=function(){
+            if($scope.aaa.taskState == 11){
+                alert("任务已经是指派状态!");
+                return;
+            }
+            $scope.aaa.taskState = 11;
+            $http.put(url+'/Tasks/changeTasksState',{Tasks:$scope.aaa}).success(function(data){
+                alert("任务指派成功!");
+                getTasksbyUserIdAndState();
+                $scope.aaa.remarks = "";
+            }).error(function(data,status,headers,config){
+                alert("任务指派失败，请稍后重试!");
+            })
+        };
+
+        //完成操作
+        $scope.updateFinish=function(){
+            if($scope.aaa.taskState == 2){
+                alert("任务已经是完成状态!");
+                return;
+            }
+            $scope.aaa.taskState=2;
+            $http.put(url+'/Tasks/changeTasksState',{Tasks:$scope.aaa}).success(function(data){
+                alert("任务完成操作成功");
+                getTasksbyUserIdAndState();
+                $scope.aaa.remarks = "";
+            }).error(function(data,status,headers,config){
+                alert("任务完成失败,请稍后重试!");
+            })
+        };
+
+        $scope.UrgeTaskRecords={};
+        //催促操作
+        $scope.urgeTask=function(){
+            $scope.UrgeTaskRecords.taskId = $scope.aaa.taskId; //关联任务
+            //$scope.UrgeTaskRecords.operatorId = ""  //预留操作人
+            $scope.UrgeTaskRecords.urgeRemarks = $scope.aaa.remarks;
+            $http.post(url+'/UrgeTaskRecords/insertUrgeTaskRecords',{UrgeTaskRecords:$scope.UrgeTaskRecords}).success(function(data){
+                alert("催促操作成功");
+                $scope.aaa.remarks = "";
+            }).error(function(data,status,headers,config){
+                alert("催促操作失败,请稍后重试!");
+            })
+        };
+
+        $scope.ApplicationDelayRecords = {};
+        //延时操作
+        $scope.delayTask=function(){
+            $scope.ApplicationDelayRecords.taskId = $scope.aaa.taskId; //关联任务
+            //$scope.UrgeTaskRecords.operatorId = ""  //预留操作人
+            $scope.ApplicationDelayRecords.remarks = $scope.aaa.remarks;
+            console.log($scope.ApplicationDelayRecords)
+            $http.post(url+'/ApplicationDelayRecords/insertApplicationDelayRecords',{ApplicationDelayRecords:$scope.ApplicationDelayRecords}).success(function(data){
+                alert("延时操作成功");
+                $scope.aaa.remarks = "";
+                console.log(data)
+            }).error(function(data,status,headers,config){
+                alert("延时操作失败,请稍后重试!");
+            })
+        };
+
+        function getTasksbyUserIdAndState(){
+            $http.get(url + "/Tasks/getTasksbyUserIdAndState").success(function(data){
+                $scope.tasks =  data.Tasks;
+            });
+        }
+
+        //获取专业线
+        $http.get(url + "/SpecialtyInfo/listAllSpecialtyInfoRestful").success(function(data){
+            $scope.SpecialtyInfo = data.SpecialtyInfo;
+            console.log($scope.SpecialtyInfo)
+        }).error(function(data,status,headers,config){
+            console.log ("获取信息失败,请稍后重试!");
+        });
+
+        //负责人信息
+        $scope.Teamworkstaff = {page:{}};
+
+        $scope.load1 = function(){
+            var fetchFunction = function (page, callback) {
+                $scope.Teamworkstaff.page = page;
+                $http.post(url + '/Teamworkstaff/listPageTeamworkStaff',{Teamworkstaff:$scope.Teamworkstaff}).success(callback)
+
+            };
+            $scope.searchPaginator2 = app.get('Paginator').list(fetchFunction,5);
+            console.log($scope.searchPaginator2);
+        };
+        $scope.load1();
+
+        //判断checkbx是否选中
+        $scope.d=false;
+        $scope.getdata=function(item){
+            var chk = document.getElementsByName("aaa");
+            for(var i=0;i<chk.length;i++){
+                if( chk[i].checked==true){
+                    $scope.accountRecord=item;
+                    $scope.d=true;
+                    return;
+                }else{
+                    $scope.d=false;
+                }
+            }
+        };
+
+        $scope.addPerson=function(){
+            $scope.person= $scope.accountRecord;
+            console.log($scope.person)
+        };
+
+    }]);
+});

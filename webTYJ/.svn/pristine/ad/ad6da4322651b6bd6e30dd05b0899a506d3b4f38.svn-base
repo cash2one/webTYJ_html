@@ -1,0 +1,281 @@
+<!--
+    创建时间：2015/5/19
+    pageName:放行条查询
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>放行条查询</title>
+</head>
+<body>
+<div id="content-first">
+    <div id="tab">
+        <a lang="no">全部放行条</a>
+    </div>
+    <div class="sel">
+            <div class="row" >
+                <!--<div class="col-lg-2 col-md-2 col-sm-2 ">
+                    筛选：
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2">
+                    <label class="radio inline">
+                        <input value="1" type="radio" ng-model="sesrch.custType" class="checkbox">
+                        <span>业户</span>
+                    </label>
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2">
+                    <label class="radio inline">
+                        <input type="radio" value="2" ng-model="sesrch.custType" class="checkbox">
+                        <span>单位</span>
+                    </label>
+                </div>-->
+
+                <div class="col-lg-12 col-md-12 col-sm-12 text-right">
+                    <button type="button" class="btn btn-default btn-primary" ng-click="change()"><span class="glyphicon glyphicon-search btn_icon"></span>查询 </button>
+                </div>
+            </div>
+                <div class="row search-padding">
+                    <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                        客户姓名:
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        <input type="text" class="form-control"  placeholder="请输入客户姓名" ng-model='sesrch.staffName'>
+                    </div>
+                    <div class="col-lg-1 col-md-2 col-sm-2 ">
+                        申请身份证:
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        <input type="text" class="form-control" placeholder="请输入申请身份证号码" ng-model="sesrch.idNum">
+                    </div>
+                    <!--<div class="col-lg-2 col-md-2 col-sm-2 ">
+                        出运人身份证号:
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        <input type="text" class="form-control" placeholder="请输入出运人身份证号">
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-4">
+                    </div>-->
+                    <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                        编号:
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        <input type="text" class="form-control" placeholder="请输入编号" ng-model="sesrch.carNum">
+                    </div>
+                    <!--<div class="col-lg-2 col-md-2 col-sm-2 ">
+                        申请单位:
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        <input type="text" class="form-control" placeholder="请输入申请单位" ng-model="sesrch.carportNum">
+                    </div>-->
+                </div>
+
+    </div>
+
+    <!--记录-->
+    <div class="row padding">
+        <!--<div class="sel1">-->
+            <!--<button type="button" class="btn btn-default btn-primary" ui-sref="index.propertyService.staffHome.vehicleManagement.vehicleManagementAdd">-->
+                <!--新增-->
+            <!--</button>-->
+        <!--</div>-->
+        <div class="col-lg-12" ng-show="tag==1">
+            <div class="row search-padding-10">
+                <!--<div class="col-lg-6 col-md-6 col-sm-6 ">
+                    <button type="button" class="btn btn-default btn-primary" ui-sref="index.propertyService.staffHome.releasePass.addReleasePass" ng-click="addRel()">
+                        <span class="glyphicon glyphicon-plus btn_icon"></span>新建放行条</button>
+                </div>-->
+                <div class="col-lg-12 col-md-6 col-sm-6 text-right">
+                    <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="listview()">
+                        <span class="glyphicon glyphicon-th-list btn_icon"></span>
+                        列表
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="tabview()">
+                        <span class="glyphicon glyphicon-th-large btn_icon"></span>
+                        网格
+                    </button>
+                </div>
+            </div>
+
+            <!--<div class="search-padding-10"  ng-show="showStatus==1">
+                <table>
+                    <thead>
+                    <tr>
+                        <th width="10px"><span style="width: 15px"></span></th>
+                        <th width="30px">序号</th>
+                        <th width="80px">申请人</th>
+                        <th width="80px">申请人电话</th>
+                        <th width="80px">放行开始时间</th>
+                        <th width="100px">放行结束时间</th>
+                        <th width="100px">地址</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr style="cursor:pointer;" ng-repeat="history in searchPaginator.object.articleReleases" ng-show="history.id!=null" data-toggle="modal" data-target="#modifyPet" ng-click="xiang(history)">
+                        <td><input type="checkbox" id="{{history.id}}" style="display:none"></td>
+                        <td>{{$index}}</td>
+                        <td>{{history.person.name}}</td>
+                        <td>{{history.person.registerPhone}}</td>
+                        <td>
+                            {{history.releaseTime|date:'yyyy-MM-dd'}}
+                        </td>
+                        <td>{{history.releaseTimeEnd|date:'yyyy-MM-dd'}}</td>
+                        <td>
+                            {{history.houseName}}
+                        </td>
+
+                    </tr>
+                    <tr ng-if="searchPaginator.object.articleReleases.length == null">
+                        <td colspan="12">暂无数据！</td>
+                    </tr>
+                    </tbody>
+                </table>    &lt;!&ndash;列表的显示与隐藏 songjia 2016-2-4 end&ndash;&gt;
+            </div>-->
+            <!--网格显示-->
+            <div class="search-padding-10"  ng-show="showStatus==0">
+                <div class="col-lg-4 col-md-6 col-sm-6" ng-repeat="item1 in searchPaginator.object.articleReleases" ng-show="item1.id !=null">
+                    <div id="pannel">
+                        <div class="title">
+                            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                <h3>放行条</h3>
+                            </div>
+                        </div>
+                        <div class="pannel_content height"  data-toggle="modal" data-target="#modifyPet" ng-click="xiang(history)">
+                            <div>
+                                <ul>
+                                    <li><a href="javascript:void(0)" >申请人<span class="pull-right">{{item1.person.name}}</span></a></li>
+                                    <li><a href="javascript:void(0)" >申请人电话<span class="pull-right">{{item1.person.registerPhone}}</span></a></li>
+                                    <li><a href="javascript:void(0)" >放行开始时间<span class="pull-right">{{item1.releaseTime|date:'yyyy-MM-dd'}}</span></a></li>
+                                    <li><a href="javascript:void(0)" >放行结束时间<span class="pull-right">{{item1.releaseTimeEnd|date:'yyyy-MM-dd'}}</span></a></li>
+                                    <li><a href="javascript:void(0)" >地址 <span class="pull-right">{{item1.houseName}}</span></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--列表显示-->
+            <div class="search-padding-10"  ng-show="showStatus==1">
+                    <table>
+                        <thead>
+                        <th>出口名称</th>
+                        <th>申请人</th>
+                        <th>有效期</th>
+                        <th>放行时间</th>
+                        <th>编号</th>
+                        <th>需放行时间</th>
+                        <th>出运人的电话</th>
+                        <th>出运人签名</th>
+                        </thead>
+                        <tbody>
+                            <tr  ng-repeat="item in searchPaginator.object.articleReleases" ng-show="item.id!=null" data-toggle="modal" data-target="#modifyPet" ng-click="show(item)">
+                                <td>{{item.userExit}}</td>
+                                <td>{{item.person.name}}</td>
+                                <td>{{item.acceptTime|date:'yyyy-MM-dd'}}</td>
+                                <td>{{item.releaseTime|date:'yyyy-MM-dd'}}</td>
+                                <td>{{item.id}}</td>
+                                <td>{{item.releaseTime|date:'yyyy-MM-dd'}}</td>
+                                <td>{{item.person.registerPhone}}</td>
+                                <td>{{item.personCust.name}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            <div class="clear"></div>
+            <div class="bill_paging" ng-show="searchPaginator.object.page.totalResult">
+                <ul class="pagination">
+                    <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-click="searchPaginator.go(1)">首页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a>
+                    </li>
+                    <li ng-class="{true:'active'}[searchPaginator.page.currentPage==i]" ng-repeat="i in searchPaginator.pages">
+                        <a href="javascript:void(0)"  ng-click="searchPaginator.go(i)">{{i}}</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                        <a href="javascript:void(0)" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                        <a href="javascript:void(0)" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a>
+                    </li>
+                </ul>
+                <span>共{{searchPaginator.object.page.totalResult}}条</span>
+            </div>
+        </div>
+    </div>
+
+    <!--详细信息模态框-->
+    <div class="modal fade" id="modifyPet" role="dialog" aria-label="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span>车辆详情</span>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <a ui-sref="index.propertyService.staffHome.vehicleManagement.vehicleManagementAdd"></a>
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="padding15">
+                    <div class="sel1">
+                        <div class="row search-padding-10">
+                            <div class="col-lg-3 col-md-6 col-sm-6 text-right">
+                                编号：
+                            </div>
+                            <div class="col-lg-9 col-md-6 col-sm-6">
+                                &nbsp;{{rele.id}}
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-6 text-right">
+                                业户：
+                            </div>
+                            <div class="col-lg-9 col-md-6 col-sm-6">
+                                &nbsp; {{rele.person.name}}
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-6 text-right">
+                                申请人：
+                            </div>
+                            <div class="col-lg-9 col-md-6 col-sm-6">
+                                &nbsp;{{rele.person.name}}
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-6 text-right">
+                                申请时间：
+                            </div>
+                            <div class="col-lg-9 col-md-6 col-sm-6">
+                                &nbsp;{{rele.applyTime|date:'yyyy-MM-dd'}}
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-6 text-right">
+                                有效期：
+                            </div>
+                            <div class="col-lg-9 col-md-6 col-sm-6">
+                                &nbsp;{{rele.acceptTime|date:'yyyy-MM-dd'}}
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-6 text-right">
+                                放行时间：
+                            </div>
+                            <div class="col-lg-9 col-md-6 col-sm-6">
+                                &nbsp; {{rele.releaseTime|date:'yyyy-MM-dd'}}
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-6 text-right">
+                                身份证号码：
+                            </div>
+                            <div class="col-lg-9 col-md-6 col-sm-6">
+                                &nbsp;{{rele.personCust.cardNum}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close">取消</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" aria-label="Close">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

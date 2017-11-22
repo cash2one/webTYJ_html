@@ -1,0 +1,384 @@
+/**
+ * 基础管理route路由
+ */
+
+define(function (require) {
+    var app = require('../app');
+
+    app.run(['$state', '$stateParams', '$rootScope', function ($state, $stateParams, $rootScope) {
+        $rootScope.$state = $state;
+        $rootScope.$stateParams = $stateParams;
+    }]);
+
+    app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
+
+        $stateProvider
+            //基础管理start
+            .state('index.baseManagement', {
+                url: '/baseManagement',
+                views: {
+                    'main@index': {
+                        templateUrl: 'main/baseManagement/index.html',
+                        controllerUrl: 'main/baseManagement/baseManagement',
+                        controller: 'baseManagementCtrl'
+                    }
+                }
+            })
+            //基础管理end
+
+            //建筑组件绑定start
+            .state('index.baseManagement.buildingComponentBinding', {
+                url: '/buildingComponentBinding',
+                views: {
+                    'main@index': {
+                        templateUrl: 'main/baseManagement/buildingComponentBinding/buildingComponentBinding.html',
+                        controllerUrl: 'main/baseManagement/buildingComponentBinding/buildingComponentBinding',
+                        controller: 'buildingComponentBindingCtrl'
+                    }
+                }
+            })
+            //建筑组件绑定end
+            //建筑组件初始化start
+            .state('index.baseManagement.buildingInitialization', {
+                url: '/buildingInitialization',
+                views: {
+                    'main@index': {
+                        templateUrl: 'main/baseManagement/buildingInitialization/buildingInitialization.html',
+                        controllerUrl: 'main/baseManagement/buildingInitialization/buildingInitialization',
+                        controller: 'buildingInitializationCtrl'
+                    }
+                }
+            })
+            .state('index.baseManagement.buildingInitialization.functionals', {
+                url: '/functionals',
+                templateUrl: 'main/baseManagement/buildingInitialization/functionals/functionals.html',
+                controllerUrl: 'main/baseManagement/buildingInitialization/functionals/functionals',
+                controller: 'functionalSCtrl',
+                dependencies: ['services/PageServices']
+            })
+            .state('index.baseManagement.buildingInitialization.buildingDetails', {
+                url: '/buildingDetails',
+                templateUrl: 'main/baseManagement/buildingInitialization/buildingDetails/buildingDetails.html',
+                controllerUrl: 'main/baseManagement/buildingInitialization/buildingDetails/buildingDetails',
+                controller: 'buildingDetailsCtrl'
+            })
+            .state('index.baseManagement.buildingInitialization.buildingList', {
+                url: '/buildingList',
+                templateUrl: 'main/baseManagement/buildingInitialization/buildingList/buildingList.html',
+                controllerUrl: 'main/baseManagement/buildingInitialization/buildingList/buildingList',
+                controller: 'buildingListCtrl',
+                dependencies: ['services/PageServices']
+            })
+            //建筑组件初始化end
+            //项目建筑初始化start
+            .state('index.baseManagement.projectConstruction',{
+                url : '/projectConstruction',
+                views : {
+                    'main@index' : {
+                        templateUrl : 'main/baseManagement/projectConstruction/projectConstruction.html',
+                        controllerUrl : 'main/baseManagement/projectConstruction/projectConstruction',
+                        controller : 'projectConstructionCtrl',
+                        dependencies: ['services/tyjUtil','services/InstanceProject']
+                    }
+                }
+            })
+            //项目建筑初始化end
+
+            //物业项目管理
+            .state('index.baseManagement.projectManagement', {
+                url: '/projectManagement',
+                views: {
+                    'main@index': {
+                        templateUrl: 'main/baseManagement/projectManagement/projectManagement.html',
+                        controllerUrl: 'main/baseManagement/projectManagement/projectManagement',
+                        controller: 'projectManagementCtrl',
+                        dependencies: ['services/PageServices','services/tyjUtil']
+                    }
+                }
+            })
+            //物业项目管理end
+            //子公司管理
+            .state('index.baseManagement.subCompanyManagement', {
+                url: '/subCompanyManagement',
+                views: {
+                    'main@index': {
+                        templateUrl: 'main/baseManagement/subCompanyManagement/subCompanyManagement.html',
+                        controllerUrl: 'main/baseManagement/subCompanyManagement/subCompanyManagement',
+                        controller: 'subCompanyManagementCtrl',
+                        dependencies: ['services/PageServices']
+                    }
+                }
+            })
+
+            .state('index.baseManagement.subCompanyManagement.newSubCompany', {
+                url: '/newSubCompany',
+                templateUrl: 'main/baseManagement/subCompanyManagement/newSubCompany/newSubCompany.html',
+                controllerUrl: 'main/baseManagement/subCompanyManagement/newSubCompany/newSubCompany',
+                controller: 'newSubCompanyCtrl',
+                dependencies: ['services/PageServices']
+            })
+            .state('index.baseManagement.subCompanyManagement.subCompanyList', {
+                url: '/subCompanyList',
+                templateUrl: 'main/baseManagement/subCompanyManagement/subCompanyList/subCompanyList.html',
+                controllerUrl: 'main/baseManagement/subCompanyManagement/subCompanyList/subCompanyList',
+                controller: 'subCompanyListCtrl',
+                dependencies: ['services/PageServices']
+            })
+            //子公司管理end
+
+            //合同初始化
+            .state('index.baseManagement.newContractInitialization', {
+                url: '/newContractInitialization',
+                views: {
+                    'main@index': {
+                        templateUrl: 'main/baseManagement/newContractInitialization/newContractInitialization.html',
+                        controllerUrl: 'main/baseManagement/newContractInitialization/newContractInitialization',
+                        controller: 'newContractInitializationCtrl',
+                        dependencies: ['services/PageServices']
+                    }
+                }
+            })
+            .state('index.baseManagement.newContractInitialization.newAddContract', {
+                url: '/newAddContract',
+                templateUrl: 'main/baseManagement/newContractInitialization/newAddContract/newAddContract.html',
+                controllerUrl: 'main/baseManagement/newContractInitialization/newAddContract/newAddContract',
+                controller: 'newAddContractCtrl'
+            })
+            .state('index.baseManagement.newContractInitialization.newContractCheck', {
+                url: '/newContractCheck',
+                templateUrl: 'main/baseManagement/newContractInitialization/newContractCheck/newContractCheck.html',
+                controllerUrl: 'main/baseManagement/newContractInitialization/newContractCheck/newContractCheck',
+                controller: 'newContractCheckCtrl',
+                dependencies: ['services/PageServices']
+            })
+            //专业资产初始化start
+            .state('index.baseManagement.majorAssetInitialization', {
+                url: '/majorAssetInitialization',
+                views: {
+                    'main@index': {
+                        templateUrl: 'main/baseManagement/majorAssetInitialization/majorAssetInitialization.html',
+                        controllerUrl: 'main/baseManagement/majorAssetInitialization/majorAssetInitialization',
+                        controller: 'majorAssetInitializationCtrl'
+                    }
+                }
+            })
+            .state('index.baseManagement.majorAssetInitialization.newAssets', {
+                url: '/newAssets',
+                templateUrl: 'main/baseManagement/majorAssetInitialization/newAssets/newAssets.html',
+                controllerUrl: 'main/baseManagement/majorAssetInitialization/newAssets/newAssets',
+                controller: 'newAssetsCtrl'
+
+            })
+            .state('index.baseManagement.majorAssetInitialization.newProfessional', {
+                url: '/newProfessional',
+                templateUrl: 'main/baseManagement/majorAssetInitialization/newProfessional/newProfessional.html',
+                controllerUrl: 'main/baseManagement/majorAssetInitialization/newProfessional/newProfessional',
+                controller: 'newProfessionalCtrl',
+                dependencies: ['services/PageServices']
+
+            })
+            .state('index.baseManagement.majorAssetInitialization.queryAssets', {
+                url: '/queryAssets',
+                templateUrl: 'main/baseManagement/majorAssetInitialization/queryAssets/queryAssets.html',
+                controllerUrl: 'main/baseManagement/majorAssetInitialization/queryAssets/queryAssets',
+                controller: 'queryAssetsCtrl',
+                dependencies: ['services/tyjUtil','services/PageServices']
+            })
+            //专业资产初始化end
+            //项目资产库管理start
+            .state('index.baseManagement.assetPoolManagement', {
+                url: '/assetPoolManagement',
+                views: {
+                    'main@index': {
+                        templateUrl: 'main/baseManagement/assetPoolManagement/assetPoolManagement.html',
+                        controllerUrl: 'main/baseManagement/assetPoolManagement/assetPoolManagement',
+                        controller: 'assetPoolManagementCtrl',
+                        dependencies: ['services/PageServices','services/tyjUtil']
+                    }
+                }
+            })
+            //项目资产库管理end
+            //入伙初始化start
+            .state('index.baseManagement.joinGangInstitution', {
+                url: '/joinGangInstitution',
+                views: {
+                    'main@index': {
+                        templateUrl: 'main/baseManagement/joinGangInstitution/joinGangInstitution.html',
+                        controllerUrl: 'main/baseManagement/joinGangInstitution/joinGangInstitution',
+                        controller: 'joinGangIntCtrl'
+                    }
+                }
+            })
+            .state('index.baseManagement.joinGangInstitution.historyActivity', {
+                url: '/historyActivity',
+                templateUrl: 'main/baseManagement/joinGangInstitution/historyActivity/historyActivity.html',
+                controllerUrl: 'main/baseManagement/joinGangInstitution/historyActivity/historyActivity',
+                controller: 'historyActivityCtrl',
+                dependencies: ['services/PageServices']
+            })
+            .state('index.baseManagement.joinGangInstitution.newActivity', {
+                url: '/newActivity',
+                templateUrl: 'main/baseManagement/joinGangInstitution/newActivity/newActivity.html',
+                controllerUrl: 'main/baseManagement/joinGangInstitution/newActivity/newActivity',
+                controller: 'newActivityCtrl',
+                dependencies: ['services/PageServices']
+            })
+            //入伙初始化end
+            //项目详情start
+            .state('index.baseManagement.project', {
+                url: '/project',
+                views: {
+                    'main@index': {
+                        templateUrl: 'main/baseManagement/project/project.html',
+                        controllerUrl: 'main/baseManagement/project/project',
+                        controller: 'projectCtrl',
+                        dependencies: ['services/InstanceProject']
+                    }
+                }
+            })
+            //项目详情end
+            //项目新建start
+            .state('index.baseManagement.project.projectDetails', {
+                url: '/projectDetails',
+                templateUrl: 'main/baseManagement/project/projectDetails/projectDetails.html',
+                controllerUrl: 'main/baseManagement/project/projectDetails/projectDetails',
+                controller: 'projectDetailsCtrl'
+            })
+            //项目新建end
+            //入伙初始化start
+            .state('index.baseManagement.project.historyActivity', {
+                url: '/historyActivity',
+                templateUrl: 'main/baseManagement/joinGangInstitution/historyActivity/historyActivity.html',
+                controllerUrl: 'main/baseManagement/joinGangInstitution/historyActivity/historyActivity',
+                controller: 'historyActivityCtrl',
+                dependencies: ['services/PageServices']
+            })
+            .state('index.baseManagement.project.newActivity', {
+                url: '/newActivity',
+                templateUrl: 'main/baseManagement/joinGangInstitution/newActivity/newActivity.html',
+                controllerUrl: 'main/baseManagement/joinGangInstitution/newActivity/newActivity',
+                controller: 'newActivityCtrl',
+                dependencies: ['services/PageServices']
+            })
+            //入伙初始化end
+            //建筑基础字段start
+            .state('index.baseManagement.project.areaManagement', {
+                url: '/areaManagement',
+                templateUrl: 'main/baseManagement/areaManagement/areaManagement.html',
+                controllerUrl: 'main/baseManagement/areaManagement/areaManagement',
+                controller: 'areaManagementCtrl',
+                dependencies: ['services/PageServices']
+            })
+            //建筑基础字段start
+            //建筑初始化start
+            .state('index.baseManagement.project.projectConstruction',{
+                url : '/projectConstruction',
+                templateUrl : 'main/baseManagement/projectConstruction/projectConstruction.html',
+                controllerUrl : 'main/baseManagement/projectConstruction/projectConstruction',
+                controller : 'projectConstructionCtrl',
+                dependencies: ['services/tyjUtil','services/PageServices']
+            })
+            //建筑初始化end
+            //新增客户个人客户管理
+            .state('index.baseManagement.project.newCustomers', {
+                url: '/newCustomers',
+                templateUrl: 'main/baseManagement/personalAccount/newCustomers/newCustomers.html',
+                controllerUrl: 'main/baseManagement/personalAccount/newCustomers/newCustomers',
+                controller: 'newCustomersCtrl',
+                dependencies: ['services/PageServices']
+
+            })
+            //查询客户个人客户管理
+            .state('index.baseManagement.project.queryCustomers', {
+                url: '/queryCustomers',
+                templateUrl: 'main/baseManagement/personalAccount/queryCustomers/queryCustomers.html',
+                controllerUrl: 'main/baseManagement/personalAccount/queryCustomers/queryCustomers',
+                controller: 'queryCustomersCtrl',
+                dependencies: ['services/PageServices']
+            })
+            //查询客户企业客户管理
+            .state('index.baseManagement.project.enterpriseCustomerCheck', {
+                url: '/enterpriseCustomerCheck',
+                templateUrl: 'main/baseManagement/enterpriseCustomer/enterpriseCustomerCheck/enterpriseCustomerCheck.html',
+                controllerUrl: 'main/baseManagement/enterpriseCustomer/enterpriseCustomerCheck/enterpriseCustomerCheck',
+                controller: 'enterpriseCustomerCheckCtrl',
+                dependencies: ['services/PageServices']
+            })
+            //新建客户企业客户管理
+            .state('index.baseManagement.project.enterpriseCustomerAdd', {
+                url: '/enterpriseCustomerAdd',
+                templateUrl: 'main/baseManagement/enterpriseCustomer/enterpriseCustomerAdd/enterpriseCustomerAdd.html',
+                controllerUrl: 'main/baseManagement/enterpriseCustomer/enterpriseCustomerAdd/enterpriseCustomerAdd',
+                controller: 'enterpriseCustomerAddCtrl',
+                dependencies: ['services/PageServices']
+            })
+            //资产绑定start
+            .state('index.baseManagement.project.assetBinding', {
+                url: '/assetBinding',
+                templateUrl: 'main/baseManagement/assetBinding/assetBinding.html',
+                controllerUrl: 'main/baseManagement/assetBinding/assetBinding',
+                controller: 'assetBindingCtrl',
+                dependencies: ['services/PageServices']
+            })
+            //资产绑定end
+            //员工start
+            .state('index.baseManagement.project.staffsuperviseITCheck', {
+                url: '/staffsuperviseITCheck',
+                templateUrl: 'main/baseManagement/project/staffsuperviseITCheck/staffsuperviseITCheck.html',
+                controllerUrl: 'main/baseManagement/project/staffsuperviseITCheck/staffsuperviseITCheck',
+                controller: 'staffSuperviseITCheckCtrl',
+                dependencies: ['services/PageServices']
+            })
+            //员工end
+            //建筑组件初始化start
+            .state('index.baseManagement.project.buildingList', {
+                url: '/buildingList',
+                templateUrl: 'main/baseManagement/project/buildingList/buildingList.html',
+                controllerUrl: 'main/baseManagement/project/buildingList/buildingList',
+                controller: 'buildingListCheckCtrl',
+                dependencies: ['services/PageServices']
+            })
+            //建筑组件初始化end
+            //专业资产初始化start
+            .state('index.baseManagement.project.queryAssets', {
+                url: '/queryAssets',
+                templateUrl: 'main/baseManagement/project/queryAssets/queryAssets.html',
+                controllerUrl: 'main/baseManagement/project/queryAssets/queryAssets',
+                controller: 'queryAssetsDetailsCtrl',
+                dependencies: ['services/PageServices','services/tyjUtil']
+            })
+            //专业资产初始化end
+            //个人客户管理查询start
+            .state('index.baseManagement.project.queryCustomersCheck', {
+                url: '/queryCustomersCheck',
+                templateUrl: 'main/baseManagement/project/queryCustomers/queryCustomers.html',
+                controllerUrl: 'main/baseManagement/project/queryCustomers/queryCustomers',
+                controller: 'queryCustomersCheckCtrl',
+                dependencies: ['services/PageServices']
+            })
+            //个人客户管理查询end
+            //企业客户管理查询start
+            .state('index.baseManagement.project.enterpriseCustomer', {
+                url: '/enterpriseCustomer',
+                templateUrl: 'main/baseManagement/project/enterpriseCustomerCheck/enterpriseCustomerCheck.html',
+                controllerUrl: 'main/baseManagement/project/enterpriseCustomerCheck/enterpriseCustomerCheck',
+                controller: 'enterpriseCustomCtrl',
+                dependencies: ['services/PageServices']
+            })
+            //企业客户管理查询end
+
+            //资产绑定start
+            .state('index.baseManagement.assetBinding',{
+                url : '/assetBinding',
+                views: {
+                    'main@index': {
+                        templateUrl: 'main/baseManagement/assetBinding/assetBinding.html',
+                        controllerUrl: 'main/baseManagement/assetBinding/assetBinding',
+                        controller: 'assetBindingCtrl',
+                        dependencies: ['services/PageServices']
+                    }
+                }
+            })
+            //资产绑定end
+    }]);
+});

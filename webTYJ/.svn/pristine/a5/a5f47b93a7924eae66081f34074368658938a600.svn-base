@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>产品初始化--租赁</title>
+    <link rel="stylesheet" href="bower_components/skins/zyupload-1.0.0.min.css " type="text/css">
+    <link rel="stylesheet" href="css/ztree/ztreedf.css" type="text/css">
+    <link rel="stylesheet" href="css/ztree/zTreeStyle.css" type="text/css">
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.core-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.excheck-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.exedit-3.5.js"></script>
+</head>
+<body>
+
+<!--条件搜索 END-->
+<form id="css_form" name="mainForm" novalidate>
+<div class="sel_height">
+    <div class="sel">
+        <div class="row search-padding-10">
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                产品名称：
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                <input type="text" ng-model="Product.productName" class="form-control" placeholder="请输入产品名称" name="productname" ng-blur="checkName()">
+            </div>
+            <div class="col-lg-1 col-md-1 col-sm-1"><span style="color: red">*</span></div>
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                产品属性：
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                <select ng-model="Product.productAttributes" class="form-control"><!-- 修改产品属性值 王洲 2015.12.25 -->
+                    <option value="">请选择产品属性</option>
+                    <option value="0">架空层</option>
+                    <option value="1">人防</option>
+                    <option value="2">地下室</option>
+                    <option value="3">临建</option>
+                    <option value="4">设备间</option>
+                    <option value="5">走廊</option>
+                    <option value="6">广场</option>
+                    <option value="7">道路</option>
+                    <option value="8">住宅</option>
+                    <option value="9">商铺</option>
+                </select>
+            </div>
+            <div class="col-lg-1 col-md-1 col-sm-1"><span style="color: red">*</span></div>
+            <div class="col-lg-2 col-md-2 col-sm-2">
+                <button type="button" class="btn btn-primary" ng-click="openBuilding()">关联建筑</button>
+            </div>
+        </div>
+    </div>
+    <div class="row padding">
+        <div class="col-lg-12">
+            <div class="search-padding-10">
+                <button type="button" class="btn btn-default btn-primary"  ng-click="addItem()">
+                    <span class="glyphicon glyphicon-plus btn_icon"></span>新增行
+                </button><span style="color: red">*</span>
+            </div>
+            <table>
+                <thead>
+                <tr>
+                    <th>序号</th>
+                    <th>名称</th>
+                    <th>面积（㎡）</th>
+                    <th>单价（元/㎡）</th>
+                    <th>总价</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="item in AreaDivisionList">
+                    <td>{{item.areaDivisionNum}}</td>
+                    <td>{{item.areaDivisionName}}</td>
+                    <td>{{item.areas}}</td>
+                    <td>{{item.unitPrice}}</td>
+                    <td>{{item.sum}}</td>
+                    <td>
+                        <button type="button" class="btn btn-default btn-primary" ng-click="updateItem($index)">修改</button>
+                        <button type="button" class="btn btn-default" ng-click="deleteItem($index)">删除</button>
+                    </td>
+                </tr>
+                <tr ng-show="editItem">
+                    <td><input class="form-control" ng-model="AreaDivision.areaDivisionNum"></td>
+                    <td><input class="form-control" ng-model="AreaDivision.areaDivisionName"></td>
+                    <td><input class="form-control" ng-model="AreaDivision.areas" ng-change="changeSum()"></td>
+                    <td><input class="form-control" ng-model="AreaDivision.unitPrice" ng-change="changeSum()"></td>
+                    <td>
+                        <input class="form-control" ng-model="AreaDivision.sum" ng-change="changePrice()">
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-default btn-primary" ng-click="addSave()">保存</button>
+                        <button type="button" class="btn btn-default" ng-click="addCancel()">取消</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="search-padding-10">
+                备注：
+            </div>
+            <textarea ng-model="Product.lntroduction" class="text_min" placeholder="请输入产品备注"></textarea>
+        </div>
+    </div>
+    <div class="sel">
+        <div class="row search-padding-10">
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                租赁价格：
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                <input ng-model="Product.price" class="form-control" placeholder="请输入租赁价格" readonly="readonly">
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2">
+                元/月
+                <span style="color: red">*</span>
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                均价：
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                <input ng-model="Product.averagePrice" class="form-control" placeholder="请输入租赁均价" readonly="readonly">
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2">
+                元/㎡<span style="color: red">*</span>
+            </div>
+        </div>
+        <div class="row search-padding-10">
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                押金：
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                <select ng-model="Product.depositWay" class="form-control">
+                    <option value="">请选择押金方式</option>
+                    <option value="0">无押金</option>
+                    <option value="1">押一</option>
+                    <option value="2">押二</option>
+                    <option value="3">押三</option>
+                    <option value="4">押四</option>
+                </select>
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2">
+                <span style="color: red">*</span>
+            </div>
+        </div>
+        <div class="row search-padding-10">
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                支付方式：
+            </div>
+            <!-- 修改预付款模块为下拉框，取消预付时间  王洲  2015.12.25 -->
+            <div class="cl-lg-3 col-md-3 col-sm-3">
+                <select ng-model="Product.payWay" class="form-control">
+                    <option value="">请选择支付方式</option>
+                    <option value="0">预付款</option>
+                    <option value="1">一次性付款</option>
+                </select>
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2">
+                <span style="color: red">*</span>
+            </div>
+        </div>
+        <div class="row search-padding-10">
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                免租期：
+            </div>
+            <div class="col-lg-1 col-md-1 col-sm-1">
+                <label class="checkbox inline">
+                    <div class="col-lg-1 col-md-6 col-sm-6">
+                         <input type="radio" ng-model="Product.isRentFree" value="0" onclick="document.getElementById('freeTime').disabled = ''">
+                    </div>
+                    <span>是</span>
+                </label>
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                <input class="form-control" placeholder="请输入免租期天数" id="freeTime" ng-model="Product.freeTime">
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                <label class="checkbox inline">
+                    <input type="radio" ng-model="Product.isRentFree" value="1" onclick="document.getElementById('freeTime').disabled = 'disabled'">
+                    <span>否</span>
+                </label>
+            </div>
+        </div>
+        <div class="row search-padding-10">
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                租金递增：
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2">
+                <label class="checkbox inline">
+                    <div class="col-lg-2 col-md-6 col-sm-6">
+                    <input type="radio" ng-model="Product.increasingRent" value="0" onclick="document.getElementById('rentProportion').disabled = ''
+                    ,document.getElementById('rentType').disabled = ''">
+                        </div>
+                    <span>递增比例(%)</span>
+                </label>
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2">
+                <input ng-model="Product.rentProportion" id="rentProportion" class="form-control" placeholder="请输入递增比例">
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                递增类型：
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2">
+                <select ng-model="Product.rentType" class="form-control" id="rentType">
+                    <option value="">请选择递增类型</option>
+                    <option value="1">半年递增</option>
+                    <option value="2">逐年递增</option>
+                    <option value="3">两年递增</option>
+                    <option value="4">三年递增</option>
+                </select>
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                <label class="checkbox inline">
+                    <input type="radio" ng-model="Product.increasingRent" value="1" onclick="document.getElementById('rentProportion').disabled = 'disabled'
+                    ,document.getElementById('rentType').disabled = 'disabled'">
+                    <span>不递增</span>
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="row padding">
+        <div class="col-lg-12">
+            <div class="col-lg-6">
+                <div class="search-padding-10">
+                    <span>
+                    <button role="presentation" tabindex="-1" data-toggle="tab" class="btn btn-default btn-primary pull-right" ng-click="uploadPic()" >
+                        上传辅图
+                    </button></span>
+                </div>
+                <div class="col-lg-12">
+                    <span ng-if="annexs != null">
+                        <span ng-repeat="item in annexs">
+                            <div ng-switch on="item.isMain" class="col-lg-12">
+                                <span ng-switch-when="1" ><img style="width:300px;" src={{fileUrl}}/{{item.annexAddress}}>&nbsp;<button class="btn btn-default btn-primary tab-btn" ng-click="delPic(item);">移除</button></span>
+                            </div>
+                        </span>
+                    </span>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="row search-padding-10">
+                <button role="presentation" tabindex="-1" data-toggle="tab" class="btn btn-default btn-primary text-right" ng-click="uploadMainPic()">
+                    上传主图
+                </button>
+                </div>
+                <div class="row"><span ng-if="annexs != null">
+                <span ng-repeat="item in annexs">
+                    <div ng-switch on="item.isMain">
+                        <span ng-switch-when="0"><img style="width: 300px" src={{fileUrl}}/{{item.annexAddress}}>&nbsp;<button class="btn btn-default btn-primary tab-btn" ng-click="delPic(item);">移除</button></span>
+                    </div>
+                </span></span>
+                </div>
+            </div>
+        </div>
+        <div class="padding text-center">
+            <button type="button" class="btn btn-default" ng-click="backToProduct();">
+                取消
+            </button>
+            <button type="button" ng-click="addProduct();" class="btn btn-default btn-primary">
+                提交
+            </button>
+        </div>
+    </div>
+</div>
+</form>
+<!-- 上传图片模态框 -->
+<div class="modal fade" id="pics" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    上传
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div id="remove">
+                    <div id="zyupload" class="zyupload"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button class="btn btn-primary" ng-click="applyAnnexs()">提交</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!-- 选择建筑模态框 王洲 2015.12.25 -->
+<div class="modal fade" id="chooseBuild" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                使用范围
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="row search-padding-10">
+                    <div class="col-lg-5 col-md-4 col-sm-4">
+                        <h5>未选区域</h5>
+                        <ul id="treeDemo"  class="ztree"></ul>
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2">
+                        <div style="margin-top: 180px;margin-left: 15px;">
+                            <button class="glyphicon glyphicon-menu-right btn btn-sm btn-info" aria-hidden="true" ng-click="addWaterReading()"></button>
+                        </div>
+                    </div>
+                    <div class="col-lg-5 col-md-4 col-sm-4">
+                        <h5>已选区域</h5>
+                        <ul class="ztree" >
+                            <li >
+                                <table >
+                                    <tr ng-repeat="items11 in addWaterCheck">
+                                        <td>{{items11.fullName}}</td>
+                                    </tr>
+                                </table>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="addBuildingToProduct()">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

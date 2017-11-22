@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户列表</title>
+</head>
+<body>
+<div class="information_box1">
+    <div class="row sel_button">
+        <div class="col-lg-4">
+            <a>
+                <button type="button" class="btn btn-default btn-primary" ng-click="toDelete()">
+                    <span class="glyphicon glyphicon-plus btn_icon"></span>
+                    加入黑名单
+                </button>
+            </a>
+        </div>
+        <div class="col-lg-3">
+            <input  class="form-control" placeholder="用户昵称" ng-model="SubscribeJiaJia.nickName">
+        </div>
+        <div class="col-lg-1">
+            <button type="button" class="btn btn-default btn-primary" ng-click="query()">
+                <span class="glyphicon glyphicon-search btn_icon"></span>
+                搜索
+            </button>
+        </div>
+        <div class="col-lg-1">
+        </div>
+        <div class="col-lg-3 text-right">
+
+
+            <button type="button" class="btn btn-default btn-primary" ng-click="show = false">
+                <span class="glyphicon glyphicon-th-large btn_icon"></span>
+                网格
+            </button>
+
+            <button type="button" class="btn btn-default btn-primary" ng-click="show = true">
+                <span class="glyphicon glyphicon-th-list btn_icon"></span>
+                列表
+            </button>
+
+        </div>
+    </div>
+    <div class="row padding">
+        <div class="col-lg-12">
+            <!-- 列表开始 -->
+            <table ng-show="show">
+                <thead>
+                <th></th>
+                <th>头像</th>
+                <th>昵称</th>
+                <th>是否认证</th>
+                <th>姓名</th>
+                <th>证件类型</th>
+                <th>证件号码</th>
+                <th>本项资产数量</th>
+                </thead>
+                <tbody>
+                <tr ng-repeat="subscribeJiaJia in searchPaginator.object.subscribeJiaJiaList" ng-show="subscribeJiaJia.jiajiaUserId!=null">
+                    <td><input type="checkbox" id="{{subscribeJiaJia.jiajiaUserId}}" ng-model="subscribeJiaJia.isActive" ng-change="getData(subscribeJiaJia)"/></td>
+                    <td>
+                        <img src="images/user/user_2.png" width="60px" height="60px">
+                    </td>
+                    <td>{{subscribeJiaJia.nickName}}</td>
+                    <td>
+                        <span ng-show="subscribeJiaJia.authentication == 0" style="color: #fbde56">未认证</span>
+                        <span ng-show="subscribeJiaJia.authentication == 1" style="color: #fa3e39">已认证</span>
+                    </td>
+                    <td>{{subscribeJiaJia.username}}</td>
+                    <td>
+                        <span ng-show="subscribeJiaJia.certificatesType == 0">身份证</span>
+                        <span ng-show="subscribeJiaJia.certificatesType == 2">港澳通行证</span>
+                    </td>
+                    <td>{{subscribeJiaJia.certificatesNum | limitTo : 18}}</td>
+                    <td>{{subscribeJiaJia.assetsNum}}</td>
+                </tr>
+                <tr ng-if="searchPaginator.page.totalResult == 0">
+                    <td colspan="12">暂无数据</td>
+                </tr>
+                </tbody>
+            </table>
+            <!-- 列表结束 -->
+            <!-- 网格开始 -->
+            <div class="row" ng-hide="show">
+                <div class="col-lg-4 col-md-4 col-sm-4 " ng-repeat="subscribeJiaJia in searchPaginator.object.subscribeJiaJiaList" ng-show="subscribeJiaJia.jiajiaUserId!=null">
+                    <div id="pannel">
+                        <div class="title">
+                            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">{{subscribeJiaJia.nickName}}</div>
+                            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 text-right">
+                                <font ng-show="subscribeJiaJia.authentication == 0" style="color: #fbde56">未认证</font>
+                                <font ng-show="subscribeJiaJia.authentication == 1" style="color: #fa3e39">已认证</font>
+                            </div>
+                        </div>
+                        <div class="pannel_content" ng-class="{true: 'this_action', false: ''}[subscribeJiaJia.isActive]" ng-click="subscribeJiaJia.isActive = !subscribeJiaJia.isActive; getData(subscribeJiaJia)">
+                            <div class="row">
+                                <div class="col-xs-4 col-lg-4 col-md-4">
+                                    <a style="cursor: pointer"  ng-dblclick="toShow(items);">
+                                        <img src="images/project/user/user_3.png" width="100%">
+                                    </a>
+                                </div>
+                                <div class="col-xs-8 col-lg-8 col-md-8">
+                                    <div class="row search-padding">
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <div class="col-lg-5 col-md-5 col-sm-5 text-right">姓名：</div>
+                                            <div class="col-lg-7 col-md-7 col-sm-7">{{subscribeJiaJia.username}}</div>
+                                        </div>
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <div class="col-lg-5 col-md-5 col-sm-5 text-right">证件类型：</div>
+                                            <div class="col-lg-7 col-md-7 col-sm-7">
+                                                <span ng-show="subscribeJiaJia.certificatesType == 0">身份证</span>
+                                                <span ng-show="subscribeJiaJia.certificatesType == 2">港澳通行证</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <div class="col-lg-5 col-md-5 col-sm-5 text-right">证件号：</div>
+                                            <div class="col-lg-7 col-md-7 col-sm-7">{{subscribeJiaJia.certificatesNum | limitTo : 18}}</div>
+                                        </div>
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <div class="col-lg-5 col-md-5 col-sm-5 text-right">资产数量：</div>
+                                            <div class="col-lg-7 col-md-7 col-sm-7">{{subscribeJiaJia.assetsNum}}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center" ng-if="searchPaginator.page.totalResult == 0">
+                    暂无数据
+                </div>
+            </div>
+            <!-- 网格结束 -->
+            <div class="col-lg-12">
+                <div class="padding">
+                    <div class="bill_paging">
+                        <span>共{{searchPaginator.object.page.totalResult}}条</span>
+                        <ul class="pagination">
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-click="searchPaginator.go(1)">首页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a>
+                            </li>
+                            <li ng-class="{true:'active'}[searchPaginator.page.currentPage==i]" ng-repeat="i in searchPaginator.pages">
+                                <a href="javascript:void(0)"  ng-click="searchPaginator.go(i)">{{i}}</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                                <a href="javascript:void(0)" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                                <a href="javascript:void(0)" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

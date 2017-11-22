@@ -1,0 +1,45 @@
+<!--作者：陶勇超
+时间：2015/6/19
+名称：质检管理
+JS路径：
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+
+<div class="row">
+    <div class="complaint_user">
+        <div class="col-md-2">
+            <div style="width:150px;height: 80px;border: solid 1px;margin: 20px;background-color: #ffffff;text-align: center">
+                <h2>质检管理</h2>
+            </div>
+        </div>
+        <!--通过JS获取数据-->
+        <div class="col-md-2" style="margin: 20px">
+            <span>质检级别：部门质检</span>
+        </div>
+        <div class="col-md-7" style="margin: 20px">
+            <span>描述：查阅并管理全部部门质检</span>
+        </div>
+        <div class="clear"></div>
+    </div>
+</div>
+
+<div id="content-first">
+    <!--tab页切换开始-->
+    <div id="tab">
+        <a ng-class="{'this_action ':btnIndex==1}" ng-click="doClick(1)" style="cursor: pointer" ui-sref="index.serviceRequest.departmentOfQualityManagement.allDepartmentsInspectionServiceRequests">全部部门质检服务请求</a>
+        <a ng-class="{'this_action ':btnIndex==2}" ng-click="doClick(2)" lang="no" style="cursor: pointer"  ui-sref="index.serviceRequest.departmentOfQualityManagement.departmentOfQualityInspectionCriteria">全部部门质检评分标准</a>
+    </div>
+    <!--tab页切换结束-->
+    <!--视图加载-->
+    <div ui-view></div>
+    <!--视图加载结束-->
+</div>
+
+</body>
+</html>

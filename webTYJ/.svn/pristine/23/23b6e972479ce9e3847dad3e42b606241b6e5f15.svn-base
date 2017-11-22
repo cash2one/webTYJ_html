@@ -1,0 +1,308 @@
+<!--
+    作者:彭婷婷
+    页面名称:办理授权
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>办理授权</title>
+
+    <!--模态框中资产和人员的切换显示   目前人员禁用,资产默认显示-->
+</head>
+<link rel="stylesheet" href="bower_components/skins/zyupload-1.0.0.min.css " type="text/css">
+
+<body >
+
+<div class="padding">
+    <div class="row">
+    <div class="col-lg-4 col-md-6 col-sm-6 ">
+        <div id="pannel">
+            <div class="title">
+                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                    <h3>被授权人</h3>
+                </div>
+                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 text-right">
+                    <span class="glyphicon glyphicon-plus" ng-click="addPerson()"></span>
+                </div>
+            </div>
+            <div class="pannel_content_form">
+                <ul>
+                    <li><a href="#">客户编号： <span class="pull-right">{{das.personCustNew.custCode}}</span></a></li>
+                    <li><a href="#">姓名：<span class="pull-right">{{das.personCustNew.name}}</span></a></li>
+                    <li><a href="#">身份证号： <span class="pull-right">{{das.personCustNew.cardNum.substring(0,das.personCustNew.cardNum.length-1)}}</span></a></li>
+                    <li><a href="#">注册电话： <span class="pull-right">{{das.personCustNew.registerPhone}}</span></a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-6 col-sm-6 ">
+        <div id="pannel">
+            <div class="title">
+                <div class="col-xs-12 col-lg-12 col-md-12 col-sm-12">
+                    <h3>资产信息</h3>
+                </div>
+            </div>
+            <div class="pannel_content_form">
+                <ul>
+                    <li><a href="#" >房屋地址：<span class="pull-right">{{das.fullName}}</span></a></li>
+                    <li><a href="#" >入伙状态： <span class="pull-right" ng-switch on="das.joinState">
+                        <span ng-switch-when="0">未入伙</span>
+                        <span ng-switch-when="1">已入伙</span>
+                    </span></a></li>
+                    <li><a href="#">竣工面积： <span class="pull-right">{{das.completeArea}}</span></a></li>
+                    <li><a href="#">房屋户型： <span class="pull-right">{{das.houseType}}</span></a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-4 col-md-4 col-sm-4">
+        <div class="sel1 tab_info">
+            <div class="row search-padding-10">
+                <div class="col-lg-4 col-md-4 col-sm-4">
+                    授权项目
+                </div>
+                <div class="col-lg-8 col-md-8 col-sm-8">
+                    <div class="col-lg-4 col-md-4 col-sm-4">
+                        <label class="checkbox inline">
+                            <input type="checkbox" id="checkAll" class="checkboxa" ng-click="allChecked()">
+                            <span>全选</span>
+                        </label>
+                    </div>
+                    <div class="col-lg-9 col-md-9 col-sm-9"></div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4" ng-repeat="items in authorizationProjectType" ng-show="items.authorizationProjectId!=null">
+                    <label class="checkbox inline">
+                        <input type="checkbox" name="child" id="{{items.authorizationProjectId}}" class="checkboxa" ng-click="getItem(items)">
+                     <span>{{items.authorizationProjectName}}</span>
+                    </label>
+                </div>
+                <div class="clear"></div>
+        <div class="col-lg-4 col-md-4 col-sm-4">
+            授权类型
+        </div>
+        <div class="col-lg-8 col-md-8 col-sm-8">
+            &nbsp;
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-4">
+            <label class="checkbox inline">
+                <input type="checkbox"  ng-model="addAuthorization.authorizationType" class="checkboxa"  ng-true-value="1">
+                <span>委托书</span>
+            </label>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-4">
+            <label class="checkbox inline">
+                <input type="checkbox" ng-model="addAuthorization.authorizationType" class="checkboxa"  ng-true-value="2">
+                <span>电话</span>
+            </label>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-4">
+            <label class="checkbox inline">
+                <input type="checkbox" ng-model="addAuthorization.authorizationType" class="checkboxa"  ng-true-value="3">
+                <span>电子授权</span>
+            </label>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-4">
+            开始日期
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-6">
+            <input type="text" onclick="WdatePicker({readOnly:true})" onChange="" class="Wdate form-control" ng-model="addAuthorization.staDate"/>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            <span style="color: red">*</span>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-4 ">
+            截止日期
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-6">
+            <input type="text" onclick="WdatePicker({readOnly:true})" onChange="" class="Wdate form-control" ng-model="addAuthorization.endDate"/>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            <span style="color: red">*</span>
+        </div>
+            <div class="clear"></div>
+        </div>
+    </div>
+    </div>
+        <div class="col-lg-8 col-md-8 col-sm-8">
+            附件
+        <div class="search-padding-10">
+            <div id="remove">
+                <div id="zyupload" class="zyupload"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="clear"></div>
+
+    <div class="text-center">
+        <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="clearData()">取消</button>
+        <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="addAuthorizationone()">提交</button>
+    </div>
+    </div>
+</div>
+
+</div>
+
+<!--模态框开始-->
+<div class="modal fade" id="myModal" role="dialog" aria-label="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 1024px">
+        <div class="modal-content" >
+            <div class="modal-header">
+                <span>授权人信息：</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                <div class="search-padding-10">
+                <div class="row sel">
+                    <form id="css_form" name="mainForm" novalidate>
+                    <div class="col-lg-1 col-md-2 col-sm-2 text-right search-padding-10">
+                        姓名：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4 text-right search-padding-10">
+                        <input type="text" class="form-control" placeholder="请输入查询姓名" ng-model="housez.name" name="name" required />
+                    </div>
+                    <div class="col-lg-1 col-md-2 col-sm-2 text-right search-padding-10">
+                        身份证号：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4 text-right search-padding-10">
+                        <input type="text" ng-pattern="/^[0-9]*$/" ng-maxlength="18" class="form-control" placeholder="请输入查询身份证号" ng-model="housez.cardNum"  name="cardNum"/>
+                         <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.cardNum.$dirty && mainForm.cardNum.$invalid">
+                            <p class="alter" ng-show="mainForm.cardNum.$error.required">
+                                输入错误
+                            </p>
+                            <p class="alter" ng-show="mainForm.cardNum.defined ">
+                                正确
+                            </p>
+                        </span>
+                    </div>
+                    <div class="col-lg-1 col-md-2 col-sm-2 text-right search-padding-10">
+                        注册电话：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4 text-right search-padding-10">
+                        <input  type="text" ng-pattern="/^[0-9]*$/"
+                                ng-maxlength="11" class="form-control" placeholder="请输入注册电话" ng-model="housez.registerPhone" name="registerPhone"/>
+                        <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.registerPhone.$dirty && mainForm.registerPhone.$invalid">
+                            <p class="alter" ng-show="mainForm.registerPhone.$error.required">
+                                输入错误
+                            </p>
+                            <p class="alter" ng-show="mainForm.registerPhone.defined ">
+                                正确
+                            </p>
+                        </span>
+                    </div>
+                    <div class="col-lg-1 col-md-2 col-sm-2 text-right search-padding-10">
+                        资产类型：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4 text-right search-padding-10">
+                        <select class="form-control"  ng-model="housez.areaId" ng-options="c.id as c.areaTypeName for c in areaTypeNew">
+                            <option value="">请选择</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-1 col-md-2 col-sm-2 text-right search-padding-10">
+                        资产编号：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4 text-right search-padding-10">
+                        <input type="text" class="form-control" placeholder="请输入查询的资产编号" ng-model="housez.houseNum" name="houseNum"/>
+                    </div>
+                    <div class="col-lg-1 col-md-2 col-sm-2 text-right search-padding-10">
+                        房产证号：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4 text-right search-padding-10">
+                        <input type="text" class="form-control" placeholder="请输入查询的房产证号" ng-model="housez.premisesPermit"/>
+                    </div>
+                    <div class="col-lg-1 col-md-2 col-sm-2 text-right search-padding-10">
+                        房屋地址：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4 text-right search-padding-10">
+                        <input type="text" class="form-control" placeholder="请输入地址" ng-model="housez.fullName"/>
+                    </div>
+                    <div class="col-lg-8 col-md-2 col-sm-2 text-right search-padding-10 text-right">
+                        <button type="button" class="btn btn-default btn-primary"  ng-click="searchPaginator._load()">
+                            <span class="glyphicon glyphicon-search btn_icon"></span>
+                            查询
+                        </button>
+                    </div>
+                    <div class="clear"></div>
+                    </form>
+                </div>
+               </div>
+                    <div class="search-padding-10">
+                        <table>
+                            <thead>
+                            <tr >
+                                <th width="50"></th>
+                                <th>序号</th>
+                                <th>业主姓名</th>
+                                <th>房屋地址</th>
+                                <th>入伙状态</th>
+                                <th>房屋编号</th>
+                                <th>销售状态</th>
+                                <th>竣工面积</th>
+                                <th>房屋户型</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <!--<tr ng-repeat="house in searchPaginator.object.houseNews" ng-class="{'this_info':btnIndex==house.personBuildingId}" ng-show="house.id!=null&&house.custId==addAuthorization.authorizedPersonid" ng-click="inputClick(house)">-->
+                            <tr ng-repeat="house in searchPaginator.object.houseNews" ng-class="{'this_info':btnIndex==house.personBuildingId}" ng-show="house.id!=null" ng-click="inputClick(house)">
+                                <td><input class="form-control" type="checkbox" id="{{house.id+house.custId }}" ng-click="getData(house)" ></td>
+                                <td>{{$index}}</td>
+                                <td>{{house.personCustNew.name}}</td>
+                                <td>{{house.fullName}}</td>
+                                <td ng-switch on="house.joinState">
+                                    <span ng-switch-when="0">未入伙</span>
+                                    <span ng-switch-when="1">已入伙</span>
+                                </td>
+                                <td>{{house.houseNum}}</td>
+                                <td>{{house.marketState}}</td>
+                                <td>{{house.completeArea}}</td>
+                                <td>{{house.houseType}}</td>
+                            </tr>
+                            <tr ng-if="searchPaginator.pages==null || searchPaginator.pages==''">
+                                <td colspan="9">暂无数据</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="bill_paging" ng-show="searchPaginator.object.page.totalResult!=0">
+                        <span>共{{searchPaginator.object.page.totalResult}}条</span>
+                        <ul class="pagination">
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-click="searchPaginator.go(1)">首页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a>
+                            </li>
+                            <li ng-class="{true:'active'}[searchPaginator.page.currentPage==i]" ng-repeat="i in searchPaginator.pages">
+                                <a href="javascript:void(0)"  ng-click="searchPaginator.go(i)">{{i}}</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                                <a href="javascript:void(0)" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                                <a href="javascript:void(0)" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" ng-click="resetData()">取消</button>
+                <button type="button" class="btn btn-primary" ng-click="saveData()">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--模态框结束-->
+</body>
+</html>

@@ -1,0 +1,334 @@
+<!--
+    创建人:王洲  修改时间：2015/10/26
+    pageName:属性设置
+    修改人：倪明  修改时间：2015/11/30
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>属性设置</title>
+</head>
+<body>
+<div id="content-first">
+    <div class="sel_top">
+        当前所在项目：
+    <span id="span1" ng-if="project.projectId == null || project.projectId == ''">
+        [{{projects.object.project[1].projectName}}]
+    </span>
+    <span id="span2" ng-if="project.projectId != null && project.projectId !=''">
+        [{{project.projectName}}]
+    </span>
+        <span class="glyphicon glyphicon-fullscreen" style="margin-left: 10px;cursor: pointer" data-toggle="modal" ng-click="openProject()"></span>
+    </div>
+    <div ng-show="showMaster">
+        <div class="row padding">
+            <div class="col-lg-12">
+                <div class="row search-padding-10">
+<!--                    <div class="col-lg-4 col-md-3 col-sm-3">
+                        <button type="button" class="btn btn-default btn-primary" ng-click="openaddMaster()">
+                            <span class="glyphicon glyphicon-plus btn_icon"></span>
+                            新建
+                        </button>
+                        <button type="button" class="btn btn-default btn-primary" ng-click="openupdateMaster()">
+                            <span class="glyphicon glyphicon-edit btn_icon"></span>
+                            编辑
+                        </button>
+                        <button type="button" class="btn btn-default btn-primary" ng-click="changeMasterStatusOff()">
+                            <span class="glyphicon glyphicon-trash btn_icon"></span>
+                            失效
+                        </button>
+                        <button type="button" class="btn btn-default btn-primary" ng-click="changeMasterStatusOn()">
+                            <span class="glyphicon glyphicon-trash btn_icon"></span>
+                            有效
+                        </button>
+                    </div>-->
+                    <div class="col-lg-3 col-md-2 col-sm-2 text-right">
+                        属性：
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-4">
+                        <input class="form-control" ng-model="DataDictionaryMasterProject.masterName" />
+                    </div>
+                    <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                        属性描述：
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-4">
+                        <input class="form-control" ng-model="DataDictionaryMasterProject.description" />
+                    </div>
+                    <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                        <button type="button" class="btn btn-default btn-primary" ng-click="dataDictionaryMasters._load();">
+                            <span class="glyphicon glyphicon-search btn_icon"></span>
+                            搜索
+                        </button>
+                    </div>
+                </div>
+
+                <div class="search-padding-10">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th width="50px;"></th>
+                            <th>序号</th>
+                            <th>属性</th>
+                            <th>属性描述</th>
+                            <th>状态</th>
+                            <th>创建人</th>
+                            <th>创建日期</th>
+                            <th>修改人</th>
+                            <th>修改日期</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-class="{'this_info':btnIndex==master.dataDictionaryMaster.masterId}" ng-click="detail(master.dataDictionaryMaster)" ng-repeat="master in dataDictionaryMasters.object.dataDictionaryMasterProjects" ng-show="master.id != null">
+                            <td><input type="checkbox" id="{{master.dataDictionaryMaster.masterId}}" ng-click="addorUpdateId(master.dataDictionaryMaster)"></td>
+                            <td>{{$index}}</td>
+                            <td>{{master.dataDictionaryMaster.masterName}}</td>
+                            <td>{{master.dataDictionaryMaster.description}}</td>
+                            <td ng-switch on="master.dataDictionaryMaster.status">
+                                <span ng-switch-when="0">有效</span>
+                                <span ng-switch-when="1">失效</span>
+                            </td>
+                            <td ng-if="master.dataDictionaryMaster.createTime!=null&&master.dataDictionaryMaster.createStaff.staff.staffName!=null">{{master.dataDictionaryMaster.createStaff.staff.staffName}}</td>
+                            <td ng-if="master.dataDictionaryMaster.createTime!=null&&master.dataDictionaryMaster.createStaff.staff.staffName==null">系统管理员</td>
+                            <td ng-if="master.dataDictionaryMaster.createTime==null"></td>
+                            <td>{{master.dataDictionaryMaster.createTime | date:"yyyy-MM-dd"}}</td>
+                            <td>{{master.dataDictionaryMaster.updateStaff.loginName}}</td>
+                            <td>{{master.dataDictionaryMaster.updateTime | date:"yyyy-MM-dd"}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="padding">
+                        <div class="bill_paging">
+                            <span>共{{dataDictionaryMasters.object.page.totalResult}}条</span>
+                            <ul class="pagination">
+                                <li ng-class="{true:'disabled'}[dataDictionaryMasters.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-click="dataDictionaryMasters.go(1)">首页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[dataDictionaryMasters.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-show="dataDictionaryMasters.hasPrevious()" ng-click="dataDictionaryMasters.previous()">上一页</a>
+                                </li>
+                                <li ng-class="{true:'active'}[dataDictionaryMasters.page.currentPage==i]" ng-repeat="i in dataDictionaryMasters.pages">
+                                    <a href="javascript:void(0)"  ng-click="dataDictionaryMasters.go(i)">{{i}}</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[dataDictionaryMasters.page.currentPage==dataDictionaryMasters.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-show="dataDictionaryMasters.hasNext()" ng-click="dataDictionaryMasters.next()">下一页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[dataDictionaryMasters.page.currentPage==dataDictionaryMasters.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-click="dataDictionaryMasters.go(dataDictionaryMasters.page.totalPage)">尾页</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div ng-show="showSlave">
+        <div class="row padding">
+            <div class="col-lg-12">
+                <div class="row search-padding-10">
+                    <div class="col-lg-4 col-md-3 col-sm-3">
+                        <button type="button" class="btn btn-default btn-primary" ng-click="openaddSlave()">
+                            <span class="glyphicon glyphicon-plus btn_icon"></span>
+                            新建
+                        </button>
+                        <button type="button" class="btn btn-default btn-primary" ng-click="openupdateSlave()">
+                            <span class="glyphicon glyphicon-edit btn_icon"></span>
+                            编辑
+                        </button>
+                        <button type="button" class="btn btn-default btn-primary" ng-click="changeSlaveStatusOff()">
+                            <span class="glyphicon glyphicon-trash btn_icon"></span>
+                            失效
+                        </button>
+                        <button type="button" class="btn btn-default btn-primary" ng-click="changeSlaveStatusOn()">
+                            <span class="glyphicon glyphicon-trash btn_icon"></span>
+                            有效
+                        </button>
+                    </div>
+                    <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                        类型属性：
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-4">
+                        <input class="form-control" ng-model="DataDictionarySlave.sName"/>
+                    </div>
+                    <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                        类型显示：
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-4">
+                        <input class="form-control" ng-model="DataDictionarySlave.desc"/>
+                    </div>
+                    <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                        <button type="button" class="btn btn-default btn-primary" ng-click="dataDictionarySlaves._load()">
+                            <span class="glyphicon glyphicon-search btn_icon"></span>
+                            搜索
+                        </button>
+                    </div>
+                </div>
+                <div class="search-padding-10">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th width="50px;"></th>
+                            <th>序号</th>
+                            <th>类型属性</th>
+                            <th>类型显示</th>
+                            <th>状态</th>
+                            <th>创建人</th>
+                            <th>创建日期</th>
+                            <th>修改人</th>
+                            <th>修改日期</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="slaves in dataDictionarySlaves.object.dataDictionarySlaves" ng-show="slaves.slaveId != null">
+                            <td><input type="checkbox" id="{{slaves.slaveId}}" ng-click="addOrUpdateSlaveId(slaves)"></td>
+                            <td>{{$index}}</td>
+                            <td>{{slaves.slaveName}}</td>
+                            <td>{{slaves.description}}</td>
+                            <td ng-switch on="slaves.status">
+                                <span ng-switch-when="0">有效</span>
+                                <span ng-switch-when="1">失效</span>
+                            </td>
+                            <td ng-if="slaves.createStaff.staff.staffName !=null">{{slaves.createStaff.staff.staffName}}</td>
+                            <td ng-if="slaves.createTime != null && slaves.createStaff.staff.staffName ==null">系统管理员</td>
+                            <td>{{slaves.createTime | date:"yyyy-MM-dd"}}</td>
+                            <td ng-if="slaves.updateStaff.staff.staffName != null">{{slaves.updateStaff.staff.staffName}}</td>
+                            <td ng-if="slaves.updateTime != null && slaves.updateStaff.staff.staffName==null">系统管理员</td>
+                            <td ng-if="slaves.updateTime == null"></td>
+                            <td>{{slaves.updateTime | date:"yyyy-MM-dd"}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="padding">
+                        <div class="bill_paging">
+                            <span>共{{dataDictionarySlaves.object.page.totalResult}}条</span>
+                            <ul class="pagination">
+                                <li ng-class="{true:'disabled'}[dataDictionarySlaves.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-click="dataDictionarySlaves.go(1)">首页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[dataDictionarySlaves.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-show="dataDictionarySlaves.hasPrevious()" ng-click="dataDictionarySlaves.previous()">上一页</a>
+                                </li>
+                                <li ng-class="{true:'active'}[dataDictionarySlaves.page.currentPage==i]" ng-repeat="i in dataDictionarySlaves.pages">
+                                    <a href="javascript:void(0)"  ng-click="dataDictionarySlaves.go(i)">{{i}}</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[dataDictionarySlaves.page.currentPage==dataDictionarySlaves.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-show="dataDictionarySlaves.hasNext()" ng-click="dataDictionarySlaves.next()">下一页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[dataDictionarySlaves.page.currentPage==dataDictionarySlaves.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-click="dataDictionarySlaves.go(dataDictionarySlaves.page.totalPage)">尾页</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--新建、编辑-->
+    <div class="modal fade" id="new" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span ng-if="typeShow == '0'">新增属性</span>
+                    <span ng-if="typeShow == '1'">新增类型属性</span>
+                    <span ng-if="typeShow == '2'">修改属性</span>
+                    <span ng-if="typeShow == '3'">修改类型属性</span>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row" style="padding:15px">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right" ng-if="typeShow == '0' || typeShow == '2'">属性：</div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right" ng-if="typeShow == '1' || typeShow == '3'">类型属性：</div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <input class="form-control" id="name" />
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right" ng-if="typeShow == '0' || typeShow == '2'">属性描述：</div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right" ng-if="typeShow == '1' || typeShow == '3'">类型显示：</div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <input class="form-control" id="description" />
+                            <input class="form-control" type="hidden" id="ids" />
+                            <input class="form-control" type="hidden" id="types" />
+                            <input class="form-control" type="hidden" id="createtime" />
+                            <input class="form-control" type="hidden" id="createid" />
+                            <input class="form-control" type="hidden" id="status" />
+                            <input class="form-control" type="hidden" id="mid" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" ng-click="addorUpdateDatas();">提交</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--新建、编辑 END-->
+    <!--新建-->
+    <div class="modal fade" id="new1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    选择项目
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="padding">
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">项目名称</div>
+                            <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" ng-model="Project.projectName" ng-change="projects._load()" /></div>
+                        </div>
+                        <div class="search-padding-10">
+                            <table>
+                                <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>序号</th>
+                                    <th>项目名称</th>
+                                    <th>所属公司</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="project in projects.object.project" ng-model="project" ng-show="project.projectId != null">
+                                    <td><input type="checkbox" id="{{project.projectId}}" ng-click="addOrDeleteProjectId(project)"></td>
+                                    <td>{{$index}}</td>
+                                    <td>{{project.projectName}}</td>
+                                    <td>{{project.companyDetail.companyName}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <div class="bill_paging">
+                                <span>共{{projects.object.page.totalResult}}条</span>
+                                <ul class="pagination">
+                                    <li ng-class="{true:'disabled'}[projects.page.currentPage==1]">
+                                        <a href="javascript:void(0)" ng-click="projects.go(1)">首页</a>
+                                    </li>
+                                    <li ng-class="{true:'disabled'}[projects.page.currentPage==1]">
+                                        <a href="javascript:void(0)" ng-show="projects.hasPrevious()" ng-click="projects.previous()">上一页</a>
+                                    </li>
+                                    <li ng-class="{true:'active'}[projects.page.currentPage==i]" ng-repeat="i in projects.pages">
+                                        <a href="javascript:void(0)"  ng-click="projects.go(i)">{{i}}</a>
+                                    </li>
+                                    <li ng-class="{true:'disabled'}[projects.page.currentPage==projects.page.totalPage]">
+                                        <a href="javascript:void(0)" ng-show="projects.hasNext()" ng-click="projects.next()">下一页</a>
+                                    </li>
+                                    <li ng-class="{true:'disabled'}[projects.page.currentPage==projects.page.totalPage]">
+                                        <a href="javascript:void(0)" ng-click="projects.go(projects.page.totalPage)">尾页</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <!--<button type="button" class="btn btn-primary" ng-click="getMaster()">提交</button>-->
+                    <button type="button" class="btn btn-primary" ng-click="dataDictionaryMasters._load()">提交</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--新建 END-->
+</div>
+</body>
+</html>

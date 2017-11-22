@@ -1,0 +1,936 @@
+<!--
+    页面名称：装修核查工单
+    创建人：倪明    创建时间：2015/8/19
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>装修核查工单</title>
+    <link rel="stylesheet" href="css/externalProfession/waterMeterInfo.css" type="text/css">
+    <link rel="stylesheet" href="bower_components/skins/zyupload-1.0.0.min.css " type="text/css">
+
+</head>
+<body>
+<div class="row padding15">
+    <!--人员主页开始-->
+    <div class="complaint_user">
+        <div>
+            <!--人员主页客户详细信息开始-->
+            <div class="complaint_user_img"><img src="../../../images/propertyService/user.jpg" width="100" height="100"></div>
+            <div class="complaint_user_info">
+                <div class="complaint_user_info_info">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <ul>
+                                <li>重大事项名称：一区园林巡检</li>
+                                <li>核查对象：{{Tasks.buildingStructureNew.fullName}}</li>
+                                <li>执行团队：{{Tasks.staff.staffName}}</li>
+                                <li>执行时间：{{Tasks.createTime}}</li>
+                            </ul>
+                        </div>
+                        <div class="col-lg-6" style="word-wrap: break-word">
+                            描述：{{Tasks.taskDescription}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--人员主页客户详细信息结束-->
+        </div>
+        <div class="clear"></div>
+    </div>
+    <!--人员主页结束-->
+</div>
+<!--处理进度-->
+<div class="search-padding-10">
+    <div class="complaint_user">
+        <div class="padding15">
+            <div class="info_lista" >
+                <table  class="table_lists" ng-repeat="item in TasksJournal">
+                    <tr class="progress_bar" >
+                        <td colspan="2" width="25px" ng-switch on="item.creOrderType" >
+                            <span ng-switch-when="14">装修核查工单</span>
+                            <span ng-switch-when="15">装修巡检工单</span>
+                            <span ng-switch-when="16">装修验收工单</span></td>
+                    </tr>
+                    <tr class="progress_bar" >
+                        <td width="25px"><a ng-click="item1(item)" class="radius_25 back_blue  icon" ></a></td>
+                        <td width="50px"><span class="line_blue"></span></td>
+                    </tr>
+                    <tr class="progress_bar" >
+                        <td colspan="2" width="25px">{{item.operationTime }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!--处理进度 end-->
+</div>
+<div id="content-first">
+    <!--tab页切换开始-->
+    <div id="tab">
+        <a lang="no">装修核查单</a>
+    </div>
+    <div class="padding">
+        <div class="row search-padding-10">
+            <div class="col-lg-1 col-md-2 col-sm-2">新建</div>
+            <div class="col-lg-11 col-md-10 col-sm-10">
+                <select class="form-control">
+                    <option>请选择</option>
+                </select>
+            </div>
+        </div>
+        <div class="search-padding-10">
+            装修设计图是否合理
+        </div>
+        <div class="search-padding-10">
+            <table>
+                <thead>
+                <tr>
+                    <th>设计图</th>
+                    <th>图纸</th>
+                    <th>是否合理</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>水路图</td>
+                    <td><img src="../../../images/a.png"></td>
+                    <td>
+                        <label class="radio inline">
+                            <input type="radio">
+                            <span>不合理</span>
+                        </label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>装修设计图</td>
+                    <td><img src="../../../images/a.png"></td>
+                    <td>
+                        <label class="radio inline">
+                            <input type="radio">
+                            <span>不合理</span>
+                        </label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>电路图</td>
+                    <td><img src="../../../images/a.png"></td>
+                    <td>
+                        <label class="radio inline">
+                            <input type="radio">
+                            <span>不合理</span>
+                        </label>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="search-padding-10">
+            <button type="button" class="btn btn-default btn-primary" >
+                <span class="glyphicon glyphicon-plus btn_icon"></span>
+                新建
+            </button>
+        </div>
+        <div class="search-padding-10">
+            <table>
+                <thead>
+                <tr>
+                    <th>检查项</th>
+                    <th>检查结果</th>
+                    <th>检查状态</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>是否承重墙</td>
+                    <td>
+                        <label class="radio ">
+                            <input type="radio" >
+                            <span>是</span>
+                            <input type="radio">
+                            <span>否</span>
+                        </label>
+                    </td>
+                    <td>
+                        <label class="radio">
+                            <input type="radio">
+                            <span>通过</span>
+                            <input type="radio">
+                            <span>不通过</span>
+                        </label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>拆墙面积</td>
+                    <td>
+                        <label class="radio ">
+                            <input type="text" >
+                            <span>平方米</span>
+
+                        </label>
+                    </td>
+                    <td>
+                        <label class="radio">
+                            <input type="radio">
+                            <span>通过</span>
+                            <input type="radio">
+                            <span>不通过</span>
+                        </label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>与小区连同</td>
+                    <td>
+                        <label class="radio ">
+                            <input type="radio" >
+                            <span>是</span>
+                            <input type="radio">
+                            <span>否</span>
+                        </label>
+                    </td>
+                    <td>
+                        <label class="radio">
+                            <input type="radio">
+                            <span>通过</span>
+                            <input type="radio">
+                            <span>不通过</span>
+                        </label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>排烟</td>
+                    <td>
+                        <label class="radio ">
+                            <input type="radio" >
+                            <span>有</span>
+                            <input type="radio">
+                            <span>无</span>
+                        </label>
+                    </td>
+                    <td>
+                        <label class="radio">
+                            <input type="radio">
+                            <span>通过</span>
+                            <input type="radio">
+                            <span>不通过</span>
+                        </label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>灭火器</td>
+                    <td>
+                        <label class="radio ">
+                            <input type="radio" >
+                            <span>有</span>
+                            <input type="radio">
+                            <span>无</span>
+                        </label>
+                    </td>
+                    <td>
+                        <label class="radio">
+                            <input type="radio">
+                            <span>通过</span>
+                            <input type="radio">
+                            <span>不通过</span>
+                        </label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>隔油地</td>
+                    <td>
+                        <label class="radio ">
+                            <input type="radio" >
+                            <span>有</span>
+                            <input type="radio">
+                            <span>无</span>
+                        </label>
+                    </td>
+                    <td>
+                        <label class="radio">
+                            <input type="radio">
+                            <span>通过</span>
+                            <input type="radio">
+                            <span>不通过</span>
+                        </label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>排烟方式</td>
+                    <td>
+                        <label class="radio ">
+                            <input type="radio" >
+                            <span>有</span>
+                            <input type="radio">
+                            <span>无</span>
+                        </label>
+                    </td>
+                    <td>
+                        <label class="radio">
+                            <input type="radio">
+                            <span>通过</span>
+                            <input type="radio">
+                            <span>不通过</span>
+                        </label>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="row search-padding-10">
+            <div class="col-lg-1 col-md-2 col-sm-2">核查讨论</div>
+            <div class="col-lg-2 col-md-2 col-sm-2">
+                <label class="radio inline">
+                    <input type="radio" value="1" class="checkboxa" ng-model="RenovationCheckOrders.whetherToContinue"  name="name2" >
+                    <span>符合装修要求</span>
+                </label>
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2">
+                <label class="radio inline">
+                    <input type="radio"  value="0" class="checkboxa" ng-model="RenovationCheckOrders.whetherToContinue"  name="name1" >
+                    <span>不符合装修要求</span>
+                </label>
+            </div>
+        </div>
+        <div class="search-padding-10">
+            任务描述
+        </div>
+        <div class="search-padding-10">
+            <textarea class="form-control" style="height:100px" placeholder="请输入内容"  ng-model="RenovationCheckOrders.remarks"></textarea>
+        </div>
+        <div class=" search-padding-10">
+            附件列表：
+        </div>
+        <div class=" search-padding-10 text_center">
+
+        </div>
+        <div class="search-padding-10 text_center">
+            <button type="button" class="btn btn-default btn-primary" >
+                取消
+            </button>
+            <button type="button" class="btn btn-default btn-primary" >
+                提交
+            </button>
+        </div>
+    </div>
+</div>
+
+<!--<div>
+    &lt;!&ndash;任务详情&ndash;&gt;
+    <div class="user_information">
+        <table width="100%" border="0" cellpadding="0" cellspacing="0" style=" margin-top:5px; margin-bottom:5px;">
+            <tr>
+                <td align="center" bgcolor="#F4F4F4">
+                    <ul class="main_ul_li">
+                        <li ng-switch on="Tasks.taskType">
+                            <span ng-switch-when="18">装修核查任务</span>
+                            <span ng-switch-when="4">装修巡检任务</span>
+                            <span ng-switch-when="5">装修验收任务</span>
+                        </li>
+                    </ul>
+                </td>
+                <td valign="top" bgcolor="#F4F4F4" >
+                    <ul>
+                        <li ng-switch on="Tasks.taskType">任务类型：
+                            <span ng-switch-when="18">装修核查任务</span>
+                            <span ng-switch-when="4">装修巡检任务</span>
+                            <span ng-switch-when="5">装修验收任务</span>
+                        </li>
+                        <li> 地&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;址：{{Tasks.buildingStructureNew.fullName}}</li>
+                        <li>负责人&nbsp;&nbsp;&nbsp;：{{Tasks.staff.staffName}}</li>
+                    </ul>
+                </td>
+                <td valign="top" bgcolor="#F4F4F4" >
+                    <ul>
+                        <li>执行时间：{{Tasks.createTime}}</li>
+                        <li class="overflow_y userinfo_height" >描述：{{Tasks.taskDescription}}</li>
+                    </ul>
+                </td>
+                <td valign="top" bgcolor="#F4F4F4" class="word-wrap" style="max-width:300px;">
+                    <ul>
+                        <li>催办次数：<a data-toggle="modal" data-target="#showUrgeTask" style="cursor:pointer" ng-click="showUrgeTask()">{{UrgeTaskRecordsCount}}次</a></li>
+                        <li>延时次数：<a data-toggle="modal" data-target="#showApplicationDelay" style="cursor:pointer" ng-click="showApplicationDelay()">{{ApplicationDelayRecordsCount}}次</a></li>
+                        <li>描述：{{Tasks.taskDescription}}</li>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+    </div>
+    &lt;!&ndash;任务详情 end&ndash;&gt;
+    &lt;!&ndash;处理进度&ndash;&gt;
+    <div class="complaint_user" style="width:100%" >
+        <div class="rder_form_list  back_white radius border">
+            <table  border="0" cellspacing="0" cellpadding="0"width="100%" >
+                <tr>
+                    <td style="width: 135px;text-align: center;"  ng-repeat="item in TasksJournal" ng-switch on="item.creOrderType" >
+                        <span ng-switch-when="14">装修核查工单</span>
+                        <span ng-switch-when="15">装修巡检工单</span>
+                        <span ng-switch-when="16">装修验收工单</span>
+                    </td>
+                    <td width="50" align="center">&nbsp;</td>
+                    <td width="140">&nbsp;</td>
+                    <td >&nbsp;</td>
+                </tr>
+                <tr>
+                    <td ng-repeat="item in TasksJournal" style=" text-align: center;width: 135px;"  >
+                        <table width="150" border="0" cellspacing="0" cellpadding="0" id="tableTime">
+                            <tr class="progress_bar">
+                                <td align="center" valign="middle" width="50"><span class="line_blue"></span></td>
+                                <td align="center" valign="middle" width="25"  ><a ng-click="item1(item)" class="radius_25 back_blue  icon" ></a></td>
+                                <td align="center" valign="middle" width="50"><span class="line_blue"></span></td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td width="140">&nbsp;</td>
+                    <td >&nbsp;</td>
+                </tr>
+                <tr >
+                    <td style="width: 135px; text-align: center" ng-repeat="item in TasksJournal">
+                        <span>{{item.operationTime }}</span>
+                    </td>
+                    <td width="50" align="center">&nbsp;</td>
+                    <td width="140">&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+            </table>
+        </div>
+        <div class="clear"></div>
+    </div>
+    &lt;!&ndash;处理进度 end&ndash;&gt;
+    &lt;!&ndash;新建工单&ndash;&gt;
+    <div class="search_panner">
+        &lt;!&ndash;新建工单选择&ndash;&gt;
+        <div class="rightpadding">
+            <div class="new_order_left "  ng-click="addTask()" class="col-md-1">
+                <a class="icon back_dark_black glyphicon glyphicon-plus white"></a>
+                <span >新建工单</span>
+            </div>
+            <div  ng-show="order"   class="col-md-4" >
+                <span>工单类型：</span>
+                <select  id="s">
+                    <option value="" >请选择工单类型</option>
+                    <option value="装修核查工单">装修核查工单</option>
+                </select>
+            </div>
+            <div class="clear"></div>
+        </div>
+        &lt;!&ndash;新建工单选择  END&ndash;&gt;
+        &lt;!&ndash;工单信息&ndash;&gt;
+        <div class="row rightpadding" ng-show="order1" >
+            &lt;!&ndash;新建装修核查工单开始&ndash;&gt;
+            <div class="col-lg-12 col-md-12 col-sm-6" id="div1" style="display: none">
+                <div class="re_panel">
+                    <div class="panel_title">
+                        <span class="panel_title_left">装修核查单</span>
+                        <span class="panel_title_right">
+                            <span class="icon glyphicon glyphicon-th-list back_dark_grey white"></span>
+                        </span>
+                    </div>
+                    <div class="building_padding">
+                        <div class="meter_plan_table_info ">
+                            <div>
+                                <span>核查单：</span>
+                                <span class="icon_float">新增核查项</span>
+                                    <span class="icon back_dark_black glyphicon glyphicon-plus white icon_float" ng-click="addItem()"></span>
+                            </div>
+                            <div class="table">
+                                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="radius_all">
+                                    <tr class="table_nav">
+                                        <td >序号</td>
+                                        <td>是否进行(默认不进行)</td>
+                                        <td>是否异常(默认正常)</td>
+                                        <td>操作</td>
+                                    </tr>
+                                    <tr ng-repeat="item in currentBuilding.areaNew">
+                                        <td >
+                                            {{item.inspectName}}
+                                        </td>
+                                        <td >
+                                            <div class="col-lg-4 col-md-4 col-sm-4"></div>
+                                            <div class="col-lg-8 col-md-8 col-sm-8">
+                                            <input type="radio" class="checkbox" value="1" ng-model="item.conduct"><span>进行</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="col-lg-4 col-md-4 col-sm-4"></div>
+                                            <div class="col-lg-8 col-md-8 col-sm-8">
+                                            <input type="radio" class="checkbox" value="1" ng-model="item.normal"><span>异常</span>
+                                            </div>
+                                        </td>
+                                        <td >
+                                            <input type="button"  class="modify"  ng-click="updateItem($index)" value="修改">
+                                            <input type="button"  class="del"  ng-click="deleteItem($index)" value="删除">
+                                        </td>
+                                    </tr>
+                                    <tr ng-show="editArea">
+                                        <td height="40px" align="center" valign="middle">
+                                            <input style="width: 150px" ng-model="currentEditArea.inspectName">
+                                        </td>
+                                        <td  height="40px" align="center" valign="middle">
+                                            <select style="width: 150px" ng-model="currentEditArea.conduct">
+                                                <option value="">-- 请选择 --</option>
+                                                <option value="0">进行</option>
+                                            </select>
+                                        </td>
+                                        <td  height="40px" align="center" valign="middle">
+                                            <select style="width: 150px" ng-model="currentEditArea.normal">
+                                                <option value="">-- 请选择 --</option>
+                                                <option value="0">异常</option>
+                                            </select>
+                                        </td>
+                                        <td  height="40px" align="center" valign="middle">
+                                            <button type="button" ng-click="addSave()">保存</button>
+                                            <button type="button" ng-click="addCancel()">取消</button>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="meter_plan_table_info ">
+                            <div>
+                                <span>装修设计图是否合理：</span>
+                            </div>
+                            <div class="table">
+                                <table width="100%">
+                                    <tbody>
+                                    <tr class="table_nav">
+                                        <td>设计图</td>
+                                        <td>图纸</td>
+                                        <td>是否合理</td>
+                                    </tr>
+                                    <tr>
+                                        <td>装修设计图</td>
+                                        <td><img></td>
+                                        <td>
+                                            <div class="col-lg-4 col-md-4 col-sm-4"></div>
+                                            <div class="col-lg-8 col-md-8 col-sm-8">
+                                            <input type="radio" class="checkbox" value="0" ng-model="RenovationCheckOrders.architecturalDesign">
+                                            <span>不合理</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>水路图</td>
+                                        <td><img></td>
+                                        <td>
+                                            <div class="col-lg-4 col-md-4 col-sm-4"></div>
+                                            <div class="col-lg-8 col-md-8 col-sm-8">
+                                            <input type="radio" class="checkbox" value="0" ng-model="RenovationCheckOrders.waterPipeDesign">
+                                            <span>不合理</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>电路图</td>
+                                        <td><img></td>
+                                        <td>
+                                            <div class="col-lg-4 col-md-4 col-sm-4"></div>
+                                            <div class="col-lg-8 col-md-8 col-sm-8">
+                                            <input type="radio" class="checkbox" value="0" ng-model="RenovationCheckOrders.circuitDesign">
+                                        <span>不合理</span>
+                                        </div>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="meter_plan_table_info ">
+                            <div>
+                                <span>是否建议发函：</span>
+                            </div>
+                            <div class="table" align="center">
+                                <table width="100%">
+                                    <tbody><tr class="table_nav">
+                                        <td>函件名</td>
+                                        <td>是否建议发函</td>
+                                    </tr>
+                                    <tr ng-repeat="vms in currentLetter">
+                                        <td>
+                                            {{vms.letterName}}
+                                        </td>
+                                        <td>
+                                            <div class="col-lg-4 col-md-4 col-sm-4"></div>
+                                            <div class="col-lg-8 col-md-8 col-sm-8">
+                                            <input type="radio" class="checkbox" value="1" ng-model="vms.whetherLetter"><span>建议发函</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="meter_plan_table_info ">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <span style="width: 160px">是否继续装修：</span>
+                                </div>
+                                <div class="col-md-2">
+                                    <input name="name1" type="radio" value="0" class="checkboxa" ng-model="RenovationCheckOrders.whetherToContinue">不可以
+                                    <div class="clear"></div>
+                                </div>
+                                <div class="col-md-2">
+                                    <input name="name2" type="radio" value="1" class="checkboxa" ng-model="RenovationCheckOrders.whetherToContinue">可以
+                                    <div class="clear"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="meter_plan_table_info">
+                            <div class="row">
+                                <div>
+                                    <ul>
+                                        <li>
+                                            <span style="width: 50px">备注：</span>
+                                            <textarea style="width: 60%" ng-model="RenovationCheckOrders.remarks"></textarea>
+                                            <div class="clear"></div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="meter_plan_table_info">
+                            <div class="row">
+                                <div>
+                                    <ul>
+                                        <li>
+                                            <span>附件上传：<button role="presentation" data-toggle="modal" data-target="#ddd" style="cursor:pointer" data-toggle="tab" ng-click="ComplainFile()">上传</button></span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="save_concel_botton icon_float">
+                            <a class="radius_all button_bule" ng-click="addCheckOrders(RenovationCheckOrders.tasksId)">确定</a>
+                            <a class="radius_all button_bule" ng-click="cancel()">取消</a>
+                        </div>
+                        <div class="clear"></div>
+                </div>
+            </div>
+            </div>
+            &lt;!&ndash;新建装修核查工单结束&ndash;&gt;
+        </div>
+        &lt;!&ndash;工单信息END&ndash;&gt;
+        &lt;!&ndash;工单详情&ndash;&gt;
+        <div class="row rightpadding">
+            &lt;!&ndash;装修核查工单详情开始&ndash;&gt;
+            <div class="col-lg-12 col-md-12 col-sm-6" ng-show="typeShow==1">
+                <div class="re_panel">
+                    <div class="panel_title">
+                        <span class="panel_title_left" ng-switch on="aa.renovationCheckOrders.orderType">
+                            <span ng-switch-when="14">装修核查工单</span>
+                            <span ng-switch-when="15">装修巡检工单</span>
+                            <span ng-switch-when="16">装修验收工单</span>
+                        </span>
+                         <span class="panel_title_right">
+                             <ul class="pull-down_menu">
+                                 <li><span class="icon glyphicon glyphicon-th-list back_dark_grey white"></span>
+                                     <ul>
+                                         <li data-toggle="modal" data-target="#complaintOrders" style="cursor:pointer" tabindex="-1" data-toggle="tab">失效</li>
+                                         &lt;!&ndash;<li>重启</li>&ndash;&gt;
+                                         &lt;!&ndash;<li>复制</li>&ndash;&gt;
+                                     </ul>
+                                 </li>
+                             </ul>
+                         </span>
+                    </div>
+                    <div class="panel_info">
+                        <div class="dot"></div>
+                        <div class="form_list">
+                            <ul class="receive_list">
+                                <li ng-switch on="aa.renovationCheckOrders.orderState">工单状态：
+                                    <i  ng-switch-when="0">失效</i>
+                                    <i ng-switch-when="1">已完成</i>
+                                </li>
+                                <div class="clear"></div>
+                            </ul>
+                        </div>
+                        <div class="meter_plan_table_info ">
+                            <div>
+                                <span>核查单：</span>
+                            </div>
+                            <div class="bill_table">
+                                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="radius_all">
+                                    <tr class="meter_title">
+                                        <td width="25%" height="35px" align="center" valign="middle" >序号</td>
+                                        <td width="25%" height="35px" align="center" valign="middle" >是否进行</td>
+                                        <td width="25%" height="35px" align="center" valign="middle">是否异常</td>
+                                    </tr>
+                                    <tr ng-repeat="vm in aa.renovationCheckOrders.renovationCheckRecords">
+                                        <td width="25%" height="30px" align="center">
+                                            {{vm.inspectName}}
+                                        </td>
+                                        <td  width="25%" height="30px" align="center" valign="middle" >
+                                            <ul class="receive_list">
+                                                <li ng-switch on="vm.conduct">
+                                                    <b  ng-switch-when="0">不进行</b>
+                                                    <b ng-switch-when="1">进行</b>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                        <td  width="25%" height="30px" align="center" valign="middle">
+                                            <ul class="receive_list">
+                                                <li ng-switch on="vm.normal">
+                                                    <b  ng-switch-when="0">正常</b>
+                                                    <b ng-switch-when="1">异常</b>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="meter_plan_table_info ">
+                            <div>
+                                <span>装修设计图是否合理：</span>
+                            </div>
+                            <div class="bill_table" align="center">
+                                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="radius_all">
+                                    <tbody><tr class="meter_title">
+                                        <td height="35" align="center" width="20%">设计图</td>
+                                        <td height="35" align="center" width="20%">图纸</td>
+                                        <td height="35" align="center" width="20%">是否合理</td>
+                                    </tr>
+                                    <tr>
+                                        <td height="30px" align="center" width="20%">
+                                            装修设计图
+                                        </td>
+                                        <td height="30px" align="center" width="20%">
+                                            <img>
+                                        </td>
+                                        <td height="30px" align="center" width="20%">
+                                            <ul class="receive_list">
+                                                <li ng-switch on="aa.renovationCheckOrders.architecturalDesign">
+                                                    <b  ng-switch-when="0">不合理</b>
+                                                    <b ng-switch-when="1">合理</b>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td height="30px" align="center" width="20%">
+                                            水路图
+                                        </td>
+                                        <td height="30px" align="center" width="20%">
+                                            <img>
+                                        </td>
+                                        <td height="30px" align="center" width="20%">
+                                            <ul class="receive_list">
+                                                <li ng-switch on="aa.renovationCheckOrders.waterPipeDesign">
+                                                    <b  ng-switch-when="0">不合理</b>
+                                                    <b ng-switch-when="1">合理</b>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td height="30px" align="center" width="20%">
+                                            电路图
+                                        </td>
+                                        <td height="30px" align="center" width="20%">
+                                            <img>
+                                        </td>
+                                        <td height="30px" align="center" width="20%">
+                                            <ul class="receive_list">
+                                                <li ng-switch on="aa.renovationCheckOrders.circuitDesign">
+                                                    <b  ng-switch-when="0">不合理</b>
+                                                    <b ng-switch-when="1">合理</b>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="meter_plan_table_info ">
+                            <div>
+                                <span>是否建议发函：</span>
+                            </div>
+                            <div class="bill_table" align="center">
+                                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="radius_all">
+                                    <tbody><tr class="meter_title">
+                                        <td height="35" align="center" width="30%">函件名</td>
+                                        <td height="35" align="center" width="30%">是否建议发函</td>
+                                    </tr>
+                                    <tr ng-repeat="vm1 in aa.renovationCheckOrders.letterRecords">
+                                        <td height="30px" align="center" width="30%">
+                                            {{vm1.letterName}}
+                                        </td>
+                                        <td height="30px" align="center" width="30%">
+                                            <ul class="receive_list">
+                                                <li ng-switch on="vm1.whetherLetter">
+                                                    <b  ng-switch-when="0">不建议发函</b>
+                                                    <b ng-switch-when="1">建议发函</b>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="meter_plan_table_info ">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <ul class="receive_list">
+                                        <li ng-switch on="aa.renovationCheckOrders.whetherToContinue">是否可继续装修：
+                                            <b  ng-switch-when="0">不可以</b>
+                                            <b ng-switch-when="1">可以</b>
+                                        </li>
+                                        <li ng-show="closed">失效时间：{{aa.renovationCheckOrders.closeTime | date:'yyyy-MM-dd HH:mm:ss'}}</li>
+                                        <li ng-show="closed">失效操作人：{{aa.renovationCheckOrders.closePersonId}}</li>
+                                        <li ng-show="closed">失效原因：{{aa.renovationCheckOrders.closeRemarks}}</li>
+                                        <li>备注：{{aa.renovationCheckOrders.remarks}}</li>
+                                        <li>
+                                            <span>附件：</span>
+                                            <img src={{fileUrl}}/{{aa.renovationCheckOrders.annexs.annexAddress}}  style="height: 200px ;width: 250px">
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            &lt;!&ndash;装修核查工单详情结束&ndash;&gt;
+        </div>
+        &lt;!&ndash;工单详情END&ndash;&gt;
+    </div>
+    &lt;!&ndash;新建工单END&ndash;&gt;
+</div>-->
+<!--装修核查工单工单模态框开始-->
+<div class="modal fade" id="complaintOrders" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    核查单失效
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div  col-md-4>
+                        <div><label>失效原因:</label></div>
+                        <label><textarea class="form-control" style="width:500px" cols="3" placeholder="请输入内容" ng-model="aa.complainOrders.closeRemarks"></textarea></label>
+                    </div>
+                    <div><label >失效操作人ID：<input  ng-model="aa.complainOrders.closePersonId"></label></div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal"  ng-click="CloseComplaintOrders(aa.appealOrders)">提交</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--装修核查工单工单模态框结束-->
+    <div class="modal fade" id="ddd" tabindex="-1" role="dialog"
+         aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width: 80%">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close"
+                            data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title">
+                        上传
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="container" id="remove">
+                        <div id="zyupload" class="zyupload"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default" data-dismiss="modal"  >提交</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- 催促次数详情 -->
+<div class="modal fade" id="showUrgeTask" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div>
+            <div>
+                <div class="row building_padding">
+                    <div class="table">
+                        <table width="100%">
+                            <tr class="table_nav">
+                                <td>催促操作时间</td>
+                                <td>催促原因</td>
+                                <td>操作人</td>
+                            </tr>
+                            <tr ng-repeat="temp in searchPaginator2.object.urgeTaskRecords" ng-show="temp.recordId!=null">
+                                <td>{{$index}}</td>
+                                <td>{{temp.urgeTime | date:"yyyy-MM-dd HH:mm:ss"}}</td>
+                                <td>{{temp.urgeRemarks}}</td>
+                                <td>{{temp.staff.staffName}}</td>
+                            </tr>
+                        </table>
+                        <div class="bill_paging">
+                            <div class="pagination">
+                                <a style="cursor: pointer" ng-show="searchPaginator2.hasPrevious()" ng-click="searchPaginator2.previous()">上一页</a>
+                                <a style="cursor: pointer" ng-repeat="i in searchPaginator2.pages"  ng-click="searchPaginator2.go(i)" class="number">{{i}}</a>
+                                <a style="cursor: pointer" ng-show="searchPaginator2.hasNext()" ng-click="searchPaginator2.next()">下一页</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div>
+</div>
+<!-- 延时次数详情 -->
+<div class="modal fade" id="showApplicationDelay" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div>
+            <div>
+                <div class="row building_padding">
+                    <div class="table">
+                        <table width="100%">
+                            <tr class="table_nav">
+                                <td>序号</td>
+                                <td>延时操作时间</td>
+                                <td>延时到具体时间</td>
+                                <td>延时原因</td>
+                                <td>操作人</td>
+                            </tr>
+                            <tr ng-repeat="temp in searchPaginator1.object.applicationDelayRecords" ng-show="temp.recordId!=null">
+                                <td>{{$index}}</td>
+                                <td>{{temp.operationTime | date:"yyyy-MM-dd HH:mm:ss"}}</td>
+                                <td>{{temp.delayTime | date:"yyyy-MM-dd HH:mm:ss"}}</td>
+                                <td>{{temp.remarks}}</td>
+                                <td>{{temp.staff.staffName}}</td>
+                            </tr>
+                        </table>
+                        <div class="bill_paging">
+                            <div class="pagination">
+                                <a style="cursor: pointer" ng-show="searchPaginator1.hasPrevious()" ng-click="searchPaginator1.previous()">上一页</a>
+                                <a style="cursor: pointer" ng-repeat="i in searchPaginator1.pages"  ng-click="searchPaginator1.go(i)" class="number">{{i}}</a>
+                                <a style="cursor: pointer" ng-show="searchPaginator1.hasNext()" ng-click="searchPaginator1.next()">下一页</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div>
+</div>
+<div class="row">
+    <div ui-view></div>
+</div>
+</body>
+</html>

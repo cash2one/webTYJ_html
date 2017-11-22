@@ -1,0 +1,307 @@
+/**
+ * Created by NM on 2016/1/22.
+ * 【建筑组件初始化】组件新增
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../app');
+
+    app.controller('buildingDetailsCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+        //定义全局变量url,访问数据库接口路径
+        var url = $rootScope.url;
+        //获取登录的用户用于增加创建人  王洲   2016.1.6
+        var user = {};
+        var userCookie = JSON.parse(sessionStorage.getItem("USER_LOGIN"));
+        $scope.user = userCookie?userCookie:user;
+        $scope.doClick(1);//引用方确保tab样式  王洲  2016.1.8
+
+        //查询所有资产数据方法.
+        $http.get(url + '/Property/listPropertyAll').success(function(data) {
+            $scope.propertys = data.Property;
+        }).error(function(data,status,headers,config){
+            layer.alert('资产数据查询失败,请重试！',{icon : 2});
+        });
+        //查询所有专业列表方法.
+        $http.get(url + '/PropertyType/treeProperty').success(function(data) {
+            //获取json数据
+            $scope.propertyTypes = data.Tree;
+            $.fn.zTree.init($("#treeDemo"), setting, $scope.propertyTypes);
+        }).error(function(data,status,headers,config){
+            layer.alert("专业资产树查询失败！",{icon : 2})
+        });
+
+
+
+        //查询所有功能区域数据方法.
+        $http.get(url + '/Functional/listFunctionalAll').success(function(data) {
+            $scope.functionals = data.Functional;
+        }).error(function(data,status,headers,config){
+            layer.alert('功能区域数据查询失败,请重试！',{icon : 2});
+        });
+
+        //查询所有单位类型数据方法.
+        $http.get(url + '/AreaTypeNew/listAllAreaTypeNew').success(function(data) {
+            $scope.areatypenews = data.AreaTypeNew;
+        }).error(function(data,status,headers,config){
+            layer.alert('单位类型数据查询失败,请重试！',{icon : 2});
+        });
+
+
+        //获取组件类型select选中的值
+        $scope.getAreaTypeId = function(){
+            var areaTypeId = $("#areaType option:selected").val();
+            document.getElementById("componentType").value = areaTypeId;
+        };
+
+        //显示模态窗口
+        //显示模态框时清空数据  王洲  2016.1.11
+        $scope.addPropertyRs = function(){
+            $scope.componentPropertys={functionalId:"",functionalName:"",propertyId:"",propertyName:"",propertyNumber:"",propertyAreaType:""};
+            $("#propertyNumber").val("");
+            $("#propertyAreaType").val("");
+            $("#functionalId").val("");
+            $("#functionalName").val("");
+            $("#citySel").val("");
+            $("#propertyId").val("");
+            $scope.FunctionalId = '';
+            $scope.propertyRsEdit=true;
+        };
+
+        //选择资产信息
+        /*    $scope.selectProperty = function() {
+         document.getElementById("propertyName").value = $("#property option:selected").text();
+         document.getElementById("propertyId").value = $scope.PropertyId;
+         };*/
+
+        //选择功能区
+        $scope.selectFunctional = function(){
+            document.getElementById("functionalName").value = $("#functional option:selected").text();
+            document.getElementById("functionalId").value = $scope.FunctionalId;
+        };
+
+        //组件新增
+        $scope.buildingComponents={};
+        $scope.componentPropertyLists=[];
+        $scope.addBuildingComponent=function(){
+            $scope.buildingComponents.componentType = document.getElementById("componentType").value;
+            $scope.buildingComponents.componentPropertys = $scope.componentPropertyLists;
+
+           /* if($scope.buildingComponents.componentNum==undefined ||$scope.buildingComponents.componentNum.replace(/\s+/g,"")=="" ||$scope.buildingComponents.componentNum == null){
+                layer.alert('组件编号不能为空！',{icon : 0});
+                return;
+            }else*/ if($scope.buildingComponents.componentName==undefined ||$scope.buildingComponents.componentName.replace(/\s+/g,"")=="" ||$scope.buildingComponents.componentName == null){
+                layer.alert('组件名称不能为空！',{icon : 0});
+                return;
+            }
+            if( $scope.buildingComponents.componentType == null|| $scope.buildingComponents.componentType==""){
+                layer.alert('请选择组件类型！',{icon : 0});
+                return;
+            }
+            if($scope.user.userName!='admin'){
+                $scope.buildingComponents.createId = $scope.user.userId;
+            }
+            $http.post(url + '/BuildingComponent/AddBuildingComponent',{BuildingComponent:$scope.buildingComponents}).success(function(data){
+                if(data == 1){
+                    layer.alert('添加成功！',{icon : 1});
+                    $location.path("/index/baseManagement/buildingInitialization/buildingList");
+                    $scope.buildingComponents = null;
+                    $scope.componentPropertyLists = null;
+                    $scope.doClick(3);//跳转时调用方法更改tab样式  王洲  2016.1.8
+                }else if(data == 0){
+                    layer.alert('组件名已存在！',{icon : 0});
+                }
+            }).error(function(data, status, headers, config){
+                layer.alert('添加失败！',{icon : 2});
+            });
+        };
+
+        var projectId = null;
+        $http.get(url + '/Project/getProjectByState').success(function(data) {
+            $scope.Project = data.Project;
+            projectId = data.Project.projectId;
+            //单位
+            $http.get(url + '/DataDictionarySlaveService/getDataDictionarySlaveRes/unit/' + projectId).success(function (data) {
+                $scope.unitList = data.DataDictionarySlave;
+            });
+        });
+
+
+
+
+        $scope.unitType = {};
+        //组件资产关系新增
+        $scope.closeCom=function (){
+            $scope.currentEditIndex=null;
+        }
+        $scope.addComponentProperty = function(){
+
+            var functionalid = $("#functionalId").val();
+            var functionalname = $("#functionalName").val();
+            var propertyname = $("#citySel").val();
+            var propertyid =$("#propertyId").val();
+            var propertynumber = $("#propertyNumber").val();
+            var propertyareaType = $("#propertyAreaType").val();
+            var propertyarea;
+
+            for(var i = 0; i<$scope.unitList.length; i++){
+                if(propertyareaType == $scope.unitList[i].description){
+                    propertyarea = $scope.unitList[i].slaveId;
+                    break;
+                }
+            }
+
+            if(functionalid == ''){
+                layer.msg('请选择一个功能区！',{icon : 0,time : 1000});
+                return;
+            }
+            if(propertyid == ''){
+                layer.msg('请选择资产信息！',{icon : 0,time : 1000});
+                return;
+            }
+            if(propertynumber == ''){
+                layer.msg('数量不能为空！',{icon : 0,time : 1000});
+                return;
+            }
+            if(isNaN(propertynumber)){
+                layer.msg('数量必须为数字！',{icon : 0,time : 1000});
+                return;
+            }
+            if(propertyareaType == ''){
+                layer.msg('单位不能为空！',{icon : 0,time : 1000});
+                return;
+            }
+            $http.get(url + '/Property/getPropertyByIdRest/' + propertyid).success(function (data) {
+                $scope.Property = data.Property;
+
+                //绑定资产时判断是修改还是新增  王洲  2016.1.11
+                if(functionalid != null && functionalid != '' || functionalname != null && functionalname != ''){
+                    if(propertyid != null && propertyid != '' || propertyname != null && propertyname != ''){
+                        if($scope.currentEditIndex != null){
+                            $scope.componentPropertyLists[$scope.currentEditIndex]={
+                                functionalId:functionalid,
+                                functionalName:functionalname,
+                                propertyName:propertyname,
+                                propertyId:propertyid,
+                                propertyNumber:propertynumber,
+                                propertyArea:propertyarea,
+                                propertyAreaType:propertyareaType,
+                                property:$scope.Property
+                            };
+                            $scope.currentEditIndex = null;
+                        }else{
+                            $scope.componentPropertys.functionalId = functionalid;
+                            $scope.componentPropertys.functionalName = functionalname;
+                            $scope.componentPropertys.propertyName = propertyname;
+                            $scope.componentPropertys.propertyId = propertyid;
+                            $scope.componentPropertys.propertyNumber = propertynumber;
+                            $scope.componentPropertys.propertyArea = propertyarea;
+                            $scope.componentPropertys.propertyAreaType = propertyareaType;
+                            $scope.componentPropertys.property= $scope.Property;
+                            $scope.componentPropertyLists.push($scope.componentPropertys);
+                            $scope.componentPropertys = null;
+                        }
+                        $scope.propertyRsEdit = false;
+                        $("#choosePropertyRs").modal("hide");
+                    }else{
+                        layer.alert('请选择资产！',{icon : 0});
+                        $scope.propertyRsEdit = true;
+                        return;
+                    }
+                } else {
+                    layer.alert('请选择功能区！',{icon : 0});
+                    $scope.propertyRsEdit = true;
+                    return;
+                }
+            }).error(function (data, status, headers, config) {
+                layer.alert("查询组件资产出错,请重试！", {icon: 2});
+            });
+        };
+
+        //删除组件资产绑定  王洲  2016.1.11
+        //删除组件资产绑定  周恒  2016.2.18
+        $scope.deletePropertyRs = function(index){
+            layer.confirm("您确定要删除选中组件吗？", {btn: ['是', '否']}, function () {
+                $scope.componentPropertyLists.splice(index, 1);
+                layer.msg("删除成功", {icon: 1, time: 2000});
+                $scope.$apply($scope.componentPropertyLists);
+
+            });
+        };
+
+        //修改组件资产绑定  王洲  2016.1.11
+        $scope.currentEditIndex = null;
+        $scope.updatePropertyRs=function(index){
+            $scope.currentEditIndex=index;
+            var current=$scope.componentPropertyLists[index];
+            $("#functionalId").val(current.functionalId);
+            $("#functionalName").val(current.functionalName);
+            $("#citySel").val(current.propertyName);
+            $("#propertyId").val(current.propertyId);
+            $("#propertyNumber").val(current.propertyNumber);
+            $("#propertyAreaType").val(current.propertyAreaType);
+            $("#choosePropertyRs").modal("show");
+            $scope.propertyRsEdit=true;
+        };
+
+        /**
+         * 导入Excel数据文档
+         */
+        var fileUrl=$rootScope.fileUrl;    //上传的文件路径
+        var filePath='';          //上传文件的路径
+        $scope.annex={
+            annexAddress:'',
+            annexName:'',
+            relationId:''
+        };
+        $scope.inportExcel = function(){
+            $scope.fileState="1";
+            $(function(){
+                // 初始化插件
+                $("#excelupload").zyUpload({
+                    /*     width            :   "900px",                 // 宽度
+                     height           :   "400px",                 // 宽度*/
+                    itemWidth        :   "140px",                 // 文件项的宽度
+                    itemHeight       :   "115px",                 // 文件项的高度
+                    url              :   fileUrl+"/FileService",  // 上传文件的路径
+                    fileType         :   ["jpg","png","jpeg","gif","xls","docx","xlsx","pdf","txt","doc","ppt"],// 上传文件的类型
+                    fileSize         :   51200000,                // 上传文件的大小
+                    multiple         :   true,                    // 是否可以多个文件上传
+                    dragDrop         :   true,                    // 是否可以拖动上传文件
+                    tailor           :   true,                    // 是否可以裁剪图片
+                    del              :   true,                    // 是否可以删除文件
+                    finishDel        :   false,  				  // 是否在上传文件完成后删除预览
+                    /* 外部获得的回调接口 */
+                    onSelect: function(selectFiles, allFiles){    // 选择文件的回调方法  selectFile:当前选中的文件  allFiles:还没上传的全部文件
+                        //console.info(selectFiles);
+                    },
+                    onDelete: function(file, files){
+                        //console.info(file.name);
+                    },
+                    onSuccess: function(file, response){          // 文件上传成功的回调方法
+
+                        filePath=response;
+                        $scope.annex.annexAddress=filePath;
+                        $scope.annex.annexName=file.name;
+                        $http.post(url + "/BuildingComponent/importExcelFile",{Annex:$scope.annex}).success(function(data){
+                            //alert(data.Info.info.$);
+                        });
+                        //console.info(filePath);
+                    },
+                    onFailure: function(file, response){          // 文件上传失败的回调方法
+                        layer.alert('此文件上传失败：',{icon : 2});
+                        //console.info(file.name);
+                    },
+                    onComplete: function(response){           	  // 上传完成的回调方法
+                        //console.info("文件上传完成");
+                        //console.info(response);
+                    }
+                });
+
+            });
+        };
+    }]);
+});
+
+

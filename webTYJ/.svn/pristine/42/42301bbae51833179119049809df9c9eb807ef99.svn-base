@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>小区公告</title>
+    <link href="bower_components/ueditor/themes/default/css/ueditor.css" type="text/css" rel="stylesheet">
+    <style>
+        .border{
+            border: 1px solid #e4e4e4;
+            /*height: 480px;*/
+            /*overflow: scroll;*/
+            /*overflow-x: hidden;*/
+        }
+        .borderTB{
+            border-top: 1px solid #e4e4e4;
+            border-bottom: 1px solid #e4e4e4;
+        }
+    </style>
+</head>
+<body>
+<div class="row padding">
+    <div class="col-md-5 padding20 border">
+        <div class="search-padding-10">
+            <button type="button" class="btn btn-default btn-primary" ng-click="changeNewState()">
+                <span class="glyphicon glyphicon-plus btn_icon"></span>新建
+            </button>
+            <button type="button" class="btn btn-default btn-primary" ng-click="editCommunityNotice()">
+                <span class="glyphicon glyphicon-edit btn_icon"></span>编辑
+            </button>
+            <button type="button" class="btn btn-default btn-primary" ng-click="deleteCommunityNotice()">
+                <span class="glyphicon glyphicon-remove btn_icon"></span>删除
+            </button>
+        </div>
+        <div class="search-padding-10">
+            <div class="padding10" >
+                <h4 class="title" style="color: #fff;background: #515151;padding: 5px 10px">
+                    标题
+                </h4>
+                <div class="borderTB padding" ng-repeat="item in searchPaginator.object.communtitnotices" ng-show="item.id!=null">
+                    <div class="col-md-1"><input type="checkbox" id="{{item.id}}"/></div>
+                    <div class="col-md-11"><strong>{{item.title}}</strong></div>
+                    <div class="clearfix"></div>
+                </div>
+                <!--<div class="borderTB padding">
+                    <div class="col-md-1"><input type="checkbox"/></div>
+                    <div class="col-md-11"><strong>这是一个标题</strong></div>
+                    <div class="clearfix"></div>
+                </div>-->
+            </div>
+            <!--<div class="padding">
+                <div class="bill_paging">
+                    &lt;!&ndash;<span>共{{currentEnterpriseCustomer.object.page.totalResult}}条</span>&ndash;&gt;
+                    &lt;!&ndash;<ul class="pagination">
+                        <li ng-class="{true:'disabled'}[currentEnterpriseCustomer.page.currentPage==1]">
+                            <a href="javascript:void(0)" ng-click="currentEnterpriseCustomer.go(1)">首页</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[currentEnterpriseCustomer.page.currentPage==1]">
+                            <a href="javascript:void(0)" ng-show="currentEnterpriseCustomer.hasPrevious()" ng-click="currentEnterpriseCustomer.previous()">上一页</a>
+                        </li>
+                        <li ng-class="{true:'active'}[currentEnterpriseCustomer.page.currentPage==i]" ng-repeat="i in currentEnterpriseCustomer.pages">
+                            <a href="javascript:void(0)"  ng-click="currentEnterpriseCustomer.go(i)">{{i}}</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[currentEnterpriseCustomer.page.currentPage==currentEnterpriseCustomer.page.totalPage]">
+                            <a href="javascript:void(0)" ng-show="currentEnterpriseCustomer.hasNext()" ng-click="currentEnterpriseCustomer.next()">下一页</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[currentEnterpriseCustomer.page.currentPage==currentEnterpriseCustomer.page.totalPage]">
+                            <a href="javascript:void(0)" ng-click="currentEnterpriseCustomer.go(currentEnterpriseCustomer.page.totalPage)">尾页</a>
+                        </li>
+                    </ul>&ndash;&gt;
+                </div>
+            </div>-->
+            <div class=" col-md-12 text-left" ng-show="searchPaginator.object.page.totalResult">
+                <ul class="pagination">
+                    <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-click="searchPaginator.go(1)">首页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a>
+                    </li>
+                    <li ng-class="{true:'active'}[searchPaginator.page.currentPage==i]" ng-repeat="i in searchPaginator.pages">
+                        <a href="javascript:void(0)"  ng-click="searchPaginator.go(i)">{{i}}</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                        <a href="javascript:void(0)" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                        <a href="javascript:void(0)" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a>
+                    </li>
+                </ul>
+                <!--<div><span>共{{searchPaginator.object.page.totalResult}}条</span></div>-->
+            </div>
+        </div>
+    </div>
+    <div class="col-md-7 padding20 border" ng-show="newState==1">
+        <div class="row search-padding-10">
+            <div class="search-padding-10">
+                <div class="col-md-2 text-right">标题：<span style="color: red">*</span></div>
+                <div class="col-md-4">
+                    <input type="text"  class="form-control"  placeholder="请输入标题" ng-model="Communtitnotice.title"/>
+                </div>
+                <div class="col-md-2 text-right">作者：</div>
+                <div class="col-md-4">
+                    <input type="text"  class="form-control" placeholder="请输入作者" ng-model="Communtitnotice.founder"/>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="search-padding-10">
+                <div class="col-md-2 text-right">所属部门：</div>
+                <div class="col-md-4">
+                    <input type="text"  class="form-control" placeholder="请输入所属部门" ng-model="Communtitnotice.department"/>
+                </div>
+                <div class="col-md-2 text-right">摘要：</div>
+                <div class="col-md-4">
+                    <textarea type="text"  class="form-control" placeholder="请输入摘要" ng-model="Communtitnotice.abstracts"></textarea>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="search-padding-10">
+                <div class="col-md-2 text-right">发布项目：<span style="color: red">*</span></div>
+                <!--<div class="col-md-4">
+                    <select name="project" ng-model="Communtitnotice.project"  class="form-control" id="select1">
+                        <option value="">&#45;&#45;请选择&#45;&#45;</option>
+                        <option ng-repeat="dep in Project" value="{{dep.projectName}}">{{dep.projectName}}</option>
+                    </select>
+                </div>-->
+                <span ng-if="Communtitnotice.project == null || Communtitnotice.project == ''" ng-click="openProject()" style="cursor: pointer">
+                    [请选择项目]
+                </span>
+                 <span ng-if="Communtitnotice.project != null && Communtitnotice.project !=''" ng-click="openProject()" style="cursor: pointer">
+                    [{{Communtitnotice.project}}]
+                </span>
+                <span class="glyphicon glyphicon-fullscreen" style="margin-left: 10px;cursor: pointer" ng-click="openProject()"  data-target="#chooseProject" data-toggle="modal"></span>
+
+                <div class="clearfix"></div>
+            </div>
+            <div class="search-padding-10">
+                <div class="col-md-2 text-right">
+                    正文：
+                </div>
+                <div class="col-md-10"></div>
+                <div class="clearfix"></div>
+                <div class="col-md-12">
+                    <div id="container1">
+
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="search-padding-10 text-center">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#btnPreview" ng-click="showPreview(Communtitnotice,1)">预览</button>
+                <button type="button" class="btn btn-primary" ng-click="insertVillageNotice()">发布</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-7 padding20 border" ng-show="editState==1">
+        <div class="row search-padding-10">
+            <div class="search-padding-10">
+                <div class="col-md-2 text-right">标题：<span style="color: red">*</span></div>
+                <div class="col-md-4">
+                    <input type="text"  class="form-control" ng-model="itemCommunity.title"/>
+                </div>
+                <div class="col-md-2 text-right">作者：</div>
+                <div class="col-md-4">
+                    <input type="text"  class="form-control" ng-model="itemCommunity.founder"/>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="search-padding-10">
+                <div class="col-md-2 text-right">所属部门：</div>
+                <div class="col-md-4">
+                    <input type="text"  class="form-control" ng-model="itemCommunity.department"/>
+                </div>
+                <div class="col-md-2 text-right">摘要：</div>
+                <div class="col-md-4">
+                    <textarea type="text"  class="form-control" ng-model="itemCommunity.abstracts"></textarea>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="search-padding-10">
+                <div class="col-md-2 text-right">发布项目：<span style="color: red">*</span></div>
+                <!--<div class="col-md-4">
+                    <select name="project" ng-model="itemCommunity.project"  class="form-control" id="select2">
+                        <option value="">&#45;&#45;请选择&#45;&#45;</option>
+                        <option ng-repeat="dep in Project" value="{{dep.projectName}}">{{dep.projectName}}</option>
+                    </select>
+                </div>-->
+                <span ng-if="itemCommunity.project == null || itemCommunity.project == ''" ng-click="openProject()" style="cursor: pointer">
+                    [请选择项目]
+                </span>
+                 <span ng-if="itemCommunity.project != null && itemCommunity.project !=''" ng-click="openProject()" style="cursor: pointer">
+                    [{{itemCommunity.project}}]
+                </span>
+                <span class="glyphicon glyphicon-fullscreen" style="margin-left: 10px;cursor: pointer" ng-click="openProject()"  data-target="#chooseProject" data-toggle="modal"></span>
+
+                <div class="clearfix"></div>
+            </div>
+            <div class="search-padding-10">
+                <div class="col-md-2 text-right">
+                    正文：
+                </div>
+                <div class="col-md-10"></div>
+                <div class="clearfix"></div>
+                <div class="col-md-12">
+                    <div id="container2">
+
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="search-padding-10 text-center">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#btnPreview" ng-click="showPreview(itemCommunity,2)">预览</button>
+                <button type="button" class="btn btn-primary" ng-click="updateVillageNotice()">发布</button>
+            </div>
+        </div>
+    </div>
+    <!--<div class="col-md-7 padding20 border">
+        正文：
+        <div id="text">
+
+        </div>
+    </div>-->
+    <!--小区公告预览模态框开始-->
+    <div class="modal fade" id="btnPreview" tabindex="-1" role="dialog"
+         aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close"
+                            data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h5 class="modal-title">
+                        公告信息预览
+                    </h5>
+                </div>
+                <div class="modal-body">
+                    <!-- <div class="sel1">
+                         <div class="row search-padding-10">
+                             <ul>
+                                 <li>
+                                     <a href="#" class="panel_info clear" ng-repeat="item in InformsAll">
+                                         <span style="width: 50%" ng-switch="item.title.length>10">
+                                             <span style="width: 100%" ng-switch-when="true" title="{{item.inform}}">{{item.inform | limitTo:10}}...</span>
+                                             <span style="width: 100%" ng-switch-when="false">{{item.inform}}</span>
+                                         </span>
+                                         <span class="pull-right text-right"> {{item.time | date:"yyyy-MM-dd"}} </span>
+                                         <br/>
+                                     </a>
+                                 </li>
+                             </ul>
+                         </div>
+
+                     </div>-->
+                    <div class="row padding">
+                        <div class="col-md-12" style="padding:10px">
+                            <div class="row" style="border-bottom:2px solid #cccccc">
+                                <div class="col-md-12"><h5><strong>{{preview.title}}</strong></h5></div>
+                                <div class="row">
+                                    <div class="col-md-5">发布单位：深圳翔恒科技开发有限公司</div>
+                                    <div class="col-md-3 text-right">发布者：{{preview.founder}}</div>
+                                    <div class="col-md-4 text-right">{{preview.creationTime | date:"yyyy-MM-dd"}}</div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12" id="editorPreview" style="padding:10px">
+                                    <!--{{itemInfoCommunity.briefContent}}-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <!--<button class="btn bg-primary" data-dismiss="modal"   ng-click="CloseConsultationOrders()">提交</button>-->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--小区公告预览模态框结束-->
+</div>
+
+<!--选择项目模态框-->
+<div class="modal fade" id="chooseProject" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                选择项目
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2">项目名称:</div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <input class="form-control" placeholder="请输入要搜索的项目名称" ng-model="projects.projectName" ng-change="projectPaginator._load()" />
+                        </div>
+                    </div>
+                    <div class="search-padding-10">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th></th>
+                                <th>序号</th>
+                                <th>项目名称</th>
+                                <th>所属公司</th>
+                            </tr>
+                            <tbody>
+                            </thead>
+                            <tr ng-repeat="project in projectPaginator.object.project"  ng-click="chooseProjectList(project)"
+                                ng-show="project.projectId != null" style="cursor: pointer;"
+                                ng-class="{'this_info':btnIndex==project.projectId}">
+                                <td><input type="checkbox" id="{{project.projectId}}" ng-click="chooseProjectList(project)"></td>
+                                <td>{{$index}}</td>
+                                <td>{{project.projectName}}</td>
+                                <td>{{project.companyDetail.companyName}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="bill_paging">
+                            <span>共{{projectPaginator.object.page.totalResult}}条</span>
+                            <ul class="pagination">
+                                <li ng-class="{true:'disabled'}[projectPaginator.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-click="projects.go(1)">首页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[projectPaginator.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-show="projectPaginator.hasPrevious()" ng-click="projectPaginator.previous()">上一页</a>
+                                </li>
+                                <li ng-class="{true:'active'}[projectPaginator.page.currentPage==i]" ng-repeat="i in projectPaginator.pages">
+                                    <a href="javascript:void(0)"  ng-click="projectPaginator.go(i)">{{i}}</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[projectPaginator.page.currentPage==projectPaginator.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-show="projectPaginator.hasNext()" ng-click="projectPaginator.next()">下一页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[projectPaginator.page.currentPage==projectPaginator.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-click="projectPaginator.go(projectPaginator.page.totalPage)">尾页</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <!--<button type="button" class="btn btn-primary" ng-click="getMaster()">提交</button>-->
+                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="submitProjectForEdit()">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" charset="utf-8" src="bower_components/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" charset="utf-8" src="bower_components/ueditor/ueditor.all.min.js"></script>
+<script type="text/javascript" src="bower_components/ueditor/lang/zh-cn/zh-cn.js"></script>
+</body>
+</html>

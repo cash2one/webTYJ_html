@@ -1,0 +1,208 @@
+/**
+ * Created by wuying on 16/5/4.
+ */
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../app');
+
+    app.controller('orderListCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+        $scope.show = true;
+        $scope.show1 = true;
+        $scope.invoiceLogShow = false;//收货单列表隐藏
+        $scope.invoiceLogDetailsShow = false;//设备订单详情隐藏
+        $scope.invoiceLogDetailsListShow = false;//收货单详情隐藏
+        var saasUrl = $rootScope.saasUrl;//云平台路径
+        //获取登录人员的公司Id
+        var companyId ;
+        var user = {employId : ''};
+        var userCook = JSON.parse(sessionStorage.getItem("USER_LOGIN"));   //从cook中获取用户信息
+        $scope.user = userCook?userCook:user;                      //三目运算获取用户信息
+        companyId= $scope.user.companyId;
+
+        /**
+         * 设备订单分页组件
+         * 2016年5月25日 陈浪
+         */
+        $scope.page = {
+            pageNo:1,//当前页
+            pageSize:6,//每页条数
+            start:0,//
+            total:0,//总条数
+            pageTotal:0,//总页数
+            pages:[],
+            load:null,
+            prev:function(){
+                if(this.pageNo>1){
+                    this.pageNo-=1;
+                    //$scope.load(this.pageNo,this.pageSize);
+                    this.load(this.pageNo,this.pageSize);
+                }
+            },
+            next:function(){
+                if(this.pageNo<this.pageTotal){
+                    this.pageNo+=1;
+                    //$scope.load(this.pageNo,this.pageSize);
+                    this.load(this.pageNo,this.pageSize);
+                }},
+            getPages:function(){
+                if(this.pageTotal>5){
+                    for(var i = 1 ;i<=5;i++){
+                        this.pages.push(i)
+                    }
+                }else{
+                    for(var n = 1 ;n<=this.pageTotal;n++){
+                        this.pages.push(n)
+                    }
+                }
+            },
+            go: function (pageNo) {
+                this.pageNo = pageNo;
+                //$scope.load(this.pageNo,this.pageSize);
+                this.load(this.pageNo,this.pageSize);
+            },
+            getList:function(data){
+                var self = this;
+                self.pageNo = data.pageNo;
+                self.pageSize = data.pageSize;
+                self.total = data.total;
+                if (self.total > self.pageSize) {
+                    if (self.total % self.pageSize > 0) {
+                        self.pageTotal = Math.floor(self.total / self.pageSize) + 1;
+                    } else {
+                        self.pageTotal = self.total / self.pageSize;
+                    }
+                } else {
+                    self.pageTotal = 1;
+                }
+                self.pages = [];
+                self.getPages();
+                return data.rows
+            }
+        };
+
+        /**
+         * 去除两边空格
+         */
+        function removeTrim(attr)
+        {
+            if(attr!=undefined)
+            {
+                return attr.replace(/(^\s*)|(\s*$)/g,'');
+            }
+        }
+
+        //设备订单列表搜索条件
+        $scope.order = {orderNum:'',number:'',custName:''};
+        /**
+         * 加载设备订单列表
+         * @param pageNo 当前页
+         * @param pageSize 每页条数
+         * 2016年5月25日 陈浪
+         */
+        $scope.load = function(pageNo,pageSize) {
+            $http.get(saasUrl+'/eqOrder/order_propertyLoad?page='+pageNo+
+                '&rows='+pageSize+
+                '&companyId='+$scope.user.companyId+
+                '&orderNum='+removeTrim($scope.order.orderNum)+
+                '&number='+removeTrim($scope.order.number)+
+                '&custName='+removeTrim($scope.order.custName)
+            ).success(function (data) {
+                $scope.orders = $scope.page.getList(data);
+                });
+        };
+        //页面加载完时加载数据
+        $scope.load(1,6);
+        //给分页请求函数赋值
+        $scope.page.load = $scope.load;
+
+
+        /**
+         * 创建收货单分页
+         * 2016年5月25日 陈浪
+         */
+        $scope.invoiceLogPage = $.extend({},{},$scope.page,true);
+
+        var invoiceLogId = '';//保存查询条件
+        /**
+         * 加载收货单列表
+         * @param pageNo
+         * @param pageSize
+         */
+        $scope.loadInvoiceLog = function(pageNo,pageSize){
+            $http.get(saasUrl+'/eqInvoiceLog/invoiceLogList?page='+pageNo+
+                '&rows='+pageSize+
+                '&orderId='+invoiceLogId
+            ).success(function (data) {
+                    $scope.invoiceLogs = $scope.invoiceLogPage.getList(data);
+            });
+        };
+        //给收货单分页请求函数赋值
+        $scope.invoiceLogPage.load = $scope.loadInvoiceLog;
+
+        /**
+         * 加载收货单列表
+         * 2016年5月25日 陈浪
+         */
+        $scope.loadInvoiceLogDetailed = function () {
+            $http.get(saasUrl+'/eqInvoice/detailed?'+
+                'orderId='+invoiceLogId
+            ).success(function (data) {
+                    $scope.invoiceLogDetaileds = data.eqInvoiceLogList;
+
+                });
+        };
+
+
+        $scope.eqContract={};
+
+        /**
+         * 设备订单列表选中
+         */
+        $scope.selected = function(item){
+            $scope.eqContract = item.eqContract;
+            $scope.btnIndex  = item.id;//选中样式
+            invoiceLogId = item.id;//选中时赋值查询条件
+            $scope.invoiceLogShow = true;
+            $scope.invoiceLogDetailsShow = true;
+
+            $scope.loadInvoiceLog(1,6);
+            $scope.loadInvoiceLogDetailed();
+        };
+
+        /**
+         * 创建收货单详情分页
+         */
+        $scope.invoiceLogDetailsPage = $.extend({},{},$scope.page,true);
+
+        /**
+         * 加载收货单详情
+         * @param pageNo
+         * @param pageSize
+         */
+        $scope.loadInvoiceLogDetailsList = function (pageNo, pageSize) {
+            $http.get(saasUrl+'/eqInvoiceLog/invoiceLogDetailsList?'+
+                'page='+pageNo+
+                '&rows='+pageSize+
+                '&outgoingBath='+outgoingBath+
+                '&invoiceId='+invoiceId
+            ).success(function (data) {
+                    $scope.invoiceLogDetailsList = $scope.invoiceLogDetailsPage.getList(data);
+                });
+        }
+
+        /**
+         * 收货单列表选中
+         */
+        var outgoingBath = '',invoiceId = '';//查询条件
+        $scope.invoiceLogDetailSelected = function (item) {
+            $scope.btnIndex1 = item.id;
+            $scope.invoiceLogDetailsListShow = true;
+            outgoingBath = item.outgoingBath;
+            invoiceId = item.invoiceId;
+            $scope.loadInvoiceLogDetailsList(1,6);
+        };
+
+    }]);
+});
+

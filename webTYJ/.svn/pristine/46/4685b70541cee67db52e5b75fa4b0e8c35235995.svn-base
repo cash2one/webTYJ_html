@@ -1,0 +1,989 @@
+<!--
+  创建人：陶勇超
+  名称：业主装修申请显示
+
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>业主装修申请显示</title>
+    <link rel="stylesheet" href="css/propertyService.css">
+    <style type="text/css">
+        #pm img{width:80px;height:80px;}
+        .doted{ height:20px; text-align:center; width:80px; margin:0 auto; }
+        .doted .dot_unChecked{ display:block; width:25px; height:25px; background:#e5e5e7; border:1px solid #a4a4a4; -moz-border-radius:50%; -webkit-border-radius:50%; border-radius:50%; float:left; margin-left:50px; margin-top:10px;}
+        .doted .dot_Check{ display:block; width:25px; height:25px; background:#02a0e7; -moz-border-radius:50%; -webkit-border-radius:50%; border-radius:50%; float:left; margin-left:50px; margin-top:10px;}
+        .doted .dot_Check{ display:block; width:25px; height:25px; background:#02a0e7; -moz-border-radius:50%; -webkit-border-radius:50%; border-radius:50%; float:left; margin-left:50px; margin-top:10px;}
+        .doted .dot_unChecked:hover{ display:block; width:25px; height:25px; background:#02a0e7; -moz-border-radius:50%; -webkit-border-radius:50%; border-radius:50%; float:left; margin-left:50px; margin-top:10px;}
+        .connectLines hr{width:76px;text-align: center;border: 1px dotted rgb(180,180,180);position: absolute;margin: 0 0 0 76px;}
+    </style>
+</head>
+<body>
+<div class="complaint_user" >
+    <div class="row col-md-12" style="margin-left: 43px;margin-top: 5px;text-align: center;">
+        <div class="col-md-1" style="margin-left: 15px">
+            <span>选择房屋</span>
+        </div>
+        <div class="col-md-1" style="margin-left: 25px">
+            <span>申请资料</span>
+        </div>
+        <div class="col-md-1" style="margin-left: 25px">
+            <span>现场核查</span>
+        </div>
+        <div class="col-md-1" style="margin-left: 25px">
+            <span>缴费</span>
+        </div>
+        <div class="col-md-1" style="margin-left: 25px">
+            <span>发放许可</span>
+        </div>
+        <div class="col-md-1" style="margin-left: 25px">
+            <span>施工过程</span>
+        </div>
+        <div class="col-md-1" style="margin-left: 25px">
+            <span>验收</span>
+        </div>
+        <div class="col-md-1" style="margin-left: 25px">
+            <span>费用结算</span>
+        </div>
+    </div>
+    <div class="row col-md-12" style="margin-left: -4px;margin-bottom: 20px;">
+        <div class="col-md-1" style="margin-left: 25px">
+                <span>
+                    <div class="doted" style="cursor:pointer">
+                        <a><span class="dot_Check" ng-click="chooseHouse()"></span></a>
+                    </div>
+                    <div class="connectLines">
+                        <hr>
+                    </div>
+                </span>
+        </div>
+        <div class="col-md-1" style="margin-left: 25px">
+                <span>
+                    <div class="doted" style="cursor:pointer">
+                        <a><span class="dot_unChecked" ng-click="applicationData()"></span></a>
+                    </div>
+                    <div class="connectLines">
+                        <hr>
+                    </div>
+                </span>
+        </div>
+        <div class="col-md-1" style="margin-left: 25px">
+                <span>
+                    <div class="doted" style="cursor:pointer">
+                        <a><span class="dot_unChecked" ng-click="verification()"></span></a>
+                    </div>
+                    <div class="connectLines">
+                        <hr>
+                    </div>
+                </span>
+        </div>
+        <div class="col-md-1" style="margin-left: 25px">
+                <span>
+                    <div class="doted" style="cursor:pointer">
+                        <a><span class="dot_unChecked" ng-click="payDeposit()"></span></a>
+                    </div>
+                    <div class="connectLines">
+                        <hr>
+                    </div>
+                </span>
+        </div>
+        <div class="col-md-1" style="cursor:pointer;margin-left: 25px">
+                <span>
+                    <div class="doted">
+                        <a><span class="dot_unChecked" ng-click="Alicence()"></span></a>
+                    </div>
+                    <div class="connectLines">
+                        <hr>
+                    </div>
+                </span>
+        </div>
+        <div class="col-md-1" style="cursor:pointer;margin-left: 25px">
+                <span>
+                    <div class="doted">
+                        <a><span class="dot_unChecked" ng-click="workProgress()"></span></a>
+                    </div>
+                    <div class="connectLines">
+                        <hr>
+                    </div>
+                </span>
+        </div>
+        <div class="col-md-1" style="cursor:pointer;margin-left: 25px">
+                <span>
+                    <div class="doted">
+                        <a><span class="dot_unChecked" ng-click="acceptance()"></span></a>
+                    </div>
+                    <div class="connectLines">
+                        <hr>
+                    </div>
+                </span>
+        </div>
+        <div class="col-md-1" style="margin-left: 25px">
+                <span>
+                    <div class="doted">
+                        <a><span class="dot_unChecked" ng-click="costClearing()"></span></a>
+                    </div>
+                </span>
+        </div>
+    </div>
+    <div class="clear"></div>
+</div>
+<div ng-show="show1">
+    <div>
+        <div class="complaint_user rightpadding">
+            <!--业主信息-->
+            <div class="architecture_table_padding">
+                <div class="row padding_lease"  >
+                    <div class="lease_search_height overflow_y">
+                        <div class="info_lista"   >
+                            <div class="media-left">
+                                <a href="#">
+                                    <img src="images/propertyService/choiceHousing/u81.jpg" width="50px;" height="50px" style="margin-top: 5px;">
+                                </a>
+                            </div>
+                            <div class="media-body" >
+                                <div class="row">
+                                    <div class="col-md-6">房屋地址：{{house.fullName}}</div>
+                                    <div class="col-md-3">业主姓名：{{user.name}}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-3">房屋编码：{{house.houseNum}}</div>
+                                    <div class="col-md-3"  ng-switch on="house.joinGangState">入伙状态：
+                                        <span ng-switch-when="0">已入伙</span>
+                                        <span ng-switch-when="1">没入伙</span>
+                                    </div>
+                                    <div class="col-md-3">竣工面积:{{house.houseArea}}</div>
+                                    <div class="col-md-3">房屋户型:{{house.houseName}}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--业主信息 结束-->
+
+            <!--下一步按钮-->
+            <div class="save_concel_botton contract_detail_botton">
+            <a href="" class="radius_all button_bule" ng-click="nextPage()">下一步</a>
+            <div class="clear"></div>
+            </div>
+            <!--下一步按钮 结束-->
+
+        </div>
+    </div>
+</div>
+<div ng-show="show2">
+    <div>
+        <div  class="complaint_user rightpadding"  >
+            <!--房屋地址表格-->
+            <div class="row">
+                <div class="col-md-6">
+                    <span>房屋地址：{{house.fullName}}</span>
+                </div>
+
+            </div>
+            <div class="table">
+                <table width="100%" >
+                    <tr class="table_nav">
+                        <td>装修图纸管理</td>
+                        <td>户型图</td>
+                        <td>水路图</td>
+                        <td>电路图</td>
+                    </tr>
+                    <tr>
+                        <td>原图</td>
+                        <td>  <img src={{fileUrl}}/{{OwnerRenovationApply.decorateAnnexList[0].annexAddress}}  style="height: 80px ;width: 100px"></td>
+                        <td>  <img src={{fileUrl}}/{{OwnerRenovationApply.decorateAnnexList[1].annexAddress}}  style="height: 80px ;width: 100px"></td>
+                        <td>  <img src={{fileUrl}}/{{OwnerRenovationApply.decorateAnnexList[2].annexAddress}}  style="height: 80px ;width: 100px"></td>
+                    </tr>
+                    <tr>
+                        <td>设计图</td>
+                        <td>  <img src={{fileUrl}}/{{OwnerRenovationApply.decorateAnnexList[3].annexAddress}}  style="height: 80px ;width: 100px"></td>
+                        <td>  <img src={{fileUrl}}/{{OwnerRenovationApply.decorateAnnexList[4].annexAddress}}  style="height: 80px ;width: 100px"></td>
+                        <td>  <img src={{fileUrl}}/{{OwnerRenovationApply.decorateAnnexList[5].annexAddress}}  style="height: 80px ;width: 100px"></td>
+                    </tr>
+                </table>
+            </div>
+            <!--房屋地址表格 结束-->
+
+            <!--装修对象表格-->
+            <span>装修对象选择：</span>
+            <div class="table">
+                <table width="100%">
+                    <tr class="table_nav">
+                        <td>建筑组建名称</td>
+                        <td>建筑组建编号</td>
+
+
+                    </tr>
+                    <tr ng-repeat="com in componentproperty">
+                        <td>{{com.functionalName}}</td>
+                        <td>{{ buildingComponent.componentNum }}</td>
+
+                    </tr>
+
+                </table>
+            </div>
+            <!--装修对象表格 结束-->
+
+            <!--条件搜索-->
+            <div class="row">
+                <div class="row form_list_three clear ">
+                    <ul>
+                        <li>
+                            <div ng-switch on="OwnerRenovationApply.decorateType">装修类型：
+                            <i ng-switch-when="0">自装</i>
+                                <i ng-switch-when="1">工装</i>
+                            </div>
+
+                            <div class="clear"></div>
+                        </li>
+                        <li >
+
+                                <span>拆墙面积：{{OwnerRenovationApply.actualDismantlesWallArea}}m2</span>
+
+                        </li>
+                    </ul>
+                </div>
+                <div class="form_list_three clear">
+                    <ul>
+                        <li>
+                            <span>装修单位：{{EnterpriseCustNew.enterpriseName}}</span>
+
+                        </li>
+                        <li>
+                            <span>现场负责人：{{personCustNew.name}}</span>
+
+                        </li>
+                        <li>
+                            <span>公司法人：{{EnterpriseCustNew.representative}}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!--条件搜索 结束-->
+
+            <!--装修人员-->
+            <div class="table">
+                <span>现场装修人员：</span>
+                <table width="100%">
+                    <tr class="table_nav">
+                        <td>装修人员姓名</td>
+                        <td>装修人员电话</td>
+                    </tr>
+                    <tr ng-repeat="itte in PersonCustNew">
+                        <td>{{itte.name}}</td>
+                        <td>{{itte.phoneNum}}</td>
+                    </tr>
+                </table>
+            </div>
+            <!--装修人员 结束-->
+
+            <!--装修单位-->
+            <div class="table">
+                <span>装修单位提交资料：</span>
+                <table width="100%">
+                    <tr class="table_nav">
+                        <td></td>
+                        <td>消防批文</td>
+                        <td>装修图纸</td>
+                        <td>动火协议</td>
+                        <td>合同文件</td>
+                        <td>其他</td>
+                    </tr>
+                    <tr>
+                        <td>文件</td>
+                        <td >  <img src={{fileUrl}}/{{OwnerRenovationApply.decoreateDiscloseInformationList[0].fileAddress}}  style="height: 80px ;width: 100px"></td>
+                        <td><img src={{fileUrl}}/{{OwnerRenovationApply.decoreateDiscloseInformationList[1].fileAddress}}  style="height: 80px ;width: 100px"></td>
+                        <td><img src={{fileUrl}}/{{OwnerRenovationApply.decoreateDiscloseInformationList[2].fileAddress}}  style="height: 80px ;width: 100px"></td>
+                        <td><img src={{fileUrl}}/{{OwnerRenovationApply.decoreateDiscloseInformationList[3].fileAddress}}  style="height: 80px ;width: 100px"></td>
+                        <td><img src={{fileUrl}}/{{OwnerRenovationApply.decoreateDiscloseInformationList[4].fileAddress}}  style="height: 80px ;width: 100px"></td>
+                    </tr>
+                </table>
+            </div>
+            <!--装修单位  结束-->
+            <div class="form_list_three clear">
+                <ul>
+                    <li>
+                        <span>装修预计开始时间：{{OwnerRenovationApply.estimatedStarTime| date:"yyyy-MM-dd HH:mm"}}</span>
+
+                    </li>
+                    <li>
+                        <span>装修预计结束时间：{{OwnerRenovationApply.estimatedFinishTime | date:"yyyy-MM-dd HH:mm"}}</span>
+
+                    </li>
+
+                </ul>
+            </div>
+            <!--下一步按钮-->
+            <div class="save_concel_botton contract_detail_botton">
+                <a href="" class="radius_all button_bule" ng-click="chooseHouse()">上一步</a>
+                <a href="" class="radius_all button_bule" ng-click="verification()">下一步</a>
+                <div class="clear"></div>
+            </div>
+            <!--下一步按钮  结束-->
+        </div>
+    </div>
+
+</div>
+<div ng-show="show3">
+    <div>
+        <div class="complaint_user">
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-6">
+                    <div class="row form_list_three clear ">
+                        <ul>
+
+                            <li>
+                                <span>负责人：</span>
+                                <div class="clear"></div>
+                            </li>
+                            <li>
+                                <span>预约时间：</span>
+                            </li>
+                        </ul>
+                    </div>
+
+
+                    <div class="panel_info">
+
+                        <div class="meter_plan_table_info ">
+                            <div>
+                                <span>核查单：</span>
+                            </div>
+                            <div class="bill_table">
+                                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="radius_all">
+                                    <tr class="table_nav">
+                                        <td width="25%" height="35px" align="center" valign="middle" >序号</td>
+                                        <td width="25%" height="35px" align="center" valign="middle" >是否进行</td>
+                                        <td width="25%" height="35px" align="center" valign="middle">是否异常</td>
+                                    </tr>
+                                    <tr ng-repeat="vm in RenovationCheckOrders.renovationCheckRecords">
+                                        <td width="25%" height="30px" align="center">
+                                            {{vm.inspectName}}
+                                        </td>
+                                        <td  width="25%" height="30px" align="center" valign="middle" >
+                                            <ul class="receive_list">
+                                                <li ng-switch on="vm.conduct">
+                                                    <b  ng-switch-when="0">不进行</b>
+                                                    <b ng-switch-when="1">进行</b>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                        <td  width="25%" height="30px" align="center" valign="middle">
+                                            <ul class="receive_list">
+                                                <li ng-switch on="vm.normal">
+                                                    <b  ng-switch-when="0">正常</b>
+                                                    <b ng-switch-when="1">异常</b>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="meter_plan_table_info ">
+                            <div>
+                                <span>装修设计图是否合理：</span>
+                            </div>
+                            <div class="bill_table" align="center">
+                                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="radius_all">
+                                    <tbody><tr class="table_nav">
+                                        <td height="35" align="center" width="20%">设计图</td>
+                                        <td height="35" align="center" width="20%">图纸</td>
+                                        <td height="35" align="center" width="20%">是否合理</td>
+                                    </tr>
+                                    <tr>
+                                        <td height="30px" align="center" width="20%">
+                                            装修设计图
+                                        </td>
+                                        <td height="30px" align="center" width="20%">
+                                            <img>
+                                        </td>
+                                        <td height="30px" align="center" width="20%">
+                                            <ul class="receive_list">
+                                                <li ng-switch on="RenovationCheckOrders.architecturalDesign">
+                                                    <b  ng-switch-when="0">不合理</b>
+                                                    <b ng-switch-when="1">合理</b>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td height="30px" align="center" width="20%">
+                                            水路图
+                                        </td>
+                                        <td height="30px" align="center" width="20%">
+                                            <img>
+                                        </td>
+                                        <td height="30px" align="center" width="20%">
+                                            <ul class="receive_list">
+                                                <li ng-switch on="RenovationCheckOrders.waterPipeDesign">
+                                                    <b  ng-switch-when="0">不合理</b>
+                                                    <b ng-switch-when="1">合理</b>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td height="30px" align="center" width="20%">
+                                            电路图
+                                        </td>
+                                        <td height="30px" align="center" width="20%">
+                                            <img>
+                                        </td>
+                                        <td height="30px" align="center" width="20%">
+                                            <ul class="receive_list">
+                                                <li ng-switch on="RenovationCheckOrders.circuitDesign">
+                                                    <b  ng-switch-when="0">不合理</b>
+                                                    <b ng-switch-when="1">合理</b>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="meter_plan_table_info ">
+                            <div>
+                                <span>是否建议发函：</span>
+                            </div>
+                            <div class="bill_table" align="center">
+                                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="radius_all">
+                                    <tbody><tr class="table_nav">
+                                        <td height="35" align="center" width="30%">函件名</td>
+                                        <td height="35" align="center" width="30%">是否建议发函</td>
+                                    </tr>
+                                    <tr ng-repeat="vm1 in RenovationCheckOrders.letterRecords">
+                                        <td height="30px" align="center" width="30%">
+                                            {{vm1.letterName}}
+                                        </td>
+                                        <td height="30px" align="center" width="30%">
+                                            <ul class="receive_list">
+                                                <li ng-switch on="vm1.whetherLetter">
+                                                    <b  ng-switch-when="0">不建议发函</b>
+                                                    <b ng-switch-when="1">建议发函</b>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="meter_plan_table_info ">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <ul class="receive_list">
+                                        <li ng-switch on="RenovationCheckOrders.whetherToContinue">是否可继续装修：
+                                            <b  ng-switch-when="0">不可以</b>
+                                            <b ng-switch-when="1">可以</b>
+                                        </li>
+                                        <!--<li ng-show="closed">关闭时间：{{aa.renovationCheckOrders.closeTime | date:'yyyy-MM-dd HH:mm:ss'}}</li>-->
+                                        <!--<li ng-show="closed">关闭操作人：{{aa.renovationCheckOrders.closePersonId}}</li>-->
+                                        <!--<li ng-show="closed">关闭原因：{{aa.renovationCheckOrders.closeRemarks}}</li>-->
+                                        <li>备注：{{RenovationCheckOrders.remarks}}</li>
+                                        <li>
+                                            <span>附件：</span>
+                                            <img src={{fileUrl}}/{{RenovationCheckOrders.annexs.annexAddress}}  style="height: 200px ;width: 250px">
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--下一步按钮-->
+            <div class="save_concel_botton contract_detail_botton">
+                <a href="" class="radius_all button_bule" ng-click="applicationData()">上一步</a>
+                <a href="" class="radius_all button_bule" ng-click="payDeposit()">下一步</a>
+                <div class="clear"></div>
+            </div>
+            <!--下一步按钮  结束-->
+        </div>
+    </div>
+
+
+
+</div>
+<div ng-show="show4">
+    <div>
+        <div class="complaint_user_list building_padding">
+            <!--收费表格-->
+            <div class="table">
+                <table width="100%">
+                    <tr class="table_nav">
+                        <td>收费编码</td>
+                        <td>收费名称</td>
+                        <td>收费金额</td>
+                    </tr>
+                    <tr>
+                        <td>sz001</td>
+                        <td>临时水表押金</td>
+                        <td>200元</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3"><span class="glyphicon glyphicon-plus"></span></td>
+                    </tr>
+                </table>
+            </div>
+            <!--收费表格 结束-->
+
+            <!--备注说明-->
+            <div class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-8">
+                    <div class="row">
+                        <span>备注说明：</span>
+                    </div>
+                    <div class="row">
+                        <textarea placeholder="备注说明" class="textarea_width"></textarea>
+                    </div>
+                </div>
+            </div>
+            <span class="icon_float">共计：4000元</span>
+            <!--备注说明 结束-->
+
+            <!--收费信息-->
+            <div class="form_list_three clear">
+                <ul>
+                    <li><span>收费人：范冰冰</span> </li>
+                    <li><span>收费时间：2015年4月8日</span></li>
+                </ul>
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-default"  ui-sref="index.propertyService.staffHome.decorate.decoration.Alicence">确认收费并打印</button>
+            </div>
+            <!--收费信息 结束-->
+            <!--下一步按钮-->
+            <div class="save_concel_botton contract_detail_botton">
+                <a href="" class="radius_all button_bule" ng-click="verification()">上一步</a>
+                <a href="" class="radius_all button_bule" ng-click="Alicence()">下一步</a>
+                <div class="clear"></div>
+            </div>
+            <!--下一步按钮  结束-->
+        </div>
+
+    </div>
+</div>
+<div ng-show="show5">
+    <div>
+        <div class="complaint_user">
+            <div class="building_padding">
+                <div class="text_center">
+                    <span><strong class="font_20">施工备案证</strong></span>
+                </div>
+                <div>
+                    <div class="col-lg-4 col-md-4 col-sm-4">
+                        <div class="row print_left">
+                            <div class="text_title">
+                                <span class="text_center">管理处存根</span>
+                            </div>
+                            <div class="form_list">
+                                <ul>
+                                    <li><span>施工单位：</span>{{EnterpriseCustNew.enterpriseName}}</li>
+                                    <li><span>备案证号：</span>{{ConstructionRecordCard.recordId}}</li>
+                                    <li><span>办证人：</span>{{user.name}}</li>
+                                    <li><span>办证日期：</span>{{ConstructionRecordCard.registrationTime}}</li>
+                                    <li><span>有效期 ：</span>{{OwnerRenovationApply.estimatedStarTime|date:"yyyy-MM-dd"}}</li>
+                                    <li><span></span><span class="text_right">——</span></li>
+                                    <li><span></span>{{OwnerRenovationApply.estimatedFinishTime|date:"yyyy-MM-dd"}}</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-8 col-md-8 col-sm-8">
+                        <div class="print_left building_padding">
+                            <div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">
+                                    <span ng-model="ConstructionRecordCard.propertyName">物业公司名称：{{WuYe.enterpriseName}}</span>
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">
+                                    <span  ng-model="ConstructionRecordCard.cardId">证件号：{{WuYe.tradingNumber}}</span>
+                                </div>
+                            </div>
+                            <div class="print_table building_padding">
+                                <table width="100%" class="text_center">
+                                    <tr>
+                                        <td>业主名称</td>
+                                        <td>{{user.name}}</td>
+                                        <td>装修地址</td>
+
+                                        <td>{{house.fullName}}</td>
+                                        <td>开工日期</td>
+                                        <td>{{OwnerRenovationApply.estimatedStarTime|date:"yyyy-MM-dd "}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>装修单位</td>
+                                        <td>{{EnterpriseCustNew.enterpriseName}}</td>
+                                        <td>现场负责人</td>
+                                        <td>{{personCustNew.name}}</td>
+                                        <!--<td>{{OwnerConstructionApply.constructionAssociatedRecord.personCustNew.name}}</td>-->
+                                        <td>消防批文号</td>
+                                        <td>{{}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>环保批文号</td>
+                                        <td colspan="5">{{}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>装修项目</td>
+                                        <td colspan="5">{{}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="6">&nbsp;&nbsp;&nbsp;&nbsp;该单元进行室内装修的手续已予办理，现装修管理小组准予施工。施工日期自
+
+                                            {{OwnerRenovationApply.estimatedStarTime|date:"yyyy-MM-dd"}}起到{{OwnerRenovationApply.estimatedFinishTime|date:"yyyy-MM-dd"}}止，施工期共计为      天。
+
+                                            每日施工时间为：{{ConstructionRecordCard.dailyStarTime|date : "HH:mm"}}——{{ConstructionRecordCard.dailyFinishTime| date : "HH:mm"}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>签发人</td>
+                                        <td colspan="2">{{ConstructionRecordCard.staff.staffName}}</td>
+                                        <td>客户服务签章</td>
+                                        <td colspan="2">&nbsp;</td>
+                                    </tr>
+                                    <tr>
+                                        <td>备注</td>
+                                        <td colspan="5" ng-switch on="ConstructionRecordCard.constructionScope">本备案施工范围属于：
+                                            <span ng-switch-when="1">装修施工</span>
+                                            <span ng-switch-when="2">装饰施工</span>
+                                            <span ng-switch-when="3">临时施工</span>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <span class="center">注： 此证须规范张贴在施工现场。此证的发出，并不代表贵户可豁免相关的法律责任。</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="text-align: center;margin-top: 30px">
+                    <button type="button" class="btn btn-default" ng-click="workProgress()">打印</button>
+                </div>
+            </div>
+        </div></div>
+</div>
+<div ng-show="show6">
+    <div >
+        <div class="complaint_user">
+            <div class="building_padding">
+                <!--装修过程巡检表-->
+                <div class="table">
+                    <table width="100%">
+                        <tr class="table_nav">
+                            <td>巡检人</td>
+                            <td>巡检时间</td>
+                            <td>业主</td>
+                            <td>巡检地址</td>
+                            <td>巡检结果</td>
+                        </tr>
+                        <tr ng-repeat="xj in xunJian">
+                            <td>{{xj.staff.staffName}}</td>
+                            <td>{{xj.estimatedTime|date:"yyyy-MM-dd"}}</td>
+                            <td>{{user.name}}</td>
+                            <td>{{xj.buildingStructureNew.fullName}}</td>
+                            <td><a style="cursor: pointer"  ng-click="addCheck(xj.taskId)">查看</a></td>
+                        </tr>
+
+                    </table>
+                </div>
+                <!--装修过程巡检表  结束-->
+
+            </div>
+            <!--下一步按钮-->
+            <div class="save_concel_botton contract_detail_botton">
+                <a href="" class="radius_all button_bule" ng-click="Alicence()">上一步</a>
+                <a href="" class="radius_all button_bule" ng-click="acceptance()">下一步</a>
+                <div class="clear"></div>
+            </div>
+            <!--下一步按钮  结束-->
+        </div>
+    </div>
+</div>
+<div ng-show="show7">
+    <div >
+        <div class="complaint_user">
+            <div class="building_padding">
+                <!--检查项表   radio 样式需修改-->
+                <div>
+                    <span>巡检单：</span>
+                </div>
+                <div class="bill_table">
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0" class="radius_all">
+                        <tr class="table_nav">
+                            <td width="25%" height="35px" align="center" valign="middle" >序号</td>
+                            <td width="25%" height="35px" align="center" valign="middle" >是否进行</td>
+                            <td width="25%" height="35px" align="center" valign="middle">是否异常</td>
+                        </tr>
+                        <tr ng-repeat="vm in RenovationInspectionOrders.renovationInspectionRecords">
+                            <td width="25%" height="30px" align="center">
+                                {{vm.inspectName}}
+                            </td>
+                            <td  width="25%" height="30px" align="center" valign="middle" >
+                                <ul class="receive_list">
+                                    <li ng-switch on="vm.conduct">
+                                        <b  ng-switch-when="0">不进行</b>
+                                        <b ng-switch-when="1">进行</b>
+                                    </li>
+                                </ul>
+                            </td>
+                            <td  width="25%" height="30px" align="center" valign="middle">
+                                <ul class="receive_list">
+                                    <li ng-switch on="vm.normal">
+                                        <b  ng-switch-when="0">正常</b>
+                                        <b ng-switch-when="1">异常</b>
+                                    </li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <!--检查项表  结束-->
+                <div class="meter_plan_table_info ">
+                    <div>
+                        <span>是否建议发函：</span>
+                    </div>
+                    <div class="bill_table" align="center">
+                        <table width="100%" border="0" cellpadding="0" cellspacing="0" class="radius_all">
+                            <tbody><tr class="table_nav">
+                                <td height="35" align="center" width="30%">函件名</td>
+                                <td height="35" align="center" width="30%">是否建议发函</td>
+                            </tr>
+                            <tr ng-repeat="vm1 in RenovationInspectionOrders.letterRecords">
+                                <td height="30px" align="center" width="30%">
+                                    {{vm1.letterName}}
+                                </td>
+                                <td height="30px" align="center" width="30%">
+                                    <ul class="receive_list">
+                                        <li ng-switch on="vm1.whetherLetter">
+                                            <b  ng-switch-when="0">不建议发函</b>
+                                            <b ng-switch-when="1">建议发函</b>
+                                        </li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="meter_plan_table_info ">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <ul class="receive_list">
+                                <li ng-switch on="RenovationInspectionOrders.normal">巡检结果是否正常：
+                                    <b  ng-switch-when="0">异常</b>
+                                    <b ng-switch-when="1">正常</b>
+                                </li>
+                                <li ng-show="closed">失效时间：{{RenovationInspectionOrders.closeTime | date:'yyyy-MM-dd HH:mm:ss'}}</li>
+                                <li ng-show="closed">失效操作人：{{RenovationInspectionOrders.closePersonId}}</li>
+                                <li ng-show="closed">失效原因：{{RenovationInspectionOrders.closeRemarks}}</li>
+                                <li>备注：{{RenovationInspectionOrders.remarks}}</li>
+                                <li>
+                                    <span>附件：</span>
+                                    <img src={{fileUrl}}/{{RenovationInspectionOrders.annexs.annexAddress}}  style="height: 200px ;width: 250px">
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="save_concel_botton contract_detail_botton">
+                    <a href="" class="radius_all button_bule"  ng-click="workProgress()">上一页</a>
+                    <a href="" class="radius_all button_bule"  ng-click="acceptance()">下一页</a>
+                    <div class="clear"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div ng-show="show8">
+    <div >
+        <div class="complaint_user">
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-6">
+                    <div class="row form_list_three clear ">
+                        <ul>
+                            <!--<li>-->
+                                <!--<span class="text_mid">工单号：</span>-->
+                                <!--<div class="clear"></div>-->
+                            <!--</li>-->
+                            <!--<li>-->
+                                <!--<span>负责人：</span>-->
+                                <!--<div class="clear"></div>-->
+                            <!--</li>-->
+                            <!--<li>-->
+                                <!--<span>预约时间：</span>-->
+                            <!--</li>-->
+                        </ul>
+                    </div>
+
+
+                    <div class="panel_info">
+
+                        <div class="meter_plan_table_info ">
+                            <div>
+                                <span>验收单：</span>
+                            </div>
+                            <div class="bill_table">
+                                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="radius_all">
+                                    <tr class="table_nav">
+                                        <td width="25%" height="35px" align="center" valign="middle" >序号</td>
+                                        <td width="25%" height="35px" align="center" valign="middle" >是否进行</td>
+                                        <td width="25%" height="35px" align="center" valign="middle">是否异常</td>
+                                    </tr>
+                                    <tr ng-repeat="vm in RenovationAcceptanceOrders.renovationAcceptanceRecords">
+                                        <td width="25%" height="30px" align="center">
+                                            {{vm.inspectName}}
+                                        </td>
+                                        <td  width="25%" height="30px" align="center" valign="middle" >
+                                            <ul class="receive_list">
+                                                <li ng-switch on="vm.conduct">
+                                                    <b  ng-switch-when="0">不进行</b>
+                                                    <b ng-switch-when="1">进行</b>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                        <td  width="25%" height="30px" align="center" valign="middle">
+                                            <ul class="receive_list">
+                                                <li ng-switch on="vm.normal">
+                                                    <b  ng-switch-when="0">正常</b>
+                                                    <b ng-switch-when="1">异常</b>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="meter_plan_table_info ">
+                            <div>
+                                <span>是否建议发函：</span>
+                            </div>
+                            <div class="bill_table" align="center">
+                                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="radius_all">
+                                    <tbody><tr class="table_nav">
+                                        <td height="35" align="center" width="30%">函件名</td>
+                                        <td height="35" align="center" width="30%">是否建议发函</td>
+                                    </tr>
+                                    <tr ng-repeat="vm1 in RenovationAcceptanceOrders.letterRecords">
+                                        <td height="30px" align="center" width="30%">
+                                            {{vm1.letterName}}
+                                        </td>
+                                        <td height="30px" align="center" width="30%">
+                                            <ul class="receive_list">
+                                                <li ng-switch on="vm1.whetherLetter">
+                                                    <b  ng-switch-when="0">不建议发函</b>
+                                                    <b ng-switch-when="1">建议发函</b>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="meter_plan_table_info ">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <ul class="receive_list">
+                                        <li ng-switch on="RenovationAcceptanceOrders.normal">验收结果是否正常：
+                                            <b  ng-switch-when="0">异常</b>
+                                            <b ng-switch-when="1">正常</b>
+                                        </li>
+                                        <li ng-show="closed">失效时间：{{RenovationAcceptanceOrders.closeTime | date:'yyyy-MM-dd HH:mm:ss'}}</li>
+                                        <li ng-show="closed">失效操作人：{{RenovationAcceptanceOrders.closePersonId}}</li>
+                                        <li ng-show="closed">失效原因：{{RenovationAcceptanceOrders.closeRemarks}}</li>
+                                        <li>备注：{{RenovationAcceptanceOrders.remarks}}</li>
+                                        <li>
+                                            <span>附件：</span>
+                                            <img src={{fileUrl}}/{{RenovationAcceptanceOrders.annexs.annexAddress}}  style="height: 200px ;width: 250px">
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--下一步按钮-->
+            <div class="save_concel_botton contract_detail_botton">
+                <a href="" class="radius_all button_bule" ng-click="workProgress()">上一步</a>
+                <a href="" class="radius_all button_bule" ng-click="costClearing()">下一步</a>
+                <div class="clear"></div>
+            </div>
+            <!--下一步按钮  结束-->
+        </div>
+    </div>
+
+
+</div>
+<div ng-show="show9">
+    <div >
+        <div class="complaint_user">
+            <div class="building_padding">
+                <div class="col-md-6">
+                    <div class="table">
+                        <table width="100%">
+                            <tr class="table_nav">
+                                <td>收费编码</td>
+                                <td>收费名称</td>
+                                <td>收费金额</td>
+                            </tr>
+
+                            <tr ng-repeat="items in Charge">
+                                <td class="col-md-4">{{items.chargeCode}}</td>
+                                <td class="col-md-4">{{items.chargeName}}</td>
+                                <td class="col-md-4">{{items.chargeamount}}</td>
+                            </tr>
+                            <tr>
+                                <td>实收费用合计</td>
+                                <td></td>
+                                <td>1900元</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="table">
+                        <table width="100%">
+                            <tr  class="table_nav">
+                                <td colspan="2">扣款金额</td>
+                            </tr>
+                            <tr ng-repeat="items5 in Charge">
+                                <!--<td class="col-md-4">{{items5.paymentId}}</td>-->
+                                <td>{{items5.paymentName}}</td>
+                                <td>{{items5.paymentamount}}</td>
+                            </tr>
+
+                            <tr>
+                                <td>扣款金额合计</td>
+                                <td>1300元</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="col-md-2" style="margin-left: 30px"> <span >应收金额：1300元 </span></div>
+                    <div class="col-md-2" style="margin-left: 30px"> <span >应退押金：4000元 </span></div>
+                    <div class="col-md-2">  <span >实退金额：<input style="width: 50px;height: 25px"></span></div>
+                    <div class="col-md-3">    <span>结算时间：2015年4月8日</span></div>
+                    <div class="col-md-2"> <span >结算人：范冰冰 </span></div>
+
+
+                </div>
+                <div class="col-md-offset-10" style="margin-top: 10px;margin-bottom: 10px"><button type="submit" class="btn btn-default">提交并打印</button></div>
+            </div>
+            <!--下一步按钮-->
+            <div class="save_concel_botton contract_detail_botton">
+                <a href="" class="radius_all button_bule" ng-click="acceptance()">上一步</a>
+                <!--<a href="" class="radius_all button_bule" ng-click="costClearing()">下一步</a>-->
+                <div class="clear"></div>
+            </div>
+            <!--下一步按钮  结束-->
+        </div>
+    </div>
+</div>
+</body>
+</html>

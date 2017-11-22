@@ -1,0 +1,279 @@
+<!--
+    创建人：NM
+    pageName:放行条查询
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>放行条查询</title>
+</head>
+<body>
+<div class="row padding">
+    <div class="row search-padding-10" >
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            申请人：
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-4">
+            <div class="row">
+                <div class="col-lg-12">
+                    <input class="form-control" type="text" ng-model="articleRelease.custName" placeholder="请输入姓名">
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            证件类型：
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-4">
+            <select ng-model="articleRelease.cardType" class="form-control">
+                <option value="">请选择</option>
+                <option value="0">身份证</option>
+                <option value="1">护照</option>
+            </select>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            证件号码：
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-4">
+            <div class="row">
+                <div class="col-lg-12">
+                    <input class="form-control" type="text" ng-model="articleRelease.cardNumber" placeholder="请输入证件号码">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row search-padding-10">
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            申请人电话：
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-4">
+            <div class="row">
+                <div class="col-lg-12">
+                    <input class="form-control" ng-model="articleRelease.phone" placeholder="请输入电话号码">
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-8 col-md-2 col-sm-2 text-right">
+            <button type="button" class="btn btn-default btn-primary" ng-click="searchPaginator._load()">
+                <span class="glyphicon glyphicon-search btn_icon"></span>查询
+            </button>
+
+            <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="showList()">
+                <span class="glyphicon glyphicon-th-large btn_icon"></span>
+                列表
+            </button>
+            <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="showTable()">
+                <span class="glyphicon glyphicon-th-list btn_icon"></span>
+                网格
+            </button>
+        </div>
+    </div>
+</div>
+<div class="row padding">
+    <div class="col-lg-12">
+        <div class="row search-padding-10">
+            <div class="col-lg-4 col-md-6 col-sm-6" ng-repeat="history in searchPaginator.object.articleReleases" ng-show="history.id !=null&&showStatus==1">
+                <div id="pannel">
+                    <div class="title">
+                        <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                            <h3>放行条</h3>
+                        </div>
+                    </div>
+                    <div class="pannel_content height" ng-click="datil(history)">
+                        <div>
+                            <ul><li><a href="javascript:void(0)" >申请人<span class="pull-right">{{history.person.name}}</span></a></li>
+                                <li><a href="javascript:void(0)" >申请人电话<span class="pull-right">{{history.person.phoneNum}}</span></a></li>
+                                <li><a href="javascript:void(0)" >放行开始时间<span class="pull-right">{{history.releaseTime|date:'yyyy-MM-dd'}}</span></a></li>
+                                <li><a href="javascript:void(0)" >放行结束时间<span class="pull-right">{{history.releaseTimeEnd|date:'yyyy-MM-dd'}}</span></a></li>
+                                <li><a href="javascript:void(0)" >地址 <span class="pull-right">{{history.houseName}}</span></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row search-padding-10" ng-show="showStatus==0">
+            <table  ng-show="showStatus==0">
+                <thead>
+                <tr>
+                    <th>申请人</th>
+                    <th>申请人电话</th>
+                    <th>放行开始时间</th>
+                    <th>放行结束时间</th>
+                    <th>地址</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="history in searchPaginator.object.articleReleases"
+                    ng-dblclick="datil(history)"
+                    ng-show="history.id !=null">
+                    <td>{{history.person.name}}</td>
+                    <td>{{history.person.phoneNum}}</td>
+                    <td>{{history.releaseTime|date:'yyyy-MM-dd'}}</td>
+                    <td>{{history.releaseTimeEnd|date:'yyyy-MM-dd'}}</td>
+                    <td>{{history.houseName}}</td>
+                </tr>
+                <tr ng-if="searchPaginator.object.articleReleases[1].id==null">
+                    <td colspan="6">暂无数据！</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="bill_paging">
+            <ul class="pagination">
+                <li><a style="cursor:pointer;" ng-click="searchPaginator.go(1)">首页</a></li>
+                <li><a style="cursor:pointer;" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a></li>
+                <li><a style="cursor:pointer;" ng-repeat="i in searchPaginator.pages"  ng-click="searchPaginator.go(i)">{{i}}</a></li>
+                <li><a style="cursor:pointer;" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a></li>
+                <li><a style="cursor:pointer;" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!--</div>-->
+<div class="modal fade" id="modifyPet" role="dialog" aria-label="myModalLabel" aria-hidden="true">
+
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>放行条</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                    <div class="row sel1">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            单据号：
+                        </div>
+                        <div class="col-lg-2 col-md-3 col-sm-3">
+                            {{lishi.releaseCode}}
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 text-right">
+                            客户：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            {{lishi.person.name}}
+                        </div>
+                        <div class="clear"></div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            客户电话：
+                        </div>
+                        <div class="col-lg-2 col-md-3 col-sm-3">
+                           {{lishi.person.phoneNum}}
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 text-right">
+                            搬出物品地址：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                           <nobr>{{lishi.houseName}}</nobr>
+                        </div>
+                        <div class="clear"></div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            申请人：
+                        </div>
+                        <div class="col-lg-2 col-md-3 col-sm-3">
+                            {{lishi.person.name}}
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 text-right">
+                            申请人证件号：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            {{lishi.person.cardNum}}
+                        </div>
+                        <div class="clear"></div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            申请人电话：
+                        </div>
+                        <div class="col-lg-2 col-md-3 col-sm-3">
+                            {{lishi.person.phoneNum}}
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 text-right">
+                            放行开始日期：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            {{lishi.releaseTime | date:"yyyy-MM-dd"}}
+                        </div>
+                        <div class="clear"></div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            申请日期：
+                        </div>
+                        <div class="col-lg-2 col-md-3 col-sm-3">
+                            {{lishi.applyTime | date:"yyyy-MM-dd"}}
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 text-right">
+                            放行结束日期：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 ">
+                           {{lishi.releaseTimeEnd | date:"yyyy-MM-dd"}}
+                        </div>
+
+                    </div>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th width="10%">序号</th>
+                            <th width="30%">包含物品</th>
+                            <th width="10%">数量</th>
+                            <th width="50%">备注</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="item in Contain_arr_y track by $index" ng-show="item.contaitState == 1">
+                            <td>{{$index+1}}</td>
+                            <td>{{item.itemName}}</td>
+                            <td>{{item.amount}}</td>
+                            <td>{{item.note}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <table ng-show="showNoContain">
+                        <thead>
+                        <tr>
+                            <th width="10%">序号</th>
+                            <th width="30%">不包含物品</th>
+                            <th width="10%">数量</th>
+                            <th width="50%">备注</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="tem in Contain_arr_n track by $index" ng-show="tem.contaitState == 0">
+                            <td>{{$index+1}}</td>
+                            <td>{{tem.itemName}}</td>
+                            <td>{{tem.amount}}</td>
+                            <td>{{tem.note}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                        data-dismiss="modal">关闭
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

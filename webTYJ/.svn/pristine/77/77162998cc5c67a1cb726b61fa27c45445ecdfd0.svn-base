@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>收款台</title>
+</head>
+<body>
+<div class="card">
+    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a ui-sref="index.cashier.cashier.cashierUI.billInquiry">
+                        <img src="images/icon/theCashier/shoukuantai.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>收款台</strong></h4>
+                    查询所有工单信息
+                    务时可以查询FAQ解答
+                    客户问题。
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a ui-sref="index.cashier.systemReport">
+                        <img src="images/icon/theCashier/xitongbaobiao.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>系统报表</strong></h4>
+                    查询所有工单信息
+                    务时可以查询FAQ解答
+                    客户问题。
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

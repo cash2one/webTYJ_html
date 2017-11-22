@@ -1,0 +1,94 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 产品初始化js
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../app');
+
+    app.controller('productCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        var url = $rootScope.url;
+        $scope.searchProduct = {page: {}};
+        $scope.indexs='';   //序号
+        $scope.productIds = [];     //存放产品id数组
+
+        /**
+         * 查询所有产品记录（分页）
+         */
+        var checkProduct = function (page, callback) {
+            $scope.searchProduct.page = page;
+            $http.post(url + '/Product/listPageProduct', {Product: $scope.searchProduct}).success(callback);
+        };
+        $scope.currentProduct = app.get('Paginator').list(checkProduct, 5);
+        $scope.indexs=$scope.currentProduct.page.currentPage*5;
+        /**
+         * 选中一条数据
+         * @param index   一个对象
+         */
+        $scope.currentBuilding = {};
+        $scope.checkProduct = function(index){
+            $scope.btnIndex = index;
+            $scope.currentBuilding = index;
+        };
+
+        $scope.toAdd = function(){
+            $rootScope.productId = null;
+            $location.path("/index/accountManagement/product/productBanner/buildLease");
+        };
+
+        //多选框点击时选中或取消,将值存入数组
+        $scope.chargeItem = function(id){
+            $scope.productids = {};
+            $scope.productids = id;
+            if(document.getElementById(id).checked == true){
+                $scope.productIds.push($scope.productids);
+            }else{
+                $scope.temp = [];
+                $scope.temp = $scope.productIds;
+                $scope.productIds = [];
+                for(var i = 0; i < $scope.temp.length; i ++){
+                    if($scope.temp[i] != id){
+                        $scope.productIds.push($scope.temp[i]);
+                    }
+                }
+            }
+        };
+
+        //产品修改跳转
+        $scope.toUpdate = function(){
+            //修改前判断是否产品是否选中，是否只选择了一条记录
+            if($scope.productIds.length == 0){
+                layer.alert('请选择需要修改的产品信息',{icon : 0});
+            }else if($scope.productIds.length > 1){
+                layer.alert('一次只能选择一条产品信息进行修改',{icon : 0});
+            }else{
+                $rootScope.productId = $scope.productIds[0];
+                $location.path("/index/accountManagement/product/productBanner");
+            }
+        };
+
+        //修改产品状态为失效
+        $scope.changeState = function(){
+            //修改前判断产品是否选中
+            if($scope.productIds.length == 0){
+                layer.alert('请选择至少一条产品信息',{icon : 0});
+            }else {
+                $scope.productids = {};
+                $scope.productids = $scope.productIds.join(",");
+                $http.get(url + '/Product/changeState/' + $scope.productids).success(function(data){
+                    layer.msg('设置成功！',{icon : 1, time : 2000});
+                    $scope.productIds = [];
+                    $scope.currentProduct._load();
+                }).error(function(){
+                    layer.alert('设置失败，请重新选择！',{icon : 2});
+                    $scope.productIds = [];
+                    $scope.currentProduct._load();
+                });
+            }
+        };
+
+    }]);
+});

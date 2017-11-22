@@ -1,0 +1,487 @@
+<!--
+    author:钟加诚
+    pageName:物业服务人员主页中停车卡---新增子页面
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script type="text/javascript">
+        /**
+         * BUG 178
+         * 陶勇超 2016年1月13日 09:38:37
+         */
+        document.getElementById("sss").focus();
+    </script>
+</head>
+<body>
+<form id="css_form" name="mainForm" novalidate>
+<div class="sel1">
+    <div class="row search-padding-10">
+    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+        停车卡号：
+    </div>
+    <div class="col-lg-3 col-md-4 col-sm-4">
+        <input type="text" class="form-control" id="sss" palceholder="请输入停车卡号" required maxlength="36" onkeyup="value=value.replace(/[\W]/g,'') "onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[\W]/g,''))"   name="input2"  ng-model="caraccesscards.idcardNum" />
+          <!--<span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.input2.$dirty && mainForm.input2.$invalid">
+                <p class="alter" ng-show="mainForm.input2.$error.required">
+                    不能为空
+                </p>
+                <p class="alter" ng-show="mainForm.input2.defined ">
+                    正确
+                </p>
+            </span>-->
+    </div>
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            <span style="color: red">*</span>
+        </div>
+    </div>
+    <div class="row search-padding-10">
+    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+        车牌号：
+    </div>
+    <div class="col-lg-3 col-md-4 col-sm-4">
+        <input type="text"  class="form-control" palceholder="请输入车牌号" name="input1"  required   ng-model="carInfoone.carNum" disabled="disabled" />
+          <!--<span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.input1.$dirty && mainForm.input1.$invalid">
+                <p class="alter" ng-show="mainForm.input1.$error.required">
+                    不能为空
+                </p>
+                <p class="alter" ng-show="mainForm.input1.defined ">
+                    正确
+                </p>
+            </span>-->
+    </div>
+
+    <div class="col-lg-2 col-md-4 col-sm-4 ">
+        <span style="color: red">*</span>
+        <span><button type="button" class="btn btn-default btn-primary" required  data-toggle="modal" data-target="#myModale" ng-click="getCarInfo()">关联车牌号 </button></span>
+    </div>
+        </div>
+    <div class="row search-padding-10">
+    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+        生效日期：
+    </div>
+    <div class="col-lg-3 col-md-4 col-sm-4">
+        <input type="text" onclick="WdatePicker({readOnly:true})" class="Wdate form-control" name="input"  onChange=""  ng-model="caraccesscards.startDate"  />
+    </div>
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            <span style="color: red">*</span>
+        </div>
+        </div>
+    <div class="row search-padding-10">
+    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+        缴费到期日：
+    </div>
+    <div class="col-lg-3 col-md-4 cosml--4">
+        <input type="text" onclick="WdatePicker({readOnly:true})" class="Wdate form-control" name="input" onChange=""  ng-model="caraccesscards.endDate"  ng-blur="checkDates()" ng-change="getStall(stallss.id,false)"/>
+    </div>
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            <span style="color: red">*</span>
+        </div>
+        </div>
+    <div class="row search-padding-10">
+    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+        车位类型：
+    </div>
+    <div class="col-lg-3 col-md-4 col-sm-4">
+            <select ng-model="stallss.id" class="form-control" name="name" ng-options="p.id as p.stallType for p in stallss" ng-change="getStall(stallss.id,true)" required  >
+        </select>
+    </div>
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            <span style="color: red">*</span>
+        </div>
+        </div>
+</div>
+</form>
+<div class="padding">
+    <!--私人车位-->
+    <div ng-show="showStall1" >
+        <div class="row search-padding-10">
+            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                车位编号：
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <input type="text" disabled="disabled" class="form-control" palceholder="请输车位编号" name="stallCoding" required ng-model="stallone.stallCoding" />
+                    </div>
+                </div>
+            </div>
+            <span class="spanInfo" ng-show="mainForm.stallCoding.$dirty && mainForm.stallCoding.$invalid">
+            <span ng-show="mainForm.stallCoding.defined "></span>
+            </span>
+        </div>
+
+        <div class="row search-padding-10">
+            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                车位状态：
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <span ng-switch on="stallone.stallState">
+                            <span ng-switch-when="1">正常</span>
+                            <span ng-switch-when="2">欠费</span>
+                            <span ng-switch-when="3">已办</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div ng-show="showStall2">
+        <!--固定车位-->
+        <div class="row search-padding-10">
+            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                车位编号：
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <input type="text" disabled="disabled" class="form-control" palceholder="请输车位编号"
+                               name="stallCoding" required ng-model="stallone.stallCoding"/>
+                    </div>
+                </div>
+            </div>
+            <span class="spanInfo" ng-show="mainForm.stallCoding.$dirty && mainForm.stallCoding.$invalid">
+            <span ng-show="mainForm.stallCoding.defined "></span>
+            </span>
+        </div>
+        <div class="row search-padding-10">
+            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                车位状态：
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <span ng-switch on="stallone.stallState">
+                            <span ng-switch-when="1">正常</span>
+                            <span ng-switch-when="2">欠费</span>
+                            <span ng-switch-when="3">已办</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<!--私人车位-->
+    <div class="row search-padding-10" ng-show="feiyong">
+        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+            工本费：
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-4">
+            <div class="row">
+                <div class="col-lg-12">
+                    {{ProductFiv.price |number:2}}元
+                </div>
+            </div>
+        </div>
+        <div class="clear"></div>
+        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+            应缴金额：
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-4">
+            <div class="row">
+                <div class="col-lg-12">
+                    {{caraccesscards.paymentAmount |number:2}}美元
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--流动车位-->
+<div class="row search-padding-10" ng-show="feiyong1">
+    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+        车位管理费：
+    </div>
+    <div class="col-lg-3 col-md-4 col-sm-4">
+        <div class="row">
+            <div class="col-lg-12">
+                {{Product.price |number:2}}元/月
+            </div>
+        </div>
+    </div>
+
+    <div class="clear"></div>
+    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+        工本费：
+    </div>
+    <div class="col-lg-3 col-md-4 col-sm-4">
+        <div class="row">
+            <div class="col-lg-12">
+                {{ProductFiv.price |number:2}}元
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+        应缴金额：
+    </div>
+    <div class="col-lg-3 col-md-4 col-sm-4">
+        <div class="row">
+            <div class="col-lg-12">
+                <!--{{Product.price * month + ProductFiv.price|number:2}}元-->
+                {{caraccesscards.paymentAmount|number:2}}元
+            </div>
+        </div>
+    </div>
+</div>
+<!--固定车位-->
+<div class="row search-padding-10" ng-show="feiyong2">
+    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+        车位管理费：
+    </div>
+    <div class="col-lg-3 col-md-4 col-sm-4">
+        <div class="row">
+            <div class="col-lg-12">
+                {{ProductFour.price |number:2}}元/月
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+        工本费：
+    </div>
+    <div class="col-lg-3 col-md-4 col-sm-4">
+        <div class="row">
+            <div class="col-lg-12">
+                {{ProductFiv.price |number:2}}元
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+
+    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+        应缴金额：
+    </div>
+    <div class="col-lg-3 col-md-4 col-sm-4">
+        <div class="row">
+            <div class="col-lg-12">
+                <!--{{ProductFour.price *month + ProductFiv.price|number:2}}元-->
+                {{caraccesscards.paymentAmount|number:2}}元
+            </div>
+        </div>
+    </div>
+</div>
+<div class="text-center">
+    <button type="button" class="btn btn-default btn-primary" ng-click="cencle()"
+            ui-sref="index.propertyService.staffHome.parkingCard.historyRecord">取消
+    </button>
+    <button type="button" class="btn btn-default btn-primary">打印</button>
+    <button type="button" id="btnSubmit" class="btn btn-default btn-primary" ng-click="AddCaraccesscard();">提交</button>
+</div>
+
+
+<!--车牌号中选择模态框-->
+<div class="modal fade" id="myModale" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalfees1">车辆列表</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row padding">
+                    <div class="rh" ng-class="{'this_info':btnIndex==items}" ng-click="inCarInfo(items)"
+                         ng-repeat="items in carInfos" ng-show="items.carId!=null">
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            <img src="images/project/car/c_03.png" width="55" height="55">
+                        </div>
+                        <div class="col-lg-10 col-md-10 col-sm-10">
+                            <div class="col-lg-6 col-md-6 col-sm-6"> 车牌号码：{{items.carNum}}</div>
+                            <div class="col-lg-6 col-md-6 col-sm-6"> 车辆颜色：{{items.carColor}}</div>
+                            <div class="col-lg-6 col-md-6 col-sm-6"> 行驶证号：{{items.drivingLicense}}</div>
+                            <div class="col-lg-6 col-md-6 col-sm-6"> 车辆型号：{{items.carStyle}}</div>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">确认</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!--车位信息模态框-->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <p>车位信息</p>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                    <div class="row rh" ng-class="{'this_info':btnIndex==item}" ng-click="inStall(item)"
+                         ng-repeat="item in stalls"
+                         ng-show="item.stallId!=null&&item.stallState!=3">
+                        <div class="col-md-2">
+                            <img src="images/project/car/c_02.png" class="text-right" width="50px" height="50px">
+                        </div>
+                        <div class="col-md-10">
+                            <div class="row">
+                                <div class="col-md-2"> 车位编号：</div>
+                                <div class="col-md-2"> {{item.stallCoding}}</div>
+                                <div class="col-md-2"> 车库位置：</div>
+                                <div class="col-md-6"> {{item.fullName}}</div>
+                                <div class="clear"></div>
+                                <div class="col-md-2"> 车位状态：</div>
+                                <div class="col-md-2">
+                                <span ng-switch on="item.stallState" ng-if="item.stallState!=null">
+                                    <span ng-switch-when="1">正常</span>
+                                    <span ng-switch-when="2">已办卡</span>
+                                    <span ng-switch-when="3">欠费</span>
+                                </span>
+                                <span ng-if="item.stallState==null">
+                                    正常
+                                </span>
+                                </div>
+                                <div class="col-md-2"> 产权人：</div>
+                                <div class="col-md-6"> {{name}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--车位信息模态框-->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                        data-dismiss="modal" ng-click="quxiao1()">关闭
+                </button>
+                <button type="button" ng-click="saveArea()" data-dismiss="modal" class="btn btn-primary">
+                    确认
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="myModal1" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="width: 700px">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <p>车位信息</p>
+            </div>
+            <div class="modal-body"  >
+                <div class="padding">
+                    <div class="sel">
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                车位编号：
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                  <input class="form-control" type="text" ng-model="personCusts.stallCoding" >
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                车位状态：
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                               <select class="form-control"  ng-model="personCusts.stallState">
+                                   <option value="">请选择</option>
+                                   <option value="1">正常</option>
+                                   <option value="2">已办卡</option>
+                                   <option value="3">欠费</option>
+                               </select>
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                车库位置：
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                              <input class="form-control" ng-model="personCusts.fullName">
+                            </div>
+                            <div class="col-lg-6 col-md-4 col-sm-4 text-right">
+                                <button type="button" class="btn btn-default btn-primary"  ng-click="searchPaginator._load()">
+                                    <span class="glyphicon glyphicon-search btn_icon"></span>搜索
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                <div class="row rh" ng-class="{'this_info':btnIndex==item}"ng-click="inStall(item)" ng-repeat="item in  searchPaginator.object.stallNews" ng-show="item.stallId!=null&& item.stallType=='固定'">
+                    <div class="col-md-2">
+                        <img src="images/project/car/c_02.png" class="text-right" width="50px"height="50px"  ng-click="inStall(item)">
+                    </div>
+                    <div class="col-md-10" >
+                        <div class="row">
+                            <div class="col-md-2"> 车位编号：</div>
+                            <div class="col-md-2"> &nbsp;{{item.stallCoding}}</div>
+                            <div class="col-md-2"> 车库位置：</div>
+                            <div class="col-md-6"> &nbsp;{{item.fullName}}</div>
+                            <div class="col-md-2"> 车位状态：</div>
+                            <div class="col-md-2">
+                                <span ng-switch on="item.stallState">
+                                    <span ng-switch-when="1">正常</span>
+                                    <span ng-switch-when="2">已办卡</span>
+                                    <span ng-switch-when="3">欠费</span>
+                                </span>
+                            </div>
+                            <div class="col-md-2"> 管理费价格：</div>
+                            <div class="col-md-6">{{ProductFour.price |number:2}}元/月</div>
+                        </div>
+                   <!--     <div class="row">
+
+                            <div class="col-md-6"> 车位状态：
+                                    <span ng-switch on="item.stallState">
+                                    <span ng-switch-when="1">正常</span>
+                                    <span ng-switch-when="2">已办卡</span>
+                                        <span ng-switch-when="3">欠费</span>
+                                </span>
+                            </div>
+                            <div class="col-md-6"> 管理费价格： {{ProductFour.price |number:2}}元/月</div>
+                        </div>-->
+                    </div>
+                </div>
+                <div class="bill_paging" ng-show="searchPaginator.object.page.totalResult">
+                    <ul class="pagination">
+                        <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                            <a href="javascript:void(0)" ng-click="searchPaginator.go(1)">首页</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                            <a href="javascript:void(0)" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a>
+                        </li>
+                        <li ng-class="{true:'active'}[searchPaginator.page.currentPage==i]" ng-repeat="i in searchPaginator.pages">
+                            <a href="javascript:void(0)"  ng-click="searchPaginator.go(i)">{{i}}</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                            <a href="javascript:void(0)" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                            <a href="javascript:void(0)" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a>
+                        </li>
+                    </ul>
+                    <span>共{{searchPaginator.object.page.totalResult}}条</span>
+                </div>
+                </div>
+            </div>
+            <!--车位信息模态框-->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                        data-dismiss="modal" ng-click="quxiao1()">关闭
+                </button>
+                <button type="button" ng-click="saveArea()" data-dismiss="modal" class="btn btn-primary">
+                    确认
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>重点客户申请</title>
+    <link rel="stylesheet" href="bower_components/skins/zyupload-1.0.0.min.css " type="text/css">
+</head>
+<body>
+<form id="css_form" name="mainForm" novalidate>
+    <div class="row padding">
+        <div class="col-lg-12">
+            <div class="col-lg-2 col-md-6 col-sm-6 text-right">
+                失效申请理由：
+            </div>
+            <div class="col-lg-9 col-md-9 col-sm-9">
+                <textarea rows="3" cols="107" placeholder="请输入内容" name="applyreason" required  ng-model="personEmphasis.applyreason"></textarea>
+                    <!--<span class="glyphicon glyphicon-exclamation-sign mess" name="applyreason" ng-show="mainForm.applyreason.$dirty && mainForm.applyreason.$invalid">
+                    <p class="alter" ng-show="mainForm.applyreason.$error.required">
+                        不能为空
+                    </p>
+                    <p class="alter" ng-show="mainForm.applyreason.defined ">
+                        正确
+                    </p>
+                    </span>-->
+            </div>
+            <div class="col-lg-1 col-md-6 col-sm-6 ">
+                <span style="color: red">*</span>
+            </div>
+            <div class="clear"></div>
+            <div class="col-lg-2 col-md-6 col-sm-6 text-right">
+                上传申请资料：
+            </div>
+            <!--合同列表-->
+            <div class="col-lg-9 col-md-9 col-sm-9">
+                <div class="search-padding-10">
+                    <div id="remove">
+                        <div id="zyupload" class="zyupload"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="text-center">
+            <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="cancleAll();">
+                <span>取消</span>
+            </button>
+            <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="saveAll();">
+                <span class="glyphicon glyphicon-floppy-disk btn_icon"></span>
+                <span>提交申请</span>
+            </button>
+        </div>
+    </div>
+</form>
+
+</body>
+</html>

@@ -1,0 +1,24 @@
+<!--
+    创建人：NM
+    页面名称：亲属关系绑定
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div class="padding_info">
+    <div id="content-first">
+        <!--tab页切换开始-->
+        <div id="tab">
+            <a ng-class="{'this_action':btnIndex==1}" ng-click="doCheck(1)" ui-sref="index.propertyService.staffHome.relationshipChain.relationshipChainAdd">添加关系</a>
+            <a ng-class="{'this_action':btnIndex==2}" ng-click="doCheck(2)" ui-sref="index.propertyService.staffHome.relationshipChain.relationshipChainHistory" lang="no">关系列表</a>
+        </div>
+        <div ui-view ></div>
+        <!--tab end-->
+    </div>
+</div>
+</body>
+</html>

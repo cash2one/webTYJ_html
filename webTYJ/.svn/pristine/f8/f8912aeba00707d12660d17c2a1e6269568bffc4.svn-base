@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>内部公告</title>
+    <link href="bower_components/ueditor/themes/default/css/ueditor.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="bower_components/ueditor/third-party/jquery.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="bower_components/ueditor/ueditor.config.js"></script>
+    <script type="text/javascript" charset="utf-8" src="bower_components/ueditor/ueditor.all.js"></script>
+    <script type="text/javascript" charset="utf-8" src="bower_components/ueditor/angular-ueditor.js"></script>
+    <script type="text/javascript" src="bower_components/ueditor/lang/zh-cn/zh-cn.js"></script>
+    <style>
+        .border{
+            border: 1px solid #e4e4e4;
+            height: 480px;
+            overflow: scroll;
+            overflow-x: hidden;
+        }
+        .borderTB{
+            border-top: 1px solid #e4e4e4;
+            border-bottom: 1px solid #e4e4e4;
+        }
+    </style>
+</head>
+<body>
+<div class="row padding">
+    <div class="col-md-5 padding20 border">
+        <div class="search-padding-10">
+            <button type="button" class="btn btn-default btn-primary">
+                <span class="glyphicon glyphicon-plus btn_icon"></span>新建
+            </button>
+            <button type="button" class="btn btn-default btn-primary">
+                <span class="glyphicon glyphicon-edit btn_icon"></span>编辑
+            </button>
+            <button type="button" class="btn btn-default btn-primary">
+                <span class="glyphicon glyphicon-remove btn_icon"></span>删除
+            </button>
+        </div>
+        <div class="search-padding-10">
+            <div class="padding10" >
+                <h4 class="title" style="color: #fff;background: #515151;padding: 5px 10px">
+                    标题
+                </h4>
+                <div class="borderTB padding" ng-repeat="item in Informs">
+                    <div class="col-md-1"><input type="checkbox"/></div>
+                    <div class="col-md-11"><strong>{{item.inform}}</strong></div>
+                    <div class="clearfix"></div>
+                </div>
+                <!--<div class="borderTB padding">
+                    <div class="col-md-1"><input type="checkbox"/></div>
+                    <div class="col-md-11"><strong>这是一个标题</strong></div>
+                    <div class="clearfix"></div>
+                </div>-->
+            </div>
+            <div class="padding">
+                <div class="bill_paging">
+                    <!--<span>共{{currentEnterpriseCustomer.object.page.totalResult}}条</span>-->
+                    <!--<ul class="pagination">
+                        <li ng-class="{true:'disabled'}[currentEnterpriseCustomer.page.currentPage==1]">
+                            <a href="javascript:void(0)" ng-click="currentEnterpriseCustomer.go(1)">首页</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[currentEnterpriseCustomer.page.currentPage==1]">
+                            <a href="javascript:void(0)" ng-show="currentEnterpriseCustomer.hasPrevious()" ng-click="currentEnterpriseCustomer.previous()">上一页</a>
+                        </li>
+                        <li ng-class="{true:'active'}[currentEnterpriseCustomer.page.currentPage==i]" ng-repeat="i in currentEnterpriseCustomer.pages">
+                            <a href="javascript:void(0)"  ng-click="currentEnterpriseCustomer.go(i)">{{i}}</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[currentEnterpriseCustomer.page.currentPage==currentEnterpriseCustomer.page.totalPage]">
+                            <a href="javascript:void(0)" ng-show="currentEnterpriseCustomer.hasNext()" ng-click="currentEnterpriseCustomer.next()">下一页</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[currentEnterpriseCustomer.page.currentPage==currentEnterpriseCustomer.page.totalPage]">
+                            <a href="javascript:void(0)" ng-click="currentEnterpriseCustomer.go(currentEnterpriseCustomer.page.totalPage)">尾页</a>
+                        </li>
+                    </ul>-->
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-7 padding20 border">
+        <div class="row search-padding-10">
+            <div class="search-padding-10">
+                <div class="col-md-2 text-right">标题：</div>
+                <div class="col-md-4">
+                    <input type="text"  class="form-control"  placeholder="请输入标题" ng-model="Inform.inform"/>
+                </div>
+                <div class="col-md-2 text-right">作者：</div>
+                <div class="col-md-4">
+                    <input type="text"  class="form-control" placeholder="请输入作者" ng-model="Inform.writer"/>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="search-padding-10">
+                <div class="col-md-2 text-right">所属部门：</div>
+                <div class="col-md-4">
+                    <input type="text"  class="form-control" placeholder="请输入所属部门" ng-model="Inform.department"/>
+                </div>
+                <div class="col-md-2 text-right">摘要：</div>
+                <div class="col-md-4">
+                    <textarea type="text"  class="form-control" placeholder="请输入摘要" ng-model="Inform.abstracts"></textarea>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="search-padding-10">
+                <div class="col-md-2 text-right">发布项目：</div>
+                <div class="col-md-4">
+                    <select name="project" class="form-control" ng-model="Inform.project">
+                        <option value="0">清水源</option>
+                    </select>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="search-padding-10">
+                <div class="col-md-2 text-right">
+                    正文：
+                </d
+                <div class="col-md-10"></div>
+                <div class="clearfix"></div>
+                <div class="col-md-12">
+                    <div id="container">
+
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="search-padding-10 text-center">
+                <button type="button" class="btn btn-primary">预览</button>
+                <button type="button" class="btn btn-primary" ng-click="updateInternalNotice()">发布</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+</script>
+</body>
+</html>

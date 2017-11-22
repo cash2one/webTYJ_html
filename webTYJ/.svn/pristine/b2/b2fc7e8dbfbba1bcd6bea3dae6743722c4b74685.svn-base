@@ -1,0 +1,28 @@
+<!--
+    作者:彭婷婷
+    页面名称:授权管理
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>授权管理</title>
+</head>
+<body>
+
+<div class="padding_info">
+    <div id="content-first">
+        <!--tab-->
+        <div id="tab">
+            <a ng-class="{'this_action ':btnIndex==1}" ng-click="doClick(1)" ui-sref="index.propertyService.staffHome.empowerManagement.empower">办理授权</a>
+            <a ng-class="{'this_action ':btnIndex==2}" ng-click="doClick(2)" lang="no" ui-sref="index.propertyService.staffHome.empowerManagement.history">历史记录</a>
+        </div>
+        <!--tab end-->
+        <!--模板-->
+        <div ui-view ></div>
+        <!--模板 end-->
+    </div>
+</div>
+
+</body>
+</html>

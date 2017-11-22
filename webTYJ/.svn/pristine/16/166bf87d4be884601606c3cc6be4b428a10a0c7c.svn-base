@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>产品初始化--固定车位</title>
+</head>
+<body>
+<!--条件搜索-->
+<div class="sel">
+    <div class="row search-padding-10">
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            产品名称：
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-4">
+            <input class="form-control" placeholder="请输入产品名称" ng-model="searchStallNew.stallPosition">
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            车位编号：
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-4">
+            <input class="form-control" placeholder="请输入车位编号" ng-model="searchStallNew.stallNumber">
+        </div>
+        <div class="col-lg-2 col-md-2 col-sm-2">
+            <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="currentStallNew._load();">
+                <span class="glyphicon glyphicon-search btn_icon"></span>查询
+            </button>
+            <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="backToProduct();">
+                返回
+            </button>
+        </div>
+    </div>
+</div>
+<!--条件搜索 END-->
+<div class="row padding">
+    <div class="col-lg-12">
+        <div class="search-padding-10">
+            <table>
+                <thead>
+                <tr>
+                    <th>产品名称</th>
+                    <th>车位属性</th>
+                    <th>车位号</th>
+                    <th>车位类型</th>
+                    <th>固定车位价格</th>
+                    <th>产权人</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-class="{'navigation_info':btnIndex==item}"
+                    ng-repeat="item in currentStallNew.object['fixedParkingSpaces']" ng-show="item['stallId'] != null">
+                    <td style="width: 25%">{{item.fullName}}</td>
+                    <td style="width: 15%">{{item['stallProperty']}}</td>
+                    <td style="width: 15%">{{item['stallNumber']}}</td>
+                    <td style="width: 15%">
+                        <select ng-model="item.stallType"  ng-change="saveType(item)" class="form-control">
+                            <option value="固定">固定</option>
+                            <option value="流动">流动</option>
+                            <option value="私人">私人</option>
+                        </select>
+                    </td>
+
+                    <td style="width: 15%" ng-show="item.stallType != '固定'">
+                        <input id="{{item.stallId}}" type="text" ng-model="item.price"  class="form-control" readonly="readonly" />
+                    </td>
+                    <td style="width: 15%" ng-show="item.stallType == '固定'">
+                        <input id="{{item.stallId}}fixPrice"  type="hidden"/>
+                        <input id="{{item.stallId}}" type="text" ng-model="item.price"  ng-blur="getPirce(item)"  class="form-control" />
+                    </td>
+                    <td style="width: 15%">{{item['name']}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="search-padding-10">
+            <div class="bill_paging pull-right">
+                <ul class="pagination">
+                    <li ng-class="{true:'disabled'}[currentStallNew.page.currentPage==1]"><a  href="javascript:void(0)"  ng-click="currentStallNew.go(1)">首页</a></li>
+                    <li g-class="{true:'disabled'}[currentStallNew.page.currentPage==1]"><a href="javascript:void(0)" ng-show="currentStallNew.hasPrevious()" ng-click="currentStallNew.previous()">上一页</a></li>
+                    <li ng-class="{true:'active'}[currentStallNew.page.currentPage==i]" ng-repeat="i in currentStallNew.pages"><a href="javascript:void(0)" ng-click="currentStallNew.go(i)">{{i}}</a></li>
+                    <li ng-class="{true:'disabled'}[currentStallNew.page.currentPage==currentStallNew.page.totalPage]"><a  href="javascript:void(0)" ng-show="currentStallNew.hasNext()" ng-click="currentStallNew.next()">下一页</a></li>
+                    <li ng-class="{true:'disabled'}[currentStallNew.page.currentPage==currentStallNew.page.totalPage]"><a href="javascript:void(0)" ng-click="currentStallNew.go(currentStallNew.page.totalPage)">尾页</a></li>
+                </ul>
+            </div>
+            <div class="text-center">
+                <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancleAdd()">取消</button>
+                <button class="btn btn-primary" ng-click="saveCurrentStall()">提交</button>
+            </div>
+        </div>
+    </div>
+
+    <!--应收款报表 END-->
+</div>
+<!--tab页切换开始-->
+</body>
+</html>

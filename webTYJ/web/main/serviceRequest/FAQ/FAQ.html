@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>内部专业线里的FAQ</title>
+
+</head>
+<body>
+
+<!--右侧正文内容 开始-->
+<div id="content-first">
+    <!--tab页切换开始-->
+    <div id="tab">
+        <a ng-class="{'this_action ':btnIndex==1}" ng-click="doClick(1)" style="cursor: pointer" ui-sref="index.serviceRequest.FAQ.commonFaq">常见FAQ</a>
+        <a ng-class="{'this_action ':btnIndex==2}" ng-click="doClick(2)" lang="no" style="cursor: pointer" ui-sref="index.serviceRequest.FAQ.upcomingFaq">待办FAQ</a>
+    </div>
+
+    <div ui-view></div>
+
+
+</div>
+</body>
+</html>

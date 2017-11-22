@@ -1,0 +1,241 @@
+<!--
+    创建人：倪明
+    页面名称：页面整个布局，首次加载的页面
+    js路径：js/main
+    修改时间：2015-09-20
+-->
+<div  ng-init="loadDefault()">
+    <!-- 头部开始 -->
+    <div ui-view="head"></div>
+    <!-- 头部结束 -->
+    <div class="row">
+        <!-- 左边开始 -->
+        <div class="col-lg-2 col-md-2 col-sm-3" >
+            <div ui-view="left"></div>
+        </div>
+        <!-- 左边结束 -->
+        <!-- 右边开始 -->
+        <div class="col-lg-10 col-md-10 col-sm-9" >
+            <div class="main_right">
+                <!--导航开始-->
+                <div ui-view="top"></div>
+                <!--导航结束-->
+                <!--内容开始-->
+                <div class="content">
+                    <!--<div class="top_top">-->
+                    <!--<b class="glyphicon glyphicon-map-marker"></b><span>主页</span>-->
+                    <!--<span>></span><span>物业服务</span>-->
+                    <!--</div>-->
+                    <!--<div class="sel_height">-->
+                    <div class="row padding">
+                        <div ui-view="main"></div>
+                    </div>
+                    <!--打印机错误提示消息开始-->
+                    <div class="modal fade" id="lodopModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content" style="margin-top: 50%;">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                            aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title" id="myModalLabel">警告</h4>
+                                </div>
+                                <div class="modal-body" id="lodoperror" style="padding: 10px;">
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                    <!--<button type="button" class="btn btn-primary">Save changes</button>-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--打印机错误提示消息结束-->
+                    <!--</div>-->
+                    <!--<button type="button" class="btn btn-default" data-target="#tipModal1" data-toggle="modal">测试</button>-->
+                </div>
+                <!--内容结束-->
+                <!--下面内容开始-->
+                <!--    <div class="down">
+                        <div class="row">
+                            <div class="pannel-padding">
+                                <div ui-view="down"></div>
+                            </div>
+                        </div>
+                    </div>-->
+                <!--下面内容结束-->
+            </div>
+        </div>
+        <!-- 右边结束 -->
+    </div>
+</div>
+
+<!--登陆系统时，弹出提示框-->
+<!--提示框1-->
+<div class="modal" id="tipModal1" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true" ng-click="closeTipModal()">
+                    &times;
+                </button>
+                <h5 class="modal-title">
+                    引导指南
+                </h5>
+            </div>
+            <div class="modal-body">
+                <div class="row padding" ng-show="showTipModal1==1">
+                    <h1 class="text-center">第一步</h1>
+                    <p class="">
+                        位置：系统设置——岗位设置
+                    </p>
+                    <p class="text-center">
+                        <img src="images/tips/t01.png" alt="" style="width: 500px;height: 250px">
+                    </p>
+                    <p>
+                        操作说明：
+                        设置专业线后设置专业线下面岗位：显示设置好的专业线，设置对应的岗位，其中星号是必须要有的职位。
+                    </p>
+                    <!--<div ng-include="'data/p01.html'"></div>-->
+                </div>
+                <div class="row padding" ng-show="showTipModal1==2">
+                    <h1 class="text-center">第二步</h1>
+                    <p class="">
+                        位置：人事管理——员工
+                    </p>
+                    <p class="text-center">
+                        <img src="images/tips/t02.png" alt="" style="width: 500px;height: 183px">
+                    </p>
+                    <p>
+                        操作说明：
+                        超级管理员在物业业务系统中录入HR系统管理员的APP账号，成功后由HR使用APP账号登录物业业务系统录入其他员工的物业APP账号，由物业业务系统发送消息至员工物业APP中申请获取个人信息，员工进行确认后个人信息物业业务系统展示，确认信息完善后，在物业业务系统发起邀请入职，并发送消息至员工物业APP，员工确认后，个人信息导入物业业务系统。
+                    </p>
+                </div>
+                <div class="row padding" ng-show="showTipModal1==3">
+                    <h1 class="text-center">第三步</h1>
+                    <p class="">
+                        位置：系统设置——管理员设置
+                    </p>
+                    <p class="text-center">
+                        <img src="images/tips/t03.png" alt="" style="width: 500px;height: 250px">
+                    </p>
+                    <p>
+                        操作说明：
+                        设置hr管理员和系统管理员：左侧选择一位员工，右侧选择需要功能权限范围，HR管理员可以可以设置功能权限范围和团队管理范围、系统管理员可以设置设置功能权限范围和项目管理范围。
+                    </p>
+                </div>
+                <div class="row padding" ng-show="showTipModal1==4">
+                    <h1 class="text-center">第四步</h1>
+                    <p class="">
+                        位置：人事管理——核心岗位任命
+                    </p>
+                    <p class="text-center">
+                        <img src="images/tips/t04.png" alt="" style="width: 500px;height: 250px">
+                    </p>
+                    <p>
+                        操作说明：
+                        核心岗位任命：根据上方的输入框可以查询职位的人员信息。职位的右边十字图标可以添加员工为职位经理。每个职位区域内分页展示该职位经理的人员，选择人员信息右侧的下拉删除可以取消员工职位。
+                    </p>
+                </div>
+                <div class="row padding" ng-show="showTipModal1==5">
+                    <h1 class="text-center">第五步</h1>
+                    <p class="">
+                        位置：基础设置——物业项目管理——新建
+                    </p>
+                    <p class="text-center">
+                        <img src="images/tips/t05.png" alt="" style="width: 500px;height: 118px;">
+                        <img src="images/tips/t06.png" alt="" style="width: 500px;height: 118px;">
+                    </p>
+                    <p>
+                        操作说明：
+                        项目管理模块新建项目，设置项目经理，填写宗地。项目基本信息可以填项目名称和项目地址，新建宗地填入必填项和相关信息后点击保存会保存当前宗地，宗地可以新建多个但是不能为空；人员编制设置项目经理下拉的人员为核心岗位任命中设置的项目经理。点击添加编制可以设置其他岗位编制。
+                    </p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <!--<div class="form-group pull-left form-horizontal">
+                    <input type="checkbox" id="showNextTime" class="">下次是否显示
+                </div>-->
+                <div class="row">
+                    <div class="col-md-1 text-right">
+                        <input id="showNextTime" type="checkbox" class="checkboxa" style="float: right" ng-click="setCheckBoxState()">
+                    </div>
+                    <div class="col-md-6 text-left">
+                        <span>下次登录时不再显示</span>
+                    </div>
+                    <div class="col-md-5 text-right">
+                        <button type="button" class="btn bg-primary" data-dismiss="" ng-click="lastStep()" ng-class="{true:'disabled'}[showTipModal1==1]">上一步</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="" ng-click="nextStep()" ng-class="{true:'disabled'}[showTipModal1==5]">下一步</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="closeTipModal()">关闭</button>
+                        <!--<button class="btn bg-primary" data-dismiss="modal"   ng-click="CloseConsultationOrders()">提交</button>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--
+&lt;!&ndash;提示框2&ndash;&gt;
+<div class="modal" id="tipModal2" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true" ng-show="showTipModal2==1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h5 class="modal-title">
+                    系统提示
+                </h5>
+            </div>
+            <div class="modal-body">
+                <div class="row padding">
+                    <h1>第二页</h1>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="form-group pull-left form-horizontal">
+                    <input type="checkbox" id="showNextTime" class="">下次是否显示
+                </div>
+                <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="nextStep()" ng-hide="showTipModal3==1" data-target="#tipModal3" data-toggle="modal">下一步</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="closeTipModal()">关闭</button>
+                &lt;!&ndash;<button class="btn bg-primary" data-dismiss="modal"   ng-click="CloseConsultationOrders()">提交</button>&ndash;&gt;
+            </div>
+        </div>
+    </div>
+</div>
+&lt;!&ndash;提示框3&ndash;&gt;
+<div class="modal" id="tipModal3" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true" ng-show="showTipModal3==1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h5 class="modal-title">
+                    系统提示
+                </h5>
+            </div>
+            <div class="modal-body">
+                <div class="row padding">
+                    <h1>第三页</h1>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="form-group pull-left form-horizontal">
+                    <input type="checkbox" id="showNextTime" class="">下次是否显示
+                </div>
+                &lt;!&ndash;<button type="button" class="btn btn-default" data-dismiss="modal" ng-click="nextStep()" ng-hide="showTipModal3==1">下一步</button>&ndash;&gt;
+                <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="closeTipModal()">关闭</button>
+                &lt;!&ndash;<button class="btn bg-primary" data-dismiss="modal"   ng-click="CloseConsultationOrders()">提交</button>&ndash;&gt;
+            </div>
+        </div>
+    </div>
+</div>
+-->
+
+

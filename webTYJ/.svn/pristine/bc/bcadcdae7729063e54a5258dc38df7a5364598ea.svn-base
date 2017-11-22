@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>核查完成</title>
+</head>
+<body>
+<div style="padding:20px 30px 0">
+    <div class="col-md-12 text-center" style="margin-bottom:30px;" >
+        <!--页面名称：物业服务装修现场核查流程-->
+        <span class="col-md-4">工单号：{{myitem.orderId}} </span>
+        <span class="col-md-4">负责人：{{myitem.inspectionPeople}}</span>
+        <span class="col-md-4">预约时间：{{myitem.planDate| date:"yyyy-MM-dd"
+        }}</span>
+    </div>
+    <!-- 修改到此处 -->
+    <!-- modifitime:2015-5-29 -->
+    <table class="table table-hover text-center">
+        <tr>
+            <td class="col-md-4"><strong>核查编号</strong></td>
+            <td class="col-md-4"><strong>核查事项</strong></td>
+            <td class="col-md-4"><strong>核查结果</strong></td>
+        </tr>
+        <tr ng-repeat="myitems in Verification">
+            <td>{{myitems.id}}</td>
+            <td>{{myitems.result}}</td>
+            <td>{{myitems.items}}</td>
+        </tr>
+        <tr>
+            <td class="col-md-4">ck001</td>
+            <td class="col-md-4"><input type="text" ng-model="addVerification.items"></td>
+            <td class="col-md-4"><input type="text" ng-model="addVerification.result"></td>
+        </tr>
+    </table>
+
+    <button type="button" class="btn btn-info" style="margin-left: 300px" ng-click="AddVerification()">保存</button>
+
+</div>
+<div class="row">
+    <div style="padding:0px 30px 0;">
+        <div ui-view></div>
+    </div>
+</div>
+</body>
+</html>

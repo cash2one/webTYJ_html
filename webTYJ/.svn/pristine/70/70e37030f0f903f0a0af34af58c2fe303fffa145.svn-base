@@ -1,0 +1,153 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 收款台js
+ */
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../../app');
+
+    app.controller('billInquiryCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        $scope.show1 = false;
+        $scope.show2 = false;
+        //定义全局变量url,访问数据库接口路径
+        var url = $rootScope.url;
+       /* $scope.electronic={page:{}};
+        //条件查询电子账单
+        $scope.load = function () {
+            var fetchFunction = function (page, callback) {
+                $scope.electronic.page = page;
+                $http.post(url + '/ElectronicBilling/listPageElectronicBilling', {ElectronicBilling: $scope.electronic}).success(callback);
+            };
+            $scope.searchPaginator = app.get('Paginator').list(fetchFunction, 6);
+        };*/
+
+        $scope.bill={page:{}};
+        //条件查询电子账单
+        $scope.load = function () {
+            var fetchFunction = function (page, callback) {
+                $scope.bill.page = page;
+                $scope.bill.billDate='2016-04';
+                $http.post(url + '/Bill/findListPageBills', {Bill: $scope.bill}).success(callback);
+            };
+            $scope.searchPaginator = app.get('Paginator').list(fetchFunction, 6);
+           /* $http.post(url + '/Bill/findListPageBills', {Bill: $scope.bill}).success(function(data){
+
+                var bdt = data.PageRestful.bills[1];
+                if(bdt!= null){
+                    $scope.showBills(data.PageRestful.bills[1]);
+                }else{
+                    $scope.showBills("0");
+                }
+            });*/
+        };
+
+        //$scope.load();
+        $scope.searchData=function(){
+            if(($scope.electronic.electronicBillingNum ==null || $scope.electronic.electronicBillingNum == '') && ($scope.electronic.cardNum==null || $scope.electronic.cardNum=='')&&
+                ($scope.electronic.custName==null || $scope.electronic.custName=='')){
+              layer.msg('请输入要查询的账单编号或收费对象！',{icon : 0,time : 2000});
+              return;
+             }
+            var custName = app.get('valueCheck').isNull($scope.electronic.custName);
+            var cardNum = app.get('valueCheck').isNull($scope.electronic.cardNum);
+            if(custName.state == false && cardNum.state == true){
+                layer.msg('请输入客户姓名！',{icon : 0,time : 2000});
+                return;
+            }
+            if(cardNum.state == false && custName.state == true){
+                layer.msg('请输入客户证件号！',{icon : 0,time : 2000});
+                return;
+            }
+            $scope.show1 = false;
+            $scope.show2 = false;
+            $scope.load();
+        };
+
+        $scope.info={billNum:'',total:''};
+        $scope.custId='';
+        $scope.currData={};//得到当前选择的数据
+        //获取电子账单下的应付款账单
+        $scope.Bill={page:{},billDate:''}
+        $scope.showBills=function(currentData){
+            $scope.buildingId = currentData.buildingId;
+            $scope.show1 = true;
+            $scope.currData=currentData;
+            $scope.btnIndex=currentData.electronicBillingId;
+            $scope.custId=currentData.custId;//得到客户的id
+            $scope.info.billNum=currentData.electronicBillingNum;
+            $scope.info.total=currentData.overdue+currentData.lastOweSum+currentData.currentOweSum;
+            var fetchFunction = function (page, callback){
+                $scope.Bill.page = page;
+                $scope.Bill.billDate=currentData.billDate;
+                $scope.Bill.electronicBillingId = currentData.electronicBillingId;
+                console.log($scope.Bill);
+                $http.post(url + '/Bill/listPageBillsByelectronicBillingIdThisMonth', {Bill: $scope.Bill}).success(callback);
+            };
+            $scope.searchPaginator1 = app.get('Paginator').list(fetchFunction, 6);
+            $scope.assetAccountId = currentData.assetAccountId;
+        }
+
+        //查询历史账单
+        $scope.Billa={page:{},billDate:''};
+        $scope.showHistory=function(){
+            $scope.show1 = true;
+            $scope.show2 = true;
+            var fetchFunction = function (page, callback) {
+                $scope.Billa.page.page = page;
+                $scope.Billa.billDate= $scope.currData.billDate;
+                $scope.Billa.electronicBillingId = $scope.btnIndex
+                $http.post(url + '/Bill/listPageBillsByelectronicBillingIdLastMonth', {Bill: $scope.Billa}).success(callback);
+            };
+            $scope.searchPaginator2 = app.get('Paginator').list(fetchFunction, 6);
+        }
+
+        //选中数据
+        $scope.dataa={list:[]};
+        $scope.chooseData={};
+        $scope.getData=function(datas){
+            datas.buildingId = $scope.buildingId;
+            var id=datas.billId;
+            var chk = document.getElementById(id);
+            $scope.chooseData=datas;
+            if(chk.checked == true){
+                //$scope.btnIndex=id;
+                $scope.dataa.list.push($scope.chooseData);
+            }else{
+                $scope.temp = [];
+                $scope.temp = $scope.dataa.list;
+                $scope.dataa={list:[]};
+                for(var i = 0; i < $scope.temp.length; i ++){
+                    if($scope.temp[i].billId != id){
+                        $scope.dataa.list.push($scope.temp[i]);
+                        //$scope.btnIndex='';
+                    }
+                }
+            }
+        };
+
+
+        //添加到购物车
+        $scope.addCart=function(){
+            //将值传递到收款台页面
+            $scope.dataa.custId = $scope.custId;
+            $scope.dataa.assetAccountId = $scope.assetAccountId;
+            var dataa=JSON.stringify($scope.dataa);
+            sessionStorage.setItem("data1",dataa);
+            if($scope.dataa.list.length>0){
+                for(var i=0; i<$scope.dataa.list.length; i++){
+                    if($scope.dataa.list[i].currentOweSum+$scope.dataa.list[i].overdue+$scope.dataa.list[i].lastOweSum ==0){
+                        layer.alert("不能添加本期欠款累计金额为0的账单！", {icon: 0});
+                        return;
+                    }
+                }
+                if($scope.dataa.list.currentOweSum+$scope.dataa.list.overdue+$scope.dataa.list);
+                $location.path("/index/cashier/cashier/cashiers").search();
+            }else{
+                layer.alert("请先选择数据", {icon: 0});
+            }
+        };
+
+    }]);
+});

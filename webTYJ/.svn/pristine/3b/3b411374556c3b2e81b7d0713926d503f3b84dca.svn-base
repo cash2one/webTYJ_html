@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+    <div class="row padding">
+        <div class="col-lg-12">
+            <div class="col-lg-10 search-padding-10">
+                <button type="button" class="btn btn-default btn-primary" ng-click="openModals(1,-1)">
+                    <span class="glyphicon glyphicon-plus btn_icon"></span>新增 </button>
+                <button type="button" class="btn btn-default btn-primary" ng-click="openModals(2,-2)" ng-show="grid == false">
+                    <span class="glyphicon glyphicon-edit btn_icon"></span>编辑 </button>
+                <button type="button" class="btn btn-default" disabled="disabled" ng-show="grid == false">
+                    <span class="glyphicon glyphicon-remove btn_icon"></span>删除 </button>
+            </div>
+            <div class="col-lg-2 col-md-6 col-sm-6 text-right">
+                    <button type="button" class="btn btn-default btn-primary" ng-click="showGrid(1)" >
+                        <span class="glyphicon glyphicon-th-large btn_icon"></span>
+                        网格
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary" ng-click="showGrid(2)">
+                        <span class="glyphicon glyphicon-th-list btn_icon"></span>
+                        列表
+                    </button>
+            </div>
+            <div ng-show="grid == false">
+            <table>
+                <thead>
+                    <tr>
+                        <th>操作</th>
+                        <th>序号</th>
+                        <th>功能区间编号</th>
+                        <th>功能区间名称</th>
+                        <th>创建人</th>
+                        <th>创建时间</th>
+                        <th>修改人</th>
+                        <th>修改时间</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr  ng-class="{'this_info ':btnIndex==item['functionalId']}"  ng-repeat="item in currentFunctional.object.functionals" ng-click="checkItems(item)" ng-show="item.functionalId != null">
+                        <td><input type="checkbox" class="checkbox_info" id="{{item.functionalId}}"  name="functionalname" ></td>
+                        <td>{{$index}}</td>
+                        <td>{{item.functionalNo}}</td>
+                        <td>{{item.functionalName}}</td>
+                        <td >{{item.staff.loginName}}</td>
+                       <!--bug 1180 陈秋旭
+                        <td ng-if="item.staff.staff.staffName == null">系统管理员</td>
+                        -->
+                        <td>{{item.createrDate | date : 'yyyy-MM-dd HH:mm:ss'}}</td>
+                        <td >{{item.staffs.loginName}}</td>
+
+                        <!--
+                         <td ng-if="item.staffs.loginName == null && item.updateDate != null">系统管理员</td>
+                        <td ng-if="item.staffs.staff.staffName == null && item.updateDate == null"></td>
+                        -->
+                        <td>{{item.updateDate | date : 'yyyy-MM-dd HH:mm:ss'}}</td>
+                    </tr>
+                    <tr ng-if="currentFunctional.object.functionals.length == null">
+                        <td colspan="8">没有数据！</td>
+                    </tr>
+                </tbody>
+            </table>
+                </div>
+            <!-- 增加网格的显示与隐藏 朱琪 2016-2-2 14:08:23 -->
+            <div class="col-lg-12" ng-show="grid == true">
+            <div class="col-lg-4 col-md-4 col-sm-4 " ng-repeat="item in currentFunctional.object.functionals" ng-show="item.functionalId != null">
+                <div id="pannel">
+                    <div class="title">
+                        <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">功能区间</div>
+                        <div class="downList">
+                            <div class="col-xs-12 col-lg-12 col-md-12 col-sm-12 text-right">
+                                <span class="glyphicon glyphicon-chevron-down" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ></span>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                    <li><a data-toggle="modal" ng-click="openModals(3,item.functionalId)">编辑</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pannel_content">
+                        <div class="col-lg-12">
+                            <div class="col-lg-6 col-md-6 col-sm-6 text-right">功能区间编号：</div>
+                            <div class="col-lg-6 col-md-6 col-sm-6">{{item.functionalNo}}</div>
+                        </div>
+                        <div class="col-lg-12">
+                        <div class="col-lg-6 col-md-6 col-sm-6 text-right">功能区间名称：</div>
+                        <div class="col-lg-6 col-md-6 col-sm-6">{{item.functionalName}}</div>
+                        </div>
+                        <div class="col-lg-12">
+                        <div class="col-lg-6 col-md-6 col-sm-6 text-right">创建人：</div>
+                        <div class="col-lg-6 col-md-6 col-sm-6">{{item.staff.staff.staffName}}</div>
+                        </div>
+                        <div class="col-lg-12">
+                        <div class="col-lg-6 col-md-6 col-sm-6 text-right">创建时间：</div>
+                        <div class="col-lg-6 col-md-6 col-sm-6">{{item.createrDate | date : 'yyyy-MM-dd HH:mm:ss'}}</div>
+                            </div>
+                        <div class="col-lg-12">
+                        <div class="col-lg-6 col-md-6 col-sm-6 text-right">修改人：</div>
+                        <div class="col-lg-6 col-md-6 col-sm-6">{{item.staffs.staff.staffName}}</div>
+                            </div>
+                        <div class="col-lg-12">
+                        <div class="col-lg-6 col-md-6 col-sm-6 text-right">修改时间：</div>
+                        <div class="col-lg-6 col-md-6 col-sm-6">{{item.updateDate | date : 'yyyy-MM-dd HH:mm:ss'}}</div>
+                            </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-6" ng-show="currentFunctional.object.functionals.length == null && grid == true">
+                <div id="pannel">
+                    <div class="title">
+                        <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                            <h3>功能区间</h3>
+                        </div>
+                        <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                           <!-- <span class="glyphicon glyphicon-search"></span>-->
+                        </div>
+                    </div>
+                    <div class="pannel_content">
+                        <div class="row">
+                            <div class="col-xs-8 col-lg-8 col-md-8">
+                                <div class="row search-padding 10">
+                                    暂无数据！
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+            <div class="padding"><!-- 修改分页样式，增加高亮 王洲 2016.1.6 -->
+                <div class="bill_paging">
+                    <span>共{{currentFunctional.object.page.totalResult}}条</span>
+                    <ul class="pagination">
+                        <li ng-class="{true:'disabled'}[currentFunctional.page.currentPage==1]">
+                            <a href="javascript:void(0)" ng-click="currentFunctional.go(1)">首页</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[currentFunctional.page.currentPage==1]">
+                            <a href="javascript:void(0)" ng-show="currentFunctional.hasPrevious()" ng-click="currentFunctional.previous()">上一页</a>
+                        </li>
+                        <li ng-class="{true:'active'}[currentFunctional.page.currentPage==i]" ng-repeat="i in currentFunctional.pages">
+                            <a href="javascript:void(0)"  ng-click="currentFunctional.go(i)">{{i}}</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[currentFunctional.page.currentPage==currentFunctional.page.totalPage]">
+                            <a href="javascript:void(0)" ng-show="currentFunctional.hasNext()" ng-click="currentFunctional.next()">下一页</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[currentFunctional.page.currentPage==currentFunctional.page.totalPage]">
+                            <a href="javascript:void(0)" ng-click="currentFunctional.go(currentFunctional.page.totalPage)">尾页</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增功能区间模态框 -->
+    <div class="modal fade" id="addFunctional" role="dialog" aria-label="myModalLabel" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span ng-if="showType == 1">新增功能区间</span>
+                    <span ng-if="showType == 2">编辑功能区间</span>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button><!-- 增加关闭按钮  王洲  2016.1.13 -->
+                </div>
+                <div class="modal-body">
+                    <div class="padding">
+                        <form id="css_form" name="mainForm" novalidate>
+                            <div class="sel1">
+                                <div class="row search-padding-10">
+                                    <!--<div class="col-lg-3 col-md-3 col-sm-3 text-right">
+                                        功能区间编号：
+                                    </div>
+                                    <div class="col-lg-8 col-md-8 col-sm-8">
+                                        <input id="funcno" name="funcno" class="form-control" type="text" ng-model="functional.functionalNo" />
+                                    </div>
+                                    <div class="col-lg-1 col-md-1 col-sm-1">
+                                        <span style="color: red">*</span>
+                                    </div>-->
+                                    <div class="col-lg-3 col-md-3 col-sm-3 text-right">
+                                        功能区间名称：
+                                    </div>
+                                    <div class="col-lg-8 col-md-8 col-sm-8">
+                                        <input id="funcname" name="funcname" class="form-control" type="text" ng-model="functional.functionalName" ng-blur="checkIfExist()" />
+                                    </div>
+                                    <div class="col-lg-1 col-md-1 col-sm-1">
+                                        <span style="color: red">*</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="closeModal()">关闭</button>
+                    <button type="button" class="btn btn-primary" ng-click="insertOrupdateFunctional()">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HR管理员设置</title>
+</head>
+<body>
+<div id="content-first">
+<div class="row">
+    <div class="col-lg-3 col-md-3 col-sm-12">
+        <div class="h4_border">
+        请选择管理员：
+            <button type="button" class="btn btn-default btn-primary" ng-click="liststaff()">
+                添加
+            </button>
+        </div>
+        <div class="info_lista" ng-repeat=" tuser in searchAdmin.object.tUserRoles" ng-show="tuser.id != null" ng-click="getPremission(tuser.tUser.userId,tuser.id)">
+            <table class="table_lists">
+                <tbody>
+                <tr  ng-class="{'this_info':btnIndex_permission == tuser.id}">
+                    <td width="30%" rowspan="3"><img src="images/project/user/user_3.png" style="width:100%;"></td>
+                    <td width="30%">姓名：</td>
+                    <td width="40%">{{tuser.tUser.staff.staffName}}</td>
+                </tr>
+                <tr ng-class="{'this_info':btnIndex_permission == tuser.id}">
+                    <td width="30%">工号：</td>
+                    <td width="30%">{{tuser.tUser.staff.staffNo}}</td>
+                </tr>
+                <tr  ng-class="{'this_info':btnIndex_permission == tuser.id}">
+                    <td width="30%">账号：</td>
+                    <td width="30%">{{tuser.tUser.loginName}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="bill_paging">
+
+            <ul class="pagination">
+                <li ng-class="{true:'disabled'}[searchAdmin.page.currentPage==1]">
+                    <a href="javascript:void(0)" ng-click="searchAdmin.go(1)">首页</a>
+                </li>
+                <li ng-class="{true:'disabled'}[searchAdmin.page.currentPage==1]">
+                    <a href="javascript:void(0)" ng-show="searchAdmin.hasPrevious()" ng-click="searchAdmin.previous()">上一页</a>
+                </li>
+                <li ng-class="{true:'active'}[searchAdmin.page.currentPage==i]" ng-repeat="i in searchAdmin.pages">
+                    <a href="javascript:void(0)"  ng-click="searchAdmin.go(i)">{{i}}</a>
+                </li>
+                <li ng-class="{true:'disabled'}[searchAdmin.page.currentPage==searchAdmin.page.totalPage]">
+                    <a href="javascript:void(0)" ng-show="searchAdmin.hasNext()" ng-click="searchAdmin.next()">下一页</a>
+                </li>
+                <li ng-class="{true:'disabled'}[searchAdmin.page.currentPage==searchAdmin.page.totalPage]">
+                    <a href="javascript:void(0)" ng-click="searchAdmin.go(searchAdmin.page.totalPage)">尾页</a>
+                </li>
+                <span>共{{searchAdmin.object.page.totalResult}}条</span>
+            </ul>
+            <div class="clear"></div>
+        </div>
+    </div>
+    <!--专业类型选择列表-->
+    <!--专业类型上传-->
+    <div class="col-lg-9 col-md-9 col-sm-12">
+        <div class="h5_border">
+            功能权限范围
+        </div>
+        <div class="h3_border">
+            <div class="row padding">
+            <div class="col-lg-2 col-md-2 col-sm-2" ng-repeat="permission in HrPermissoions">
+                <div class="hR_span">{{permission.permissionsName}}</div>
+                <div class="hR_img"><img src="images/project/user/user_3.png"></div>
+                <div class="hR_input"><input name="permissionIds" type="checkbox" id="{{permission.permissionsId}}" ng-click="setPermission(permission.permissionsId,permission.permissionsName)"></div>
+            </div>
+            </div>
+        </div>
+        <div class="h5_border">
+            团队管理范围
+        </div>
+        <div class="h3_border">
+            <div class="row padding">
+                <div class="col-lg-2 col-md-2 col-sm-2" ng-repeat="team in Teamwork">
+                    <div class="hR_span">{{team.staffName}}的团队</div>
+                    <div class="hR_img"><img src="images/project/user/user_3.png"></div>
+                    <div class="hR_input"><input name="authorityIds" type="checkbox" id="{{team.id}}" ng-click="setAuthority(team.id)"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--专业类型上传-->
+    <!--是否设置为新建管理员-->
+    <div class="modal fade" id="new" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    新建
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <!--<div class="seach-padding-10 text-center">
+                        <img src="images/question.png" style="width:80px">
+                    </div>--><!--  无图片，暂时屏蔽，需再确认此处是否需要保留图片  王洲  2016.02.19  -->
+
+                     <div class="seach-padding-10 text-center">
+                    <span style="font-size:18px">
+                     您尚未录入任何员工档案，<br>
+                        是否直接创建一个员工档案并设置为HR管理员？
+                    </span>
+                     </div>
+                    <div class="text-center" style="padding:15px">
+                        <a style="color:#0000ff;font-size:15px;cursor: pointer" data-toggle="modal" data-target="#new1">点击这里开始创建</a>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        <!--<button type="button" class="btn btn-primary" data-dismiss="modal">确认</button>-->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--是否设置为新建管理员 END-->
+    <!--新建并设置管理员-->
+    <div class="modal fade" id="new1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static">
+        <div class="modal-dialog" >
+            <div class="modal-content">
+                <div class="modal-header">
+                    新建并设置管理员
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="padding">
+                       <div class="row search-padding-10">
+                           <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                               员工工号：
+                           </div>
+                           <div class="col-lg-3 col-md-3 col-sm-3">
+                               <input class="form-control" type="text" ng-model="Staffs.staffNo" />
+                           </div>
+                           <div class="col-lg-1 col-md-1 col-sm-1">
+                               <span style="color: red">*</span>
+                           </div>
+                           <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                               员工姓名：
+                           </div>
+                           <div class="col-lg-3 col-md-3 col-sm-3">
+                               <input class="form-control" type="text" ng-model="Staffs.staffName" />
+                           </div>
+                           <div class="col-lg-1 col-md-1 col-sm-1">
+                               <span style="color: red">*</span>
+                           </div>
+                       </div>
+                       <div class="row search-padding-10">
+                           <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                               员工性别：
+                           </div>
+                           <div class="col-lg-3 col-md-3 col-sm-3">
+                               <select ng-model="Staffs.sex" class="form-control" ng-options="a.slaveName as a.description for a in sexList">
+                                   <option value="">--请选择--</option>
+                               </select>
+                           </div>
+                           <div class="col-lg-1 col-md-1 col-sm-1">
+                               <span style="color: red">*</span>
+                           </div>
+                           <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                               出生日期：
+                           </div>
+                           <div class="col-lg-3 col-md-3 col-sm-3">
+                               <input class="form-control" ng-model="Staffs.birthday" type="date" />
+                           </div>
+                           <div class="col-lg-1 col-md-1 col-sm-1">
+                               <span style="color: red">*</span>
+                           </div>
+                       </div>
+                       <div class="row search-padding-10">
+                           <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                               联系电话：
+                           </div>
+                           <div class="col-lg-3 col-md-3 col-sm-3">
+                               <input class="form-control" type="text" ng-model="Staffs.telphone" />
+                           </div>
+                           <div class="col-lg-1 col-md-1 col-sm-1">
+                               <span style="color: red">*</span>
+                           </div>
+                           <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                               学历：
+                           </div>
+                           <div class="col-lg-3 col-md-3 col-sm-3">
+                               <select ng-model="Staffs.eduLever" class="form-control" ng-options="a.slaveName as a.description for a in eduLeverList">
+                                   <option value="">请选择</option>
+                               </select>
+                           </div>
+                           <div class="col-lg-1 col-md-1 col-sm-1">
+                               <span style="color: red">*</span>
+                           </div>
+                       </div>
+                       <div class="row search-padding-10">
+                           <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                               证件类型：
+                           </div>
+                           <div class="col-lg-3 col-md-3 col-sm-3">
+                               <select ng-model="Staffs.cardType" class="form-control" ng-options="a.slaveName as a.description for a in cardTypeList">
+                                   <option value="">请选择</option>
+                               </select>
+                           </div>
+                           <div class="col-lg-1 col-md-1 col-sm-1">
+                               <span style="color: red">*</span>
+                           </div>
+                           <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                               证件号码：
+                           </div>
+                           <div class="col-lg-3 col-md-3 col-sm-3">
+                               <input class="form-control" type="text" ng-model="Staffs.cardNum" />
+                           </div>
+                           <div class="col-lg-1 col-md-1 col-sm-1">
+                               <span style="color: red">*</span>
+                           </div>
+                       </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                        <button type="button" class="btn btn-default" ng-click="closeAddStaff()">关闭</button>
+                        <button type="button" class="btn btn-primary" ng-click="addStaff()">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--新建并设置管理员 END-->
+    <!--取消-->
+    <div class="modal fade" id="new2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    员工信息
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row padding">
+                        <div class="row search-padding-10">
+                            <div class="col-lg-1 col-md-1 col-sm-1">
+                                姓名：
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3">
+                                <input class="form-control" type="text" ng-model="Staff.staffName" />
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                联系电话：
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input class="form-control" type="text" ng-model="Staff.telphone" />
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                <button type="button" class="btn btn-default btn-primary" ng-click="getStaffNotAdmin._load()">
+                                    搜索
+                                </button>
+                            </div>
+                        </div>
+                        <div class="rh" ng-class="{'this_info':btnIndex == staff.staffId}" ng-repeat="staff in getStaffNotAdmin.object.staffs" ng-show="staff.staffId != null" ng-click="addTUser(staff);">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                <img src="images/project/user/user_3.png"  width="55" height="55">
+                            </div>
+                            <div class="col-lg-10 col-md-10 col-sm-10">
+                                <div class="col-lg-6 col-md-6 col-sm-6">
+                                    员工姓名：{{staff.staffName}}
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">
+                                    员工年龄：{{staff.age}}
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">
+                                    员工性别：
+                                     <span ng-switch on="staff.sex">
+                                        <span ng-switch-when="0">男</span>
+                                        <span ng-switch-when="1">女</span>
+                                    </span>
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">
+                                    联系电话：{{staff.telphone}}
+                                </div>
+                            </div>
+                            <div class="clear"></div>
+
+                        </div>
+                        <div class="bill_paging">
+                            <ul class="pagination">
+                                <li ng-class="{true:'disabled'}[getStaffNotAdmin.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-click="getStaffNotAdmin.go(1)">首页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[getStaffNotAdmin.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-show="getStaffNotAdmin.hasPrevious()" ng-click="getStaffNotAdmin.previous()">上一页</a>
+                                </li>
+                                <li ng-class="{true:'active'}[getStaffNotAdmin.page.currentPage==i]" ng-repeat="i in getStaffNotAdmin.pages">
+                                    <a href="javascript:void(0)"  ng-click="getStaffNotAdmin.go(i)">{{i}}</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[getStaffNotAdmin.page.currentPage==getStaffNotAdmin.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-show="getStaffNotAdmin.hasNext()" ng-click="getStaffNotAdmin.next()">下一页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[getStaffNotAdmin.page.currentPage==getStaffNotAdmin.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-click="getStaffNotAdmin.go(getStaffNotAdmin.page.totalPage)">尾页</a>
+                                </li>
+                            </ul>
+                            <span>共{{getStaffNotAdmin.object.page.totalResult}}条</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="addTUser_permission()">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--取消 END-->
+</div>
+</div>
+</body>
+</html>

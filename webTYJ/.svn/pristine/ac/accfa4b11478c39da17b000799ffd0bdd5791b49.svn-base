@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>交账审批</title>
+    <style type="text/css">
+        .process button {
+            width: 105px;
+            height: 40px;
+        }
+
+        .process span {
+            margin: 12px;
+        }
+
+        .atop {
+            padding: 5px 20px;
+        }
+
+        .operate {
+            padding: 10px 5px;
+        }
+
+        .operate button{
+            width: 70px;
+            height: 30px;
+            line-height: 1px;;
+        }
+
+        .aleft {
+            padding: 0 10px;
+        }
+
+        .tt {
+            width: 75px;
+        }
+
+        .t1 {
+            width: 50px;
+        }
+
+        .tooltip.bottom .tooltip-arrow {
+            top: -10px !important;
+        }
+
+    </style>
+</head>
+<body>
+<div id="content-first">
+    <!--ng-show="showMain"-->
+    <div class="col-lg-12 col-md-12 col-sm-12 sel atop">
+        <div class="row">
+            <div class="col-lg-2" style="padding: 0px;line-height: 1.8em; width: 130px;">
+                审批名称：交账审批<br/>
+                流程类型：可配置
+            </div>
+            <div class="col-lg-10 process">
+                <button href="" class="btn btn-default" disabled="disabled">开始</button>
+                <span class="glyphicon glyphicon-play"></span>
+                <button href="" class="btn btn-default" style="background-color: #029ff0;color:#fff;" ng-click="syy()">
+                    收银员
+                </button>
+                <span class="glyphicon glyphicon-play"></span>
+                <button href="" class="btn btn-default" ng-click="syzz()">收银组长</button>
+                <span class="glyphicon glyphicon-play"></span>
+                <button href="" class="btn btn-default" ng-click="cn()">出纳</button>
+                <span class="glyphicon glyphicon-play"></span>
+                <button href="" class="btn btn-default" ng-click="kj()">会计</button>
+                <span class="glyphicon glyphicon-play"></span>
+                <button href="" class="btn btn-default" disabled="disabled">结束</button>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-2 col-md-3 col-sm-12">
+            <div class="col-xs-12 sel aleft">
+                <div class="operate">
+                    <button class="btn btn-primary glyphicon glyphicon-plus btn-lg" ng-click="add()"></button>
+                    <button class="btn btn-primary glyphicon glyphicon-minus btn-lg" ng-click="deleteAll(searchPaginator.object.staffs)"></button>
+                    <!--<button class="btn btn-primary glyphicon glyphicon-chevron-down"></button>
+                    <button class="btn btn-primary glyphicon glyphicon-chevron-up"></button>-->
+                </div>
+                <div class="row sfbx">
+                    <input type="checkbox" checked="checked" disabled="true" style="vertical-align: sub;"/>
+                    <span style="font-size: 14px;color: red">是否并行</span>
+                    <span class="glyphicon glyphicon-question-sign" style="margin-left: 5px;" data-toggle="tooltip"
+                          data-placement="bottom" title="并行就是选择的所有审批人需要按顺序一个一个的都要审批，不勾选此项，代表是串行；多个审批人中随便一个审批即可"></span>
+                </div>
+            </div>
+            <div class="col-xs-12 aleft">
+                <div class="row text-right" style="font-size:14px;">审批人可以有多个！</div>
+                <div style="margin-top: 10px;">
+
+                    <ul ng-repeat="item in searchPaginator.object.staffs" ng-show="item.staffName != null">
+                        <li>
+                            <div class="user_information">
+                                <div class="user_information_img">
+                                    <img src="images/project/user/user_3.png">
+                                </div>
+                                <div class="user_information_body" style="position: relative">
+                                    <div class="user_information_name">
+                                        {{item.staffName}}
+                                    </div>
+                                    <div class="user_information_info">
+                                        {{item.nameOfCustom}}
+                                    </div>
+                                    <button class="glyphicon glyphicon-trash btn btn-danger text-right"
+                                            style="position: absolute;right:0px;bottom:0px !important;" ng-click="delete(item)"></button>
+                                </div>
+                            </div>
+                        </li>
+                        <!--<li ng-show="searchPaginator.object.staffs.length == null">暂无数据!</li>-->
+                    </ul>
+                    <ul class="text-center" ng-show="searchPaginator.object.staffs.length == null">
+                        <li>暂无数据!</li>
+                    </ul>
+                </div>
+                <div class="search-padding-10" ng-show="searchPaginator.object.staffs.length > 4">
+                    <div class="bill_paging">
+                        <span>共{{searchPaginator.object.page.totalResult}}条</span>
+                        <ul class="pagination">
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]"><a href="javascript:void(0)" ng-click="searchPaginator.go(1)">首页</a></li>
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]"><a href="javascript:void(0)" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a></li>
+                            <li ng-class="{true:'active'}[searchPaginator.page.currentPage==i]" ng-repeat="i in searchPaginator.pages" ><a href="javascript:void(0)" on-show="searchPaginator.go(i)"  ng-click="searchPaginator.go(i)">{{i}}</a></li>
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]"><a href="javascript:void(0)" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a></li>
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]"><a href="javascript:void(0)" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a></li>
+                        </ul>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--内部专业线创建建筑结构-->
+        <!--内部专业线创建建筑结构表-->
+        <div class="col-lg-10 col-md-9 col-sm-12">
+
+            <div class="content-two budding" id="myTabContent">
+                <div class="row search-padding-10" style="margin-top: 20px;">
+                    <div class="col-lg-1 col-md-2 col-sm-2 text-right t1">
+                        姓名：
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-4">
+                        <input class="form-control" ng-model="staff2.staffName"
+                               placeholder="请输入姓名"/>
+                    </div>
+                    <div class="col-lg-1 col-md-2 col-sm-2 text-right t1">
+                        工号：
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-4">
+                        <input class="form-control" ng-model="staff2.staffNo"
+                               placeholder="请输入工号"/>
+                    </div>
+                    <div class="col-lg-1 col-md-2 col-sm-2 text-left">
+                        <button type="button" class="btn btn-primary" ng-click="searchPaginators._load();">
+                            <span class="glyphicon glyphicon-search btn_icon"></span>
+                            查询
+                        </button>
+                    </div>
+                </div>
+                <div class="row padding">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th><input type="checkbox" id="allchose" ng-click="allchose(searchPaginators.object.staffs)"></th>
+                            <th>序号</th>
+                            <th>员工工号</th>
+                            <th>姓名</th>
+                            <th>所属部门</th>
+                            <th>职位</th>
+                            <th>身份证号</th>
+                            <th>邻音号</th>
+                            <th>年龄</th>
+                            <th>性别</th>
+                            <th>联系电话</th>
+                            <th>QQ号码</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="item in searchPaginators.object.staffs" ng-show="item.staffName != null" ng-click="getdata(item)">
+                            <td><input type="checkbox" id="{{item.staffNo}}" ng-click="getdata(item)"></td>
+                            <td>{{$index+(searchPaginators.page.currentPage-1)*6}}</td>
+                            <td>{{item.staffNo}}</td>
+                            <td>{{item.staffName}}</td>
+                            <td>{{item.specialtyName}}部</td>
+                            <td>{{item.nameOfCustom}}</td>
+                            <td>{{item.cardNum}}</td>
+                            <td>123123</td>
+                            <td>{{item.age}}</td>
+                            <td ng-switch on="{{item.sex}}">
+                                <span ng-switch-when="0">男</span>
+                                <span ng-switch-when="1">女</span></td>
+                            <td>{{item.telphone}}</td>
+                            <td>{{item.qq}}</td>
+                        </tr>
+                        <tr ng-show="searchPaginators.object.staffs.length == null">
+                            <td colspan="15">暂无数据!</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="search-padding-10">
+                    <div class="bill_paging">
+                        <span>共{{searchPaginators.object.page.totalResult}}条</span>
+                        <ul class="pagination">
+                            <li ng-class="{true:'disabled'}[searchPaginators.page.currentPage==1]"><a href="javascript:void(0)" ng-click="searchPaginators.go(1)">首页</a></li>
+                            <li ng-class="{true:'disabled'}[searchPaginators.page.currentPage==1]"><a href="javascript:void(0)" ng-show="searchPaginators.hasPrevious()" ng-click="searchPaginators.previous()">上一页</a></li>
+                            <li ng-class="{true:'active'}[searchPaginators.page.currentPage==i]" ng-repeat="i in searchPaginators.pages" ><a href="javascript:void(0)" on-show="searchPaginators.go(i)"  ng-click="searchPaginators.go(i)">{{i}}</a></li>
+                            <li ng-class="{true:'disabled'}[searchPaginators.page.currentPage==searchPaginators.page.totalPage]"><a href="javascript:void(0)" ng-show="searchPaginators.hasNext()" ng-click="searchPaginators.next()">下一页</a></li>
+                            <li ng-class="{true:'disabled'}[searchPaginators.page.currentPage==searchPaginators.page.totalPage]"><a href="javascript:void(0)" ng-click="searchPaginators.go(searchPaginators.page.totalPage)">尾页</a></li>
+                        </ul>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--内部专业线创建建筑结构表-->
+    </div>
+    <!--视图加载开始-->
+</div>
+<script src="bower_components/bootstrap/bootstrap.min.js"></script>
+</body>
+</html>

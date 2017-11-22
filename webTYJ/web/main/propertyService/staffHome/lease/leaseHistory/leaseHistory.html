@@ -1,0 +1,456 @@
+<!--
+    创建人：XC
+    页面名称：人员主页办理租赁业务
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>历史记录</title>
+    <style>
+        .addae {
+            border: 1px solid #797979;
+            margin: 10px 10px;
+            height: 105px;
+            padding: 15px 0;
+            white-space: nowrap;
+        }
+    </style>
+    <script>
+        function checkShow(){
+           var checks=document.getElementsByName("leaseId");
+            for(var i=0;i<checks.length;i++){
+                checks[i].checked=false;
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="bower_components/skins/zyupload-1.0.0.min.css " type="text/css">
+</head>
+<body>
+<div class="sel">
+    <div class="row search-padding-10">
+        <div class="col-lg-4 col-md-5 col-sm-5">
+            <button type="button" class="btn btn-default btn-primary" data-target="#new" data-toggle="modal" ui-sref="index.propertyService.staffHome.lease.leaseAdd"
+                    ng-click="doClick(2)" >
+                <span class="glyphicon glyphicon-plus btn_icon"></span>新建
+            </button>
+            <button type="button" class="btn btn-default btn-primary" data-target="#new" data-toggle="modal" ng-click="getModifyLease()" ng-show="showStatus==1">
+                <span class="glyphicon glyphicon-edit btn_icon"></span>编辑
+            </button>
+            <button type="button" class="btn btn-default btn-primary" data-target="#new" data-toggle="modal" ng-click="deleteLeases()"  ng-show="showStatus==1">
+                <span class="glyphicon glyphicon-remove btn_icon"></span>删除
+            </button>
+        </div>
+        <div class="col-lg-1 col-md-1 col-sm-1 text-right">
+            房屋地址
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-4">
+            <input class="form-control" placeholder="请输入房屋地址" set-Focus="" ng-model="search.houseAddress" />
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            <button type="button" class="btn btn-default btn-primary" data-target="#new" data-toggle="modal" ng-click="currentPaginator._load()">
+                <span class="glyphicon glyphicon-search btn_icon"></span>搜索
+            </button>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-4 text-right">
+            <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="listview()">
+                <span class="glyphicon glyphicon-th-list btn_icon"></span>
+                列表
+            </button>
+
+            <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="tabview()">
+                <span class="glyphicon glyphicon-th-large btn_icon"></span>
+                网格
+            </button>
+        </div>
+    </div>
+</div>
+<div class="row padding">
+    <div class="col-lg-12">
+        <div class="search-padding-10" ng-show="showStatus==1">
+            <table>
+                <thead>
+                <tr>
+                    <th><input type="checkbox" id="allchose1" ng-true-value="1" ng-false-value="0"
+                               ng-click="allchose1()" style="vertical-align: -4px;"></th>
+                    <th>序号</th>
+                    <th>房屋地址</th>
+                    <th>房屋属性</th>
+                    <th>月租金</th>
+                    <th>承租人</th>
+                    <th>承租开始时间</th>
+                    <th>承租结束时间</th>
+                    <th>租赁状态</th>
+                </tr>
+                </thead>
+                <tbody id="propertyTypes">
+                <tr ng-repeat="item in currentPaginator.object.newLeases"
+                    ng-show="item.id!=null" ng-click="getdata(item)" ng-class="{'this_info':btnIndex==item}"
+                    id={{item.id}}>
+                    <td><input name="leaseId" type="checkbox" id={{item.id}}></td>
+                    <td>{{$index}}</td>
+                    <td>{{item.houseAddress}}</td>
+                    <td>
+                        <span ng-show="item.houseIdType==1">商铺</span>
+                        <span ng-show="item.houseIdType==0">住宅</span>
+                    </td>
+                    <td>{{item.rent | number:2}} <span ng-if="item.rent==null">0.00</span>元</td>
+                    <td>{{item.leasePersonName}}</td>
+                    <td>{{item.hireStartDate|date:'yyyy-MM-dd'}}</td>
+                    <td>{{item.hireFinishDate|date:'yyyy-MM-dd'}}</td>
+                    <td>{{item.atRent}}</td>
+                </tr>
+                <tr ng-if="currentPaginator.object.newLeases.length == null">
+                    <td colspan="12">暂无数据！</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <!--网格的显示与隐藏 songjia 2016-03-14 start-->
+        <div class="search-padding-10" ng-show="showStatus==0">
+            <div class="col-lg-4 col-md-6 col-sm-6" ng-repeat="item in currentPaginator.object.newLeases"
+                 ng-show="item.id!=null">
+                <div id="pannel">
+                    <div class="title">
+                        <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                            <h3 class="text-left">租赁信息</h3>
+                        </div>
+                    </div>
+                    <div class="downList">
+                        <div class="col-xs-12 col-lg-12 col-md-12 col-sm-12 text-right">
+                            <span class="glyphicon glyphicon-chevron-down" id="dropdownMenu1" data-toggle="dropdown"
+                                  aria-haspopup="true" aria-expanded="false"></span>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                <li><a style="cursor: pointer" ng-click="getModifyLease(item)">编辑</a></li>
+                                <li><a style="cursor: pointer" ng-click="deleteLeases(item)">删除</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="pannel_content">
+                        <div class="row">
+                            <div class="col-xs-3 col-lg-3 col-md-3">
+                                <a style="cursor: pointer" ng-dblclick="toShow(item);">
+                                    <img ng-show="item.annexs[0].annexAddress==null"
+                                         src="images/project/user/user_3.png" width="100%"/>
+                                    <img ng-src="{{fileUrl}}/{{item.annexs.annexAddress}}" width="100%">
+                                </a>
+                            </div>
+                            <div class="col-xs-9 col-lg-9 col-md-9">
+                                <div class="row search-padding">
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <div class="col-lg-5 col-md-5 col-sm-5 text-right">房屋地址：</div>
+                                        <div class="col-lg-7 col-md-7 col-sm-7 ">{{item.houseAddress}}</div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <div class="col-lg-5 col-md-5 col-sm-5 text-right">房屋属性：</div>
+                                        <div class="col-lg-7 col-md-7 col-sm-7">
+                                            <span ng-show="item.house==null">商铺</span>
+                                            <span ng-show="item.store==null">住宅</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <div class="col-lg-5 col-md-5 col-sm-5 text-right">月租金：</div>
+                                        <div class="col-lg-7 col-md-7 col-sm-7 ">{{item.rent | number:2}} <span ng-if="item.rent==null">0.00</span>元</div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <div class="col-lg-5 col-md-5 col-sm-5 text-right">承租人：</div>
+                                        <div class="col-lg-7 col-md-7 col-sm-7 ">{{item.leasePersonName}}</div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <div class="col-lg-5 col-md-5 col-sm-5 text-right">承租开始时间：</div>
+                                        <div class="col-lg-7 col-md-7 col-sm-7 ">
+                                            {{item.hireStartDate|date:'yyyy-MM-dd'}}
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <div class="col-lg-5 col-md-5 col-sm-5 text-right">承租结束时间：</div>
+                                        <div class="col-lg-7 col-md-7 col-sm-7 ">
+                                            {{item.hireFinishDate|date:'yyyy-MM-dd'}}
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <div class="col-lg-5 col-md-5 col-sm-5 text-right">租赁状态：</div>
+                                        <div class="col-lg-7 col-md-7 col-sm-7 ">{{item.atRent}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-lg-4 col-md-4 col-sm-4"
+             ng-show="currentPaginator.object.newLeases.length == null && showStatus==0">
+            <div id="pannel">
+                <div class="title">
+                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                        <h3>租赁信息</h3>
+                    </div>
+                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                        <!-- <span class="glyphicon glyphicon-search"></span>-->
+                    </div>
+                </div>
+                <div class="pannel_content">
+                    <div class="row">
+                        <div class="col-xs-12 col-lg-12 col-md-12">
+                            <div class="row search-padding 10">
+                                暂无数据！
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 网格的显示与隐藏 songjia 2016-03-14 end -->
+    <div class="bill_paging" ng-show="currentPaginator.object.page.totalResult">
+        <span>共{{currentPaginator.object.page.totalResult}}条</span>
+        <ul class="pagination">
+            <li ng-class="{true:'disabled'}[currentPaginator.page.currentPage==1]">
+                <a href="javascript:void(0)" ng-click="currentPaginator.go(1)">首页</a>
+            </li>
+            <li ng-class="{true:'disabled'}[currentPaginator.page.currentPage==1]">
+                <a href="javascript:void(0)" ng-show="currentPaginator.hasPrevious()" ng-click="currentPaginator.previous()">上一页</a>
+            </li>
+            <li ng-class="{true:'active'}[currentPaginator.page.currentPage==i]" ng-repeat="i in currentPaginator.pages">
+                <a href="javascript:void(0)"  ng-click="currentPaginator.go(i)">{{i}}</a>
+            </li>
+            <li ng-class="{true:'disabled'}[currentPaginator.page.currentPage==currentPaginator.page.totalPage]">
+                <a href="javascript:void(0)" ng-show="currentPaginator.hasNext()" ng-click="currentPaginator.next()">下一页</a>
+            </li>
+            <li ng-class="{true:'disabled'}[currentPaginator.page.currentPage==currentPaginator.page.totalPage]">
+                <a href="javascript:void(0)" ng-click="currentPaginator.go(currentPaginator.page.totalPage)">尾页</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="modal fade" id="modifyLeases" role="dialog" aria-label="myModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                租赁信息编辑
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row padding">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-4 text-right search-padding-10">
+                            房屋地址:
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-6 search-padding-10">
+                            {{leasesToModify.houseAddress}}
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-4 text-right search-padding-10">
+                            房屋属性:
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-6 search-padding-10">
+                            <span ng-show="leasesToModify.houseIdType==1">商铺</span>
+                            <span ng-show="leasesToModify.houseIdType==0">住宅</span>
+                        </div>
+                        <div class="clear"></div>
+                        <div class="col-lg-2 col-md-4 col-sm-4 text-right search-padding-10">
+                            合同开始日期:
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-sm-6 search-padding-10">
+                            <div class="col-md-11">
+                                <input name="input" type="date" ng-model="leasesToModify.hireStartDate"
+                                                          class="form-control"/>
+                            </div>
+                            <div class="col-md-1"><span style="color: red">*</span></div>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-4 text-right search-padding-10">
+                            合同结束日期:
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-sm-6 search-padding-10">
+                            <div class="col-md-11">
+                                <input name="input" type="date" ng-model="leasesToModify.hireFinishDate"
+                                       class="form-control"/>
+                            </div>
+                            <div class="col-md-1"><span style="color: red">*</span></div>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-4 text-right search-padding-10">
+                            租金:
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-sm-6 search-padding-10">
+                            <div class="col-md-11">
+                                <input name="rent" type="number" ng-model="leasesToModify.rent" min="0"
+                                       class="form-control" ng-blur="formatRent()"/>
+                            </div>
+                            <div class="col-md-1"><span style="color: red">*</span></div>
+                        </div>
+                        <div class="clear"></div>
+                        <div class="col-lg-2 col-md-4 col-sm-4 text-right">
+                            图片:
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4" ng-show="leasesToModify.annexs==null">
+                            <img src="images/project/user/user_3.png" style="width:80px;height:80px;"/>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4 text-center search-padding-10"
+                             ng-repeat="item in leasesToModify.annexs track by $index"
+                             ng-show="item.annexAddress != null">
+                            <img src={{fileUrl}}/{{item.annexAddress}} width="80px" height="80px">
+                            <br/>
+                            <button class="btn btn-default btn-primary tab-btn" ng-click="delPic(item);">移除</button>
+                        </div>
+                        <div class="clear"></div>
+                        <!--承租人-->
+                        <div class="search-padding-10">
+                            <div class="search-padding-10">
+                                <button type="button" class="btn btn-default btn-primary" data-toggle="modal"
+                                        data-target="#myModal_zuping" ng-click="ryssqc()">
+                                    <span class="glyphicon glyphicon-plus btn_icon"></span>添加租户
+                                </button>
+                                <button type="button" class="btn btn-default btn-primary" ng-click="deletePerson()">
+                                    <span class="glyphicon glyphicon-minus btn_icon"></span>删除租户
+                                </button>
+                            </div>
+                            <table>
+                                <thead>
+                                <tr>
+                                    <th>序号</th>
+                                    <th>租客姓名</th>
+                                    <th>租客电话</th>
+                                    <th>租客证件号</th>
+                                    <th>家家号</th>
+                                </tr>
+                                </thead>
+                                <tbody id="tbody">
+                                <tr ng-repeat="person in persons track by $index" ng-show="person.custId!=null"
+                                    ng-click="deleteSelect(person.custId)" id="{{person.custId}}">
+                                    <td>{{$index+1}}</td>
+                                    <td>{{person.name}}</td>
+                                    <td>{{person.registerPhone}}</td>
+                                    <td>{{person.cardNum| limitTo:18}}</td>
+                                    <td>{{person.jiajiaNum}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="remove">
+                        <div id="zyupload" class="zyupload"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" id="close">关闭</button>
+                <button type="button" class="btn btn-primary"  ng-click="modifyLease()">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--modal-->
+<!--人员模态框-->
+<div class="modal fade" id="myModal_zuping" tabindex="-1"
+     role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog" style="width:80%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>客户信息</span>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+            </div>
+            <div class="modal-body">
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                    <div class="row sel">
+                        <div class="col-1 col-md-1 col-sm-1 text-right">
+                            姓名
+                        </div>
+                        <div class="col-2 col-md-2 col-sm-2">
+                            <input type="text" class="form-control " ng-model="searchone.staffName">
+                        </div>
+                        <div class="col-1 col-md-1 col-sm-1 text-right">
+                            联系电话
+                        </div>
+                        <div class="col-2 col-md-2 col-sm-2 ">
+                            <input type="text" class="form-control " ng-model="searchone.phone">
+                        </div>
+                        <div class="col-1 col-md-1 col-sm-1 text-right">
+                            身份证号
+                        </div>
+                        <div class="col-2 col-md-2 col-sm-2">
+                            <input type="text" class="form-control " ng-model="searchone.idNum">
+                        </div>
+
+                        <div class="col-3 col-md-3 col-sm-3 text-right">
+                            <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="selectPerson();">
+                                <span class="glyphicon glyphicon-search btn_icon"></span>
+                                查询
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="padding">
+                    <div class="row rh" ng-class="{'this_info':chocieCss(person.custId)}"  ng-click="choicePerson(person)"
+                         ng-repeat="person in currentPaginatorPerson.object.personCustNew" ng-show="person.custId!=null" ng-show="person.custId!=null">
+                        <div class="col-lg-1 col-md-1 col-sm-1"><img src="images/project/user/user_3.png"  width="50" height="50" ></div>
+                        <div class="col-lg-11 col-md-11 col-sm-11">
+                            <div class="row">
+                                <div class="col-lg-1 col-md-2 col-sm-2 text-right">客户姓名：</div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">{{person.name}} &nbsp;</div>
+                                <div class="col-lg-1 col-md-2 col-sm-2 text-right">客户性别：</div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">
+                                      <span ng-switch on="person.sex">
+                                         <span ng-switch-when="0">男</span>
+                                         <span ng-switch-when="1">女</span>
+                                        </span></div>
+                                <div class="col-lg-1 col-md-2 col-sm-2 text-right">客户编号：</div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">{{person.custCode}} &nbsp;</div>
+                                <div class="col-lg-1 col-md-2 col-sm-2 text-right">身份证：</div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">{{person.cardNum| limitTo:18}}</div>
+
+                                <div class="col-lg-1 col-md-2 col-sm-2 text-right">QQ号码：</div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">{{person.weixinNum}} &nbsp;</div>
+                                <div class="col-lg-1 col-md-2 col-sm-2 text-right">出生日期：</div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">{{person.birthday | date:'yyyy-MM-dd'}}</div>
+                                <div class="col-lg-1 col-md-2 col-sm-2 text-right">联系电话：</div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">{{person.phoneNum}} &nbsp;</div>
+                                <div class="col-lg-1 col-md-2 col-sm-2 text-right">家家号：</div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">{{person.jiajiaNum}} &nbsp;</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bill_paging">
+                        <span>共{{currentPaginatorPerson.object.page.totalResult}}条</span>
+                        <ul class="pagination">
+                            <li ng-class="{true:'disabled'}[currentPaginatorPerson.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-click="currentPaginatorPerson.go(1)">首页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[currentPaginatorPerson.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-show="currentPaginatorPerson.hasPrevious()" ng-click="currentPaginatorPerson.previous()">上一页</a>
+                            </li>
+                            <li ng-class="{true:'active'}[currentPaginatorPerson.page.currentPage==i]" ng-repeat="i in currentPaginatorPerson.pages">
+                                <a href="javascript:void(0)"  ng-click="currentPaginatorPerson.go(i)">{{i}}</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[currentPaginatorPerson.page.currentPage==currentPaginatorPerson.page.totalPage]">
+                                <a href="javascript:void(0)" ng-show="currentPaginatorPerson.hasNext()" ng-click="currentPaginatorPerson.next()">下一页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[currentPaginatorPerson.page.currentPage==currentPaginatorPerson.page.totalPage]">
+                                <a href="javascript:void(0)" ng-click="currentPaginatorPerson.go(currentPaginatorPerson.page.totalPage)">尾页</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn  btn-default" data-dismiss="modal">
+                    取消
+                </button>
+                <button type="button" class="btn bg-primary" aria-label="Left Align" data-dismiss="modal" ng-click="btnClick()">
+                    确定
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,265 @@
+<!--
+    pageName:【新增门禁卡】物业服务人员主页中门禁卡
+    Author:钟加诚
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>物业服务新建门禁卡</title>
+</head>
+<body>
+<form id="css_form" name="mainForm" novalidate>
+<div class="sel1">
+    <div class="row search-padding-10">
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            门禁卡号：
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-4">
+            <input type="text" class="form-control" name="cardnum" set-Focus="" ng-model="addEntrance.cardNum" placeholder="请输入门禁卡号">
+            <!-- 删除提示感叹号，避免清空数据后出现为空提示  王洲  2016.1.13 -->
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            <span style="color: red">*</span>
+        </div>
+    </div>
+    <div class="row search-padding-10">
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            房屋地址：
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-4">
+            <span ng-model="houseone.fullName">{{houseone.fullName}}</span>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            <button type="button" class="btn btn-default btn-primary" data-toggle="modal" ng-click="openHouse()"><span class="glyphicon glyphicon-search btn_icon"></span>关联房屋</button>
+        </div>
+    </div>
+    <div class="row search-padding-10">
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            启用日期：
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-4">
+            <input type="date" class="form-control" ng-model="addEntrance.startDate" name="startdate">
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            <span style="color: red">*</span>
+        </div>
+    </div>
+    <div class="row search-padding-10">
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            截止日期：
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-4">
+            <input type="date" class="form-control" ng-model="addEntrance.endDate" name="enddate" ng-blur="checkDates()">
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2">
+        </div>
+    </div>
+    <div class="row search-padding-10">
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            客户姓名：
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-4">
+            <span ng-model="personone.name">{{personone.name}}</span>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            <button type="button" class="btn btn-default btn-primary" data-toggle="modal" ng-click="openPerson()"><span class="glyphicon glyphicon-search btn_icon"></span>关联用户</button>
+        </div>
+    </div>
+    <div class="row search-padding-10">
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            工本费：
+        </div>
+        <div class="col-lg-4 col-md-6 col-ms-6">
+            <span>{{Product.price | number : 2}}</span>元</div>
+    </div>
+    <div class="row search-padding-10">
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            应缴金额：
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-6">
+            <span>{{Product.price | number : 2}}</span>元
+        </div>
+    </div>
+</div>
+</form>
+
+<div class="padding">
+    <div class="text-center">
+        <button type="button" class="btn btn-default tab-btn" ng-click="resetAddEntrance()">取消</button>
+        <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="insertEntrance()">提交</button>
+    </div>
+
+</div>
+
+<div class="modal fade" id="file" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 60%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalfees">关联房屋</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row padding">
+                    <div class="rh" ng-class="{'this_info':btnIndex==house.buildingStructureId}" ng-click="choiceHouse(house)" ng-repeat="house in buildingStructure" ng-show="house.houseNew != null">
+                        <div class="col-lg-1 col-md-1 col-sm-1">
+                            <img src="images/project/bud/b_01.png"  width="55" height="55">
+                        </div>
+                        <div class="col-lg-11 col-md-11 col-sm-11">
+                            <div class="col-lg-8 col-md-8 col-sm-8">
+                                房屋地址：{{house.houseNew.fullName}}
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                入伙状态：
+                                <span ng-switch on="house.houseNew.joinState">
+                                    <span ng-switch-when="0">未入伙</span>
+                                    <span ng-switch-when="1">已入伙</span>
+                                    <span ng-switch-default>未入伙</span>
+                                </span>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                销售状态：
+                                 <span ng-switch on="house.houseNew.marketState">
+                                    <span ng-switch-when="0">未售</span>
+                                    <span ng-switch-when="1">已售</span>
+                                    <span ng-switch-default>已售</span>
+                                </span>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                竣工面积：{{house.houseNew.houseArea}}
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                房屋户型：{{house.houseNew.houseName}}
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="rh" ng-class="{'this_info':btnIndex==stall.buildingStructureId}" ng-click="choiceHouse(stall)" ng-repeat="stall in buildingStructure" ng-show="stall.stallNew != null">
+                        <div class="col-lg-1 col-md-1 col-sm-1">
+                            <img src="images/project/car/c_01.png"  width="55" height="55">
+                        </div>
+                        <div class="col-lg-11 col-md-11 col-sm-11">
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                车位地址：{{stall.stallNew.fullName}}
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                车位编码：
+                                {{stall.stallNew.stallCoding}}
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                车位类型：
+                                {{stall.stallNew.stallType}}
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                车位状态：
+                                <span ng-switch on="stall.stallNew.stallState">
+                                    <span ng-switch-when="1">正常</span>
+                                    <span ng-switch-when="2">欠费</span>
+                                    <span ng-switch-when="3">办卡</span>
+                                    <span ng-switch-default>正常</span>
+                                </span>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                车位面积：{{stall.stallNew.usableArea}}
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                车位管理费：{{stall.stallNew.maintenancePrice}}
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="rh" ng-class="{'this_info':btnIndex==store.buildingStructureId}" ng-click="choiceHouse(store)" ng-repeat="store in buildingStructure" ng-show="store.storeNew != null">
+                        <div class="col-lg-1 col-md-1 col-sm-1">
+                            <img src="images/project/bud/b_05.png"  width="55" height="55">
+                        </div>
+                        <div class="col-lg-11 col-md-11 col-sm-11">
+                            <div class="col-lg-8 col-md-8 col-sm-8">
+                                商铺地址：{{store.storeNew.fullName}}
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                商铺编码：
+                                {{store.storeNew.storeNumber}}
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                销售状态：
+                                 <span ng-switch on="store.storeNew.intakeState">
+                                    <span ng-switch-when="0">未售</span>
+                                    <span ng-switch-when="1">已售</span>
+                                    <span ng-switch-default>已售</span>
+                                </span>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                竣工面积：{{store.storeNew.completionArea}}
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                商铺类型：{{store.storeNew.storeTyoe}}
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"  data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary"  data-dismiss="modal">确认</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="person" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 60%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <span>
+                 查询客户
+                </span>
+            </div>
+            <div class="modal-body">
+                <div class="row padding">
+                <div class="rh" ng-class="{'this_info':btnIndex==items.custId}" ng-click="getPersonBycustId(items)" ng-repeat="items in personCustNewList" ng-show="items.custId!=null">
+                    <div class="col-lg-1 col-md-1 col-sm-1">
+                        <img src="images/project/user/user_3.png"  width="55" height="55">
+                    </div>
+                    <div class="col-lg-11 col-md-11 col-sm-11">
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            客户姓名：{{items.name}}
+                        </div>
+                        <div class="col-lg-5 col-md-5 col-sm-5">
+                            身份证：{{items.cardNum}}
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            联系电话：{{items.phoneNum}}
+                        </div>
+                        <div class="clear"></div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            客户性别：{{items.sex}}
+                        </div>
+                        <div class="col-lg-5 col-md-5 col-sm-5">
+                            家家号：{{items.jiajiaNum}}
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            客户编号：{{items.custCode}}
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"  data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary"  data-dismiss="modal">确认</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<div style="text-align: center"><span style="color: red;">{{err}}</span></div>
+</body>
+</html>

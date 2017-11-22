@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>项目建筑初始化</title>
+    <link rel="stylesheet" href="css/projectConstruction.css">
+    <link rel="stylesheet" href="css/ztree/ztreeProjectC.css" type="text/css">
+    <link rel="stylesheet" href="css/ztree/zTreeStyle.css" type="text/css">
+    <link rel="stylesheet" href="css/externalProfession/waterMeterInfo.css" type="text/css">
+    <link rel="stylesheet" href="bower_components/skins/zyupload-1.0.0.min.css " type="text/css">
+    <style type="text/css">
+        .ztree li span.button.add {margin-left:2px; margin-right: -1px; background-position:-144px 0;  *vertical-align:middle}
+    </style>
+</head>
+<body ng-controller="projectConstructionCtrl">
+<div id="content-first" ng-show="showMain">
+    <!--视图加载-->
+    <!--内部专业线创建建筑结构--选择框一开始
+    <div class="sel">
+        <div class="row search-padding-10">
+            <div class="col-lg-1 col-md-2 col-sm-2">
+                选择项目
+            </div>
+            <div class="col-lg-5 col-md-4 col-sm-4">
+                <select id="projectCons" class="form-control"  ng-model="currentProject" ng-options="p.projectName for p in allProjects">
+                    <option value="">请选择</option>
+                </select>
+                <input type="hidden" id="fileurl" value="{{fileUrl}}">
+                <input type="hidden" id="proid" value="{{currentProject.projectId}}">
+            </div>
+        </div>
+    </div>
+   内部专业线创建建筑结构--选择框一结束-->
+    <!--内部专业线创建建筑结构--内容-->
+    <div class="col-lg-12 col-md-12 col-sm-12 sel">
+        <button type="button" class="btn btn-default btn-primary"  ng-click="addBuilding()" ><span class="glyphicon glyphicon-plus btn_icon"></span> 创建建筑结构 </button>
+        <!-- 补完导入导出需要的隐藏域  王洲  2016.2.2 -->
+        <input type="hidden" id="fileurl" value="{{fileUrl}}">
+        <input type="hidden" id="proid" value="{{projectIds}}">
+        <!--<button type="button" class="btn btn-default btn-primary" onClick="exportBuildingStructureModel()">
+            <span class="glyphicon glyphicon-copy btn_icon"></span>模板导出
+        </button>
+        <button type="button" class="btn btn-default btn-primary" onClick="exportBuildingStructure()">
+            <span class="glyphicon glyphicon-copy btn_icon"></span>导出
+        </button>
+        <button type="button" class="btn btn-default btn-primary" onClick="exportBuildingStructure()">
+            <span class="glyphicon glyphicon-copy btn_icon"></span>导入
+        </button>-->
+        <button type="button" class="btn btn-default btn-primary" onClick="createBuildingModel()">
+            <span class="glyphicon glyphicon-copy btn_icon"></span>建筑模板导出
+        </button>
+        <button type="button" class="btn btn-default btn-primary" onClick="exportBuildingStructure()">
+            <span class="glyphicon glyphicon-copy btn_icon"></span>建筑信息导出
+        </button>
+        <button type="button" class="btn btn-default btn-primary" ng-click="exportBuildingStructureNew()">
+            <span class="glyphicon glyphicon-copy btn_icon"></span>建筑信息导入
+        </button>
+        <button type="button" class="btn btn-default btn-primary" ng-click="finishBuilding()">完成</button>
+        <label><input type="checkbox" name="finish" style="vertical-align:-3px;margin-left:10px;" ng-click="moveData()"/> {{finishName}}</label>
+        <!--<button type="button" ng-show="isFinish==0" class="btn btn-default btn-primary" ng-click="moveData(0)">数据迁移</button>-->
+        <!--<button type="button" ng-show="" class="btn btn-default" ng-click="moveData(1)">取消数据迁移</button>-->
+
+        <button type="button" class="btn btn-default pull-right btn-primary" ng-click="back()">返回</button>
+
+    </div>
+    <div class="row">
+        <div class="col-lg-3 col-md-3 col-sm-12">
+            <div id="tree" class="budding">
+            <p class="empty"></p>
+                <div class="tree_list padding">
+                    <div ng-show="buildingToTree.id != null">目前位置：{{buildingToTree.name}}</div>
+                    <div ng-repeat="node in buildingList track by $index" ng-include="'building_nodes_show'"></div>
+                </div>
+            </div>
+        </div>
+        <!--内部专业线创建建筑结构-->
+        <!--内部专业线创建建筑结构表-->
+        <div class="col-lg-9 col-md-9 col-sm-12">
+
+            <div class="content-two budding" id="myTabContent">
+                <div class="row padding">
+                <div class="row search-padding-10">
+                    <div class="col-md-6 col-xs-6">
+                        <div ng-show="building != null">建筑名称： {{building.buildingName}}</div>
+                    </div>
+                    <div class="col-md-6 col-xs-6 text-right">
+                        <div ng-show="buildingprice != ''">建筑总面积： {{building.buildingArea}}&nbsp;㎡</div>
+                    </div>
+                </div>
+                    <table  id="divOne" ><!-- 数据过长时截取方法  王洲  2016.1.22 -->
+                        <thead>
+                        <tr>
+                            <th>区域名称</th>
+                            <th>建筑面积</th>
+                            <th>实用率</th>
+                            <th>套内面积</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="areaNew in areaNews">
+                            <td style="width: 25%; overflow: hidden;text-overflow: ellipsis">
+                                <nobr>{{areaNew.areaTypeNew.areaTypeName}}</nobr>
+                            </td>
+                            <td style="width: 25%; overflow: hidden; text-overflow: ellipsis">
+                                <nobr>{{areaNew.buildingArea}}</nobr>
+                            </td>
+                            <td style="width: 25%; overflow: hidden; text-overflow: ellipsis">
+                                <nobr>{{areaNew.utilityRatio}}</nobr>
+                            </td>
+                            <td style="width: 25%; overflow: hidden; text-overflow: ellipsis">
+                                <nobr>{{areaNew.commonalityArea}}</nobr>
+                            </td>
+                        </tr>
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!--内部专业线创建建筑结构表-->
+    </div>
+    <!--视图加载开始-->
+</div>
+<div ng-show="showTitle">
+    <div id="tab">
+        <a ng-if="show1" class="this_action" lang="no">新增建筑</a>
+        <a ng-if="show2" class="this_action" lang="no">新增建筑结构</a>
+        <a ng-if="show3" class="this_action" lang="no">住宅管理</a>
+        <a ng-if="show4" class="this_action" lang="no">车位管理</a>
+        <a ng-if="show5" class="this_action" lang="no">商铺管理</a>
+    </div>
+    <div class="row" style="padding:0;">
+        <div class="col-lg-12 col-md-6 col-sm-6 text-right" style="background:#f0f0f0;padding-top:5px;">
+            <button type="button" class="btn btn-default btn-primary" ng-click="refeashHtml()">
+                <span class="glyphicon glyphicon-remove" style="vertical-align: -2px;"></span>
+            </button>
+        </div>
+        <div class="col-lg-12 col-md-6 col-sm-6" style="padding:0;">
+            <!--面积属性数据录入-->
+            <div class="absBox" ng-show="show1">
+                <div class="sel">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <div class="col-lg-3 col-md-3 text-right">
+                                建筑名称：
+                            </div>
+                            <div class="col-lg-6 col-md-6">
+                                <input class="form-control" name="buildingName" id="buildingName" ng-model="currentBuilding.buildingName" placeholder="请输入建筑名称">
+                            </div>
+                            <div class="col-lg-3 col-md-3">
+                                <span id="showbuildingName" class="red">*</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="col-lg-3 col-md-3 text-right">建筑总面积：</div>
+                            <div class="col-lg-6 col-md-6">
+                                <input id="totalnum" type="text" class="form-control" ng-model="currentBuilding.totalArea">
+                            </div><!-- 增加必填提示 王洲  2016.1.8 -->
+                            <div class="col-lg-3 col-md-3"><span id="showbuildingareas" class="red">*</span>&nbsp;平方米</div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="col-lg-3 col-md-3 text-right">用地总面积：</div>
+                            <div class="col-lg-6 col-md-6">
+                                <input id="totalarea" type="text" class="form-control" ng-model="currentBuilding.totalAreas">
+                            </div><!-- 增加必填提示  王洲 2016.1.18 -->
+                            <div class="col-lg-3 col-md-3"><span id="showtotalarea" class="red">*</span>&nbsp;平方米</div>
+                        </div>
+                        <div class="col-lg-6"><!-- 增加宗地号选择  王洲  2016.2.2 -->
+                            <div class="col-lg-3 col-md-3 text-right">宗地号：</div>
+                            <div class="col-lg-6 col-md-6">
+                                <select ng-options="a.parcelId as a.parcelNum for a in Parcel" class="form-control" ng-model="currentBuilding.parcelId">
+                                    <option value="">--请选择--</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-3 col-md-3 text-center">
+                                <span class="red pull-left">*</span>
+                                <button type="button" class="btn btn-default btn-primary" ng-click="newArea()">
+                                    <span class="glyphicon glyphicon-plus btn_icon"></span>新建
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="padding" style="max-height:195px;overflow:auto;">
+                    <table style="table-layout: fixed">
+                        <thead>
+                        <tr>
+                            <th width="15%">
+                                <span>面积属性</span>
+                            </th>
+                            <th>
+                                <span>建筑面积</span>
+                            </th>
+                            <th>
+                                <span>公摊面积</span>
+                            </th>
+                            <th>
+                                <span>实用率</span>
+                            </th>
+                            <th>
+                                <span>套内面积</span>
+                            </th>
+                            <th>
+                                <span>操作</span>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="item in currentBuilding.areaNew">
+                            <td style="width: 15%; overflow: hidden;text-overflow: ellipsis"><nobr>{{item.areaTypeName}}</nobr></td><!-- 设置显示长度，过长时截取显示  王洲  2016.1.21 -->
+                            <td style="width: 15%; overflow: hidden;text-overflow: ellipsis"><nobr>{{item.buildingArea}}</nobr></td>
+                            <td style="width: 15%; overflow: hidden;text-overflow: ellipsis"><nobr>{{item.commonalityArea}}</nobr></td>
+                            <td style="width: 15%; overflow: hidden;text-overflow: ellipsis"><nobr>{{item.utilityRatio}}</nobr></td>
+                            <td style="width: 15%; overflow: hidden;text-overflow: ellipsis"><nobr>{{item.insideArea}}</nobr></td>
+                            <td style="width: 25%; overflow: hidden;text-overflow: ellipsis">
+                                <button type="button" class="btn btn-default btn-primary" ng-click="updateArea($index,item)" ><span class="glyphicon glyphicon-edit btn_icon"></span>修改 </button>
+                                <button type="button" class="btn btn-default btn-primary" ng-click="deleteArea($index)" ><span class="glyphicon glyphicon-remove btn_icon"></span>删除 </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div id="nam" ng-show="editArea" name="nam">
+                        <table>
+                            <tbody>
+                            <tr>
+                                <td width="15%">
+                                    <select id="areaTypeName" name="select4" size="1" class="form-control"
+                                            ng-model="currentEditArea.areaType"
+                                            ng-options="o.areaTypeName for o in areaTypes">
+                                        <option value="">请选择</option>
+                                    </select>
+                                    <span id="showareaTypeName" class="red">*</span>
+                                </td>
+                                <td>
+                                    <form><input id="buildingArea" name="input" type="text" class="form-control"
+                                                 class="architecture_input"
+                                                 ng-model="currentEditArea.buildingArea" maxlength="7" /><!-- 设置文本框输入的最大长度  王洲  2016.1.21 -->
+                                        <span id="showbuildingArea" style="color: red;display:block">*</span>
+                                    </form>
+                                </td>
+                                <td>
+                                    <form><input id="commonalityArea" name="input" type="text" class="form-control"
+                                                 class="architecture_input"
+                                                 ng-model="currentEditArea.commonalityArea" maxlength="7" /><!-- 设置文本框输入的最大长度  王洲  2016.1.21 -->
+                                        <span id="showcommonalityArea" style="color: red;display:block">*</span>
+                                    </form>
+                                </td>
+                                <td>
+                                    <form><input id="utilityRatio" name="input" type="text" class="form-control"
+                                                 class="architecture_input"
+                                                 ng-model="currentEditArea.utilityRatio" maxlength="7" /><!-- 设置文本框输入的最大长度  王洲  2016.1.21 -->
+                                        <span id="showutilityRatio" style="color: red;display:block">*</span>
+                                    </form>
+                                </td>
+                                <td>
+                                    <form><input id="insideArea" name="input" type="text" class="form-control"
+                                                 class="architecture_input"
+                                                 ng-model="currentEditArea.insideArea" maxlength="7" /><!-- 设置文本框输入的最大长度  王洲  2016.1.21 -->
+                                        <span id="showinsideArea" style="color: red;display:block">*</span>
+                                    </form>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-default btn-primary" ng-click="saveArea()"><span class="glyphicon glyphicon-floppy-disk btn_icon"></span>保存 </button>
+                                    <button type="button" class="btn btn-default btn-primary"  ng-click="deleteAreaTwo()" ><span class="glyphicon glyphicon-floppy-disk btn_icon"></span>删除</button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer absFoot" style="background:#f0f0f0;">
+                    <a data-toggle="tab" ><input type="button" ng-click="saveBuildingArea()" class="btn btn-default btn-primary"  value="下一步"></a>
+                </div>
+            </div>
+            <!--面积属性数据录入  结束-->
+            <!--建筑结构数据录入-->
+            <div class="absBox" ng-show="show2" >
+                <div class="sel">
+                    <h4>创建建筑结构【{{currentBuilding.buildingName}}】</h4>
+                </div>
+                <div class="padding" style="max-height:245px;overflow: auto;">
+                    <div class="tree_list">
+                        <ul id="treeProjectConstruction" class="ztree"></ul>
+                    </div>
+                </div>
+                <div class="modal-footer absFoot">
+                                <span ng-if="showUp == ''">
+                                    <a data-toggle="tab" > <input type="button" class="btn btn-default btn-primary" ng-click="gotoFirst();" value="上一步"></a>
+                                </span>
+                    <input type="button" class="btn btn-default btn-primary"  ng-hide="zTreevisible" ng-click="zTreeGetAllNodes();" value="保存">
+                    <a data-toggle="tab" > <input type="button" class="btn btn-default btn-primary" ng-click="getBuildingStructureHouse();" value="下一步"></a>
+                </div>
+            </div>
+            <!--建筑结构数据录入 结束-->
+            <!--面积属性数据录入-->
+            <div class="absBox" ng-show="show3">
+                <div class="sel">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4>住宅面积资产</h4>
+                        </div>
+                        <div class="col-md-6 text-right">
+                            <!--<button type="button" class="btn btn-default btn-primary" onClick="exportExcelHouse()">
+                                <span class="glyphicon glyphicon-copy btn_icon"></span>住宅模板导出
+                            </button>
+                            <button type="button" class="btn btn-default btn-primary" role="presentation"
+                                    data-toggle="modal" data-target="#ddd" tabindex="-1" data-toggle="tab"
+                                    ng-click="inportExcel()">
+                                <span class="glyphicon glyphicon-copy btn_icon"></span>住宅记录导入
+                            </button>-->
+                            <button type="button" class="btn btn-default btn-primary" onClick="exprotHouseList()">
+                                <span class="glyphicon glyphicon-copy btn_icon"></span>住宅记录导出
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="padding" style="max-height:225px;overflow: auto;">
+                    <table id="houseTable" style="margin-bottom:20px;box-shadow: none;">
+                        <thead>
+                        <tr><!--  住宅页面显示字段调整  王洲   2016.02.25  -->
+                            <th>区域名称</th>
+                            <th>属性</th>
+                            <th>房屋编码</th>
+                            <th>建筑面积</th>
+                            <th>套内面积</th>
+                            <th>公摊面积</th>
+                            <th>竣工面积</th>
+                            <th style="width: 110px;">竣工日期</th>
+                            <th>楼房属性</th>
+                            <th>房屋户型</th>
+                            <th>销售状态</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="bsh in searchHousePaginator.object.houseNews" ng-show="bsh.id != null">
+                            <td>
+                                <input type="hidden" value="{{bsh.buildingStructureId}}" class="form-control">
+                                <input type="hidden" value="{{bsh.buildingId}}" class="form-control">
+                                <input type="hidden" value="{{bsh.projectId}}" class="form-control">
+                                <input type="hidden" value="{{bsh.houseAddress}}" class="form-control">
+                                <input type="hidden" value="{{bsh.id}}" class="form-control">
+                                <input type="hidden" value="{{bsh.password}}" class="form-control" >
+                                <input type="hidden" value="{{bsh.sipId}}" class="form-control" >
+                                {{bsh.houseAddress}}
+                            </td>
+                            <td>住宅</td>
+                            <td>
+                                <input type="text" class="input_style" ng-model="bsh.houseNum" value="{{bsh.houseNum}}" />
+                            </td>
+                            <td>
+                                <input type="text" class="input_style" ng-model="bsh.houseArea" value="{{bsh.houseArea}}" />
+                            </td>
+                            <td>
+                                <input type="text" class="input_style" ng-model="bsh.usableArea" value="{{bsh.usableArea}}" />
+                            </td>
+                            <td>
+                                <input type="text" class="input_style" ng-model="bsh.shareArea" value="{{bsh.shareArea}}" />
+                            </td>
+                            <td>
+                                <input type="text" class="input_style" ng-model="bsh.completeArea" value="{{bsh.completeArea}}" />
+                            </td>
+                            <td>
+                                <input type="date" class="input_style" style="width: 135px;" ng-model="bsh.completeDate" value="{{bsh.completeDate | date:'yyyy-MM-dd'}}" format-date/>
+                            </td>
+                            <td>
+                                <select class="form-control" ng-model="bsh.houseAttribute">
+                                    <option value="" selected="selected">请选择</option>
+                                    <option value="多层">多层</option>
+                                    <option value="小高层">小高层</option>
+                                    <option value="高层">高层</option>
+                                    <option value="超高层">超高层</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select class="form-control" ng-model="bsh.houseType">
+                                    <option value="" selected="selected">请选择</option>
+                                    <option value="单房">单房</option>
+                                    <option value="一房一厅">一房一厅</option>
+                                    <option value="一房两厅">一房两厅</option>
+                                    <option value="两房一厅">两房一厅</option>
+                                    <option value="两房两厅">两房两厅</option>
+                                    <option value="三房两厅">三房两厅</option>
+                                    <option value="四房两厅">四房两厅</option>
+                                    <option value="五房两厅">五房两厅</option>
+                                    <option value="连排">连排</option>
+                                    <option value="别墅">别墅</option>
+                                    <option value="其它">其它</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select class="form-control" ng-model="bsh.saleState">
+                                    <option value="未售">未售</option>
+                                    <option value="已售">已售</option>
+                                </select>
+                            </td>
+                            <td>
+                                <button type="button" ng-hide="visible" class="btn btn-default btn-primary"  ng-click="addBuildingStructureHouse($index,bsh);"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
+                            </td>
+                        </tr>
+                        <tr ng-if="BuildingStructureHouse.length == 0">
+                            <td colspan="11">暂无数据！</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="col-xs-12">
+                        <div class="bill_paging">
+                            <span style="float:right;margin:0;">共{{searchHousePaginator.object.page.totalResult}}条</span>
+                            <ul class="pagination">
+                                <li ng-class="{true:'disabled'}[searchHousePaginator.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-click="searchHousePaginator.go(1)">首页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchHousePaginator.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-show="searchHousePaginator.hasPrevious()" ng-click="searchHousePaginator.previous()">上一页</a>
+                                </li>
+                                <li ng-class="{true:'active'}[searchHousePaginator.page.currentPage==i]" ng-repeat="i in searchHousePaginator.pages">
+                                    <a href="javascript:void(0)"  ng-click="searchHousePaginator.go(i)">{{i}}</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchHousePaginator.page.currentPage==searchHousePaginator.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-show="searchHousePaginator.hasNext()" ng-click="searchHousePaginator.next()">下一页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchHousePaginator.page.currentPage==searchHousePaginator.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-click="searchHousePaginator.go(searchHousePaginator.page.totalPage)">尾页</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer absFoot">
+                    <a data-toggle="tab"><input type="button" class="btn btn-default btn-primary"  value="上一步" ng-click="close()"></a>
+
+                    <a data-toggle="tab"><input type="button" class="btn btn-default btn-primary"   ng-click="getBuildingStructureParking();" value="下一步"></a>
+                </div>
+            </div>
+            <!--面积属性数据录入 结束-->
+            <!--车位面积属性数据录入-->
+            <div class="absBox" ng-show="show4">
+                <div class="sel">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4>车位面积资产</h4>
+                        </div>
+                        <div class="col-md-6 text-right">
+                            <!--<button type="button" class="btn btn-default btn-primary" onClick="exportExcelStall()">
+                                <span class="glyphicon glyphicon-copy btn_icon"></span>车位模板导出
+                            </button>
+                            <button type="button" class="btn btn-default btn-primary" role="presentation"
+                                    data-toggle="modal" data-target="#ddd" tabindex="-1" data-toggle="tab"
+                                    ng-click="inportExcelStall()">
+                                <span class="glyphicon glyphicon-copy btn_icon"></span>车位记录导入
+                            </button>-->
+                            <button type="button" class="btn btn-default btn-primary" onClick="exprotStallList()">
+                                <span class="glyphicon glyphicon-copy btn_icon"></span>车位记录导出
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="padding" style="max-height:225px;overflow: auto;">
+                    <table id="stallTable" style="margin-bottom:20px;box-shadow: none;">
+                        <thead>
+                        <tr><!--  车位页面显示字段调整  王洲   2016.02.25  -->
+                            <th>车位名称</th>
+                            <th>属性</th>
+                            <th>车位编码</th>
+                            <th>车位属性</th>
+                            <th>车位号</th>
+                            <th>机械车位</th>
+                            <th style="width: 135px;">竣工日期</th>
+                            <th>销售状态</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="bsp in searchStallNewPaginator.object.stallNews" ng-show="bsp.stallId!=null">
+                            <td>
+                                <input type="hidden" value="{{bsp.stallId}}"  class="form-control">
+                                <input type="hidden" value="{{bsp.buildingId}}"  class="form-control">
+                                <input type="hidden" value="{{bsp.buildingStructureId}}" class="form-control">
+                                <input type="hidden" value="{{bsp.projectId}}"   class="form-control">
+                                {{bsp.fullName}}
+                            </td>
+                            <td>
+                                车位
+                            </td>
+                            <td>
+                                <input type="text" value="{{bsp.stallCoding}}" ng-model="bsp.stallCoding" class="input_style">
+                            </td>
+                            <td>
+                                <select  class="form-control" ng-model="bsp.stallProperty">
+                                    <option value="" selected="selected">请选择</option>
+                                    <option value="标准车位">标准车位</option>
+                                    <option value="微型车位">微型车位</option>
+                                    <option value="子母车位">子母车位</option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="text" value="{{bsp.stallNumber}}" ng-model="bsp.stallNumber" class="input_style">
+                            </td>
+                            <td>
+                                <select  class="form-control" ng-model="bsp.isMechanicalStall">
+                                    <option value="是">是</option>
+                                    <option value="否">否</option>
+                                </select>
+                                <!-- 机械车位，1是0否 -->
+                            </td>
+                            <td>
+                                <input type="date" style="width: 135px;" ng-model="bsp.intakeDate" value="{{bsp.intakeDate | date:'yyyy-MM-dd'}}" class="input_style" format-date>
+                            </td>
+                            <td>
+                                <select class="form-control" ng-model="bsp.intakeStates">
+                                    <option value="未售">未售</option>
+                                    <option value="已售">已售</option>
+                                </select>
+                            </td>
+                            <td>
+                                <button type="button" ng-hide="visibleStall" class="btn btn-default btn-primary"  ng-click="addBuildingStructureStall($index,bsp);"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
+                                <!--<input type="button" ng-hide="visibleStall" class="btn btn-default btn-primary" value="保存" ng-click="addBuildingStructureStall();">-->
+                            </td>
+                        </tr>
+                        <tr ng-if="BuildingStructureParking.length == 0">
+                            <td colspan="8">暂无数据！</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="col-xs-12">
+                        <div class="bill_paging">
+                            <span style="float:right;margin:0">共{{searchStallNewPaginator.object.page.totalResult}}条</span>
+                            <ul class="pagination">
+                                <li ng-class="{true:'disabled'}[searchStallNewPaginator.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-click="searchStallNewPaginator.go(1)">首页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchStallNewPaginator.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-show="searchStallNewPaginator.hasPrevious()" ng-click="searchStallNewPaginator.previous()">上一页</a>
+                                </li>
+                                <li ng-class="{true:'active'}[searchStallNewPaginator.page.currentPage==i]" ng-repeat="i in searchStallNewPaginator.pages">
+                                    <a href="javascript:void(0)"  ng-click="searchStallNewPaginator.go(i)">{{i}}</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchStallNewPaginator.page.currentPage==searchStallNewPaginator.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-show="searchStallNewPaginator.hasNext()" ng-click="searchStallNewPaginator.next()">下一页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchStallNewPaginator.page.currentPage==searchStallNewPaginator.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-click="searchStallNewPaginator.go(searchStallNewPaginator.page.totalPage)">尾页</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer absFoot">
+                    <a data-toggle="tab" ><input type="button" class="btn btn-default btn-primary" value="上一步" ng-click="close1()"></a>
+
+                    <a data-toggle="tab" ><input type="button"  class="btn btn-default btn-primary" ng-click="getBuildingStructureBusiness();" value="下一步"></a>
+                </div>
+            </div>
+            <!--车位面积属性数据录入 结束-->
+            <!--结构详情数据录入(商业)-->
+            <div class="absBox" ng-show="show5">
+                <div class="sel">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4>商业面积资产</h4>
+                        </div>
+                        <div class="col-md-6 text-right">
+                            <!--<button type="button" class="btn btn-default btn-primary" onClick="exportExcelStore()">
+                                <span class="glyphicon glyphicon-copy btn_icon"></span>商业模板导出
+                            </button>
+                            <button type="button" class="btn btn-default btn-primary" role="presentation"
+                                    data-toggle="modal" data-target="#ddd" tabindex="-1" data-toggle="tab"
+                                    ng-click="inportExcelStore()">
+                                <span class="glyphicon glyphicon-copy btn_icon"></span>商业记录导入
+                            </button>-->
+                            <button type="button" class="btn btn-default btn-primary" onClick="exprotStoreList()">
+                                <span class="glyphicon glyphicon-copy btn_icon"></span>商业记录导出
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="padding abs" style="max-height:225px;">
+                    <table id="storeTable" style="margin-bottom:20px;box-shadow: none;">
+                        <thead>
+                        <tr><!--  商铺模块显示字段调整   王洲  2016.02.25  -->
+                            <th>商铺名称</th>
+                            <th>属性</th>
+                            <th>商业属性</th>
+                            <th>商铺编码</th>
+                            <th>商铺号</th>
+                            <th>建筑面积</th>
+                            <th>套内面积</th>
+                            <th>分摊面积</th>
+                            <th>竣工面积</th>
+                            <th style="width: 135px;">竣工日期</th>
+                            <th>销售状态</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="bsb in searchStoreNewPaginator.object.storeNews" ng-show="bsb.storeId!=null">
+                            <td>
+                                <input type="hidden" value="{{bsb.buildingStructureId}}" class="form-control">
+                                <input type="hidden" value="{{bsb.buildingId}}" class="form-control">
+                                <input type="hidden" value="{{bsb.projectId}}"  class="form-control">
+                                <input type="hidden" value="{{bsb.storeId}}" class="form-control">                                {{bsb.fullName}}
+                            </td>
+                            <td>
+                                商铺
+                            </td>
+                            <td>
+                                <select class="form-control" ng-model="bsb.storeTyoe">
+                                    <option value="" selected="selected">请选择</option>
+                                    <option value="小商铺">小商铺</option>
+                                    <option value="写字楼">写字楼</option>
+                                    <option value="商业公寓">商业公寓</option>
+                                    <option value="酒店">酒店</option>
+                                    <option value="商业综合体">商业综合体</option>
+                                    <option value="产业用房">产业用房</option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="text" class="input_style" ng-model="bsb.storeCode" value="{{bsb.storeCode}}">
+                            </td>
+                            <td>
+                                <input type="text" class="input_style" ng-model="bsb.storeNumber" value="{{bsb.storeNumber}}">
+                            </td>
+                            <td>
+                                <input type="text" class="input_style" ng-model="bsb.buildingArea" value="{{bsb.buildingArea}}">
+                            </td>
+                            <td>
+                                <input type="text" class="input_style" ng-model="bsb.insideArea" value="{{bsb.insideArea}}">
+                            </td>
+                            <td>
+                                <input type="text" class="input_style" ng-model="bsb.commonalityArea" value="{{bsb.commonalityArea}}">
+                            </td>
+                            <td>
+                                <input type="text" class="input_style" ng-model="bsb.completionArea" value="{{bsb.completionArea}}">
+                            </td>
+                            <td>
+                                <input type="date" class="input_style" style="width: 135px;" ng-model="bsb.intakeDate" value="{{bsb.intakeDate | date:'yyyy-MM-dd'}}" format-date>
+                            </td>
+                            <td>
+                                <select class="form-control" ng-model="bsb.intakeStates">
+                                    <option value="未售">未售</option>
+                                    <option value="已售">已售</option>
+                                </select>
+                            </td>
+                            <td>
+                                <!--<input type="button"  ng-hide="visibleStore" class="btn btn-default btn-primary" value="保存" ng-click="addBuildingStructureStore();">-->
+                                <button type="button" ng-hide="visibleStore" class="btn btn-default btn-primary"  ng-click="addBuildingStructureStore($index,bsb);"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
+                            </td>
+                        </tr>
+                        <tr ng-if="BuildingStructureBusiness.length == 0">
+                            <td colspan="11">暂无数据！</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="col-xs-12">
+                        <div class="bill_paging">
+                            <span style="float:right;margin:0;">共{{searchStoreNewPaginator.object.page.totalResult}}条</span>
+                            <ul class="pagination">
+                                <li ng-class="{true:'disabled'}[searchStoreNewPaginator.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-click="searchStoreNewPaginator.go(1)">首页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchStoreNewPaginator.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-show="searchStoreNewPaginator.hasPrevious()" ng-click="searchStoreNewPaginator.previous()">上一页</a>
+                                </li>
+                                <li ng-class="{true:'active'}[searchStoreNewPaginator.page.currentPage==i]" ng-repeat="i in searchStoreNewPaginator.pages">
+                                    <a href="javascript:void(0)"  ng-click="searchStoreNewPaginator.go(i)">{{i}}</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchStoreNewPaginator.page.currentPage==searchStoreNewPaginator.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-show="searchStoreNewPaginator.hasNext()" ng-click="searchStoreNewPaginator.next()">下一页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchStoreNewPaginator.page.currentPage==searchStoreNewPaginator.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-click="searchStoreNewPaginator.go(searchStoreNewPaginator.page.totalPage)">尾页</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer absFoot">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="refeashHtml()">关闭</button>
+
+                    <a data-toggle="tab" ><input type="button"  class="btn btn-default btn-primary"  value="上一步" ng-click="close2()"></a>
+                </div>
+            </div>
+            <!--结构详情数据录入(商业) 结束-->
+        </div>
+    </div>
+</div>
+<!----------------------------------------------模态框开始-------------------------------------------->
+<!--<div class="modal fade" id="neworlostModal" role="dialog" aria-label="myModalLabel" aria-hidden="true">-->
+    <!--<div class="modal-dialog modal-lg" style="width:90%">-->
+        <!--<div class="modal-content">-->
+            <!--<div class="modal-header">-->
+                <!--<span ng-if="show1 == true">新增建筑</span>-->
+                <!--<span ng-if="show2 == true">新增建筑结构</span>-->
+                <!--<span ng-if="show3 == true">住宅管理</span>-->
+                <!--<span ng-if="show4 == true">车位管理</span>-->
+                <!--<span ng-if="show5 == true">商铺管理</span>-->
+                <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close" ng-click="refeashHtml()">-->
+                    <!--<span aria-hidden="true">&times;</span>-->
+                <!--</button>-->
+            <!--</div>-->
+            <!--<div class="modal-body">-->
+                <!--&lt;!&ndash;面积属性数据录入&ndash;&gt;-->
+                <!--<div ng-show="show1">-->
+                    <!--<div class="sel">-->
+                        <!--<div class="row">-->
+                            <!--<div class="col-xs-6">-->
+                                <!--<div class="col-lg-3 col-md-3 text-right">-->
+                                    <!--建筑名称：-->
+                                <!--</div>-->
+                                <!--<div class="col-lg-6 col-md-6">-->
+                                    <!--<input class="form-control" name="buildingName" id="buildingName" ng-model="currentBuilding.buildingName" placeholder="请输入建筑名称">-->
+                                <!--</div>-->
+                                <!--<div class="col-lg-3 col-md-3">-->
+                                    <!--<span id="showbuildingName" class="red">*</span>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                            <!--<div class="col-lg-6">-->
+                                <!--<div class="col-lg-3 col-md-3 text-right">建筑总面积：</div>-->
+                                <!--<div class="col-lg-6 col-md-6">-->
+                                    <!--<input id="totalnum" type="text" class="form-control" ng-model="currentBuilding.totalArea">-->
+                                <!--</div>&lt;!&ndash; 增加必填提示 王洲  2016.1.8 &ndash;&gt;-->
+                                <!--<div class="col-lg-3 col-md-3"><span id="showbuildingareas" class="red">*</span>&nbsp;平方米</div>-->
+                            <!--</div>-->
+                            <!--<div class="col-lg-6">-->
+                                <!--<div class="col-lg-3 col-md-3 text-right">用地总面积：</div>-->
+                                <!--<div class="col-lg-6 col-md-6">-->
+                                    <!--<input id="totalarea" type="text" class="form-control" ng-model="currentBuilding.totalAreas">-->
+                                <!--</div>&lt;!&ndash; 增加必填提示  王洲 2016.1.18 &ndash;&gt;-->
+                                <!--<div class="col-lg-3 col-md-3"><span id="showtotalarea" class="red">*</span>&nbsp;平方米</div>-->
+                            <!--</div>-->
+                            <!--<div class="col-lg-6">&lt;!&ndash; 增加宗地号选择  王洲  2016.2.2 &ndash;&gt;-->
+                                <!--<div class="col-lg-3 col-md-3 text-right">宗地号：</div>-->
+                                <!--<div class="col-lg-6 col-md-6">-->
+                                    <!--<select ng-options="a.parcelId as a.parcelNum for a in Parcel" class="form-control" ng-model="currentBuilding.parcelId">-->
+                                        <!--<option value="">--请选择--</option>-->
+                                    <!--</select>-->
+                                <!--</div>-->
+                                <!--<div class="col-lg-3 col-md-3 text-center">-->
+                                    <!--<span class="red pull-left">*</span>-->
+                                    <!--<button type="button" class="btn btn-default btn-primary" ng-click="newArea()">-->
+                                        <!--<span class="glyphicon glyphicon-plus btn_icon"></span>新建-->
+                                    <!--</button>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                    <!--<div class="padding">-->
+                        <!--<table style="table-layout: fixed">-->
+                            <!--<thead>-->
+                            <!--<tr>-->
+                                <!--<th width="15%">-->
+                                    <!--<span>面积属性</span>-->
+                                <!--</th>-->
+                                <!--<th>-->
+                                    <!--<span>建筑面积</span>-->
+                                <!--</th>-->
+                                <!--<th>-->
+                                    <!--<span>公摊面积</span>-->
+                                <!--</th>-->
+                                <!--<th>-->
+                                    <!--<span>实用率</span>-->
+                                <!--</th>-->
+                                <!--<th>-->
+                                    <!--<span>套内面积</span>-->
+                                <!--</th>-->
+                                <!--<th>-->
+                                    <!--<span>操作</span>-->
+                                <!--</th>-->
+                            <!--</tr>-->
+                            <!--</thead>-->
+                            <!--<tbody>-->
+                            <!--<tr ng-repeat="item in currentBuilding.areaNew">-->
+                                <!--<td style="width: 15%; overflow: hidden;text-overflow: ellipsis"><nobr>{{item.areaTypeName}}</nobr></td>&lt;!&ndash; 设置显示长度，过长时截取显示  王洲  2016.1.21 &ndash;&gt;-->
+                                <!--<td style="width: 15%; overflow: hidden;text-overflow: ellipsis"><nobr>{{item.buildingArea}}</nobr></td>-->
+                                <!--<td style="width: 15%; overflow: hidden;text-overflow: ellipsis"><nobr>{{item.commonalityArea}}</nobr></td>-->
+                                <!--<td style="width: 15%; overflow: hidden;text-overflow: ellipsis"><nobr>{{item.utilityRatio}}</nobr></td>-->
+                                <!--<td style="width: 15%; overflow: hidden;text-overflow: ellipsis"><nobr>{{item.insideArea}}</nobr></td>-->
+                                <!--<td style="width: 25%; overflow: hidden;text-overflow: ellipsis">-->
+                                    <!--<button type="button" class="btn btn-default btn-primary" ng-click="updateArea($index,item)" ><span class="glyphicon glyphicon-edit btn_icon"></span>修改 </button>-->
+                                    <!--<button type="button" class="btn btn-default btn-primary" ng-click="deleteArea($index)" ><span class="glyphicon glyphicon-remove btn_icon"></span>删除 </button>-->
+                                <!--</td>-->
+                            <!--</tr>-->
+                            <!--</tbody>-->
+                        <!--</table>-->
+                        <!--<div ng-show="editArea">-->
+                            <!--<table>-->
+                                <!--<tbody>-->
+                                    <!--<tr>-->
+                                        <!--<td width="15%">-->
+                                            <!--<select id="areaTypeName" name="select4" size="1" class="form-control"-->
+                                                    <!--ng-model="currentEditArea.areaType"-->
+                                                    <!--ng-options="o.areaTypeName for o in areaTypes">-->
+                                                <!--<option value="">请选择</option>-->
+                                            <!--</select>-->
+                                            <!--<span id="showareaTypeName" class="red">*</span>-->
+                                        <!--</td>-->
+                                        <!--<td>-->
+                                            <!--<form><input id="buildingArea" name="input" type="text" class="form-control"-->
+                                                         <!--class="architecture_input"-->
+                                                         <!--ng-model="currentEditArea.buildingArea" maxlength="7" />&lt;!&ndash; 设置文本框输入的最大长度  王洲  2016.1.21 &ndash;&gt;-->
+                                                <!--<span id="showbuildingArea" style="color: red;display:block">*</span>-->
+                                            <!--</form>-->
+                                        <!--</td>-->
+                                        <!--<td>-->
+                                            <!--<form><input id="commonalityArea" name="input" type="text" class="form-control"-->
+                                                         <!--class="architecture_input"-->
+                                                         <!--ng-model="currentEditArea.commonalityArea" maxlength="7" />&lt;!&ndash; 设置文本框输入的最大长度  王洲  2016.1.21 &ndash;&gt;-->
+                                                <!--<span id="showcommonalityArea" style="color: red;display:block">*</span>-->
+                                            <!--</form>-->
+                                        <!--</td>-->
+                                        <!--<td>-->
+                                            <!--<form><input id="utilityRatio" name="input" type="text" class="form-control"-->
+                                                         <!--class="architecture_input"-->
+                                                         <!--ng-model="currentEditArea.utilityRatio" maxlength="7" />&lt;!&ndash; 设置文本框输入的最大长度  王洲  2016.1.21 &ndash;&gt;-->
+                                                <!--<span id="showutilityRatio" style="color: red;display:block">*</span>-->
+                                            <!--</form>-->
+                                        <!--</td>-->
+                                        <!--<td>-->
+                                            <!--<form><input id="insideArea" name="input" type="text" class="form-control"-->
+                                                         <!--class="architecture_input"-->
+                                                         <!--ng-model="currentEditArea.insideArea" maxlength="7" />&lt;!&ndash; 设置文本框输入的最大长度  王洲  2016.1.21 &ndash;&gt;-->
+                                                <!--<span id="showinsideArea" style="color: red;display:block">*</span>-->
+                                            <!--</form>-->
+                                        <!--</td>-->
+                                        <!--<td>-->
+                                            <!--<button type="button" class="btn btn-default btn-primary" ng-click="saveArea()"><span class="glyphicon glyphicon-floppy-disk btn_icon"></span>保存 </button>-->
+                                        <!--</td>-->
+                                    <!--</tr>-->
+                                <!--</tbody>-->
+                            <!--</table>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                    <!--<div class="modal-footer">-->
+                        <!--<a data-toggle="tab" ><input type="button" ng-click="saveBuildingArea()" class="btn btn-default btn-primary"  value="下一步"></a>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--&lt;!&ndash;面积属性数据录入  结束&ndash;&gt;-->
+                <!--&lt;!&ndash;建筑结构数据录入&ndash;&gt;-->
+                <!--<div ng-show="show2" >-->
+                    <!--<div class="sel">-->
+                        <!--<h4>创建建筑结构【{{currentBuilding.buildingName}}】</h4>-->
+                    <!--</div>-->
+                    <!--<div class="padding">-->
+                        <!--<div class="tree_list">-->
+                            <!--<ul id="treeProjectConstruction" class="ztree"></ul>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                    <!--<div class="modal-footer">-->
+                                <!--<span ng-if="showUp == ''">-->
+                                    <!--<a data-toggle="tab" > <input type="button" class="btn btn-default btn-primary" ng-click="gotoFirst();" value="上一步"></a>-->
+                                <!--</span>-->
+                        <!--<input type="button" class="btn btn-default btn-primary"  ng-hide="zTreevisible" ng-click="zTreeGetAllNodes();" value="保存">-->
+                        <!--<a data-toggle="tab" > <input type="button" class="btn btn-default btn-primary" ng-click="getBuildingStructureHouse();" value="下一步"></a>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--&lt;!&ndash;建筑结构数据录入 结束&ndash;&gt;-->
+                <!--&lt;!&ndash;面积属性数据录入&ndash;&gt;-->
+                <!--<div ng-show="show3">-->
+                    <!--<div class="sel">-->
+                        <!--<div class="row">-->
+                            <!--<div class="col-md-6">-->
+                                <!--<h4>住宅面积资产</h4>-->
+                            <!--</div>-->
+                            <!--<div class="col-md-6 text-right">-->
+                                <!--&lt;!&ndash;<button type="button" class="btn btn-default btn-primary" onClick="exportExcelHouse()">-->
+                                    <!--<span class="glyphicon glyphicon-copy btn_icon"></span>住宅模板导出-->
+                                <!--</button>-->
+                                <!--<button type="button" class="btn btn-default btn-primary" role="presentation"-->
+                                        <!--data-toggle="modal" data-target="#ddd" tabindex="-1" data-toggle="tab"-->
+                                        <!--ng-click="inportExcel()">-->
+                                    <!--<span class="glyphicon glyphicon-copy btn_icon"></span>住宅记录导入-->
+                                <!--</button>&ndash;&gt;-->
+                                <!--<button type="button" class="btn btn-default btn-primary" onClick="exprotHouseList()">-->
+                                    <!--<span class="glyphicon glyphicon-copy btn_icon"></span>住宅记录导出-->
+                                <!--</button>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                    <!--<div class="padding">-->
+                        <!--<table id="houseTable" style="margin-bottom:20px;">-->
+                            <!--<thead>-->
+                                <!--<tr>&lt;!&ndash;  住宅页面显示字段调整  王洲   2016.02.25  &ndash;&gt;-->
+                                    <!--<th>区域名称</th>-->
+                                    <!--<th>属性</th>-->
+                                    <!--<th>房屋编码</th>-->
+                                    <!--<th>建筑面积</th>-->
+                                    <!--<th>套内面积</th>-->
+                                    <!--<th>公摊面积</th>-->
+                                    <!--<th>竣工面积</th>-->
+                                    <!--<th>竣工日期</th>-->
+                                    <!--<th>楼房属性</th>-->
+                                    <!--<th>房屋户型</th>-->
+                                    <!--<th>销售状态</th>-->
+                                    <!--<th>操作</th>-->
+                                <!--</tr>-->
+                            <!--</thead>-->
+                            <!--<tbody>-->
+                                <!--<tr ng-repeat="bsh in searchHousePaginator.object.houseNews" ng-show="bsh.id != null">-->
+                                    <!--<td>-->
+                                        <!--<input type="hidden" value="{{bsh.buildingStructureId}}" class="form-control">-->
+                                        <!--<input type="hidden" value="{{bsh.buildingId}}" class="form-control">-->
+                                        <!--<input type="hidden" value="{{bsh.projectId}}" class="form-control">-->
+                                        <!--<input type="hidden" value="{{bsh.houseAddress}}" class="form-control">-->
+                                        <!--<input type="hidden" value="{{bsh.id}}" class="form-control">-->
+                                        <!--<input type="hidden" value="{{bsh.password}}" class="form-control" >-->
+                                        <!--<input type="hidden" value="{{bsh.sipId}}" class="form-control" >-->
+                                        <!--{{bsh.houseAddress}}-->
+                                    <!--</td>-->
+                                    <!--<td>住宅</td>-->
+                                    <!--<td>-->
+                                        <!--<input type="text" class="input_style" ng-model="bsh.houseNum" value="{{bsh.houseNum}}" />-->
+                                    <!--</td>-->
+                                    <!--<td>-->
+                                        <!--<input type="text" class="input_style" ng-model="bsh.houseArea" value="{{bsh.houseArea}}" />-->
+                                    <!--</td>-->
+                                    <!--<td>-->
+                                        <!--<input type="text" class="input_style" ng-model="bsh.usableArea" value="{{bsh.usableArea}}" />-->
+                                    <!--</td>-->
+                                    <!--<td>-->
+                                        <!--<input type="text" class="input_style" ng-model="bsh.shareArea" value="{{bsh.shareArea}}" />-->
+                                    <!--</td>-->
+                                    <!--<td>-->
+                                        <!--<input type="text" class="input_style" ng-model="bsh.completeArea" value="{{bsh.completeArea}}" />-->
+                                    <!--</td>-->
+                                    <!--<td>-->
+                                        <!--<input type="date" class="input_style" ng-model="bsh.completeDate" value="{{bsh.completeDate | date:'yyyy-MM-dd'}}" />-->
+                                    <!--</td>-->
+                                    <!--<td>-->
+                                        <!--<select class="form-control" ng-model="bsh.houseAttribute">-->
+                                            <!--<option value="" selected="selected">请选择</option>-->
+                                            <!--<option value="多层">多层</option>-->
+                                            <!--<option value="小高层">小高层</option>-->
+                                            <!--<option value="高层">高层</option>-->
+                                            <!--<option value="超高层">超高层</option>-->
+                                        <!--</select>-->
+                                    <!--</td>-->
+                                    <!--<td>-->
+                                        <!--<select class="form-control" ng-model="bsh.houseType">-->
+                                            <!--<option value="" selected="selected">请选择</option>-->
+                                            <!--<option value="单房">单房</option>-->
+                                            <!--<option value="一房一厅">一房一厅</option>-->
+                                            <!--<option value="一房两厅">一房两厅</option>-->
+                                            <!--<option value="两房一厅">两房一厅</option>-->
+                                            <!--<option value="两房两厅">两房两厅</option>-->
+                                            <!--<option value="三房两厅">三房两厅</option>-->
+                                            <!--<option value="四房两厅">四房两厅</option>-->
+                                            <!--<option value="五房两厅">五房两厅</option>-->
+                                            <!--<option value="连排">连排</option>-->
+                                            <!--<option value="别墅">别墅</option>-->
+                                            <!--<option value="其它">其它</option>-->
+                                        <!--</select>-->
+                                    <!--</td>-->
+                                    <!--<td>-->
+                                        <!--<select class="form-control" ng-model="bsh.saleState">-->
+                                            <!--<option value="未售">未售</option>-->
+                                            <!--<option value="已售">已售</option>-->
+                                        <!--</select>-->
+                                    <!--</td>-->
+                                    <!--<td>-->
+                                        <!--<button type="button" ng-hide="visible" class="btn btn-default btn-primary"  ng-click="addBuildingStructureHouse($index,bsh);"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>-->
+                                    <!--</td>-->
+                                <!--</tr>-->
+                                <!--<tr ng-if="BuildingStructureHouse.length == 0">-->
+                                    <!--<td colspan="11">暂无数据！</td>-->
+                                <!--</tr>-->
+                            <!--</tbody>-->
+                        <!--</table>-->
+                        <!--<div class="col-xs-12">-->
+                            <!--<div class="bill_paging">-->
+                                <!--<span style="float:right;margin:0 20px 0 0;">共{{searchHousePaginator.object.page.totalResult}}条</span>-->
+                                <!--<ul class="pagination">-->
+                                    <!--<li ng-class="{true:'disabled'}[searchHousePaginator.page.currentPage==1]">-->
+                                        <!--<a href="javascript:void(0)" ng-click="searchHousePaginator.go(1)">首页</a>-->
+                                    <!--</li>-->
+                                    <!--<li ng-class="{true:'disabled'}[searchHousePaginator.page.currentPage==1]">-->
+                                        <!--<a href="javascript:void(0)" ng-show="searchHousePaginator.hasPrevious()" ng-click="searchHousePaginator.previous()">上一页</a>-->
+                                    <!--</li>-->
+                                    <!--<li ng-class="{true:'active'}[searchHousePaginator.page.currentPage==i]" ng-repeat="i in searchHousePaginator.pages">-->
+                                        <!--<a href="javascript:void(0)"  ng-click="searchHousePaginator.go(i)">{{i}}</a>-->
+                                    <!--</li>-->
+                                    <!--<li ng-class="{true:'disabled'}[searchHousePaginator.page.currentPage==searchHousePaginator.page.totalPage]">-->
+                                        <!--<a href="javascript:void(0)" ng-show="searchHousePaginator.hasNext()" ng-click="searchHousePaginator.next()">下一页</a>-->
+                                    <!--</li>-->
+                                    <!--<li ng-class="{true:'disabled'}[searchHousePaginator.page.currentPage==searchHousePaginator.page.totalPage]">-->
+                                        <!--<a href="javascript:void(0)" ng-click="searchHousePaginator.go(searchHousePaginator.page.totalPage)">尾页</a>-->
+                                    <!--</li>-->
+                                <!--</ul>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                    <!--<div class="modal-footer">-->
+                        <!--<a data-toggle="tab"><input type="button" class="btn btn-default btn-primary"  value="上一步" ng-click="close()"></a>-->
+
+                        <!--<a data-toggle="tab"><input type="button" class="btn btn-default btn-primary"   ng-click="getBuildingStructureParking();" value="下一步"></a>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--&lt;!&ndash;面积属性数据录入 结束&ndash;&gt;-->
+                <!--&lt;!&ndash;车位面积属性数据录入&ndash;&gt;-->
+                <!--<div ng-show="show4">-->
+                    <!--<div class="sel">-->
+                        <!--<div class="row">-->
+                            <!--<div class="col-md-6">-->
+                                <!--<h4>车位面积资产</h4>-->
+                            <!--</div>-->
+                            <!--<div class="col-md-6 text-right">-->
+                                <!--&lt;!&ndash;<button type="button" class="btn btn-default btn-primary" onClick="exportExcelStall()">-->
+                                    <!--<span class="glyphicon glyphicon-copy btn_icon"></span>车位模板导出-->
+                                <!--</button>-->
+                                <!--<button type="button" class="btn btn-default btn-primary" role="presentation"-->
+                                        <!--data-toggle="modal" data-target="#ddd" tabindex="-1" data-toggle="tab"-->
+                                        <!--ng-click="inportExcelStall()">-->
+                                    <!--<span class="glyphicon glyphicon-copy btn_icon"></span>车位记录导入-->
+                                <!--</button>&ndash;&gt;-->
+                                <!--<button type="button" class="btn btn-default btn-primary" onClick="exprotStallList()">-->
+                                    <!--<span class="glyphicon glyphicon-copy btn_icon"></span>车位记录导出-->
+                                <!--</button>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                    <!--<div class="padding">-->
+                        <!--<table id="stallTable" style="margin-bottom:20px;">-->
+                            <!--<thead>-->
+                            <!--<tr>&lt;!&ndash;  车位页面显示字段调整  王洲   2016.02.25  &ndash;&gt;-->
+                                <!--<th>车位名称</th>-->
+                                <!--<th>属性</th>-->
+                                <!--<th>车位编码</th>-->
+                                <!--<th>车位属性</th>-->
+                                <!--<th>车位号</th>-->
+                                <!--<th>机械车位</th>-->
+                                <!--<th>竣工日期</th>-->
+                                <!--<th>销售状态</th>-->
+                                <!--<th>操作</th>-->
+                            <!--</tr>-->
+                            <!--</thead>-->
+                            <!--<tbody>-->
+                            <!--<tr ng-repeat="bsp in searchStallNewPaginator.object.stallNews" ng-show="bsp.stallId!=null">-->
+                                <!--<td>-->
+                                    <!--<input type="hidden" value="{{bsp.stallId}}"  class="form-control">-->
+                                    <!--<input type="hidden" value="{{bsp.buildingId}}"  class="form-control">-->
+                                    <!--<input type="hidden" value="{{bsp.buildingStructureId}}" class="form-control">-->
+                                    <!--<input type="hidden" value="{{bsp.projectId}}"   class="form-control">-->
+                                    <!--{{bsp.fullName}}-->
+                                <!--</td>-->
+                                <!--<td>-->
+                                    <!--车位-->
+                                <!--</td>-->
+                                <!--<td>-->
+                                    <!--<input type="text" value="{{bsp.stallCoding}}" ng-model="bsp.stallCoding" class="input_style">-->
+                                <!--</td>-->
+                                <!--<td>-->
+                                    <!--<select  class="form-control" ng-model="bsp.stallProperty">-->
+                                        <!--<option value="" selected="selected">请选择</option>-->
+                                        <!--<option value="标准车位">标准车位</option>-->
+                                        <!--<option value="微型车位">微型车位</option>-->
+                                        <!--<option value="子母车位">子母车位</option>-->
+                                    <!--</select>-->
+                                <!--</td>-->
+                                <!--<td>-->
+                                    <!--<input type="text" value="{{bsp.stallNumber}}" ng-model="bsp.stallNumber" class="input_style">-->
+                                <!--</td>-->
+                                <!--<td>-->
+                                    <!--<select  class="form-control" ng-model="bsp.isMechanicalStall">-->
+                                        <!--<option value="是">是</option>-->
+                                        <!--<option value="否">否</option>-->
+                                    <!--</select>-->
+                                    <!--&lt;!&ndash; 机械车位，1是0否 &ndash;&gt;-->
+                                <!--</td>-->
+                                <!--<td>-->
+                                    <!--<input type="date" ng-model="bsp.intakeDate" value="{{bsp.intakeDate | date:'yyyy-MM-dd'}}" class="input_style">-->
+                                <!--</td>-->
+                                <!--<td>-->
+                                    <!--<select class="form-control" ng-model="bsp.intakeStates">-->
+                                        <!--<option value="未售">未售</option>-->
+                                        <!--<option value="已售">已售</option>-->
+                                    <!--</select>-->
+                                <!--</td>-->
+                                <!--<td>-->
+                                    <!--<button type="button" ng-hide="visibleStall" class="btn btn-default btn-primary"  ng-click="addBuildingStructureStall($index,bsp);"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>-->
+                                    <!--&lt;!&ndash;<input type="button" ng-hide="visibleStall" class="btn btn-default btn-primary" value="保存" ng-click="addBuildingStructureStall();">&ndash;&gt;-->
+                                <!--</td>-->
+                            <!--</tr>-->
+                            <!--<tr ng-if="BuildingStructureParking.length == 0">-->
+                                <!--<td colspan="8">暂无数据！</td>-->
+                            <!--</tr>-->
+                            <!--</tbody>-->
+                        <!--</table>-->
+                        <!--<div class="col-xs-12">-->
+                            <!--<div class="bill_paging">-->
+                                <!--<span style="float:right;margin:0 20px 0 0;">共{{searchStallNewPaginator.object.page.totalResult}}条</span>-->
+                                <!--<ul class="pagination">-->
+                                    <!--<li ng-class="{true:'disabled'}[searchStallNewPaginator.page.currentPage==1]">-->
+                                        <!--<a href="javascript:void(0)" ng-click="searchStallNewPaginator.go(1)">首页</a>-->
+                                    <!--</li>-->
+                                    <!--<li ng-class="{true:'disabled'}[searchStallNewPaginator.page.currentPage==1]">-->
+                                        <!--<a href="javascript:void(0)" ng-show="searchStallNewPaginator.hasPrevious()" ng-click="searchStallNewPaginator.previous()">上一页</a>-->
+                                    <!--</li>-->
+                                    <!--<li ng-class="{true:'active'}[searchStallNewPaginator.page.currentPage==i]" ng-repeat="i in searchStallNewPaginator.pages">-->
+                                        <!--<a href="javascript:void(0)"  ng-click="searchStallNewPaginator.go(i)">{{i}}</a>-->
+                                    <!--</li>-->
+                                    <!--<li ng-class="{true:'disabled'}[searchStallNewPaginator.page.currentPage==searchStallNewPaginator.page.totalPage]">-->
+                                        <!--<a href="javascript:void(0)" ng-show="searchStallNewPaginator.hasNext()" ng-click="searchStallNewPaginator.next()">下一页</a>-->
+                                    <!--</li>-->
+                                    <!--<li ng-class="{true:'disabled'}[searchStallNewPaginator.page.currentPage==searchStallNewPaginator.page.totalPage]">-->
+                                        <!--<a href="javascript:void(0)" ng-click="searchStallNewPaginator.go(searchStallNewPaginator.page.totalPage)">尾页</a>-->
+                                    <!--</li>-->
+                                <!--</ul>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                    <!--<div class="modal-footer">-->
+                        <!--<a data-toggle="tab" ><input type="button" class="btn btn-default btn-primary" value="上一步" ng-click="close1()"></a>-->
+
+                        <!--<a data-toggle="tab" ><input type="button"  class="btn btn-default btn-primary" ng-click="getBuildingStructureBusiness();" value="下一步"></a>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--&lt;!&ndash;车位面积属性数据录入 结束&ndash;&gt;-->
+                <!--&lt;!&ndash;结构详情数据录入(商业)&ndash;&gt;-->
+                <!--<div ng-show="show5">-->
+                    <!--<div class="sel">-->
+                        <!--<div class="row">-->
+                            <!--<div class="col-md-6">-->
+                                <!--<h4>商业面积资产</h4>-->
+                            <!--</div>-->
+                            <!--<div class="col-md-6 text-right">-->
+                                <!--&lt;!&ndash;<button type="button" class="btn btn-default btn-primary" onClick="exportExcelStore()">-->
+                                    <!--<span class="glyphicon glyphicon-copy btn_icon"></span>商业模板导出-->
+                                <!--</button>-->
+                                <!--<button type="button" class="btn btn-default btn-primary" role="presentation"-->
+                                        <!--data-toggle="modal" data-target="#ddd" tabindex="-1" data-toggle="tab"-->
+                                        <!--ng-click="inportExcelStore()">-->
+                                    <!--<span class="glyphicon glyphicon-copy btn_icon"></span>商业记录导入-->
+                                <!--</button>&ndash;&gt;-->
+                                <!--<button type="button" class="btn btn-default btn-primary" onClick="exprotStoreList()">-->
+                                    <!--<span class="glyphicon glyphicon-copy btn_icon"></span>商业记录导出-->
+                                <!--</button>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                    <!--<div class="padding">-->
+                        <!--<table id="storeTable" style="margin-bottom:20px;">-->
+                            <!--<thead>-->
+                            <!--<tr>&lt;!&ndash;  商铺模块显示字段调整   王洲  2016.02.25  &ndash;&gt;-->
+                                <!--<th>商铺名称</th>-->
+                                <!--<th>属性</th>-->
+                                <!--<th>商业属性</th>-->
+                                <!--<th>商铺编码</th>-->
+                                <!--<th>商铺号</th>-->
+                                <!--<th>建筑面积</th>-->
+                                <!--<th>套内面积</th>-->
+                                <!--<th>分摊面积</th>-->
+                                <!--<th>竣工面积</th>-->
+                                <!--<th>竣工日期</th>-->
+                                <!--<th>销售状态</th>-->
+                                <!--<th>操作</th>-->
+                            <!--</tr>-->
+                            <!--</thead>-->
+                            <!--<tbody>-->
+                            <!--<tr ng-repeat="bsb in searchStoreNewPaginator.object.storeNews" ng-show="bsb.storeId!=null">-->
+                                <!--<td>-->
+                                    <!--<input type="hidden" value="{{bsb.buildingStructureId}}" class="form-control">-->
+                                    <!--<input type="hidden" value="{{bsb.buildingId}}" class="form-control">-->
+                                    <!--<input type="hidden" value="{{bsb.projectId}}"  class="form-control">-->
+                                    <!--<input type="hidden" value="{{bsb.storeId}}" class="form-control">-->
+                                    <!--{{bsb.fullName}}-->
+                                <!--</td>-->
+                                <!--<td>-->
+                                    <!--商铺-->
+                                <!--</td>-->
+                                <!--<td>-->
+                                    <!--<select class="form-control" ng-model="bsb.storeTyoe">-->
+                                        <!--<option value="" selected="selected">请选择</option>-->
+                                        <!--<option value="小商铺">小商铺</option>-->
+                                        <!--<option value="写字楼">写字楼</option>-->
+                                        <!--<option value="商业公寓">商业公寓</option>-->
+                                        <!--<option value="酒店">酒店</option>-->
+                                        <!--<option value="商业综合体">商业综合体</option>-->
+                                        <!--<option value="产业用房">产业用房</option>-->
+                                    <!--</select>-->
+                                <!--</td>-->
+                                <!--<td>-->
+                                    <!--<input type="text" class="input_style" ng-model="bsb.storeCode" value="{{bsb.storeCode}}">-->
+                                <!--</td>-->
+                                <!--<td>-->
+                                    <!--<input type="text" class="input_style" ng-model="bsb.storeNumber" value="{{bsb.storeNumber}}">-->
+                                <!--</td>-->
+                                <!--<td>-->
+                                    <!--<input type="text" class="input_style" ng-model="bsb.buildingArea" value="{{bsb.buildingArea}}">-->
+                                <!--</td>-->
+                                <!--<td>-->
+                                    <!--<input type="text" class="input_style" ng-model="bsb.insideArea" value="{{bsb.insideArea}}">-->
+                                <!--</td>-->
+                                <!--<td>-->
+                                    <!--<input type="text" class="input_style" ng-model="bsb.commonalityArea" value="{{bsb.commonalityArea}}">-->
+                                <!--</td>-->
+                                <!--<td>-->
+                                    <!--<input type="text" class="input_style" ng-model="bsb.completionArea" value="{{bsb.completionArea}}">-->
+                                <!--</td>-->
+                                <!--<td>-->
+                                    <!--<input type="date" class="input_style" ng-model="bsb.intakeDate" value="{{bsb.intakeDate | date:'yyyy-MM-dd'}}">-->
+                                <!--</td>-->
+                                <!--<td>-->
+                                    <!--<select class="form-control" ng-model="bsb.intakeStates">-->
+                                        <!--<option value="未售">未售</option>-->
+                                        <!--<option value="已售">已售</option>-->
+                                    <!--</select>-->
+                                <!--</td>-->
+                                <!--<td>-->
+                                    <!--&lt;!&ndash;<input type="button"  ng-hide="visibleStore" class="btn btn-default btn-primary" value="保存" ng-click="addBuildingStructureStore();">&ndash;&gt;-->
+                                    <!--<button type="button" ng-hide="visibleStore" class="btn btn-default btn-primary"  ng-click="addBuildingStructureStore($index,bsb);"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>-->
+                                <!--</td>-->
+                            <!--</tr>-->
+                            <!--<tr ng-if="BuildingStructureBusiness.length == 0">-->
+                                <!--<td colspan="11">暂无数据！</td>-->
+                            <!--</tr>-->
+                            <!--</tbody>-->
+                        <!--</table>-->
+                        <!--<div class="col-xs-12">-->
+                            <!--<div class="bill_paging">-->
+                                <!--<span style="float:right;margin:0 20px 0 0;">共{{searchStoreNewPaginator.object.page.totalResult}}条</span>-->
+                                <!--<ul class="pagination">-->
+                                    <!--<li ng-class="{true:'disabled'}[searchStoreNewPaginator.page.currentPage==1]">-->
+                                        <!--<a href="javascript:void(0)" ng-click="searchStoreNewPaginator.go(1)">首页</a>-->
+                                    <!--</li>-->
+                                    <!--<li ng-class="{true:'disabled'}[searchStoreNewPaginator.page.currentPage==1]">-->
+                                        <!--<a href="javascript:void(0)" ng-show="searchStoreNewPaginator.hasPrevious()" ng-click="searchStoreNewPaginator.previous()">上一页</a>-->
+                                    <!--</li>-->
+                                    <!--<li ng-class="{true:'active'}[searchStoreNewPaginator.page.currentPage==i]" ng-repeat="i in searchStoreNewPaginator.pages">-->
+                                        <!--<a href="javascript:void(0)"  ng-click="searchStoreNewPaginator.go(i)">{{i}}</a>-->
+                                    <!--</li>-->
+                                    <!--<li ng-class="{true:'disabled'}[searchStoreNewPaginator.page.currentPage==searchStoreNewPaginator.page.totalPage]">-->
+                                        <!--<a href="javascript:void(0)" ng-show="searchStoreNewPaginator.hasNext()" ng-click="searchStoreNewPaginator.next()">下一页</a>-->
+                                    <!--</li>-->
+                                    <!--<li ng-class="{true:'disabled'}[searchStoreNewPaginator.page.currentPage==searchStoreNewPaginator.page.totalPage]">-->
+                                        <!--<a href="javascript:void(0)" ng-click="searchStoreNewPaginator.go(searchStoreNewPaginator.page.totalPage)">尾页</a>-->
+                                    <!--</li>-->
+                                <!--</ul>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                    <!--<div class="modal-footer">-->
+                        <!--<button type="button" class="btn btn-default" data-dismiss="modal" ng-click="refeashHtml()">关闭</button>-->
+
+                        <!--<a data-toggle="tab" ><input type="button"  class="btn btn-default btn-primary"  value="上一步" ng-click="close2()"></a>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--&lt;!&ndash;结构详情数据录入(商业) 结束&ndash;&gt;-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->
+
+<div class="modal fade" id="ddd" tabindex="-1" role="dialog"  aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    上传
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div id="remove"><!-- 修改上传图片模态框  王洲  2016.1.13 -->
+                    <div id="excelupload" class="zyupload"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
+<!-- excel导入模态框开始 -->
+<div class="modal fade" id="addExcel" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <span>
+                 上传
+                </span>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-12 col-md-2 col-sm-2 ">
+                            <input type="hidden" id="fileUrls" value="{{fileUrl}}">
+                        </div>
+                        <div class="col-lg-12 col-md-2 col-sm-2 text-right">
+                            <!-- <button class="btn-primary btn" onClick="importExcelTemplet()">
+                                 导入模版下载
+                             </button>-->
+                        </div>
+                    </div>
+                    <div id="remove1">
+                        <div id="excelupload" class="zyupload"></div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" ng-click="cancleExcel()">关闭</button>
+                <button type="button" class="btn btn-primary" ng-click="saveExcel()">确认</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!-- excel导入模态框结束 -->
+
+<div class="modal fade" id="uploadProcessDialog" role="dialog" aria-label="myModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+               文件上传导入进度
+            </div>
+            <div class="modal-body">
+                <div class="text_title">
+                <div class="progress progress-striped active">
+                    <div class="progress-bar progress-bar-success" id="progress" role="progressbar"
+                         aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" ng-style="myObj">
+                        <span class="sr-only">{{bfNum*100}}% 完成</span>
+                    </div>
+                </div>
+                <div>总共需要上传记录<b id="totalnum2"></b>条，目前已成功上传<b id="bsnum"></b>条记录。</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="blankSpace"></div>
+                    <!--<button type="button" class="btn btn-default" >关闭</button>-->
+                    <!--<button type="button" class="btn btn-primary">确认</button>-->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!----------------------------------------------模态框结束------------------------------------------->
+
+
+
+</body>
+<script type="text/ng-template" id="building_nodes_show">
+    <div>
+        <p class="empty"></p>
+        <p class="empty" ng-show="!node.checked"></p>
+        <p ng-click="toggleNode(node.id,node.projectId)" ng-show="node.checked" ng-class="{true: 'open', false: 'close'}[node.collapse]"></p>
+        <p ng-show="node.nodeName != null"><!--  增加显示判断，当节点名称不为空时才显示节点  王洲 2016.02.25  -->
+           <a href="javascript:void(0);" ng-click="showBuildingInfo(node)">{{node.nodeName}}</a>&nbsp;&nbsp;&nbsp;&nbsp;<a ng-click="changeName(node)"><span class="glyphicon glyphicon-edit btn_icon" style="cursor: pointer;"></span></a>
+
+            <!--  <a href="javascript:void(0);" ng-click="showBuildingInfo_click(node)">{{node.nodeName}}</a>&nbsp;&nbsp;&nbsp;&nbsp;<a ng-click="changeName(node)"><span class="glyphicon glyphicon-edit btn_icon" style="cursor: pointer;"></span></a>
+             -->
+             <!--  增加修改名称的入口  王洲  2016.02.24  -->
+        </p>
+        <div class="clear"></div>
+    </div>
+    <div ng-show="node.collapse" class="tree_sub">
+        <div ng-repeat="node in node.nodes track by $index" ng-include="'building_nodes_show'"></div>
+    </div>
+</script>
+<script type="text/ng-template" id="building_nodes_edit">
+    <div>-s
+        <p ng-click="toggleNode(node.id,node.projectId)" ng-class="{true: 'open', false: 'close'}[node.collapse]"></p>
+        <p>
+            <a href="javascript:void(0);" ng-click="showBuildingInfo(node.id)">{{node.nodeName}}</a>
+        </p>
+        <input type="button" class="modify_button">
+        <input type="button" class="del_button">
+        <div class="clear"></div>
+    </div>
+    <div ng-show="node.collapse" class="tree_sub">
+        <div ng-repeat="node in node.nodes track by $index" ng-include="'building_nodes_edit'"></div>
+        <div>
+            <input type="text" ng-model="node.subNodeName" ng-show="node.editing">
+            <input type="button" class="added_button" ng-show="!node.editing" ng-click="enterSubNodeName(node.id)">
+            <input type="button" class="building_save_button" ng-show="node.editing" ng-click="addBuildingNode(node.id)">
+        </div>
+    </div>
+</script>
+<script type="text/javascript" src="bower_components/ztree/jquery.ztree.core-3.5.js"></script>
+<script type="text/javascript" src="bower_components/ztree/jquery.ztree.excheck-3.5.js"></script>
+<script type="text/javascript" src="bower_components/ztree/jquery.ztree.exedit-3.5.js"></script>
+<SCRIPT type="text/javascript">
+
+    function exportExcelHouse(){
+        var url = document.getElementById("fileurl").value;
+        var projectids = document.getElementById("proid").value;
+        var types = 'house';
+        window.location.href=url +"/info/outputExcel.do?projectId="+projectids + "&types=" + types;
+    }
+
+    function exportExcelStall(){
+        var url = document.getElementById("fileurl").value;
+        var projectids = document.getElementById("proid").value;
+        var types = 'stall';
+        window.location.href=url +"/info/outputExcel.do?projectId="+projectids + "&types=" + types;
+    }
+
+    function exportExcelStore(){
+        var url = document.getElementById("fileurl").value;
+        var projectids = document.getElementById("proid").value;
+        var types = 'store';
+        window.location.href=url +"/info/outputExcel.do?projectId="+projectids + "&types=" + types;
+    }
+
+    function exprotHouseList(){
+        var url = document.getElementById("fileurl").value;
+        var types = 'house';
+        window.location.href = url + '/info/getexportExcel.do?types=' + types;
+    }
+
+    function exprotStallList(){
+        var url = document.getElementById("fileurl").value;
+        var types = 'stall';
+        window.location.href = url + '/info/getexportExcel.do?types=' + types;
+    }
+
+    function exprotStoreList(){
+        var url = document.getElementById("fileurl").value;
+        var types = 'store';
+        window.location.href = url + '/info/getexportExcel.do?types=' + types;
+    }
+
+    //导出建筑结构模板
+    function exportBuildingStructureModel(){
+        var url = document.getElementById("fileurl").value;
+        var projectids = document.getElementById("proid").value;
+        window.location.href = url + '/info/importAllBuildingStructureByProjectId.do?projectId=' + projectids;
+    }
+
+    //导出建筑结构模板（新）
+    function createBuildingModel(){
+        var url = document.getElementById("fileurl").value;
+        //var projectids = document.getElementById("proid").value;
+        window.location.href = url + '/info/createBuildingModel.do';
+    }
+
+    //导出建筑结构数据
+    function exportBuildingStructure(){
+        var url = document.getElementById('fileurl').value;
+        var projectids = document.getElementById('proid').value;
+        window.location.href = url + '/info/exportAllBuildingStructtureByProjectId.do?projectId=' + projectids;
+    }
+
+    var log, className = "dark";
+    function beforeDrag(treeId, treeNodes) {
+        return false;
+    }
+    function beforeEditName(treeId, treeNode) {
+        className = (className === "dark" ? "":"dark");
+        showLog("[ "+getTime()+" beforeEditName ]&nbsp;&nbsp;&nbsp;&nbsp; " + treeNode.name);
+        var zTree = $.fn.zTree.getZTreeObj("treeProjectConstruction");
+        zTree.selectNode(treeNode);
+//            confirm("进入节点 -- " + treeNode.name + " 的编辑状态吗？")
+        return true;
+    }
+
+
+    function onRemove(e, treeId, treeNode) {
+        showLog("[ "+getTime()+" onRemove ]&nbsp;&nbsp;&nbsp;&nbsp; " + treeNode.name);
+    }
+    function beforeRename(treeId, treeNode, newName, isCancel) {
+        className = (className === "dark" ? "":"dark");
+        showLog((isCancel ? "<span style='color:red'>":"") + "[ "+getTime()+" beforeRename ]&nbsp;&nbsp;&nbsp;&nbsp; " + treeNode.name + (isCancel ? "</span>":""));
+        if (newName.length == 0) {
+            layer.msg("节点名称不能为空！",{icon : 0});
+            //alert("节点数据不能为空！");
+            var zTree = $.fn.zTree.getZTreeObj("treeProjectConstruction");
+            setTimeout(function(){zTree.editName(treeNode)}, 10);
+            return false;
+        }
+        return true;
+    }
+    function onRename(e, treeId, treeNode, isCancel) {
+        showLog((isCancel ? "<span style='color:red'>":"") + "[ "+getTime()+" onRename ]&nbsp;&nbsp;&nbsp;&nbsp; " + treeNode.name + (isCancel ? "</span>":""));
+    }
+    function showRemoveBtn(treeId, treeNode) {
+        //判断时候显示删除按钮，如果是根节点的时候不显示，其他节点显示删除按钮  王洲  2016.1.21
+        var flag = false;
+        if(treeNode.id == 'root'){
+            flag = false;
+        }else{
+            flag = true;
+        }
+        return flag;
+    }
+    function showRenameBtn(treeId, treeNode) {
+        // return !treeNode.isLastNode;
+        return true;
+    }
+    function showLog(str) {
+        if (!log) log = $("#log");
+        log.append("<li class='"+className+"'>"+str+"</li>");
+        if(log.children("li").length > 8) {
+            log.get(0).removeChild(log.children("li")[0]);
+        }
+    }
+    function getTime() {
+        var now= new Date(),
+                h=now.getHours(),
+                m=now.getMinutes(),
+                s=now.getSeconds(),
+                ms=now.getMilliseconds();
+        return (h+":"+m+":"+s+ " " +ms);
+    }
+
+    //    var newCount = 1;
+    //    function addHoverDom(treeId, treeNode) {
+    //        var sObj = $("#" + treeNode.tId + "_span");
+    //        if (treeNode.editNameFlag || $("#addBtn_"+treeNode.tId).length>0) return;
+    //        var addStr = "<span class='button add' id='addBtn_" + treeNode.tId
+    //                + "' title='add node' onfocus='this.blur();'></span>";
+    //        sObj.after(addStr);
+    //        var btn = $("#addBtn_"+treeNode.tId);
+    //        if (btn) btn.bind("click", function(){
+    //            var zTree = $.fn.zTree.getZTreeObj("treeProjectConstruction");
+    //            zTree.addNodes(treeNode, {id:(1000 + newCount), pId:treeNode.id, name:"new node" + (newCount++),types:"",checked:true});
+    //            return true;
+    //        });
+    //    };
+
+    //    var IDMark_A = "_a";
+    //    //var newCount = 1;
+    //    function addDiyDom(treeId, treeNode){
+    //        if (treeNode.parentNode && treeNode.parentNode.id!=2) return;
+    //        var aObj = $("#" + treeNode.tId + IDMark_A);
+    //        var editStr = "<select class='selDemo' id='diyBtn_" +treeNode.id+ "'>" +
+    //                "<option value=0>无类型</option><option value=1>住宅</option><option value=2>商铺</option><option value=3>车位</option><option value=4>公摊</option><option value=5>公建</option></select>";
+    //        aObj.after(editStr);
+    //        var btn = $("#diyBtn_"+treeNode.id);
+    //        if (btn) btn.bind("change", function(){
+    //            // alert("diy Select value="+btn.find("option:selected").val()+" for " + treeNode.name);
+    //            var zTree = $.fn.zTree.getZTreeObj("treeProjectConstruction");
+    //            treeNode.types = btn.find("option:selected").val();
+    //            zTree.updateNode(treeNode,true);
+    //            return true;
+    //        });
+    //    };
+
+    //    function removeHoverDom(treeId, treeNode) {
+    //        $("#addBtn_"+treeNode.tId).unbind().remove();
+    //    };
+    function selectAll() {
+        var zTree = $.fn.zTree.getZTreeObj("treeProjectConstruction");
+        zTree.setting.edit.editNameSelectAll =  $("#selectAll").attr("checked");
+    }
+
+    $(document).ready(function(){
+        //$.fn.zTree.init($("#treeProjectConstruction"), setting, zNodes);
+        $("#selectAll").bind("click", selectAll);
+    });
+    //-->
+
+
+</SCRIPT>
+</html>

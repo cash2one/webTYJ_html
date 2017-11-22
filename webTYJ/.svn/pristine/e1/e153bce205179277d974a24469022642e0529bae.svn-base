@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div id="tab">
+    <a ng-click="decorate1()" >装修服务请求管理</a>
+    <a ng-click="addDecorate1()" >新建装修服务请求</a>
+</div>
+<div ng-show="show1">
+    <div class="sel_top">
+        <div class="row">
+            <div class="col-lg-8 col-md-6 col-sm-6">
+                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="showCharge()">
+                    <span class="glyphicon glyphicon-check btn_icon"></span>
+                    全选
+                </button>
+                <button type="button" class="btn btn-default btn-primary tab-btn" data-target="#new1" data-toggle="modal" ng-click="reatartAccounting()">
+                    <span class="glyphicon glyphicon-ban-circle btn_icon"></span>
+                    失效
+                </button>
+                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="verifyAccounting()">
+                    <span class="glyphicon glyphicon-ok btn_icon"></span>
+                    完成
+                </button>
+                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="verifyAccounting()">
+                    <span class="glyphicon glyphicon-plus btn_icon"></span>
+                    新建请求
+                </button>
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2">
+                搜索条件
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-4">
+                <input class="form-control"/>
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2">
+                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="searchPaginator._load();">
+                    <span class="glyphicon glyphicon-search btn_icon"></span>
+                    搜索
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="row padding">
+        <div class="col-lg-12">
+            <div class="col-lg-4 col-md-6 col-sm-6 ng-scope" ng-click="lookOwner()">
+                <div id="pannel">
+                    <div class="title">
+                        <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                            <h3>业主报事</h3>
+                        </div>
+                        <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                            <span class="glyphicon glyphicon-chevron-down"></span>
+                        </div>
+                    </div>
+                    <div class="pannel_content">
+                        <div class="row search-padding-10">
+                            <div class="col-lg-6 col-md-6 col-sm-6">客户姓名：</div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 text-right">{{user.name}}</div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-6 col-md-6 col-sm-6">请求类型：</div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 text-right">业主报事</div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-6 col-md-6 col-sm-6">状态：</div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 text-right">{{}}</div>
+                        </div>
+
+                        <div class="row search-padding-10">
+                            <div class="col-lg-6 col-md-6 col-sm-6">创建时间：</div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 text-right">{{vm.requestTime|date:"yyyy-MM-dd"}}</div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-6 col-md-6 col-sm-6">备注：</div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 text-right">{{vm.remarks}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bill_paging">
+                <ul class="pagination">
+                    <li><a>首页</a></li>
+                    <li><a>上一页</a></li>
+                    <li><a>1</a></li>
+                    <li><a>2</a></li>
+                    <li><a>3</a></li>
+                    <li><a>4</a></li>
+                    <li><a>5</a></li>
+                    <li><a>下一页</a></li>
+                    <li><a>尾页</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div ng-show="show2">222</div>
+</body>
+</html>

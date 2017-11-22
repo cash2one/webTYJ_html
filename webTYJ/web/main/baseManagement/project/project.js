@@ -1,0 +1,61 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 项目详情js
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../app');
+
+    app.controller('projectCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        var url = $rootScope.url;   //url地址
+        $scope.shownum = true;
+        $scope.projectId = JSON.parse(localStorage.getItem("project_id"));    //获取项目id
+
+        /**
+         * 选中样式
+         * @type {number}
+         */
+        $scope.btnIndex=1;
+        $scope.doClick=function(index){
+            $scope.btnIndex=index;
+        };
+
+        $scope.change = function(item){
+            if(item == 0){
+                $scope.shownum = true;
+            }else if(item == 1){
+                $scope.shownum = false;
+            }
+        };
+
+        /**
+         * 初始化加载
+         */
+        $scope.load = function(){
+            /**
+             * 根据项目id获取项目信息
+             */
+            if(app.get('instance').obj.projectId==undefined)
+            {
+                $http.get(url + '/Project/getProjectbyId/' + $scope.projectId).success(function(data) {
+                    $scope.currentObject = data.Project;
+                }).error(function(data, status, headers, config){
+                    layer.alert('查询失败',{icon:2});
+                });
+            }
+        };
+        $scope.load();
+
+        setInterval(function(){
+            if(app.get('instance').obj.projectId!=undefined)
+            {
+                $scope.currentObject = app.get('instance').obj;
+            }
+        },1000);
+
+
+    }]);
+});

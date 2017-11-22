@@ -1,0 +1,300 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 车辆管理js
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../../app');
+
+    app.controller('vehicleManagementAddCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        var url = $rootScope.url;
+        $scope.personBuildings=[{id:0,custName:"请选择车辆所有人",relation:""}];//用于下拉选择人员对应关系
+        $scope.personBuildings.id=0;
+        $scope.name=$rootScope.user.name;
+        //   console.log($rootScope.user);
+        //根据条件搜索出房屋信息
+        $scope.search={page:{}};
+        //$scope.search.custType="业主";
+        $scope.selectHouse=function(){
+            /*   $scope.search.lease=1;
+             $scope.search.custId=$rootScope.user.custId;
+
+             var parent = function (page, callback) {
+             $scope.search.page = page;
+             $http.post(url+'/HouseNew/listPagelistHouseBySearchAu',{Search:$scope.search}).success(callback);
+             };
+             $scope.currentHouse = app.get('Paginator).list(parent,5);
+             console.log($scope.currentHouse);*/
+            $http.post(url+'/HouseNew/listAllHouseNewBySearch',{Search:$scope.search}).success(function(data)
+            {
+                //    console.log("搜索成功");
+                $scope.house=data.HouseNew;
+                $scope.house=data.HouseNew;
+                //       console.log($scope.house);
+            });
+        };
+
+
+
+        //选择获取到的一栋房屋
+        $scope.houseone={};
+
+        $scope.choiceHouse=function(houseId){
+            $scope.btnIndex = houseId;
+            $scope.houseone= houseId;
+        };
+
+        //取消新增车辆填写的数据
+        $scope.resetAddCar=function(){
+            $scope.addCarInfo={};
+            var nowTime=new Date();
+            $scope.addCarInfo.recordDate=nowTime;
+            $scope.search={};
+            $scope.houseone={};
+            $scope.personBuildingNew={};
+            $scope.house={};
+            $scope.personCustNewList = [];
+            //$scope.personBuildings=[{id:0,custName:"请选择车辆所有人",relation:""}];//用于下拉选择人员对应关系
+            //$scope.personBuildings.id=0;
+            //    console.log("重置成功");
+            $location.path('/index/propertyService/staffHome/vehicleManagement/vehicleManagementCheck');
+        };
+
+        //   console.log($scope.houseone);
+
+        $scope.PersonBuildingNew = {};
+        $scope.PersonBuildingNew.custId = $scope.personCust.custId;
+        $scope.PersonBuildingNew.projectType='9266b03e-195a-4f6b-ac9f-f3a1992f6a00';
+        $scope.openHouse = function(){
+            $http.post(url + '/PersonBuildingNew/selectPersonBuildingNewByCustId',{PersonBuildingNew : $scope.PersonBuildingNew}).success(function(data){
+                console.log(data);
+                $scope.buildingStructure = data.PersonBuildingNew;
+                console.log($scope.buildingStructure);
+                $("#file").modal("show");
+            }).error(function(data){
+                layer.msg("没有关联的建筑",{icon : 3,time : 2000});
+            });
+        };
+
+
+        /**
+         * 获取与该栋房屋相关的人员建筑关系信息
+         */
+        $scope.selectPersonBuilding1 = function(){
+            $scope.search.houseId = $scope.houseone.id;
+            $scope.search.buildingStructureId = $scope.houseone.id;
+            $scope.search.projectType = '9266b03e-195a-4f6b-ac9f-f3a1992f6a00';
+            $scope.search.custId = $rootScope.user.custId;
+            $http.post(url+'/PersonCustNew/getPersonCustNew',{Search:$scope.search}).success(function(data){
+                $scope.personCustNewList = data.PersonCustNew;
+                if($scope.personCustNewList.length>1){
+                    $scope.selectPerson = $scope.personCustNewList[0].name;
+                }
+                console.log($scope.personCustNewList);
+            }).error(function(data){
+                layer.msg("获取信息失败",{icon : 3,time : 2000});
+            });
+        }
+
+
+
+
+        //获取与该栋房屋相关的人员建筑关系信息
+        //$scope.selectPersonBuilding=function(){
+        //
+        //    $http.post(url+'/PersonBuildingNew/listPersonBuildingByHouseId/'+$scope.houseone.buildingStructureId).success(function(data)
+        //    {
+        //        $scope.personBuildingNew=data.PersonBuildingNew;
+        //        console.log($scope.personBuildingNew);
+        //        console.log("获取人员房屋关系成功");
+        //        $scope.personBuildingNew=$scope.notrepeat($scope.personBuildingNew);
+        //        $scope.personBuildings=[];//用于下拉选择人员对应关系
+        //        for(var i=0;i<$scope.personBuildingNew.length;i++)
+        //        {
+        //            if($scope.personBuildingNew[i].custId!=null){
+        //                $scope.option= {id:$scope.personBuildingNew[i].personCustNew.custId,custName:$scope.personBuildingNew[i].personCustNew.name,relation:$scope.personBuildingNew[i].custType};
+        //                $scope.personBuildings.push($scope.option);
+        //            }
+        //        }
+        //    }).error(function(data, status, headers, config){
+        //        layer.msg("获取信息失败",{icon : 3,time : 2000});
+        //    }) ;
+        //};
+
+        $scope.addCarInfo={};
+        //获取选择人员信息
+        //$scope.choicePerson=function(personId){
+        //    $scope.addCarInfo.owner = personId;
+        //    console.log("选取人员信息成功");
+        //};
+
+
+
+        //添加车辆信息
+        $scope.selectPerson = null;
+        var nowTime=new Date();
+        $scope.annexs=[];
+        $scope.addCarInfo.annexs= $scope.annexs;
+        $scope.addCarInfo.recordDate=nowTime;
+        $scope.addCarInfo.transactor=$rootScope.user.custId;
+        $scope.addCarInfo.personId=$rootScope.user.custId;
+
+        /***
+         *  查询所有的车辆信息
+         * @type {null}
+         */
+        $scope.carde;
+        $http.get(url+'/CarInfo/getCarInfo/'+$scope.addCarInfo.personId).success(function(data){
+            //  console.log(data);
+            $scope.carde=data.CarInfo;
+        }).error(function(data,status,headers,config){
+            layer.alert("查询车辆信息出错,请重试！",{icon:2});
+        });
+        $scope.insertCar=function(){
+            /**
+             * 禅道BUG  219
+             * 修改人：陶勇超
+             * 2016年1月8日 09:58:46
+             *  验证车牌号是否重复
+             */
+            if(   $scope.carde.length>0){
+                for(var i=0;i<$scope.carde.length;i++){
+                    if($scope.addCarInfo.carNum==$scope.carde[i].carNum){
+                        layer.alert('车牌号码已存在！',{icon : 0});
+                        return;
+                    }
+                }
+            }
+            var passengers = app.get("valueCheck").isOnlyNumberOrNull($scope.addCarInfo.passengers);
+            if(passengers.state == false){
+                layer.alert("核定载客只能输入正整数",{icon : 0});
+                return;
+            }
+            /**
+             * 禅道BUG 203 202 316
+             * 修改人：陶勇超
+             * 2016年1月6日 17:32:30
+
+             */
+            if($scope.houseone.fullName==undefined||$scope.houseone.fullName==""||$scope.houseone.fullName==null ){
+                layer.alert("房屋不能为空",{icon : 0});
+                return;
+            }else
+            if($scope.selectPerson==undefined||$scope.selectPerson==""||$scope.selectPerson==null ){
+                layer.alert("车辆所有人不能为空",{icon : 0});
+                return;
+            }else  if($scope.addCarInfo.carType==undefined||$scope.addCarInfo.carType.replace(/\s+/g,"")==""||$scope.addCarInfo.carType==null ){
+                layer.alert("车辆类型不能为空",{icon : 0});
+                return;
+            }
+            else if($scope.addCarInfo.carColor==undefined||$scope.addCarInfo.carColor.replace(/\s+/g,"")==""||$scope.addCarInfo.carColor==null ){
+                layer.alert("车辆颜色不能为空",{icon : 0});
+                return;
+            }else
+            if($scope.addCarInfo.carStyle==undefined||$scope.addCarInfo.carStyle.replace(/\s+/g,"")==""||$scope.addCarInfo.carStyle==null ){
+                layer.alert("车辆型号不能为空",{icon : 0});
+                return;
+            } else if($scope.addCarInfo.carNum==undefined||$scope.addCarInfo.carNum.replace(/\s+/g,"")==""||$scope.addCarInfo.carNum==null ){
+                layer.alert("车牌号码不能为空",{icon : 0});
+                return;
+            }else      if($scope.addCarInfo.drivingLicense==undefined||$scope.addCarInfo.drivingLicense.replace(/\s+/g,"")==""||$scope.addCarInfo.drivingLicense==null ){
+                layer.alert("行驶证号不能为空",{icon : 0});
+                return;
+            } else  if($scope.addCarInfo.certificationDate==undefined||$scope.addCarInfo.certificationDate==""||$scope.addCarInfo.certificationDate==null ){
+                layer.alert("行驶证发证日期不能为空",{icon : 0});
+                return;
+            }else  if($scope.addCarInfo.regeditDate==undefined||$scope.addCarInfo.regeditDate==""||$scope.addCarInfo.regeditDate==null ){
+                layer.alert("车辆登记日期不能为空",{icon : 0});
+                return;
+            }else  if($scope.name==undefined||$scope.name==""||$scope.name==null ){
+                layer.alert("用户名不能为空",{icon : 0});
+                return;
+            } else if($scope.annexs.length == 0 || $scope.annexs == null) {
+                layer.alert("附件不能为空", {icon: 0});
+                return;
+            }else{
+                $scope.addCarInfo.owner = $scope.selectPerson.custId;
+                $http.post(url + '/CarInfo/AddCarInfo', {CarInfo: $scope.addCarInfo}).success(function () {
+                    layer.msg('提交成功',{icon : 1,time : 2000});
+                    $location.path("/index/propertyService/staffHome/vehicleManagement/vehicleManagementCheck");
+                    $scope.personBuildings = [{id: 0, custName: "请选择车辆所有人", relation: ""}];//用于下拉选择人员对应关系
+                    $scope.personBuildings.id = 0;
+                }).error(function (data, status, headers, config) {
+                    layer.msg("提交失败",{icon : 2,time : 2000});
+                });
+            }
+
+        };
+
+        //去重人员
+        $scope.notrepeat=function(entrances){
+            for ( var i = 0; i < entrances.length; i++) {
+                for(var j = entrances.length-1 ; j > i; j--){
+                    if (entrances[i].custId == entrances[j].custId) {
+                        entrances[j]={};
+                    }
+                }
+                //     console.log(entrances);
+            }
+            return entrances;
+
+        };
+
+        var fileUrl=$rootScope.fileUrl;    //上传的文件路径
+        var filePath='';          //上传文件的路径
+        $scope.annex = {annexAddress:'',annexName:'',relationId:''};
+        //上传文件
+        $(function(){
+            // 初始化插件
+            $("#zyupload").zyUpload({
+                width            :   "auto",                 // 宽度
+                height           :   "auto",                 // 宽度
+                itemWidth        :   "140px",                 // 文件项的宽度
+                itemHeight       :   "115px",                 // 文件项的高度
+                url              :   fileUrl+"/FileService",  // 上传文件的路径
+                fileType         :   ["jpg","png","jpeg","gif","xls","docx","xlsx","pdf","txt","doc","ppt"],// 上传文件的类型
+                fileSize         :   51200000,                // 上传文件的大小
+                multiple         :   true,                    // 是否可以多个文件上传
+                dragDrop         :   true,                    // 是否可以拖动上传文件
+                tailor           :   true,                    // 是否可以裁剪图片
+                del              :   true,                    // 是否可以删除文件
+                finishDel        :   false,  				  // 是否在上传文件完成后删除预览
+                /* 外部获得的回调接口 */
+                onSelect: function(selectFiles, allFiles){    // 选择文件的回调方法  selectFile:当前选中的文件  allFiles:还没上传的全部文件
+
+                    console.info(selectFiles);
+                },
+                onDelete: function(file, files){
+                    console.info(file.name);
+                    $scope.annexs=[];
+                },
+                onSuccess: function(file, response){          // 文件上传成功的回调方法
+                    console.info("此文件上传成功：");
+                    console.info(file.name);
+                    console.info("此文件上传到服务器地址：");
+                    filePath=response;
+                    $scope.annex.annexAddress=filePath;
+                    $scope.annex.annexName=file.name;
+                    $scope.annexs.push($scope.annex);
+                    // console.log($scope.annexs);
+                    console.info(filePath);
+                    $scope.annex={}
+                    /*    $("#uploadInf").append("<p>上传成功，文件地址是：" + filePath + "</p>");*/
+                },
+                onFailure: function(file, response){          // 文件上传失败的回调方法
+                    console.info("此文件上传失败：");
+                    console.info(file.name);
+                },
+                onComplete: function(response){           	  // 上传完成的回调方法
+                    console.info("文件上传完成");
+                    console.info(response);
+                }
+            });
+
+        });
+
+    }]);
+});

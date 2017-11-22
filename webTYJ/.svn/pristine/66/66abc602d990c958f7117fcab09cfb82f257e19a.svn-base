@@ -1,0 +1,635 @@
+/**
+ * Created by Administrator on 2016/07/22
+ */
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../app');
+    app.controller('electricMeterReadingProgramCtrl', ['$scope', '$http', '$rootScope', '$location', function ($scope, $http, $rootScope, $location) {
+        $scope.doClick(2);
+        var url = $rootScope.url;                     //url地址
+        $scope.searchMeter = {page: {}};         //电表抄表计划分页
+        $scope.fileUrl = $rootScope.fileUrl;
+        $scope.electricAddSave = {};         //新增电表抄表保存
+
+        $rootScope.MeterReadingProgramId = ''; //全局变量抄表计划id
+        $rootScope.tree = true;   //树形显示状态
+        $scope.bslist = {};       //建筑结构id集合
+
+        var user = {employId: ''};
+        var userCook = JSON.parse(sessionStorage.getItem("USER_LOGIN"));   //从cook中获取用户信息
+        $scope.user = userCook ? userCook : user;                      //三目运算获取用户信息
+        $scope.addElectricCheck = [];
+        /**
+         * 分页查询所有电表抄表
+         */
+        $scope.load = function () {
+            var waterCheckFunction = function (page, callback) {
+                $scope.searchMeter.page = page;
+                $http.post(url + '/ElectricityMeterReadingProgram/listElectricityMeterReadingProgram',
+                    {SearchMeter: $scope.searchMeter}).success(callback);
+            };
+            console.log($scope.searchMeter);
+            $scope.electricChecks = app.get('Paginator').list(waterCheckFunction, 6);
+            console.log("电表分页");
+            console.log($scope.electricChecks);
+            console.log($scope.electricChecks.object.electricityMeterReadingProgram);
+            console.log("电表分页");
+        };
+        $scope.load();
+        /**
+         * 选中一条数据事件
+         * @param index  电表抄表计划数据id
+         */
+     /*   $scope.check = function (index) {
+            var checkbox = $('#'+index.meterReadingProgramId)[0];
+            var tr = $(checkbox).parent().parent()[0];
+            $(tr).toggleClass('this_info');
+            checkbox.checked = $(tr).hasClass('this_info');
+            $scope.item2 = index;
+        };
+
+        function buildingTreeOnSelect (event, treeId, treeNode){
+            if(!treeNode.isLastNode){
+                return ;
+            }
+            $http.get(url+'/ElectricMeter/getElectricMeterAndFullNameByParentId/'+treeNode.id).success(function(data){
+                if(data.info.length!=null && data.info!='未查询到数据！'){
+                    $scope.houses = data.info;
+                    $scope.housesTemp = data.info;
+                }
+            })
+        }
+        $scope.newPlan = function(){
+            $scope.addOrEdit = true;
+            $scope.electricAddSave={};
+            $scope.addelEctricCheck=[];
+            $scope.houses= {};
+            var buildingTree = $.fn.zTree.getZTreeObj('buildingTree');
+            buildingTree.removeNode(buildingTree.getNodes()[0]);
+            buildingTree.updateNode(buildingTree.getNodes()[0]);
+        };
+        var zTreeSetting ={
+            check: {
+                enable: true
+            },
+            view: {
+                selectedMulti: false
+            },
+            edit: {
+                enable: false,
+                editNameSelectAll: false
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            },
+            callback: {
+                onClick: buildingTreeOnSelect
+            }
+        };
+        $.fn.zTree.init($('#buildingTree'),zTreeSetting,[]);
+        *//**
+         * 根据项目id获取建筑信息
+         * @param projectId
+         *//*
+        $scope.getBuildingList = function(projectId){
+            $http.get(url+'/BuildingStructureNew/listBuildingByProjectId/'+projectId).success(function(data){
+                var buildingList = data.BuildingStructureNew;
+                $scope.nodes = [];
+                for(var i =0;i<buildingList.length;i++){
+                    $scope.node = {id:buildingList[i].id,name:buildingList[i].nodeName,fullName:buildingList[i].fullName,nocheck:true,pId:buildingList[i].parentId};
+                    $scope.nodes.push($scope.node);
+                }
+                $.fn.zTree.init($('#buildingTree'),zTreeSetting,$scope.nodes);
+            }).error(function(){
+
+            })
+        };
+        *//**
+         * 获取选中树
+         * @type {Array}
+         *//*
+        var ids = [];
+        $scope.getChecked = function(){
+            var houses = $('#houses').find('input[type=checkbox]');
+            var checks = [];
+            ids=[];
+            for(var i =0;i<houses.length;i++){
+                if(houses[i].checked){
+                    var obj = {id:houses[i].id,waterMeterNum:houses[i].labels[0].innerHTML,fullName:houses[i].labels[1].innerHTML};
+                    checks.push(obj);
+                    ids.push(houses[i].id);
+                }
+            }
+            return checks;
+        };
+
+        *//**
+         * 搜索树
+         *//*
+        var TO = $.fn.zTree.getZTreeObj('buildingTree');
+        $scope.searchTree1 = function(){
+            if($scope.region==''){
+                return;
+            }
+            $.fn.zTree.init($('#buildingTree'),zTreeSetting,$scope.nodes);
+            var nodes = TO.getNodes();
+            for(var i = 0;i<nodes.length;i++){
+                if(nodes[i].fullName.indexOf($scope.region)==-1){
+                    var children = nodes[i].children;
+                    if(children.length!=null&&children.length!=0){
+                        for(var n = 0;n<children.length;n++){
+                            if(children[i].fullName.indexOf($scope.region)==-1){
+                                TO.removeNode(children[i]);
+                            }
+                        }
+                    }
+                    if(children.length==0){
+                        TO.removeNode(nodes[i]);
+                    }
+                }
+            }
+            TO.updateNode(nodes[0]);
+        };
+        *//**
+         * 搜索列表
+         * @type {string}
+         *//*
+        $scope.tableNumber1='';
+        $scope.tableName1='';
+        $scope.searchTree2 = function(){
+            $scope.houses = $scope.housesTemp;
+            if($scope.tableNumber1!=''&&$scope.tableName1!=''){
+                var tempArray1 = [];
+                for(var i =0;i<$scope.houses.length;i++){
+                    if($scope.houses[i].waterMeterNum.indexOf($scope.tableNumber1)!=-1&&
+                        $scope.houses[i].fullName.indexOf($scope.tableName1)!=-1){
+                        tempArray1.push($scope.houses[i]);
+                    }
+                }
+                $scope.houses = tempArray1;
+            }else{
+                var tempArray2 = [];
+                for(var n =0;n<$scope.houses.length;n++){
+                    if($scope.tableNumber1!=''){
+                        if($scope.houses[n].electricMeterNum.indexOf($scope.tableNumber1)!=-1){
+                            tempArray2.push($scope.houses[n]);
+                        }
+                    }else if($scope.fullName!=''){
+                        if($scope.houses[n].fullName.indexOf($scope.tableName1)!=-1){
+                            tempArray2.push($scope.houses[n]);
+                        }
+                    }
+                }
+                $scope.houses = tempArray2;
+            }
+        };
+        *//**
+         * 搜索列表
+         * @type {string}
+         *//*
+        $scope.tableNumber2='';
+        $scope.tableName2='';
+        $scope.searchTree3 = function(){
+            $scope.addElectricCheck = $scope.addElectricCheckTemp;
+            if($scope.tableNumber2!=''&&$scope.tableName2!=''){
+                var tempArray1 = [];
+                for(var i =0;i<$scope.addWaterCheck.length;i++){
+                    if($scope.addElectricCheck[i].electricMeterNum.indexOf($scope.tableNumber2)!=-1&&
+                        $scope.addElectricCheck[i].fullName.indexOf($scope.tableName2)!=-1){
+                        tempArray1.push($scope.addElectricCheck[i]);
+                    }
+                }
+                $scope.addElectricCheck = tempArray1;
+            }else{
+                var tempArray2 = [];
+                for(var n =0;n<$scope.addElectricCheck.length;n++){
+                    if($scope.tableNumber2!=''){
+                        if($scope.addElectricCheck[n].electricMeterNum.indexOf($scope.tableNumber2)!=-1){
+                            tempArray2.push($scope.addElectricCheck[n]);
+                        }
+                    }else if($scope.fullName!=''){
+                        if($scope.addElectricCheck[n].fullName.indexOf($scope.tableName2)!=-1){
+                            tempArray2.push($scope.addElectricCheck[n]);
+                        }
+                    }
+                }
+                $scope.addWaterCheck = tempArray2;
+            }
+        };
+
+        $scope.checkTime = function(){
+            console.log(typeof ($scope.electricAddSave.startTime));
+            if($scope.electricAddSave.executionFrequency==1){
+                $scope.electricAddSave.endTime = new Date($scope.electricAddSave.endTime);
+                var date =new Date(new Date($scope.electricAddSave.endTime.getTime()));
+                var time = new Date(date.setDate($scope.electricAddSave.endTime.getDate()+Number($scope.electricAddSave.auditTime)));
+                $scope.electricAddSave.startTime = new Date($scope.electricAddSave.startTime);
+                console.log($scope.electricAddSave.startTime);
+                if(time.getMonth()>$scope.electricAddSave.startTime.getMonth() && time.getDate() >$scope.electricAddSave.startTime.getDate()){
+                    layer.msg('审核时长不能大于下一次审核的开始时间！',{icon:2});
+                    return false;
+                }else{
+                    return true;
+                }
+            }
+        };
+
+        *//**
+         * 新建电表抄表
+         *//*
+        $scope.submitWater = function () {
+            $scope.electricAddSave.ids = ids;
+            console.log($scope.waterAddSave.ids);
+            if ($scope.electricAddSave.projectName == undefined || $scope.electricAddSave.projectName == "" || $scope.electricAddSave.projectName == null) {
+                layer.alert('计划名称不能为空！', {icon: 0});
+                return;
+            } else if ($scope.electricAddSave.projectId == undefined || $scope.electricAddSave.projectId == "" || $scope.electricAddSave.projectId == null) {
+                layer.alert('项目名称不能为空！', {icon: 0});
+                return;
+            }*//* else if ($scope.waterAddSave.settlementDay == undefined || $scope.waterAddSave.settlementDay == "" || $scope.waterAddSave.settlementDay == null) {
+             layer.alert('月结日不能为空！', {icon: 0});
+             return;
+             }*//* else if ($scope.electricAddSave.startTime == undefined || $scope.electricAddSave.startTime == "" || $scope.electricAddSave.startTime == null) {
+                layer.alert('开始时间不能为空！', {icon: 0});
+                return;
+            } else if ($scope.electricAddSave.endTime == undefined || $scope.electricAddSave.endTime == "" || $scope.electricAddSave.endTime == null) {
+                layer.alert('结束时间不能为空！', {icon: 0});
+                return;
+            } else if(new Date($scope.electricAddSave.startTime)-new Date($scope.electricAddSave.endTime )>0){
+                layer.msg('开始时间不能超过结束时间！',{icon:0});
+                return;
+            } else if ($scope.electricAddSave.executionFrequency == undefined || $scope.electricAddSave.executionFrequency == "" || $scope.electricAddSave.executionFrequency == null) {
+                layer.alert('审核频率不能为空！', {icon: 0});
+                return;
+            } else if ($scope.electricAddSave.auditTime == undefined || $scope.electricAddSave.auditTime == "" || $scope.electricAddSave.auditTime == null) {
+                layer.alert('审核时长不能为空！', {icon: 0});
+                return;
+            }
+            if(!$scope.checkTime()){
+                return;
+            }
+
+            if($scope.addOrEdit){
+                if ($scope.electricAddSave.ids == undefined || $scope.electricAddSave.ids == "" || $scope.electricAddSave.ids == null) {
+                    layer.alert('建筑不能为空！', {icon: 0});
+                    return;
+                }
+                $scope.serviceRequest={listTasks:{}};
+                $http.post(url + '/MeterReadingProgram/insertMeterReadingProgram',
+                    {MeterReadingProgram: $scope.waterAddSave}).success(function () {
+                    $scope.serviceRequest.requestSource = '自动创建';
+                    //$scope.serviceRequest.customerId = $scope.serviceRequest.custCode;//客户id
+                    $scope.serviceRequest.serviceRequestState = 0;//不需回访
+                    $scope.serviceRequest.serviceRequestName = '电表抄表计划服务请求';
+                    $scope.serviceRequest.serviceRequestType = '5';//水表
+                    //$scope.serviceRequest.writerId = $scope.caraccesscards.creater;//创建人id
+                    $scope.serviceRequest.remarks = '电表抄表自动创建';//备注
+                    $scope.serviceRequest.directionType = 0;//外部服务请求
+                    //$scope.serviceRequest.listTasks.customerId =  $scope.caraccesscards.custCode;//客户id
+                    $scope.serviceRequest.listTasks.taskType = 16;//任务类型
+                    $scope.serviceRequest.listTasks.taskState = '4';//任务状态
+                    //$scope.serviceRequest.listTasks.estimatedTime = new Date((new Date()/1000+86400)*1000);//预计完成时间7天以后
+                    $scope.serviceRequest.listTasks.addressIds=[];
+                    $scope.serviceRequest.listTasks.addressIds.push($scope.node.id);//地址id
+                    $scope.serviceRequest.listTasks.taskDescription = '电表抄表计划服务请求';//任务描述
+                    //$scope.serviceRequest.listTasks.principal = '';//负责人
+                    $http.post(url + '/ServiceRequest/insertServiceRequestRestful', {ServiceRequest: $scope.serviceRequest}).success(function (data) {
+                        layer.alert('添加电表抄表成功', {icon: 1});
+                        $scope.load();
+                        $('#myModal').hide();
+                    }).error(function (data) {
+                        layer.msg("添加电表抄表失败",{icon : 2,time : 2000});
+                    });
+                }).error(function () {
+                    layer.msg('添加电表抄表失败', {icon: 2});
+                });
+            }else{
+                ids = [];
+                var array = $("#selected").find('input[type=checkbox]');
+                for(var i=0; i<array.length;i++){
+                    ids.push(array[i].value);
+                }
+                $scope.electricAddSave.ids = ids;
+                if ($scope.electricAddSave.ids == undefined || $scope.electricAddSave.ids == "" || $scope.waterAddSave.ids == null) {
+                    layer.alert('建筑不能为空！', {icon: 0});
+                    return;
+                }
+                $http.post(url + '/MeterReadingProgram/updateMeterReadingProgram',
+                    {MeterReadingProgram: $scope.electricAddSave}).success(function () {
+                    layer.msg('编辑电表抄表成功', {icon: 1});
+                    $scope.load();
+                    $('#myModal').hide();
+                }).error(function () {
+                    layer.alert('编辑电表抄表失败', {icon: 2});
+                });
+            }
+
+        };
+        *//**
+         * 获取抄表计划项目
+         *//*
+        $http.get(url + '/Project/listAllProject/'+$scope.user.companyId).success(function (data) {
+            $scope.currentObject = data.Project;
+        }).error(function () {
+            layer.alert('获取抄表计划项目失败', {icon: 2});
+        });
+        *//**
+         * 取消电表抄表
+         *//*
+        $scope.cancelWater = function () {
+            $scope.load();
+        };
+        *//**
+         * 计划修改(按钮)
+         *//*
+        $scope.currentObject = [];                   //所有项目
+        $scope.currentStaff = [];                    //所有审核人员
+        *//**
+         * 抄表计划编辑
+         * @param index
+         *//*
+        $scope.updatePlans = function (index) {
+            alert("aaa");
+            $scope.addOrEdit = false;
+            if(getSelect().length==0){
+                layer.msg("请选择抄表计划", {icon: 0});
+                return ;
+            }else if(getSelect().length>1){
+                layer.msg("只能选择一项抄表计划进行编辑", {icon: 0});
+                return;
+            }
+            if (index == null) {
+                layer.msg("请选择抄表计划", {icon: 0});
+            } else {
+                $("#myModal").modal("show");
+                $rootScope.tree = false;
+                $scope.item3 = index;
+                $scope.electricAddSave = $scope.item3;
+                $scope.electricAddSave.startTime = new Date($scope.electricAddSave.startTime);
+                $scope.electricAddSave.endTime = new Date($scope.electricAddSave.endTime);
+                $scope.electricAddSave.settlementDay = $scope.electricAddSave.settlementDay+'';
+                $scope.electricAddSave.auditTime = $scope.electricAddSave.auditTime+'';
+                $scope.electricAddSave.executionFrequency = $scope.electricAddSave.executionFrequency+'';
+
+                $scope.getBuildingList($scope.electricAddSave.project.projectId);
+
+                $http.get(url+'/MeterReadingProgram/editData/'+$scope.electricAddSave.meterReadingProgramId).success(function(data){
+                    if(data.MeterReadingProgram.electricMeterList.length==null){
+                        data.MeterReadingProgram.electricMeterList = [data.MeterReadingProgram.electricMeterList];
+                    }
+                    var MeterReadingProgram = data.MeterReadingProgram;
+                    if(MeterReadingProgram!=null&&MeterReadingProgram.electricMeterList!=null){
+                        for(var i =0;i<MeterReadingProgram.electricMeterList.length;i++){
+                            MeterReadingProgram.electricMeterList[i].id = MeterReadingProgram.electricMeterList[i].electricMeterRecordsId;
+                        }
+                    }
+                    $scope.addElectricCheck = MeterReadingProgram.electricMeterList;
+                })
+            }
+
+        };
+        *//**
+         * 获取选中数据
+         *//*
+        function getSelect (){
+            var executeInput = $('#executeInput').find('input[type=checkbox]');
+            var meterReadingProgramIds = [];
+            for(var i= 0;i<executeInput.length;i++){
+                if(executeInput[i].checked){
+                    meterReadingProgramIds.push(executeInput[i].id);
+                }
+            }
+            return meterReadingProgramIds;
+        }
+
+        *//**
+         * 执行
+         *//*
+        $scope.execute = function(){
+            var meterReadingProgramIds = getSelect();
+            if(getSelect()==0){
+                layer.msg('您未选中执行项！',{icon:0});
+                return;
+            }
+            $http.post(url+"/MeterReadingProgram/implementProgram",JSON.stringify(meterReadingProgramIds)).success(function(data){
+                if(data.info=='执行成功'){
+                    layer.msg('执行成功',{time:1500,icon:1});
+                    $scope.waterChecks._load();
+                }else{
+                    layer.msg('执行出错',{time:1500,icon:2});
+                }
+            })
+        };
+        *//**
+         * 全选
+         *//*
+        $scope.executeAll = function(){
+            var inputs = $('#executeInput').find('input[type=checkbox]');
+            if(inputs.length>getSelect().length){
+                $(inputs).each(function(index,element){
+                    element.checked = true;
+                }).parent().parent().each(function(){
+                    $(this).addClass('this_info');
+                });
+                $('#executeAll')[0].checked = true ;
+            }else if((inputs.length=getSelect().length)){
+                $(inputs).each(function(index,element){
+                    element.checked = false;
+                }).parent().parent().each(function(){
+                    $(this).removeClass('this_info');
+                });
+                $('#executeAll')[0].checked = false ;
+            }
+        };
+        *//**
+         * 保存计划修改
+         *//*
+        $scope.submitUpdatePlan = function (index) {
+            //alert(index);
+            if ($scope.currentProjectPlan.projectName == undefined || $scope.currentProjectPlan.projectName == "" || $scope.currentProjectPlan.projectName == null) {
+                layer.alert('计划名称不能为空！', {icon: 0});
+                $scope.load();
+                return;
+            } else if ($scope.currentProjectPlan.projectId == undefined || $scope.currentProjectPlan.projectId == "" || $scope.currentProjectPlan.projectId == null) {
+                layer.alert('项目名称不能为空！', {icon: 0});
+                $scope.load();
+                return;
+            } *//*else if ($scope.currentProjectPlan.settlementDay == undefined || $scope.currentProjectPlan.settlementDay == "" || $scope.currentProjectPlan.settlementDay == null) {
+             layer.alert('月结日不能为空！', {icon: 0});
+             $scope.load();
+             return;
+             }*//*
+            else if ($scope.currentProjectPlan.startTime == undefined || $scope.currentProjectPlan.startTime == "" || $scope.currentProjectPlan.startTime == null) {
+                layer.alert('开始时间不能为空！', {icon: 0});
+                $scope.load();
+                return;
+            } else if ($scope.currentProjectPlan.endTime == undefined || $scope.currentProjectPlan.endTime == "" || $scope.currentProjectPlan.endTime == null) {
+                layer.alert('结束时间不能为空！', {icon: 0});
+                $scope.load();
+                return;
+            } else if ($scope.currentProjectPlan.currentExecutor == undefined || $scope.currentProjectPlan.currentExecutor == "" || $scope.currentProjectPlan.currentExecutor == null) {
+                layer.alert('抄表人不能为空！', {icon: 0});
+                $scope.load();
+                return;
+            }
+            $scope.currentProjectPlan.meterReadingProgramId = index;
+            $scope.currentProjectPlan.buildingStructureNew = $scope.bslist;
+            $http.put(url + '/MeterReadingProgram/updateMeterReadingProgram',
+                {MeterReadingProgram: $scope.currentProjectPlan}).success(function () {
+                layer.alert('保存计划修改成功', {icon: 1});
+                $scope.load();
+            }).error(function (data, status, headers, config) {
+                layer.alert('保存计划修改失败', {icon: 2});
+            });
+        };
+        *//**
+         * 取消计划修改
+         *//*
+        $scope.cancelUpdatePlan = function () {
+            $scope.item2 = null;
+            $scope.load();
+        };
+
+        *//**
+         * 显示添加页面树状菜单
+         *//*
+        var zTreeOnCheck = function (event, treeId, treeNode) {
+            var treeObj = null;
+            if ($rootScope.tree == true) {
+                treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+            } else {
+                treeObj = $.fn.zTree.getZTreeObj("treeDemo1");
+            }
+
+            var nodes = treeObj.getCheckedNodes(true);
+            $scope.treeResult = {treeList: []};
+            for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].isParent == false) {
+                    $scope.treeResult.treeList.push(nodes[i]);
+                }
+            }
+            $scope.bslist = $scope.treeResult.treeList;
+
+        };
+        *//**
+         * 显示选中的树状数据
+         *//*
+        $scope.addWaterReading = function () {
+            var temp = $scope.getChecked();
+            var array = angular.copy($scope.addElectricCheck);
+            for(var i=0;i<temp.length;i++){
+                var bool = true;
+                for(var n = 0;n<$scope.addElectricCheck.length;n++){
+                    if(temp[i].id==$scope.addElectricCheck[n].id){
+                        bool=false;
+                    }
+                }
+                if(bool){
+                    array.push(temp[i]);
+                }
+            }
+            $scope.addElectricCheck = array;
+            $scope.addElectricCheckTemp = $scope.addElectricCheck;
+        };
+
+        *//**
+         * 删除已选中的树数据
+         *//*
+        $scope.removeElectricReading = function(){
+            var selected = $("#selected").find('input[type=checkbox]:checked');
+            var array = [];
+            for(var i = 0;i<$scope.addElectricCheck.length;i++){
+                var bool=true;
+                for(var n = 0;n<selected.length;n++) {
+                    if($scope.addElectricCheck[i].id==$(selected[n]).val()){
+                        bool=false;
+                    }
+                }
+                if(bool){
+                    array.push($scope.addWaterCheck[i]);
+                }
+            }
+            $scope.addWaterCheck = array;
+        };
+
+        var setting = {
+            check: {
+                enable: true
+            },
+            view: {
+                selectedMulti: false
+            },
+            edit: {
+                enable: false,
+                editNameSelectAll: false
+                //showRemoveBtn: showRemoveBtn,
+                //showRenameBtn: showRenameBtn
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            },
+            callback: {
+                onCheck: zTreeOnCheck,
+                onClick: updateWaterReading
+            }
+        };
+
+
+        var updateElectricReading = function () {
+            $scope.updateElectricCheck = $scope.treeResult.treeList;
+        };
+
+        function selectAll() {
+            var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+            zTree.setting.edit.editNameSelectAll = $("#selectAll").attr("checked");
+        }
+
+        $(document).ready(function () {
+            $("#selectAll").bind("click", selectAll);
+        });
+
+        $scope.updateElectricReading = function () {
+            $scope.updateElectricCheck = $scope.treeResult.treeList;
+        };
+
+        function getSelect1(){
+            var executeInput = $('#executeInput').find('input[type=checkbox]');
+            var meterReadingProgramIds = [];
+            for(var i= 0;i<executeInput.length;i++){
+                if(executeInput[i].checked){
+                    var meterReadingProgram = $scope.electricChecks.object.meterReadingProgram;
+                    for(var n in meterReadingProgram){
+                        if(meterReadingProgram[n].meterReadingProgramId==executeInput[i].id){
+                            meterReadingProgramIds.push({id:executeInput[i].id,projectName:meterReadingProgram[n].projectName});
+                        }
+                    }
+                }
+            }
+            return meterReadingProgramIds;
+        }
+
+        $scope.exportExcelHouse = function() {
+            var i = 0;
+            var meterReadingProgramList = getSelect1();
+            if(getSelect()==0){
+                layer.msg('您未选择导出项',{icon:0});
+                return;
+            }
+            var time = setInterval(function () {
+                $('#click').remove();
+                var a = '<a id="click" href="' + $scope.fileUrl + '/info/outReadingProgramExcel.do?fileName=' + meterReadingProgramList[i].projectName + '&meterReadingProgramId=' + meterReadingProgramList[i].id + '"></a>';
+                $('body').append(a);
+                document.getElementById('click').click();
+                i++;
+                if (i == meterReadingProgramList.length) {
+                    clearInterval(time);
+                }
+            }, 500);
+        };*/
+    }]);
+});

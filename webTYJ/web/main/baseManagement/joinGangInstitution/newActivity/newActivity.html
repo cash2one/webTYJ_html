@@ -1,0 +1,364 @@
+<!--
+    创建人:彭婷婷    创建时间：2015/5/14
+    页面名称:入伙初始化--新增活动
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>入伙初始化</title>
+    <link rel="stylesheet" href="css/ztree/ztreedf.css" type="text/css">
+    <link rel="stylesheet" href="css/ztree/zTreeStyle.css" type="text/css">
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.core-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.excheck-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.exedit-3.5.js"></script>
+    <script type="text/javascript">
+        var setting = {
+            check:{
+                enable:true
+            },
+            view: {
+                selectedMulti: false
+            },
+            edit: {
+                enable: false,
+                editNameSelectAll: false
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            }
+        };
+    </script>
+</head>
+<body>
+<div id="content-first">
+    <div ng-show="activityStart">
+        <div class="sel">
+            <div class="row search-padding-10">
+                <div class="col-lg-2 col-md-2 col-sm-2">入伙开始时间</div>
+                <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" type="date" ng-model="currentJoinProject.startDate"></div>
+                <div class="col-lg-2 col-md-2 col-sm-2">入伙结束时间</div>
+                <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" type="date" ng-model="currentJoinProject.endDate"></div>
+                <div class="col-lg-2 col-md-2 col-sm-2">管理费默认计费时间</div>
+                <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" type="date" ng-model="currentJoinProject.managementFeeChargingTime"></div>
+                <div class="col-lg-2 col-md-2 col-sm-2">选择预交管理费月数</div>
+                <div class="col-lg-4 col-md-4 col-sm-4">
+                    <select class="form-control" ng-model="currentJoinProject.chooseToPrepayFeesMonths">
+                        <option value="">请选择</option>
+                        <option value="3">3</option><option value="4">4</option>
+                        <option value="5">5</option><option value="6">6</option>
+                        <option value="7">7</option><option value="8">8</option>
+                        <option value="9">9</option><option value="10">10</option>
+                        <option value="11">11</option><option value="12">12</option>
+                    </select>
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2">拒绝入伙管理费承担人</div>
+                <div class="col-lg-1 col-md-2 col-sm-2">
+                    <label class="radio inline">
+                        <input name="name1" type="radio" value="0" ng-model="currentJoinProject.takeOne">
+                        <span>业主</span>
+                    </label>
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2">
+                    <label class="radio inline">
+                        <input name="name2" type="radio" value="1" ng-model="currentJoinProject.takeOne">
+                        <span>开发商</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="row padding">
+            <div class="col-lg-12 col-md-12 col-sm-12">
+                <div class="row search-padding-10">
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <!-- 添加负责人开始 -->
+                        <div class="col-lg-3 col-md-3 col-sm-6">
+                            <div class="row">
+                                <div class="user_new_pannel">
+                                    <div class="user_new_pannel_title">
+                                        <span>添加负责人</span>
+                                    </div>
+                                    <div class="user_guoup_pannel_text">
+                                        <a href="#addLeader" data-toggle="modal" >
+                                            <img src="images/project/user/user_2.png" width="49" height="49"  ng-click="listAllStaff()">
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 添加负责人开始 -->
+                        <!--负责人开始-->
+                        <div class="col-lg-3 col-md-3 col-sm-6">
+                            <div class="user_new_pannel">
+                                <div class="user_new_pannel_title">
+                                    <span>负责人</span>
+                                </div>
+                                <div class="user_scher_pannel_text">
+                                    <div class="user_scher_img">
+                                        <img src="images/project/user/user_3.png">
+                                    </div>
+                                    <div class="user_scher_text">
+                                        负责人：{{personone.staffName}}<br>
+                                        性别：{{personone.sex}}<br>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--负责人开始-->
+                <div class="row search-padding-10">
+                    <!--人员面版1-->
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div class="user_new_pannel">
+                            <div class="user_new_pannel_title">
+                                <span>团队成员</span>
+                            </div>
+                            <div class="user_guoupa_pannel_text">
+                                <div class="user_guoupa_pannel_25">
+                                    <a href="#addMember" data-toggle="modal" >
+                                        <img src="images/project/user/user_2.png" width="49" height="49"  ng-click="listAllStaff()" class="ourguoupimg">
+                                    </a>
+                                </div>
+                                <div class="user_guoupa_pannel_25" ng-repeat="items in personAll">
+                                    <img src="images/project/user/user_3.png"><br>
+                                    <span class="user_group_name_grey">{{items.staffName}}</span>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+                        </div>
+                        <!--人员面版1结束-->
+                    </div>
+                </div>
+                <div class="text-center">
+                    <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="oneCheck()">
+                        下一步
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div  ng-show="activityOne">
+        <!--入伙初始化第二步-->
+        <div class="sel">
+            <div class="row search-padding-10">
+                <div class="col-lg-1 col-md-2 col-sm-2">选择项目</div>
+                <div class="col-lg-11 col-md-10 col-sm-10">
+                    <select class="form-control" ng-model="currentProject" ng-options="p.projectName for p in allProjects">
+                        <option>请选择</option>
+                    </select>
+                </div>
+            </div>
+
+        </div>
+        <div class="padding">
+            <div class="search-padding-10">
+                <ul id="buildingNewtreeDemo"  class="ztree" ></ul>
+            </div>
+            <div class="text-center">
+                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="oneBack()">
+                    上一步
+                </button>
+                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="twoCheck()">
+                    下一步
+                </button>
+            </div>
+        </div>
+        <!--入伙初始化第三步-->
+    </div>
+    <div ng-show="activityTwo">
+        <div class="sel">
+            <div class="row search-padding-10">
+                <div class="col-lg-1 col-md-2 col-sm-2">物品名称</div>
+                <div class="col-lg-5 col-md-4 col-sm-4"><input type="text" class="form-control" placeholder="请输入" ng-model="searchArticle.giftName"></div>
+                <div class="col-lg-6 col-md-6 col-sm-6">
+                    <button type="button" class="btn btn-default btn-primary" >
+                        <span class="glyphicon glyphicon-search btn_icon"ng-click="articleChecks._load()"></span>
+                        查询
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row padding">
+            <div class="col-lg-12">
+                <div class="search-padding-10">
+                    <button type="button" class="btn btn-default btn-primary" href="#addArticle" data-toggle="modal" ng-click="addItem()">
+                        <span class="glyphicon glyphicon-plus btn_icon"></span>
+                        新增
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary" href="#updateArticle" data-toggle="modal" ng-click="updateItem()">
+                        <span class="glyphicon glyphicon-edit btn_icon"></span>
+                        修改
+                    </button>
+                </div>
+                <div class="row search-padding-10">
+                    <div class="col-lg-6 col-md-6 col-sm-6">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>物品包名称</th>
+                                <th>物品包数量</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-class="{'navigation_info ':btnIndex==item12['giftId']}" ng-click="articleCheck(item12)" ng-repeat="item12 in articleChecks.object.gift" ng-show="item12['giftId'] != null">
+                                <td>{{item12.giftName}}</td>
+                                <td>{{item12.giftAmount}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="bill_paging">
+                            <div class="pagination">
+                                <li><a style="cursor: pointer;" ng-show="articleChecks.hasPrevious()" ng-click="articleChecks.previous()">上一页</a></li>
+                                <li><a style="cursor: pointer;" ng-repeat="i in articleChecks.pages"  ng-click="articleChecks.go(i)" class="number">{{i}}</a></li>
+                                <li><a style="cursor: pointer;" ng-show="articleChecks.hasNext()" ng-click="articleChecks.next()">下一页</a></li>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6"  ng-show="articleShow">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>物品名称</th>
+                                <th>物品数量</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="item13 in giftArticleCheck">
+                                <td>{{item13.houseArticle.articleName}}</td>
+                                <td>{{item13.houseArticle.quantity}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="twoBack()">
+                        上一步
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="threeCheck()">
+                        下一步
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--入伙初始化第四步-->
+    <div ng-show="activityThree">
+        <div class="row padding">
+            <div class="col-lg-12">
+                <div class="search-padding-10">
+                    入伙活动详情信息
+                </div>
+                <div class="search-padding-10">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>房屋名称</th>
+                            <th>物品包名称</th>
+                            <th>业主</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="item8 in data" ng-show="item8.personBuildingId != null">
+                            <td>{{item8.fullName}}</td>
+                            <td>{{currentBuilding.giftName}}</td>
+                            <td>{{item8.name}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="bill_paging">
+                        <div class="pagination">
+                            <li><a style="cursor:pointer;" ng-click="previous()">上一页</a></li>
+                            <li><a style="cursor:pointer;" ng-click="go(index)" class="number">{{index}}</a></li>
+                            <li><a style="cursor:pointer;" ng-click="next()">下一页</a></li>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="threeBack()">
+                        上一步
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary tab-btn" ui-sref="index.businessManagement.joinGangInstitution.historyActivity">
+                        保存
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <div class="modal fade" id="addLeader" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                            &times;
+                        </button>
+                        <span class="modal-title" id="ImpClient" >
+                            增加负责人
+                        </span>
+                    </div>
+                    <div class="modal-body">
+                        <div class="padding">
+                                <!--人员1-->
+                          <div class="user_check_pannel_20" ng-class="{'navigation_info ':btnIndex==item11}" ng-repeat="item11 in staff">
+                                    <a style="cursor: pointer;" ng-click="choicePerson(item11)">
+                                        <img src="images/project/user/user_3.png" >
+                                    </a><br>
+                                    <span>{{item11.staffName}}</span>
+                                </div>
+
+                         </div>
+                     </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default"
+                                data-dismiss="modal">关闭
+                        </button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="addInfo()">
+                            保存
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <div class="modal fade" id="addMember" tabindex="-1" role="dialog"
+         aria-labelledby="myModalLabel" aria-hidden="true" >
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close"
+                            data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <span class="modal-title" >
+                        增加团队成员
+                    </span>
+                </div>
+                <div class="modal-body">
+                    <div class="padding">
+                        <div class="user_check_pannel_20"  ng-repeat="item2 in staff track by $index">
+                            <a style="cursor: pointer" ng-click="choice(item2,$index)">
+                                <img src="images/project/user/user_3.png" >
+                            </a>
+                            <br />
+                            <span>{{item2.staffName}}</span>
+                    </div>
+                     </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default"
+                            data-dismiss="modal">关闭
+                    </button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="addInfoPerson()">
+                        保存
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+</html>

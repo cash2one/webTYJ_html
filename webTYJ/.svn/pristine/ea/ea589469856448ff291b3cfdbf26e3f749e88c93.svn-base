@@ -1,0 +1,148 @@
+<!--author:王志刚-->
+<!--页面名称：物业服务装修历史查询-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>历史记录</title>
+</head>
+<body>
+<div style="padding:20px 30px 0">
+
+</div>
+<div style="padding:20px 30px 0">
+
+    <div class="pull-right">
+        <img src="images/propertyService/u459.png" style="width: 20px;height: 20px">
+        <a ui-sref="index.propertyService.staffHome.decorate.decoration.chooseHouse" class="btn btn-xs" >办理装修</a>
+    </div>
+
+    <table class="table table-bordered text-center table-hover">
+    <!-- author： 耿小江 -->
+    <!-- 2015-06-01 -->
+    <!--页面名称：物业服务装修历史查询-->
+        <tr style="background-color: lightskyblue">
+            <td><strong>房屋编号</strong></td>
+            <td><strong>业主姓名</strong></td>
+            <td><strong>房屋地址</strong></td>
+            <td><strong>装修类型</strong></td>
+            <td><strong>装修公司</strong></td>
+            <td><strong>企业法人</strong></td>
+            <td><strong>负责人</strong></td>
+            <td><strong>装修开始日期</strong></td>
+            <td><strong>装修完成日期</strong></td>
+            <td><strong>装修状态</strong></td>
+        </tr>
+
+<!--2015年6月3日更改  -->
+        <tr ng-repeat="items in PersonCust">
+            <td>{{items.house.houseId}}</td>
+            <td>{{items.name}}</td>
+            <td>{{items.house.houseAddress}}</td>
+            <td ng-switch on="items.assetdecorate.decorationType">
+                 	    <span ng-switch-when="1">工装</span>
+                 	    <span ng-switch-when="2">自装</span>      
+                 	            	                                                             	   
+                        </td>
+            <td>{{items.assetdecorate.builderName}}</td>
+            <td>{{items.assetdecorate.corporationperson}}</td>
+            <td>{{items.assetdecorate.principalleading}}</td>
+            <td>{{items.assetdecorate.applyDate| date:"yyyy-MM-dd"}}</td>
+            <td>{{items.assetdecorate.completeDate| date:"yyyy-MM-dd"}}</td>
+            
+            <td ng-switch on="items.assetdecorate.decorationState">
+                 	    <span ng-switch-when="1">已经装修</span>
+                 	    <span ng-switch-when="2">未装修</span>     
+                 	     <span ng-switch-when="3">装修进行中</span>  
+                     	                                                             	   
+                        </td>
+        </tr>
+
+
+
+<!--  
+        <tr>
+            <td>TYJ009</td>
+            <td>张三</td>
+            <td>桃原居5栋3单元703室</td>
+            <td>自装</td>
+            <td>无</td>
+            <td>李四</td>
+            <td>杨家平</td>
+            <td>2015/05/10</td>
+            <td>2015/05/18</td>
+            <td>已完成</td>
+        </tr>
+
+        <tr>
+            <td>TYJ009</td>
+            <td>李四</td>
+            <td>桃原居5栋3单元703室</td>
+            <td>自装</td>
+            <td>无</td>
+            <td>张三</td>
+            <td>王五</td>
+            <td>2015/05/10</td>
+            <td>2015/05/18</td>
+            <td>已完成</td>
+        </tr>
+
+        <tr>
+            <td>TYJ009</td>
+            <td>大大</td>
+            <td>桃原居5栋3单元703室</td>
+            <td>自装</td>
+            <td>无</td>
+            <td>小小</td>
+            <td>你好</td>
+            <td>2015/05/10</td>
+            <td>2015/05/18</td>
+            <td>已完成</td>
+        </tr>
+
+        <tr>
+            <td>TYJ009</td>
+            <td>天才</td>
+            <td>桃原居5栋3单元703室</td>
+            <td>自装</td>
+            <td>无</td>
+            <td>无</td>
+            <td>杨家平</td>
+            <td>2015/05/10</td>
+            <td>2015/05/18</td>
+            <td>已完成</td>
+        </tr>
+
+        <tr>
+            <td>TYJ009</td>
+            <td>好孩子</td>
+            <td>桃原居5栋3单元703室</td>
+            <td>自装</td>
+            <td>无</td>
+            <td>校长</td>
+            <td>张明</td>
+            <td>2015/05/10</td>
+            <td>2015/05/18</td>
+            <td>已完成</td>
+        </tr>
+
+        <tr>
+            <td>TYJ009</td>
+            <td>小红</td>
+            <td>桃原居5栋3单元703室</td>
+            <td>自装</td>
+            <td>无</td>
+            <td>小李</td>
+            <td>杨乐</td>
+            <td>2015/05/10</td>
+            <td>2015/05/18</td>
+            <td>已完成</td>
+        </tr>
+        
+        
+        -->
+        <!-- 截止修改日期：2015-06-01 -->
+    </table>
+</div>
+</body>
+</html>

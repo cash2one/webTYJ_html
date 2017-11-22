@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>组织结构管理</title>
+    <link rel="stylesheet" href="css/ztree/demo.css" type="text/css">
+    <link rel="stylesheet" href="css/ztree/zTreeStyle.css" type="text/css">
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.core-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.excheck-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.exedit-3.5.js"></script>
+    <script>
+        function check(obj) {
+            $(':checkbox').each(function () {
+                if (this != obj)
+                    $(this).attr("checked", false);
+                else {
+                    if ($(this).prop("checked")){
+                        $(this).attr("checked", true);
+                    }
+                    else
+                        $(this).attr("checked", false);
+                }
+            });
+        }
+        document.getElementById("ceshi").focus();
+    </script>
+</head>
+<body >
+<!--<div class="sel">
+    <div class="row">
+
+        <div class="col-lg-5 col-md-4 col-sm-4 text-right">
+            <input class="form-control" placeholder="请输入要查询组织结构名称" ng-model="subCompany.subCompanyName" />
+        </div>
+        <div class="col-lg-1 col-md-4 col-sm-4 ">
+        <button type="button" class="btn btn-default btn-primary" data-target="#new" data-toggle="modal" ng-click="currentSubCompany._load()">
+            搜索
+        </button>
+            </div>
+    </div>
+</div>-->
+<div class="sel_top">
+    <div class="row">
+        <div class="col-lg-7 col-md-6 col-sm-6">
+            <button type="button" class="btn btn-default btn-primary" data-target="#new" data-toggle="modal" ui-sref="index.baseManagement.subCompanyManagement.newSubCompany">
+                <span class="glyphicon glyphicon-plus btn_icon"></span>
+                新建
+            </button>
+            <button type="button" class="btn btn-default btn-primary" ng-click="getSubCompany(-1)" ng-show="grid==false"><!-- 网格下隐藏   王洲   2016.2.3 -->
+                <span class="glyphicon glyphicon-edit btn_icon"></span>
+                编辑
+            </button>
+            <button type="button" class="btn btn-default btn-primary"  ng-click="deleteSubCompany(-1)" ng-show="grid==false"><!-- 网格下隐藏   王洲   2016.2.3 -->
+                <span class="glyphicon glyphicon-remove btn_icon"></span>
+                删除
+            </button>
+        </div>
+
+        <div class="col-lg-2 col-md-4 col-sm-4">
+            <input class="form-control" placeholder="请输入要查询组织结构名称" ng-model="subCompany.subCompanyName" id="ceshi"  />
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            <button type="button" class="btn btn-default btn-primary" data-target="#new" data-toggle="modal" ng-click="currentSubCompany._load()"  >
+                搜索
+            </button>
+        </div>
+        <div class="col-lg-2 col-md-6 col-sm-6 text-right">
+            <button type="button" class="btn btn-default btn-primary" ng-click="showGrid(1)" >
+                <span class="glyphicon glyphicon-th-large btn_icon"></span>
+                网格
+            </button>
+            <button type="button" class="btn btn-default btn-primary" ng-click="showGrid(2)">
+                <span class="glyphicon glyphicon-th-list btn_icon"></span>
+                列表
+            </button>
+        </div>
+    </div>
+</div>
+<div class="row padding">
+    <div class="col-lg-12">
+        <!--<div class="search-padding-10">
+    <button type="button" class="btn btn-default btn-primary" data-target="#new" data-toggle="modal" ui-sref="index.internalProfession.subCompanyManagement.newSubCompany">
+        新建
+    </button>
+    <button type="button" class="btn btn-default btn-primary" ng-click="getSubCompany()">
+        编辑
+    </button>
+    <button type="button" class="btn btn-default btn-primary"  ng-click="deleteSubCompany()">
+        删除
+    </button>
+</div>-->
+        <div class="search-padding-10">
+            <table ng-show="grid == false">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>序号</th>
+                    <th>组织结构名称</th>
+                    <th>创建时间</th>
+                    <th>创建人</th>
+                    <th>最后修改时间</th>
+                    <th>最后修改人</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr  ng-class="{'this_info ':btnIndex==item}" ng-click="checkShow(item)" ng-dblclick="checkShowList(item)" ng-repeat="item in currentSubCompany.object.subCompanies" ng-show="item.subCompanyId != null" >
+                    <td><input name="scId"  value="item" type="checkbox" class="checkbox_info" id="{{item.subCompanyId}}" ></td>
+                    <td><input id="$index" type="hidden" value="{{item.subCompanyId}}"  ng-bind="$index+1" />{{$index}}</td>
+                    <td>{{item.subCompanyName}}</td>
+                    <td>{{item.createTime | date : 'yyyy-MM-dd'}}</td>
+                    <td>{{item.createPersonId}}</td>
+                    <td>{{item.modifiedTime | date : 'yyyy-MM-dd'}}</td>
+                    <td>{{item.modifiedPersonId}}</td>
+                </tr>
+                <tr ng-if="currentSubCompany.object.subCompanies.length == null">
+                    <td colspan="8">没有数据！</td>
+                </tr>
+                </tbody>
+            </table>
+
+            <!-- 增加网格的显示与隐藏 朱琪 2016-2-2 15:49:42 -->
+            <div class="col-lg-12" ng-show="grid == true">
+                <div class="col-lg-4 col-md-4 col-sm-4 " ng-repeat="item in currentSubCompany.object.subCompanies" ng-show="item.subCompanyId != null">
+                    <div id="pannel">
+                        <div class="title">
+                            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">组织结构</div>
+                            <div class="downList">
+                                <div class="col-xs-12 col-lg-12 col-md-12 col-sm-12 text-right">
+                                    <span class="glyphicon glyphicon-chevron-down" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ></span>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                        <li><a data-toggle="modal" ng-click="getSubCompany(item.subCompanyId)">编辑</a></li>
+                                        <li><a data-toggle="modal" ng-click="deleteSubCompany(item.subCompanyId)">删除</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pannel_content">
+                            <div class="col-lg-12">
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">序号：</div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">{{$index}}</div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">组织结构名称：</div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">{{item.subCompanyName}}</div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">创建人：</div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">{{item.createPersonId}}</div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">创建时间：</div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">{{item.createTime | date : 'yyyy-MM-dd'}}</div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">最后修改人：</div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">{{item.modifiedPersonId}}</div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">最后修改时间：</div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">{{item.modifiedTime | date : 'yyyy-MM-dd'}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-6" ng-show="currentSubCompany.object.subCompanies.length == null && grid == true">
+                <div id="pannel">
+                    <div class="title">
+                        <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                            <h3>组织结构</h3>
+                        </div>
+                        <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                            <span class="glyphicon glyphicon-search"></span>
+                        </div>
+                    </div>
+                    <div class="pannel_content">
+                        <div class="row">
+                            <div class="col-xs-8 col-lg-8 col-md-8">
+                                <div class="row search-padding 10">
+                                    暂无数据！
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+            <div class="padding col-lg-12">
+                <div class="bill_paging">
+                    <span>共{{currentSubCompany.object.page.totalResult}}条</span>
+                    <ul class="pagination">
+                        <li ng-class="{true:'disabled'}[currentSubCompany.page.currentPage==1]">
+                            <a href="javascript:void(0)" ng-click="currentSubCompany.go(1)">首页</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[currentSubCompany.page.currentPage==1]">
+                            <a href="javascript:void(0)" ng-show="currentSubCompany.hasPrevious()" ng-click="currentSubCompany.previous()">上一页</a>
+                        </li>
+                        <li ng-class="{true:'active'}[currentSubCompany.page.currentPage==i]" ng-repeat="i in currentSubCompany.pages">
+                            <a href="javascript:void(0)"  ng-click="currentSubCompany.go(i)">{{i}}</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[currentSubCompany.page.currentPage==currentSubCompany.page.totalPage]">
+                            <a href="javascript:void(0)" ng-show="currentSubCompany.hasNext()" ng-click="currentSubCompany.next()">下一页</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[currentSubCompany.page.currentPage==currentSubCompany.page.totalPage]">
+                            <a href="javascript:void(0)" ng-click="currentSubCompany.go(currentSubCompany.page.totalPage)">尾页</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!--禅道BUG 163-->
+<!--* 修改人;taoyongchao-->
+<!--* 2016年1月6日 09:39:48-->
+<div class="modal fade" id="modifySubCompany" role="dialog" aria-label="myModalLabel" aria-hidden="true" >
+    <div class="modal-dialog" style="width: 1100px">
+        <div class="modal-content">
+            <div class="modal-header">
+                组织结构编辑
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="sell padding15">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            组织结构名称：
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <input id="subCompanyName" name="input" type="text"  maxlength="40" ng-model="subCompanyToModify.subCompanyName" value="{{subCompanyToModify.subCompanyName}}" class="form-control"/>
+                        </div>
+                        <div class="col-lg-1 col-md-2 col-sm-2 ">
+                            <span style="color: red">*</span>
+                        </div>
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-md-2"></div>
+                        <div class="col-md-3 ">
+                            <div class="component_select company">
+                                <div class="component_select_title">
+                                    <div class="text-center">可选项目</div>
+                                    <div class="clear"></div>
+                                </div>
+                                <div class="component_select_height new">
+                                    <ul id="treeDemo"  class="ztree"></ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 text-center">
+                            <div style="margin-top: 150px">
+                                <button class="glyphicon glyphicon-menu-right btn btn-sm btn-primary" aria-hidden="true" ng-click="addWaterReading()" ></button>
+                            </div>
+                        </div>
+                        <div class="col-md-3" >
+                            <div class="component_select company">
+                                <div class="component_select_title">
+                                    <div class="text-center">已选项目</div>
+                                    <div class="clear"></div>
+                                </div>
+                                <div class="component_select_height new">
+                                    <ul class="ztree" >
+                                        <li >
+                                            <table >
+                                                <!--      禅道BUG 080
+                                                           修改人：陶勇超
+                                                         2016年1月5日 14:24:59-->
+                                                <tr ng-repeat="item in subcomProjectList">
+                                                    <td >{{item.project.projectName}}<span style="color: #ff0000;float: right;" ng-click="removeI($index,item)">×</span></td>
+                                                </tr>
+
+                                            </table>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" id="close">关闭</button>
+                <button type="button" class="btn btn-primary" ng-click="updateSubCompamy()">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--BUG 95 陶勇超2016年1月19日 16:12:48-->
+<div class="modal fade" id="SubCompanyList" role="dialog" aria-label="myModalLabel" aria-hidden="true" >
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                组织结构详情
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class=" sell">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            组织结构名称：
+                        </div>
+                        <div class="col-lg-4 col-md-2 col-sm-2 ">
+                            {{subcomList.subCompanyName}}
+                        </div>
+
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            创建时间：
+                        </div>
+                        <div class="col-lg-4 col-md-2 col-sm-2 ">
+                            {{subcomList.createTime}}
+                        </div>
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            创建人：
+                        </div>
+                        <div class="col-lg-4 col-md-2 col-sm-2 ">
+                            {{subcomList.createPersonId}}
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            修改时间：
+                        </div>
+                        <div class="col-lg-4 col-md-2 col-sm-2 ">
+                            {{subcomList.modifiedTime}}
+                        </div>
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            修改人：
+                        </div>
+                        <div class="col-lg-4 col-md-2 col-sm-2 ">
+                            {{subcomList.modifiedPersonId}}
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            组织结构项目：
+                        </div>
+                        <div class="col-lg-4 col-md-2 col-sm-2 ">
+                            <span ng-repeat="item in subcomProjectList">{{item.project.projectName}}<br></span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" >关闭</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

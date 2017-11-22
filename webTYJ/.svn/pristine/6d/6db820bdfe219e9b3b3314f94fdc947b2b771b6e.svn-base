@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>房屋初验</title>
+</head>
+<body >
+<div id="content-first">
+    <!--tab页切换开始-->
+    <div id="tab">
+        <a ng-class="{'this_action ':btnIndex==1}" ng-click="doClick(1)" ui-sref="index.businessManagement.housingManagement.houseNew">新增验房</a>
+        <a lang="no" ng-class="{'this_action ':btnIndex==2}" ng-click="doClick(2)" ui-sref="index.businessManagement.housingManagement.houseList">历史记录</a>
+    </div>
+    <div ui-view></div>
+</div>
+
+</body>
+</html>

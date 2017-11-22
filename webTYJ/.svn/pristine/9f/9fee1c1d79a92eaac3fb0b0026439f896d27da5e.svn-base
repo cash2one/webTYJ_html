@@ -1,0 +1,72 @@
+/*物业服务*/
+.body1{
+    font-size: 14px;
+}
+
+.font{
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.img1{
+    margin-right: 8px;
+    margin-top: 10px;
+}
+
+.info tr{
+    line-height:22px;
+}
+
+.img2 {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 25px;
+    height: 20px;
+}
+
+.img3{
+    left: 0px;
+    top: 0px;
+    width: 100px;
+    height: 80px;
+}
+
+
+.coll{
+    width: 316px;
+    height: 230px;
+}
+
+.tables{
+    width: 1039px;height: 540px;
+}
+
+.bordered{
+    border-bottom: 1px solid lightgrey;
+    height: 108px;
+}
+
+.width{
+    width: 120px;
+}
+
+.tops{
+    margin-top: 7px;
+}
+
+.spans span{
+    width: 70px;
+}
+
+.zom_button{
+    display:block;
+    width:16px; height:16px;
+    float:left;
+    margin-top:-6px;
+    margin-left: 210px;
+}
+
+.table1 td{width: 15%;height: 35px;}
+.table2 td{width: 10%;height: 35px;}
+

@@ -1,0 +1,98 @@
+
+
+/*
+ * doCheck 表单验证
+ * 
+ * elementId 需要正元素id
+ * spanId	span标签Id
+ * type  	判断类型 验证类型
+ * */
+
+function doCheck(elementId,spanId,type){		
+	/*
+	 * 判断是否为空
+	 * */
+	if(type=="notNull")
+		{
+			var a = $('#'+elementId).val();// document.getElementById(elementId).value;
+			if(a==""){
+				$('#'+spanId).css('display','none');
+				$('#'+spanId).html('× 该项不能为空');
+				$('#'+spanId).css('display','inline-block');
+				$('#'+spanId).css('color','red');
+				//document.getElementById(spanId).style.display="none";		//隐藏*号
+				//document.getElementById(spanId).innerText="× 该项不能为空";		//赋值
+				//document.getElementById(spanId).style.display="inline-block";		//显示
+				//document.getElementById(spanId).style.color="red";		//颜色
+				return false;
+			}else{
+				$('#'+spanId).html('√');
+				$('#'+spanId).css('color','green');
+				//document.getElementById(spanId).innerText="√";		//赋值
+				//document.getElementById(spanId).style.color="green";		//颜色
+				return true;
+			}		
+		}
+
+		
+	/*
+	 * 下拉列表验证不能为空
+	 * */
+	if(type=="isOption"){
+		var a = $('#'+elementId).val();// document.getElementById(elementId).value;
+		if(a==""||a=="--请选择--"){
+			$('#'+spanId).html('× 请选择');
+			$('#'+spanId).css('color','red');
+   			//document.getElementById(spanId).innerText="× 请选择";		//赋值
+   			//document.getElementById(spanId).style.color="red";		//颜色
+   			return false;
+   			
+   		}else{
+   			$('#'+spanId).html('√');
+   			$('#'+spanId).css('color','green');
+   			//document.getElementById(spanId).innerText="√";		//赋值
+   			//document.getElementById(spanId).style.color="green";		//颜色
+   			return true;
+   		}
+	}	
+
+	
+	/*
+	 * 数字验证并且不能为空
+	 * */
+	if(type=="isCountNotNull"){
+		var a = $('#'+elementId).val();// document.getElementById(elementId).value;
+   		if(a==""){
+   			$('#'+spanId).css('display','none');
+			$('#'+spanId).html('× 该项不能为空');
+			$('#'+spanId).css('display','inline-block');
+			$('#'+spanId).css('color','red');
+			//document.getElementById(spanId).style.display="none";		//隐藏*号
+			//document.getElementById(spanId).innerText="× 该项不能为空";		//赋值
+			//document.getElementById(spanId).style.display="inline-block";		//显示
+			//document.getElementById(spanId).style.color="red";		//颜色	//颜色
+   			return false;
+   			
+   		}else{
+   			if(!(/^[0-9]+.?[0-9]*$/.test(a))){
+   				$('#'+spanId).css('display','none');
+   				$('#'+spanId).html('× 请输入数字');
+   				$('#'+spanId).css('display','inline-block');
+   				$('#'+spanId).css('color','red');
+   				//document.getElementById(spanId).style.display="none";		//隐藏*号
+	   			//document.getElementById(spanId).innerText="× 请输入数字";		//赋值
+	   			//document.getElementById(spanId).style.display="inline-block";		//显示
+	   			//document.getElementById(spanId).style.color="red";		//颜色
+	   			return false;
+   			}else{
+   				$('#'+spanId).html('√');
+   	   			$('#'+spanId).css('color','green');
+	   			//document.getElementById(spanId).innerText="√";		//赋值
+	   			//document.getElementById(spanId).style.color="green";		//颜色
+	   			return true;
+   				}
+   		}
+		
+	}
+
+}

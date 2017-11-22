@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>基础管理</title>
+</head>
+<body>
+<div class="card">
+    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a style="cursor: pointer" ng-click="checkPermission('property')"><!-- 修改跳转路径为点击事件，进行权限判断  王洲  2016.1.30 -->
+                        <img src="images/icon/basicManagement/xiangmuguanli.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>物业项目管理</strong></h4>
+                    前台和CC进行咨询服
+                    务时可以查询FAQ解答
+                    客户问题。
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a style="cursor: pointer" ng-click="checkPermission('affiliate')"><!-- 修改跳转路径为点击事件，进行权限判断  王洲  2016.1.30 -->
+                        <img src="images/icon/basicManagement/zigongsiguanli.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>组织结构管理</strong></h4>
+                    组织结构列表
+                    新建组织结构
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a style="cursor: pointer" ng-click="checkPermission('component')"><!-- 修改跳转路径为点击事件，进行权限判断  王洲  2016.1.30 -->
+                        <img src="images/icon/basicManagement/jianzhuzujianchushihua.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>建筑组件初始化</strong></h4>
+                    前台和CC进行咨询服
+                    务时可以查询FAQ解答
+                    客户问题。
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a style="cursor: pointer" ng-click="checkPermission('asset')"><!-- 修改跳转路径为点击事件，进行权限判断  王洲  2016.1.30 -->
+                        <img src="images/icon/basicManagement/zichanchushihua.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>专业资产初始化</strong></h4>
+                    前台和CC进行咨询服
+                    务时可以查询FAQ解答
+                    客户问题。
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a style="cursor: pointer" ng-click="checkPermission('bindcomponent')"><!-- 修改跳转路径为点击事件，进行权限判断  王洲  2016.1.30 -->
+                        <img src="images/icon/basicManagement/jianzuzujianbangding.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>建筑组件绑定</strong></h4>
+                    前台和CC进行咨询服
+                    务时可以查询FAQ解答
+                    客户问题。
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--<div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a ui-sref="index.baseManagement.newContractInitialization.newContractCheck">
+                        <img src="images/icon/basicManagement/hetongchushihua.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>合同初始化</strong></h4>
+                    岗位设置
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a ui-sref="index.baseManagement.assetPoolManagement">
+                        <img src="images/icon/basicManagement/xiangmuzichankuguanli.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>项目资产库管理</strong></h4>
+                    前台和CC进行咨询服
+                    务时可以查询FAQ解答
+                    客户问题。
+                </div>
+            </div>
+        </div>
+    </div>-->
+
+
+    <!--<div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a ui-sref="index.baseManagement.personalAccount.queryCustomers">
+                        <img src="images/icon/basicManagement/gerenkehuguanli.png" >
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>个人客户管理</strong></h4>
+                    前台和CC进行咨询服
+                    务时可以查询FAQ解答
+                    客户问题。。
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a ui-sref="index.baseManagement.enterpriseCustomer.enterpriseCustomerCheck">
+                        <img src="images/icon/basicManagement/qiyekehuguanli.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>企业客户管理</strong></h4>
+                    前台和CC进行咨询服
+                    务时可以查询FAQ解答
+                    客户问题。
+                </div>
+            </div>
+        </div>
+    </div>-->
+
+    <!--<div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a ui-sref="index.baseManagement.assetBinding">
+                        <img src="images/icon/basicManagement/zichanbangding.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>资产绑定</strong></h4>
+                    查询所有工单信息
+                    务时可以查询FAQ解答
+                    客户问题。
+                </div>
+            </div>
+        </div>
+    </div>-->
+    <!--<div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a ui-sref="index.baseManagement.areaManagement">
+                        <img src="images/icon/basicManagement/mianjiguanli.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>面积管理</strong></h4>
+                    前台和CC进行咨询服
+                    务时可以查询FAQ解答
+                    客户问题。
+                </div>
+            </div>
+        </div>
+    </div>-->
+
+    <!--<div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a ui-sref="index.baseManagement.projectConstruction">
+                        <img src="images/icon/basicManagement/xiangmujianzhuchushihua.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>项目建筑初始化</strong></h4>
+                    前台和CC进行咨询服
+                    务时可以查询FAQ解答
+                    客户问题。
+                </div>
+            </div>
+        </div>
+    </div>-->
+
+    <!--<div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a ui-sref="index.baseManagement.joinGangInstitution.historyActivity">
+                        <img src="images/icon/businessManagement/ruhuochushihua.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>入伙初始化</strong></h4>
+                    前台和CC进行咨询服
+                    务时可以查询FAQ解答
+                    客户问题。
+                </div>
+            </div>
+        </div>
+    </div>-->
+
+</div>
+</body>
+</html>

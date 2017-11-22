@@ -1,0 +1,87 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 全部业务查询
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../app');
+
+    app.controller('landlordLeaseInquiryCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        var url = $rootScope.url;
+        //查询户主的房屋中的租赁信息
+        $scope.search={page:{}};
+        $scope.load = function(){
+            var parent = function (page, callback) {
+                $scope.search.page = page;
+                $http.post(url+'/NewLease/listPageNewLeaseByContion',{NewLease:$scope.search}).success(callback);
+            };
+            $scope.currentPaginator = app.get('Paginator').list(parent,6);
+            console.log( $scope.currentPaginator );
+
+        }
+        $scope.load();//加载
+
+        /**
+         * 获取选中的租赁对象
+         * @param id
+         */
+        $scope.deletenewLease = function(item) {
+            layer.confirm("您确定要删除选中的租赁对象？",
+                {btn : ['是','否']},function(){
+                    $http.put(url + '/NewLease/deleteNewLeaseRestful/' + item.id).success(
+                        function() {
+                            layer.msg('删除成功!',{icon : 1});
+                            $scope.load();//刷新
+                        }).error(function(data, status, headers, config) {
+                            layer.msg('删除失败!',{icon : 3});
+                        });
+                }
+            );
+
+        };
+
+
+        /**
+         * 修改租赁信息
+         * @type {{}}
+         */
+        $scope.leasesToModify ={};
+        $scope.getModifyLease = function(item){
+            $("#modifyLeases").modal("show");
+            $scope.leasesToModify = item;
+            var startTime = $scope.leasesToModify.hireStartDate;
+            var finishTime = $scope.leasesToModify.hireFinishDate;
+            $scope.leasesToModify.hireStartDate = new Date(startTime);
+            $scope.leasesToModify.hireFinishDate = new Date(finishTime);
+        }
+
+        /**
+         * 修改租赁信息
+         * @type {{}}
+         */
+        $scope.modifyLease = function(){
+            $http.put(url+'/NewLease/updateNewLeaseRestful',{NewLease:$scope.leasesToModify}).success(function(){
+                layer.msg('修改租赁信息成功！',{icon : 1});
+            }).error(function(){
+                layer.msg('修改租赁信息失败！',{icon : 3});
+            });
+            $scope.load();//刷新
+
+        }
+
+        /**
+         * 将输入数字保留两位小数
+         */
+        $scope.formatRent = function(){
+            var num = $("input[name=rent]").val();
+            var val = $filter('number')(num,2);
+            var val1 = val.replace(/,/g, "");
+            console.log(val1);
+            $("input[name=rent]").val(val1);
+        }
+
+    }]);
+});

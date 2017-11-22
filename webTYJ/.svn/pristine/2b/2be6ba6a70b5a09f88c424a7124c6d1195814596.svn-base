@@ -1,0 +1,129 @@
+<!--
+    页面名称：群发功能
+    创建人：吴颖   创建时间：2016/1/29
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>群发消息列表</title>
+</head>
+<body>
+
+<div class="information_box1">
+    <div class="row sel_button">
+        <div class="col-lg-4">
+            <a ui-sref="index.systemSettings.publicNumberManagement.addInformation">
+                <button type="button" class="btn btn-default btn-primary">
+                    <span class="glyphicon glyphicon-plus btn_icon"></span>
+                    新建
+                </button>
+            </a>
+        </div>
+        <div class="col-lg-2">
+            <select class="form-control" onchange="angular.element(this).scope().changeData(this.value)">
+                <option value="1">今天</option>
+                <option value="5">最近5天</option>
+                <option value="30">最近30天</option>
+            </select>
+        </div>
+        <div class="col-lg-2">
+            <input  class="form-control" placeholder="消息内容" ng-model="Information.content">
+        </div>
+        <div class="col-lg-1">
+            <button type="button" class="btn btn-default btn-primary" ng-click="query()">
+                <span class="glyphicon glyphicon-search btn_icon"></span>
+                搜索
+            </button>
+        </div>
+        <div class="col-lg-3 text-right">
+
+
+                <button type="button" class="btn btn-default btn-primary" ng-click="show = false">
+                    <span class="glyphicon glyphicon-th-large btn_icon"></span>
+                    网格
+                </button>
+
+                <button type="button" class="btn btn-default btn-primary" ng-click="show = true">
+                    <span class="glyphicon glyphicon-th-list btn_icon"></span>
+                    列表
+                </button>
+
+        </div>
+    </div>
+    <div class="row padding">
+        <div class="col-lg-12">
+            <table ng-show="show">
+                <thead>
+                <tr><th>封面</th>
+                    <th width="60%">内容</th>
+                    <th>发布时间</th>
+                    <th>作者</th>
+                </tr></thead>
+                <tbody>
+                <tr ng-repeat="information in searchPaginator.object.informationList" ng-show="information.informationId!=null">
+                    <td><img src="{{jiajiaFileUrl}}/{{information.coverPath}}" ng-show="information.coverPath != ''" height="75px" width="75px"/></td>
+                    <td class="text-left">{{information.summary}}</td>
+                    <td>{{information.createTime|date:'yyyy-MM-dd'}}</td>
+                    <td>{{information.author}}</td>
+                </tr>
+                <tr ng-if="searchPaginator.page.totalResult == 0">
+                    <td colspan="12">暂无数据</td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="row" ng-hide="show">
+                <div class="col-lg-4 col-md-4 col-sm-4 " ng-repeat="information in searchPaginator.object.informationList" ng-show="information.informationId!=null">
+                    <div id="pannel">
+                        <div class="title">
+                            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">{{information.createTime|date:'yyyy-MM-dd HH:mm:ss'}}</div>
+                            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 text-right">{{information.author}}</div>
+                        </div>
+                        <div class="pannel_content">
+                            <div class="col-xs-4 col-lg-4 col-md-4">
+                                <a>
+                                    <img src="{{jiajiaFileUrl}}/{{information.coverPath}}" ng-show="information.coverPath != ''" width="100%"/>
+                                </a>
+                            </div>
+                            <div class="col-xs-8 col-lg-8 col-md-8">
+                                {{information.summary}}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center" ng-if="searchPaginator.page.totalResult == 0">
+                    暂无数据
+                </div>
+            </div>
+
+            <div class="col-lg-12">
+                <div class="padding">
+                    <div class="bill_paging">
+                        <span>共{{searchPaginator.object.page.totalResult}}条</span>
+                        <ul class="pagination">
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-click="searchPaginator.go(1)">首页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a>
+                            </li>
+                            <li ng-class="{true:'active'}[searchPaginator.page.currentPage==i]" ng-repeat="i in searchPaginator.pages">
+                                <a href="javascript:void(0)"  ng-click="searchPaginator.go(i)">{{i}}</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                                <a href="javascript:void(0)" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                                <a href="javascript:void(0)" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

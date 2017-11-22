@@ -1,0 +1,1233 @@
+<!--
+    页面名称：遗失物品
+    创建人：倪明     创建时间：2015/4/16
+    js路径：js/controllers/internalProfession/lostArticles.js
+    修改人：倪明     修改日期：2015/8/3
+-->
+<!DOCTYPE html>
+<html>
+<style type="text/css">
+    .pannel1, .pannel2, .pannel3, .pannel4, .pannel5, .pannel6{
+        background: #f0f0f0;
+        border: 1px solid #bbbbbb;
+        overflow: hidden;
+        font-size: 12px;
+        -moz-border-radius:5px;
+        -webkit-border-radius:5px;
+        border-radius: 5px;
+        margin-bottom: 5px;
+    }
+    .pannel1 .title, .pannel2 .title, .pannel3 .title, .pannel4 .title, .pannel5 .title, .pannel6 .title{
+        padding: 0px 5px;
+        background: #cacaca;
+        color: #666666;
+        height: 35px;
+        line-height: 35px;
+    }
+    ul .col-lg-6{
+        width:30%;
+    }
+
+</style>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>遗失物品</title>
+</head>
+<body>
+<div id="content-first">
+
+    <div id="tab">
+        <a ng-click="toPage(0,0)" ng-class="{'this_action ':btnIndexTop==0}" >拾到物品记录</a>
+        <a ng-click="toPage(1,1)" ng-class="{'this_action ':btnIndexTop==1}" >遗失物品记录</a>
+        <a lang="no" ng-click="toPage(2,2)" ng-class="{'this_action ':btnIndexTop==2}">物品领取记录</a>
+    </div>
+    <div class="row padding" ng-show="showPage(0)">
+        <div class="col-lg-12">
+            <div class="col-lg-12 col-md-12 col-sm-12">
+                <div class="row search-padding-10">
+                    <div class="col-lg-6">
+                        拾取待认领物品数量：{{lostPick}}
+                    </div>
+                    <div class="col-lg-6 text-right">遗失待归还物品数量：{{lostWait}}</div>
+                </div>
+            </div>
+            <div class="col-lg-12 col-md-12 col-sm-12">
+                    <div class="col-lg-10 col-md-6 col-sm-6 search-padding-10 text-left">
+                        <button type="button" class="btn btn-default btn-primary tab-btn text-left" href=""
+                                ng-click="toPage(4)" >
+                            登记拾到物品
+                        </button>
+                        <button type="button" class="btn btn-default btn-primary tab-btn text-left" href=""
+                                ng-click="toPage(5)">
+                            登记遗失物品
+                        </button>
+                        <button type="button" class="btn btn-default btn-primary tab-btn text-left" href=""
+                                ng-click="toPage(3)" ng-show="grid == false">
+                            登记领取
+                        </button>
+                    </div>
+                <div class="col-lg-2 col-md-6 col-sm-6 text-right">
+                    <button type="button" class="btn btn-default btn-primary text-right" ng-click="showGrid(1)">
+                        <span class="glyphicon glyphicon-th-large btn_icon"></span>
+                        网格
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary text-right" ng-click="showGrid(2)">
+                        <span class="glyphicon glyphicon-th-list btn_icon"></span>
+                        列表
+                    </button>
+                </div>
+            </div>
+            <table ng-show="grid == false">
+                <thead>
+                <th width="50px"></th>
+                <th>物品名称</th>
+                <th>物品描述</th>
+                <th>拾取地点描述</th>
+                <th>拾取时间描述</th>
+                <th>拾到人</th>
+                <th>备注</th>
+                </thead>
+                <tbody>
+                <tr ng-repeat="article in listLostPicks.object.tcArticleStates" ng-show="article.articleId != null"
+                    ng-class="{'this_info ':choiceCss(article.articleId)}">
+                    <td><input type="checkbox" id="article.articleId" name="articleName"
+                               ng-click="getArticleList(article)" ng-checked=""></td>
+                    <td>{{article.article.articleName}}</td>
+                    <td>{{article.article.articleDescribe}}</td>
+                    <td>{{article.site}}</td>
+                    <td>{{article.time | date : 'yyyy-MM-dd'}}</td>
+                    <td>{{article.person.name}}</td>
+                    <td>{{article.remark}}</td>
+                </tr>
+                </tbody>
+            </table>
+            <!-- 增加网格的显示与隐藏 朱琪 2016-03-18 start -->
+            <div class="col-lg-12" ng-show="grid == true">
+                <div class="col-lg-4 col-md-4 col-sm-4 " ng-repeat="article in listLostPicks.object.tcArticleStates"
+                     ng-show="article.articleId != null">
+                    <div id="pannel1"  class="pannel1">
+                        <div class="title">
+                            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">拾到物品信息</div>
+                            <div class="downList">
+                                <div class="col-xs-12 col-lg-12 col-md-12 col-sm-12 text-right">
+                                    <span class="glyphicon glyphicon-chevron-down" id="dropdownMenu1"
+                                          data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                        <li><a data-toggle="modal" ng-click="toPage(3,article)">登记领取</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pannel_content">
+                            <ul ng-click="projectCheck(item.projectId)" style="cursor:pointer">
+                                <div class="col-lg-12">
+                                    <div class="col-lg-6 col-md-6 col-sm-6 text-right">序号：</div>
+                                    <div class="col-lg-6 col-md-6 col-sm-6">{{$index}}</div>
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="col-lg-6 col-md-6 col-sm-6 text-right">物品名称：</div>
+                                    <div class="col-lg-6 col-md-6 col-sm-6">
+                                        <li>
+                                            <nobr>{{article.article.articleName}}</nobr>
+                                        </li>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="col-lg-6 col-md-6 col-sm-6 text-right">物品描述：</div>
+                                    <div class="col-lg-6 col-md-6 col-sm-6">{{article.article.articleDescribe}}</div>
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="col-lg-6 col-md-6 col-sm-6 text-right">拾取地点描述：</div>
+                                    <div class="col-lg-6 col-md-6 col-sm-6">
+                                        <nobr>{{article.site}}</nobr>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="col-lg-6 col-md-6 col-sm-6 text-right">拾取时间描述：</div>
+                                    <div class="col-lg-6 col-md-6 col-sm-6">{{article.time | date : 'yyyy-MM-dd'}}</div>
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="col-lg-6 col-md-6 col-sm-6 text-right">拾到人：</div>
+                                    <div class="col-lg-6 col-md-6 col-sm-6">{{article.person.name}}</div>
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="col-lg-6 col-md-6 col-sm-6 text-right">备注：</div>
+                                    <div class="col-lg-6 col-md-6 col-sm-6">{{article.remark}}</div>
+                                </div>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 增加网格的显示与隐藏 朱琪 2016-03-18 end -->
+
+            <!-- 增加没有数据时网格的显示 朱琪 2016-03-18 start -->
+            <div class="col-lg-4 col-md-6 col-sm-6" ng-show="listLostPicks.object.tcArticleStates.length == null && grid == true">
+                <div id="pannel2"  class="pannel2">
+                    <div class="title">
+                        <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                            <h3>拾到物品信息</h3>
+                        </div>
+                        <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                            <!-- <span class="glyphicon glyphicon-search"></span>-->
+                        </div>
+                    </div>
+                    <div class="pannel_content">
+                        <div class="row">
+                            <div class="col-xs-8 col-lg-8 col-md-8">
+                                <div class="row search-padding 10">
+                                    暂无数据！
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 增加没有数据时网格的显示 朱琪 2016-03-18 end -->
+        <div class="bill_paging">
+            <li class="padding">
+                <span>共{{listLostPicks.object.page.totalResult}}条</span>
+                <ul class="pagination">
+                    <li ng-class="{true:'disabled'}[listLostPicks.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-click="listLostPicks.go(1)">首页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[listLostPicks.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-show="listLostPicks.hasPrevious()"
+                           ng-click="listLostPicks.previous()">上一页</a>
+                    </li>
+                    <li ng-class="{true:'active'}[listLostPicks.page.currentPage==i]"
+                        ng-repeat="i in listLostPicks.pages">
+                        <a href="javascript:void(0)" ng-click="listLostPicks.go(i)">{{i}}</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[listLostPicks.page.currentPage==listLostPicks.page.totalPage]">
+                        <a href="javascript:void(0)" ng-show="listLostPicks.hasNext()" ng-click="listLostPicks.next()">下一页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[listLostPicks.page.currentPage==listLostPicks.page.totalPage]">
+                        <a href="javascript:void(0)" ng-click="listLostPicks.go(listLostPicks.page.totalPage)">尾页</a>
+                    </li>
+                </ul>
+        </div>
+
+    </div>
+
+
+<div class="row padding" ng-show="showPage(1)">
+    <div class="col-lg-12">
+        <div class="col-lg-12 col-md-12 col-sm-12">
+        <div class="row search-padding-10">
+            <div class="col-lg-6">
+                拾取待认领物品数量：{{lostPick}}
+            </div>
+            <div class="col-lg-6 text-right">遗失待归还物品数量：{{lostWait}}</div>
+        </div>
+        </div>
+        <div class="col-lg-12 col-md-12 col-sm-12">
+            <div class="col-lg-10 col-md-6 col-sm-6 search-padding-10 text-left">
+                <button type="button" class="btn btn-default btn-primary tab-btn text-left" href=""
+                        ng-click="toPage(4)">
+                    登记拾到物品
+                </button>
+                <button type="button" class="btn btn-default btn-primary tab-btn text-left" href=""
+                        ng-click="toPage(5)">
+                    登记遗失物品
+                </button>
+                <button type="button" class="btn btn-default btn-primary tab-btn text-left" href=""
+                        ng-click="toPage(3)" ng-show="grid == false">
+                    登记领取
+                </button>
+            </div>
+            <div class="col-lg-2 col-md-6 col-sm-6 text-right">
+                <button type="button" class="btn btn-default btn-primary text-right" ng-click="showGrid(1)">
+                    <span class="glyphicon glyphicon-th-large btn_icon"></span>
+                    网格
+                </button>
+                <button type="button" class="btn btn-default btn-primary text-right" ng-click="showGrid(2)">
+                    <span class="glyphicon glyphicon-th-list btn_icon"></span>
+                    列表
+                </button>
+            </div>
+        </div>
+        <table ng-show="grid==false">
+            <thead>
+            <th width="50px"></th>
+            <th>物品名称</th>
+            <th>物品描述</th>
+            <th>遗失地点描述</th>
+            <th>遗失时间描述</th>
+            <th>联系人</th>
+            <th>联系电话</th>
+            </thead>
+            <tbody>
+            <tr ng-repeat="article in listLostPicks.object.tcArticleStates" ng-show="article.articleId != null">
+                <td><input type="checkbox" id="{{article.articleId}}" name="articleName"
+                           ng-click="getArticleList(article)" ng-checked=""></td>
+                <td>{{article.article.articleName}}</td>
+                <td>{{article.article.articleDescribe}}</td>
+                <td>{{article.site}}</td>
+                <td>{{article.time | date : 'yyyy-MM-dd'}}</td>
+                <td>{{article.person.name}}</td>
+                <td>{{article.person.phoneNum}}</td>
+            </tr>
+            </tbody>
+        </table>
+        <!-- 增加网格的显示与隐藏 朱琪 2016-03-18 start -->
+        <div class="col-lg-12" ng-show="grid == true">
+            <div class="col-lg-4 col-md-4 col-sm-4 " ng-repeat="article in listLostPicks.object.tcArticleStates"
+                 ng-show="article.articleId != null">
+                <div id="pannel3"  class="pannel3">
+                    <div class="title">
+                        <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">遗失物品信息</div>
+                        <!--<div class="downList">-->
+                            <!--<div class="col-xs-12 col-lg-12 col-md-12 col-sm-12 text-right">-->
+                                    <!--<span class="glyphicon glyphicon-chevron-down" id="dropdownMenu1"-->
+                                          <!--data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>-->
+                                <!--<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">-->
+                                    <!--<li><a data-toggle="modal" ng-click="toPage(3,article)">登记拾领取</a></li>-->
+                                <!--</ul>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    </div>
+                    <div class="pannel_content">
+                        <ul ng-click="projectCheck(item.projectId)" style="cursor:pointer">
+                            <div class="col-lg-12">
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">序号：</div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">{{$index}}</div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">物品名称：</div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">
+                                    <li>
+                                        <nobr>{{article.article.articleName}}</nobr>
+                                    </li>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">物品描述：</div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">{{article.article.articleDescribe}}</div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">遗失地点描述：</div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">
+                                    <nobr>{{article.site}}</nobr>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">遗失时间描述：</div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">{{article.time | date : 'yyyy-MM-dd'}}</div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">遗失人：</div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">{{article.person.name}}</div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">联系电话：</div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">{{article.person.phoneNum}}</div>
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 增加网格的显示与隐藏 朱琪 2016-03-18 end -->
+
+        <!-- 增加没有数据时网格的显示 朱琪 2016-03-18 start -->
+        <div class="col-lg-4 col-md-6 col-sm-6" ng-show="listLostPicks.object.tcArticleStates.length == null && grid == true">
+            <div id="pannel4"  class="pannel4">
+                <div class="title">
+                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                        <h3>拾到物品信息</h3>
+                    </div>
+                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                        <!-- <span class="glyphicon glyphicon-search"></span>-->
+                    </div>
+                </div>
+                <div class="pannel_content">
+                    <div class="row">
+                        <div class="col-xs-8 col-lg-8 col-md-8">
+                            <div class="row search-padding 10">
+                                暂无数据！
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 增加没有数据时网格的显示 朱琪 2016-03-18 end -->
+        <div class="bill_paging">
+            <li class="padding">
+                <span>共{{listLostPicks.object.page.totalResult}}条</span>
+                <ul class="pagination">
+                    <li ng-class="{true:'disabled'}[listLostPicks.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-click="listLostPicks.go(1)">首页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[listLostPicks.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-show="listLostPicks.hasPrevious()"
+                           ng-click="listLostPicks.previous()">上一页</a>
+                    </li>
+                    <li ng-class="{true:'active'}[listLostPicks.page.currentPage==i]"
+                        ng-repeat="i in listLostPicks.pages">
+                        <a href="javascript:void(0)" ng-click="listLostPicks.go(i)">{{i}}</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[listLostPicks.page.currentPage==listLostPicks.page.totalPage]">
+                        <a href="javascript:void(0)" ng-show="listLostPicks.hasNext()" ng-click="listLostPicks.next()">下一页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[listLostPicks.page.currentPage==listLostPicks.page.totalPage]">
+                        <a href="javascript:void(0)" ng-click="listLostPicks.go(listLostPicks.page.totalPage)">尾页</a>
+                    </li>
+                </ul>
+        </div>
+    </div>
+
+<div class="row padding" ng-show="showPage(2)">
+    <div class="col-lg-12">
+        <div class="col-lg-12 col-md-12 col-sm-12">
+        <div class="row search-padding-10">
+            <div class="col-lg-6">
+                拾取待认领物品数量：{{lostPick}}
+            </div>
+            <div class="col-lg-6 text-right">遗失待归还物品数量：{{lostWait}}</div>
+        </div>
+        </div>
+        <div class="col-lg-12 col-md-12 col-sm-12">
+            <div class="col-lg-10 col-md-6 col-sm-6 search-padding-10 text-left">
+            </div>
+            <div class="col-lg-2 col-md-6 col-sm-6 search-padding-10 text-right">
+                <button type="button" class="btn btn-default btn-primary text-right" ng-click="showGrid(1)">
+                    <span class="glyphicon glyphicon-th-large btn_icon"></span>
+                    网格
+                </button>
+                <button type="button" class="btn btn-default btn-primary text-right" ng-click="showGrid(2)">
+                    <span class="glyphicon glyphicon-th-list btn_icon"></span>
+                    列表
+                </button>
+            </div>
+        </div>
+        <table ng-show="grid==false">
+            <thead>
+            <th>物品名称</th>
+            <th>物品描述</th>
+            <th>拾取地点描述</th>
+            <th>拾取时间描述</th>
+            <th>拾到人</th>
+            <th>领取人</th>
+            <th>联系电话</th>
+            <th>领取时间</th>
+            </thead>
+            <tbody>
+            <tr ng-repeat="article in listLostPicks.object.tcArticleStates" ng-show="article.articleId != null">
+                <td>{{article.article.articleName}}</td>
+                <td>{{article.article.articleDescribe}}</td>
+                <td>{{article.site}}</td>
+                <td>{{article.time | date : 'yyyy-MM-dd'}}</td>
+                <td>{{article.person.name}}</td>
+                <td>{{article.claimer.name}}</td>
+                <td>{{article.claimer.phoneNum}}</td>
+                <td>{{article.articleGet.time | date : 'yyyy-MM-dd'}}</td>
+            </tr>
+            </tbody>
+        </table>
+        <!-- 增加网格的显示与隐藏 朱琪 2016-03-18 start -->
+        <div class="col-lg-12" ng-show="grid == true">
+            <div class="col-lg-4 col-md-4 col-sm-4 " ng-repeat="article in listLostPicks.object.tcArticleStates"
+                 ng-show="article.articleId != null">
+                <div id="pannel5"  class="pannel5">
+                    <div class="title">
+                        <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">拾到物品信息</div>
+                        <div class="downList">
+                            <div class="col-xs-12 col-lg-12 col-md-12 col-sm-12 text-right">
+                                <!--    <span class="glyphicon glyphicon-chevron-down" id="dropdownMenu1"
+                                          data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                    <li><a data-toggle="modal" ng-click="toPage(3,article)">登记拾领取</a></li>
+                                </ul>-->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pannel_content">
+                        <ul ng-click="projectCheck(item.projectId)" style="cursor:pointer">
+                            <div class="col-lg-12">
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">序号：</div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">{{$index}}</div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">物品名称：</div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">
+                                    <li>
+                                        <nobr>{{article.article.articleName}}</nobr>
+                                    </li>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">物品描述：</div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">{{article.article.articleDescribe}}</div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">拾取地点描述：</div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">
+                                    <nobr>{{article.site}}</nobr>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">拾取时间描述：</div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">{{article.time | date : 'yyyy-MM-dd'}}</div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">拾到人：</div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">{{article.person.name}}</div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">领取人：</div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">{{article.claimer.name}}</div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">联系电话：</div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">{{article.person.phoneNum}}</div>
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 增加网格的显示与隐藏 朱琪 2016-03-18 end -->
+
+        <!-- 增加没有数据时网格的显示 朱琪 2016-03-18 start -->
+        <div class="col-lg-4 col-md-6 col-sm-6" ng-show="listLostPicks.object.tcArticleStates.length == null && grid == true">
+            <div id="pannel6" class="pannel6">
+                <div class="title">
+                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                        <h3>拾到物品信息</h3>
+                    </div>
+                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                        <!-- <span class="glyphicon glyphicon-search"></span>-->
+                    </div>
+                </div>
+                <div class="pannel_content">
+                    <div class="row">
+                        <div class="col-xs-8 col-lg-8 col-md-8">
+                            <div class="row search-padding 10">
+                                暂无数据！
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 增加没有数据时网格的显示 朱琪 2016-03-18 end -->
+        <div class="bill_paging">
+            <li class="padding">
+                <span>共{{listLostPicks.object.page.totalResult}}条</span>
+                <ul class="pagination">
+                    <li ng-class="{true:'disabled'}[listLostPicks.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-click="listLostPicks.go(1)">首页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[listLostPicks.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-show="listLostPicks.hasPrevious()"
+                           ng-click="listLostPicks.previous()">上一页</a>
+                    </li>
+                    <li ng-class="{true:'active'}[listLostPicks.page.currentPage==i]"
+                        ng-repeat="i in listLostPicks.pages">
+                        <a href="javascript:void(0)" ng-click="listLostPicks.go(i)">{{i}}</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[listLostPicks.page.currentPage==listLostPicks.page.totalPage]">
+                        <a href="javascript:void(0)" ng-show="listLostPicks.hasNext()" ng-click="listLostPicks.next()">下一页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[listLostPicks.page.currentPage==listLostPicks.page.totalPage]">
+                        <a href="javascript:void(0)" ng-click="listLostPicks.go(listLostPicks.page.totalPage)">尾页</a>
+                    </li>
+                </ul>
+        </div>
+    </div>
+    </div>
+</div>
+
+
+<!--
+<div class="row padding" ng-show="showPage(3)">
+    <div class="col-lg-2 col-md-2 col-sm-2"></div>
+    <div class="col-lg-8 col-md-8 col-sm-8 search-padding-10">
+        <div class="row sel1 tab_info">
+            <div class="col-lg-2 col-md-2 col-sm-2 text-right">物品名称：</div>
+            <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;{{articleList.article.articleName}}</div>
+            <div class="col-lg-2 col-md-2 col-sm-2 text-right">物品描述：</div>
+            <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;{{articleList.article.articleDescribe}}</div>
+            <div class="col-lg-2 col-md-2 col-sm-2 text-right">拾取地点描述：</div>
+            <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;{{articleList.site}}</div>
+            <div class="col-lg-2 col-md-2 col-sm-2 text-right">拾到时间：</div>
+            <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;{{articleList.time | date : 'yyyy-MM-dd'}}</div>
+            <div class="col-lg-2 col-md-2 col-sm-2 text-right">联系电话：</div>
+            <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;{{person_choice.phoneNum}}</div>
+            <div class="col-lg-2 col-md-2 col-sm-2 text-right">证件号码：</div>
+            <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;{{person_choice.cardNum}}</div>
+            <div class="col-lg-2 col-md-2 col-sm-2 text-right">领取日期：</div>
+            <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" type="date"
+                                                           ng-model="articleClaim.time"></div>
+            <div class="col-lg-2 col-md-2 col-sm-2 text-right">领取人：</div>
+            <div class="col-lg-3 col-md-2 col-sm-2">&nbsp;{{person_choice.name}}</div>
+            <div class="col-lg-1 col-md-2 col-sm-2">
+                <button type="button" class="btn btn-primary tab-btn" data-toggle="modal" data-target="#myModal_zuping">
+                    搜索
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div class="text-center">
+        <button type="button" class="btn btn-default btn-primary" ng-click="toPage(0)">取消</button>
+        <button type="button" class="btn btn-default btn-primary" ng-click="addClaimArticle()">提交</button>
+    </div>
+</div>
+<div class="row padding" ng-show="showPage(4)">
+    <div class="col-lg-2 col-md-2 col-sm-2"></div>
+    <div class="col-lg-8 col-md-8 col-sm-8 search-padding-10">
+        <div class="row sel1 tab_info">
+            <div class="col-lg-2 col-md-2 col-sm-2 text-right">物品名称：</div>
+            <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" ng-model="articleLost.articleName">
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2 text-right">物品描述：</div>
+            <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" ng-model="articleLost.articleDescribe">
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2 text-right">遗失地点描述：</div>
+            <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" ng-model="articleStateLost.site"></div>
+            <div class="col-lg-2 col-md-2 col-sm-2 text-right">遗失时间：</div>
+            <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" type='date'
+                                                           ng-model="articleStateLost.time"></div>
+            <div class="col-lg-2 col-md-2 col-sm-2 text-right">联系电话：</div>
+            <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;{{person_choice.phoneNum}}</div>
+            <div class="col-lg-2 col-md-2 col-sm-2 text-right">证件号码：</div>
+            <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;{{person_choice.cardNum}}</div>
+            <div class="col-lg-2 col-md-2 col-sm-2 text-right">联系人：</div>
+            <div class="col-lg-3 col-md-2 col-sm-2">&nbsp;{{person_choice.name}}</div>
+            <div class="col-lg-1 col-md-2 col-sm-2">
+                <button type="button" class="btn btn-primary tab-btn" data-toggle="modal" data-target="#myModal_zuping">
+                    搜索
+                </button>
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2 text-right">备注说明：</div>
+            <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" ng-model="articleStateLost.remark">
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div class="text-center">
+        <button type="button" class="btn btn-default btn-primary" ng-click="toPage(0)">取消</button>
+        <button type="button" class="btn btn-default btn-primary" ng-click="addLostArticle(0)">提交</button>
+    </div>
+</div>
+
+<div class="row padding" ng-show="showPage(5)">
+    <div class="col-lg-2 col-md-2 col-sm-2"></div>
+    <div class="col-lg-8 col-md-8 col-sm-8 search-padding-15">
+        <div class="row sel1 tab_info ">
+            <div class="col-lg-2 col-md-2 col-sm-2 text-right">物品名称：</div>
+            <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" ng-model="articleLost.articleName">
+            </div>
+
+            <div class="col-lg-2 col-md-2 col-sm-2 text-right">物品描述：</div>
+            <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" ng-model="articleLost.articleDescribe">
+            </div>
+
+            <div class="col-lg-2 col-md-2 col-sm-2 text-right">遗失地点描述：</div>
+            <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" ng-model="articleStateLost.site"></div>
+            <div class="col-lg-2 col-md-2 col-sm-2 text-right">遗失时间：</div>
+            <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" type='date'
+                                                           ng-model="articleStateLost.time"></div>
+            <div class="col-lg-2 col-md-2 col-sm-2 text-right">联系电话：</div>
+            <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;{{person_choice.phoneNum}}</div>
+            <div class="col-lg-2 col-md-2 col-sm-2 text-right">证件号码：</div>
+            <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;{{person_choice.cardNum}}</div>
+            <div class="col-lg-2 col-md-2 col-sm-2 text-right">联系取人：</div>
+            <div class="col-lg-3 col-md-2 col-sm-2">&nbsp;{{person_choice.name}}</div>
+            <div class="col-lg-1 col-md-2 col-sm-2">
+                <button type="button" class="btn btn-primary tab-btn" data-toggle="modal" data-target="#myModal_zuping">
+                    搜索
+                </button>
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2 text-right">备注说明：</div>
+            <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" ng-model="articleStateLost.remark">
+            </div>
+            <div class="col-lg-4 ">
+                <button type="button" class="btn btn-default btn-primary" ng-click="toPage(0)">取消</button>
+                <button type="button" class="btn btn-default btn-primary" ng-click="addLostArticle(1)">提交</button>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+</div>
+-->
+<!-- 登记领取物品模态框开始 -->
+<div class="modal fade" id="receive" role="dialog" aria-label="personDatil" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>登记拾到物品</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row padding">
+                    <div class="col-lg-12 search-padding-10">
+                        <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">物品名称：</div>
+                        <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" ng-model="articleLost.articleName">
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">物品描述：</div>
+                        <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" ng-model="articleLost.articleDescribe">
+                        </div>
+                            </div>
+                        <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">拾到地点描述：</div>
+                        <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" ng-model="articleStateLost.site"></div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">拾到时间：</div>
+                        <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" type='date'
+                                                                       ng-model="articleStateLost.time"></div>
+                            </div>
+                        <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">联系电话：</div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;{{person_choice.phoneNum}}</div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">证件号码：</div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">&nbsp;{{person_choice.cardNum}}</div>
+                            </div>
+                        <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">联系人：</div>
+                        <div class="col-lg-3 col-md-2 col-sm-2">&nbsp;{{person_choice.name}}</div>
+                        <div class="col-lg-1 col-md-2 col-sm-2">
+                            <button type="button" class="btn btn-primary tab-btn" data-toggle="modal" data-target="#myModal_zuping" ng-click="selectPerson()">
+                                搜索
+                            </button>
+                        </div>
+                            </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">备注说明：</div>
+                        <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" ng-model="articleStateLost.remark">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default btn-primary" ng-click="toOff('receive')">取消</button>
+                <button type="button" class="btn btn-default btn-primary" ng-click="addLostArticle(0)">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 登记领取物品模态框开始 -->
+<div class="modal fade" id="receives" role="dialog" aria-label="personDatil" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>登记领取物品</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row padding">
+                    <div class="col-lg-12">
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                物品名称
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                             <!--   {{ys.articleName}}   -->
+                                {{articleList.article.articleName}}
+                            </div>
+                        </div>
+                        <!--1111111111111-->
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                物品描述
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                {{articleList.article.articleDescribe}}
+                            </div>
+                        </div>
+
+
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                领取人
+                            </div>
+                            <!--
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input type="text" ng-model="personone.name" class="form-control">
+                            </div>-->
+                            <div class="col-lg-3 col-md-2 col-sm-2">&nbsp;{{person_choice.name}}</div>
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                <button type="button" class="btn bg-primary" data-toggle="modal"
+                                        data-target="#myModal_zuping" ng-click="selectPerson()">
+                                    <span class="glyphicon glyphicon-plus btn_icon"></span>
+                                    添加
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                联系电话
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                             <!--<input type="text" ng-model="personone.phoneNum" class="form-control">-->
+                                &nbsp;{{person_choice.phoneNum}}
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                领取时间
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                               <!-- {{ys.lostTime| date: 'yyyy-MM-dd'}}-->
+                                <input type="date" ng-model="ys.time" class="form-control">
+                            </div>
+                        </div>
+             <!--           <div class="row search-padding-10">
+                            <div class="col-lg-3 col-md-2 col-sm-2">
+                                 遗失地点描述
+                            </div>
+                            <div class="col-lg-10 col-md-4 col-sm-4">
+                                {{articleList.articlePlaceremark}}
+                            </div>
+                        </div>    -->
+                        <!--111111-->
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                拾到地点描述
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                {{articleList.site}}
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                拾到时间描述
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                {{articleList.time | date: 'yyyy-MM-dd'}}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn bg-primary" data-dismiss="modal" ng-click="update2()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 登记领取物品模态框结束 -->
+<!-- 登记遗失物品模态框开始 -->
+<div class="modal fade" id="loss" role="dialog" aria-label="personDatil" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>登记遗失物品</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row padding">
+
+                    <div class="col-lg-12">
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                物品名称
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input type="text" ng-model="losty.articleName" class="form-control">
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                联系人
+                            </div>
+                       <!--     <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input type="text" ng-model="personone.name" class="form-control">
+                            </div>-->
+                            <div class="col-lg-3 col-md-2 col-sm-2">&nbsp;{{person_choice.name}}</div>
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                <button type="button" class="btn bg-primary"  data-toggle="modal"
+                                        data-target="#myModal_zuping" ng-click="selectPerson()">
+                                    <span class="glyphicon glyphicon-plus btn_icon"></span>
+                                    添加
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                联系电话
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input type="text" ng-model="personone.phoneNum" class="form-control">
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                遗失时间
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input type="date" ng-model="losty.lostTime" class="form-control">
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-12 col-md-2 col-sm-2">
+                                物品描述
+                            </div>
+                            <div class="col-lg-12 col-md-4 col-sm-4">
+                                <textarea ng-model="losty.articleDescribe" class="form-control"></textarea>
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-12 col-md-2 col-sm-2">
+                                遗失地点描述
+                            </div>
+                            <div class="col-lg-12 col-md-4 col-sm-4">
+                                <textarea ng-model="losty.articlePlace" class="form-control"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn bg-primary"  data-dismiss="modal"  ng-click="insert2(1)">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 登记遗失物品模态框结束 -->
+<!-- 登记拾到物品模态框开始 -->
+<div class="modal fade" id="pickUp" role="dialog" aria-label="personDatil" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>登记拾到物品</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row padding">
+                    <div class="col-lg-12">
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                物品名称
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input type="text" ng-model="losts.articleName" class="form-control">
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                联系人
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input type="text" ng-model="personone.name" class="form-control">
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                <button type="button" class="btn bg-primary" data-toggle="modal"
+                                        data-target="#myModal_zuping">
+                                    <span class="glyphicon glyphicon-plus btn_icon"></span>
+                                    添加
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                联系电话
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input type="text" ng-model="personone.phoneNum" class="form-control">
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                拾到时间
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input type="text" ng-model="losts.articleTimePicker" class="form-control">
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-12 col-md-2 col-sm-2">
+                                物品描述
+                            </div>
+                            <div class="col-lg-12 col-md-4 col-sm-4">
+                                <textarea ng-model="losts.articleDescribe" class="form-control"></textarea>
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-12 col-md-2 col-sm-2">
+                                拾到地点描述
+                            </div>
+                            <div class="col-lg-12 col-md-4 col-sm-4">
+                                <textarea ng-model="losts.pickPlace" class="form-control"></textarea>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn bg-primary" data-dismiss="modal" ng-click="insert3()">保存</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- 登记遗失物品模态框结束 -->
+<!--人员模态框-->
+<!--<div class="modal fade" id="myModal_zuping" tabindex="-1"
+     role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <span>客户信息</span>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                    &lt;!&ndash;条件搜索&ndash;&gt;
+                    <div class="sel">
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                姓名
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input class="form-control"  ng-model="searchone.staffName">
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                联系电话
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input class="form-control" ng-model="searchone.phone">
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                身份证号
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input class="form-control" ng-model="searchone.idNum">
+                            </div>
+                            <div class="col-lg-6 col-md-4 col-sm-4 text-right">
+                                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="selectPerson();">
+                                    <span class="glyphicon glyphicon-search btn_icon"></span>
+                                    查询
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    &lt;!&ndash;条件搜索 END&ndash;&gt;
+
+                <div class="row padding" >
+                    <div class="container">
+                        <div class="renyuantt" ng-repeat="person in person"
+                             ng-show="person.custId!=null">
+                            <div class="col-md-2">
+                                <a href="#" ng-click="choicePerson(person)"> <img src="images/propertyService/choiceHousing/u81.jpg" width="50px;" height="50px" style="margin-top: 5px;"></a>
+                            </div>
+                            <div class="col-md-10 zengjia">
+                                <table>
+                                    <tr>
+                                        <td>客户姓名：</td>
+                                        <td>{{person.name}}</td>
+                                        <td>性别：</td>
+                                        <td>{{person.sex}}</td>
+                                        <td>家家号：</td>
+                                        <td>{{person.jiajiaNum}}</td>
+                                        <td>身份证：</td>
+                                        <td>{{person.cardNum}}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-10 zengjia">
+                                <table>
+                                    <tr>
+                                        <td>客户编号：</td>
+                                        <td>{{person.custCode}}</td>
+                                        <td>年龄：</td>
+                                        <td>{{person.age}}</td>
+                                        <td>联系电话：</td>
+                                        <td>{{person.phoneNum}}</td>
+                                        <td>QQ号码：</td>
+                                        <td>{{person.weixinNum}}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" >取消</button>
+                <button type="button" class="btn bg-primary" data-dismiss="modal" >保存</button>
+
+            </div>
+        </div>
+    </div>
+</div>-->
+<div class="modal fade" id="myModal_zuping" tabindex="-1"
+     role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width:70%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>客户信息</span>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+            </div>
+            <div class="modal-body">
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                    <div class=" row sel">
+                        <div class="col-lg-1 col-md-1 col-sm-1 text-right">
+                            姓名：
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            <input type="text" class="form-control " ng-model="searchone.staffName">
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            联系电话：
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            <input type="text" class="form-control " ng-model="searchone.phone">
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            身份证号：
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            <input type="text" class="form-control " ng-model="searchone.idNum">
+                        </div>
+
+                        <div class="col-lg-1 col-md-1 col-sm-1 text-right">
+                            <button type="button" class="btn btn-default btn-primary tab-btn"
+                                    ng-click="selectPerson();">
+                                <span class="glyphicon glyphicon-search btn_icon"></span>
+                                查询
+                            </button>
+                        </div>
+
+                        <div class="clear"></div>
+
+                    </div>
+                </div>
+                <div class="padding">
+                    <div class="row rh" ng-repeat="person in currentPaginator1.object.personCustNew"
+                         ng-class="{'this_info':btnIndex==person.custId}" ng-show="person.custId!=null"
+                         ng-click="choicePerson(person)">
+                        <div class="col-xs-1 col-lg-1 col-md-1 text-right">
+                            <img src="images/project/user/user_3.png" width="55" height="55">
+                        </div>
+                        <div class="col-xs-11 col-lg-11 col-md-11">
+                            <div class="col-xs-2 col-lg-2 col-md-2 text-right">
+                                客户姓名：
+                            </div>
+                            <div class="col-xs-2 col-lg-2 col-md-2" ng-show="person.name!=null">
+                                {{person.name}}
+                            </div>
+                            <div class="col-xs-2 col-lg-2 col-md-2" ng-show="person.name==null">
+                                <b>暂无数据</b>
+                            </div>
+                            <div class="col-xs-2 col-lg-2 col-md-2 text-right">
+                                家家号：
+                            </div>
+                            <div class="col-xs-2 col-lg-2 col-md-2 " ng-show="person.jiajiaNum!=null">
+                                {{person.jiajiaNum}}
+                            </div>
+                            <div class="col-xs-2 col-lg-2 col-md-2 " ng-show="person.jiajiaNum==null">
+                                <b>暂无数据</b>
+                            </div>
+
+                            <div class="col-xs-2 col-lg-2 col-md-2 text-right">
+                                客户编号：
+                            </div>
+                            <div class="col-xs-2 col-lg-2 col-md-2 " ng-show="person.custCode!=null">
+                                {{person.custCode}}
+                            </div>
+                            <div class="col-xs-2 col-lg-2 col-md-2 " ng-show="person.custCode==null">
+                                <b>暂无数据</b>
+                            </div>
+                            <div class="col-xs-2 col-lg-2 col-md-2 text-right">
+                                联系电话：
+                            </div>
+                            <div class="col-xs-2 col-lg-2 col-md-2" ng-show="person.phoneNum!=null">
+                                {{person.phoneNum}}
+                            </div>
+                            <div class="col-xs-2 col-lg-2 col-md-2" ng-show="person.phoneNum==null">
+                                <b>暂无数据</b>
+                            </div>
+
+                            <div class="col-xs-2 col-lg-2 col-md-2 text-right">
+                                证件号码：
+                            </div>
+                            <div class="col-xs-2 col-lg-2 col-md-2" ng-show="person.cardNum!=null">
+                                {{person.cardNum}}
+                            </div>
+                            <div class="col-xs-2 col-lg-2 col-md-2" ng-show="person.cardNum==null">
+                                <b>暂无数据</b>
+                            </div>
+                            <div class="col-xs-2 col-lg-2 col-md-2 text-right">
+                                性别：
+                            </div>
+                            <div class="col-xs-2 col-lg-2 col-md-2 " ng-show="person.sex!=null">
+                                {{person.sex}}
+                            </div>
+                            <div class="col-xs-2 col-lg-2 col-md-2 " ng-show="person.sex==null">
+                                <b>暂无数据</b>
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                    </div>
+                    <div class="bill_paging">
+                        <li class="padding">
+                            <span>共{{currentPaginator1.object.page.totalResult}}条</span>
+                            <ul class="pagination">
+                                <li ng-class="{true:'disabled'}[currentPaginator1.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-click="currentPaginator1.go(1)">首页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[currentPaginator1.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-show="currentPaginator1.hasPrevious()"
+                                       ng-click="currentPaginator1.previous()">上一页</a>
+                                </li>
+                                <li ng-class="{true:'active'}[currentPaginator1.page.currentPage==i]"
+                                    ng-repeat="i in currentPaginator1.pages">
+                                    <a href="javascript:void(0)" ng-click="currentPaginator1.go(i)">{{i}}</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[currentPaginator1.page.currentPage==currentPaginator1.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-show="currentPaginator1.hasNext()"
+                                       ng-click="currentPaginator1.next()">下一页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[currentPaginator1.page.currentPage==currentPaginator1.page.totalPage]">
+                                    <a href="javascript:void(0)"
+                                       ng-click="currentPaginator1.go(currentPaginator1.page.totalPage)">尾页</a>
+                                </li>
+                            </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn  btn-default"
+                    data-dismiss="modal" ng-click="outPerson()">
+                取消
+            </button>
+            <button type="button" class="btn bg-primary "
+                    aria-label="Left Align" data-dismiss="modal">
+                确定
+            </button>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+</html>

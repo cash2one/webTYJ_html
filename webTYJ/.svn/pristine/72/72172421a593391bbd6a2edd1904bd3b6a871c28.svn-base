@@ -1,0 +1,23 @@
+<!--
+    创建人：彭婷婷  创建时间：2015/6/12
+    页面名称：人员管理
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div class="padding">
+    <div id="content-first">
+        <div id="tab">
+            <a ui-sref="index.serviceRequest.patrolManagement.serviceRequests.newPatrolServiceRequest">新建服务请求</a>
+            <a lang="no" ui-sref="index.serviceRequest.patrolManagement.serviceRequests.isGoingServiceRequest">处理中服务请求</a>
+        </div>
+        <div ui-view></div>
+    </div>
+</div>
+
+</body>
+</html>

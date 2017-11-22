@@ -1,0 +1,16 @@
+/**
+ * Created by LM on 2015/3/11.
+ * 工作台js
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../app');
+
+    app.controller('workCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        $scope.test = 11111;
+
+    }]);
+});

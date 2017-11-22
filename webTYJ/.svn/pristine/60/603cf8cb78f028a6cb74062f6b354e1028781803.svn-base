@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+<meta charset="UTF-8">
+<title>系统设置</title>
+</head>
+<body>
+	<div class="card">
+		<div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+			<div id="pannel">
+				<div class="row" style="padding: 10px">
+					<div class="col-md-4 col-xs-4 icon_img">
+						<a ng-click="checkAuthority(1)" style="cursor: pointer">
+							<!-- 将链接更改为跳转，在跳转前增加权限判断  王洲  2016.1.30 --> <img
+							src="images/icon/systemSettings/gangweishezhi.png">
+						</a>
+					</div>
+					<div class="col-md-8 col-xs-8">
+						<h4>
+							<strong>岗位设置(新)</strong>
+						</h4>
+						岗位设置
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+			<div id="pannel">
+				<div class="row" style="padding: 10px">
+					<div class="col-md-4 col-xs-4 icon_img">
+						<a ng-click="checkAuthority(2)" style="cursor: pointer">
+							<!-- 将链接更改为跳转，在跳转前增加权限判断  王洲  2016.1.30 --> <img
+							src="images/icon/systemSettings/guanliyuanshezhi.png">
+						</a>
+					</div>
+					<div class="col-md-8 col-xs-8">
+						<h4>
+							<strong>管理员设置</strong>
+						</h4>
+						设置系统管理员、HR管理员并配置相关权限
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+			<div id="pannel">
+				<div class="row" style="padding: 10px">
+					<div class="col-md-4 col-xs-4 icon_img">
+						<a ng-click="checkAuthority(4)" style="cursor: pointer">
+							<!-- 将链接更改为跳转，在跳转前增加权限判断  王洲  2016.1.30 --> <img
+							src="images/icon/systemSettings/shuxingshezhi.png">
+						</a>
+					</div>
+					<div class="col-md-8 col-xs-8">
+						<h4>
+							<strong>属性设置</strong>
+						</h4>
+						岗位设置
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+			<div id="pannel">
+				<div class="row" style="padding: 10px">
+					<div class="col-md-4 col-xs-4 icon_img">
+						<a ng-click="checkAuthority(5)" style="cursor: pointer">
+							<!-- 将链接更改为跳转，在跳转前增加权限判断  王洲  2016.1.30 --> <img
+							src="images/icon/systemSettings/zhuanyexianshezhi.png">
+						</a>
+					</div>
+					<div class="col-md-8 col-xs-8">
+						<h4>
+							<strong>物业模块</strong>
+						</h4>
+						前台和CC进行咨询服 务时可以查询FAQ解答 客户问题。
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--<div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">-->
+		<!--<div id="pannel">-->
+		<!--<div class="row" style="padding: 10px">-->
+		<!--<div class="col-md-4 col-xs-4 icon_img">-->
+		<!--<a ui-sref="index.systemSettings.systemAdministrator" style="cursor: pointer">&lt;!&ndash; 将链接更改为跳转，在跳转前增加权限判断  王洲  2016.1.30 &ndash;&gt;-->
+		<!--<img src="images/icon/systemSettings/guanliyuanshezhi.png">-->
+		<!--</a>-->
+		<!--</div>-->
+		<!--<div class="col-md-8 col-xs-8">-->
+		<!--<h4><strong>系统管理员设置</strong></h4>-->
+		<!--前台和CC进行咨询服-->
+		<!--务时可以查询FAQ解答-->
+		<!--客户问题。-->
+		<!--</div>-->
+		<!--</div>-->
+		<!--</div>-->
+		<!--</div>-->
+		<div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+			<div id="pannel">
+				<div class="row" style="padding: 10px">
+					<div class="col-md-4 col-xs-4 icon_img">
+						<a ng-click="checkAuthority(3)" style="cursor: pointer">
+							<!--将链接更改为跳转，在跳转前增加权限判断  王洲  2016.1.30 --> <img
+							src="images/icon/systemSettings/guizhangzhidu.png">
+						</a>
+					</div>
+					<div class="col-md-8 col-xs-8">
+						<h4>
+							<strong>规章制度</strong>
+						</h4>
+						规章制度
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+			<div id="pannel">
+				<div class="row" style="padding: 10px">
+					<div class="col-md-4 col-xs-4 icon_img">
+						<a
+							ui-sref="index.systemSettings.publicNumberManagement.massInformation">
+							<img src="images/icon/anbao.png">
+						</a>
+					</div>
+					<div class="col-md-8 col-xs-8">
+						<h4>
+							<strong>公众号管理</strong>
+						</h4>
+						公众号管理
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+			<div id="pannel">
+				<div class="row" style="padding: 10px">
+					<div class="col-md-4 col-xs-4 icon_img">
+						<a ui-sref="index.systemSettings.workflow"> <img
+							src="images/icon/workflow.png">
+						</a>
+					</div>
+					<div class="col-md-8 col-xs-8">
+						<h4>
+							<strong>工作流</strong>
+						</h4>
+						审批流程
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

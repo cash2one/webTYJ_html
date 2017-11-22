@@ -1,0 +1,349 @@
+/**
+ * Created by SZ on 2018/1/18.
+ * 区域组管理js
+ */
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../app');
+    app.controller('districtManagementCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+        var url = $rootScope.videoUrl;
+        var urlbase =$rootScope.url; //"http://127.0.0.1:8080/webTYJ/cxfws/rest";    //
+        $scope.gating = {};
+        var projectId = "";
+        var companyId = "";
+        var userCook = JSON.parse(sessionStorage.getItem("USER_LOGIN"));   //从cook中获取用户信息
+        $scope.user = userCook?userCook:user;                      //三目运算获取用户信息
+        companyId= $scope.user.companyId;
+        var ids = [];
+        var setting = {
+            check:{
+                enable:true
+            },
+            view: {
+                selectedMulti: false
+            },
+            edit: {
+                enable: false,
+                editNameSelectAll: false
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            }
+        };
+        $scope.Area = {
+            nodeName:'',//节点名称
+            detailsName:''//详情名称
+
+        };
+        $scope.go = function (data){
+            var index = ids.indexOf(data);
+            if(index >-1){
+                ids.splice(index,1);
+            }else{
+                ids.push(data);
+            }
+         };
+
+        //获取项目信息
+        $scope.projectIdList = [];
+        $scope.projectList = [];
+        $scope.area1={};
+
+        $http.get(urlbase + '/Company/getCompanyInformation/' + companyId).success(function(data){
+            if(data.Company.projectList==null){
+                layer.msg('未查询到项目信息！',{icon : 0,time : 1000});
+                return;
+            }
+            $scope.projectIdList = data.Company.projectList;
+            $scope.area1.projectIdList=[];
+            for(var i=0; i<$scope.projectIdList.length; i++){
+                if($scope.projectIdList[i].projectId!=null && $scope.projectIdList[i].projectId != undefined){
+                    $scope.area1.projectIdList[i] = $scope.projectIdList[i].projectId;
+                    $scope.projectList.push($scope.projectIdList[i]);
+                }
+
+            }
+            $scope.loadDistrict();
+        }).error(function(data){
+            layer.msg('没有有效的公司信息！',{icon : 0,time : 1000});
+        });
+
+
+
+        //区组列表查询
+        $scope.DisteamList = [];
+        $scope.loadDistrict=function() {
+                $http.post(url + '/areaService/listAreaByProjectId/' , {Area:$scope.area1}).success(function (data) {
+                    if(data.state=="success"){
+                        $scope.temp = data.info;
+                        if(!angular.isArray($scope.temp)){
+                            $scope.DisteamList.push($scope.temp);
+                        }else{
+                            $scope.DisteamList = $scope.temp;
+
+                        }
+                        $scope.loadPages($scope.DisteamList);
+                    } else if(data.state == "failure"){
+                        $scope.DisteamList=[];
+                        $scope.loadPages([]);
+                    }
+
+                }).error(function (data, status, headers, config) {
+                    layer.msg('区组信息查询失败！',{icon : 0,time : 1000});
+                });
+        };
+
+        //根据查询未被分区的组信息
+        $scope.DteamList = [];
+        $scope.selectTeam = function () {
+            if($scope.projectId==null || $scope.projectId==''){
+                layer.msg("请选择项目",{icon : 2,time : 1000});
+                $scope.DteamList = [];
+                return;
+            }
+            $http.get(url + '/areaService/getTeamByProjectId/' + $scope.projectId).success(function(data){
+                if(data.state == "success"){
+                    $scope.temp = data.info;
+                    if(!angular.isArray($scope.temp)){
+                        $scope.DteamList.push($scope.temp);
+                    }else{
+                        $scope.DteamList = $scope.temp;
+
+                    }
+                }else if(data.state == "failure"){
+                    $scope.DteamList = [];
+                    layer.msg(data.info,{icon : 2,time : 1000});
+                }
+            });
+            $scope.chooseData.datas=[];
+        };
+
+        //得到选中的复选框的值(新建时使用)
+        $scope.chooseData = {datas: []};
+        $scope.getData = function (data) {
+            setTimeout(function(){
+                var id = data.id;
+                var temp = document.getElementById(id);
+                $scope.dataa = {};
+                $scope.dataa = data;
+                if (temp.checked == true) {
+                    $scope.chooseData.datas.push($scope.dataa);
+                } else {
+                    $scope.temp = [];
+                    $scope.temp = $scope.chooseData.datas;
+                    $scope.chooseData = {datas: []};
+                    for (var i = 0; i < $scope.temp.length; i++) {
+                        if ($scope.temp[i].id != id) {
+                            $scope.chooseData.datas.push($scope.temp[i]);
+                        }
+                    }
+                }
+                console.dir($scope.chooseData.datas);
+            },"10");
+        };
+
+        //得到选中的复选框的值(删除时使用)
+        $scope.deleteData = {datas: []};
+        $scope.getDeleteData = function (data) {
+            setTimeout(function(){
+                var id = data.id;
+                var temp = document.getElementById(id);
+                var dataa = {};
+                dataa = data;
+                if (temp.checked == true) {
+                    $scope.deleteData.datas.push(dataa);
+                } else {
+                    $scope.temp = [];
+                    $scope.temp = $scope.deleteData.datas;
+                    $scope.deleteData = {datas: []};
+                    for (var i = 0; i < $scope.temp.length; i++) {
+                        if ($scope.temp[i].id != id) {
+                            $scope.deleteData.datas.push($scope.temp[i]);
+                        }
+                    }
+                }
+                console.dir($scope.deleteData.datas);
+            },"10");
+        };
+
+        $scope.area = {
+            name : ''
+        };
+        $scope.saveDistrict = function(){
+            var nodename = $scope.area.name;
+            if(nodename == null || nodename == ""){
+                layer.alert('请输入区名！',{icon : 0});
+                return;
+
+            }else if($scope.chooseData.datas.length == 0){
+                layer.alert('请选择组！',{icon : 0});
+                return;
+            }else{
+                $scope.Area ={
+                    nodeName: nodename,
+                    teamList : $scope.chooseData.datas,
+                    projectId: $scope.projectId
+                };
+
+                $http.post(url + "/areaService/saveArea/", {Area:$scope.Area}).success(function(){
+                    layer.msg('保存成功！',{icon : 1,time : 1000});
+                    //$("#new").hide();
+                    $("#new").modal("hide");
+                    $scope.loadDistrict();
+                    $scope.area.name='';
+                    $scope.DteamList=[];
+                    $scope.projectId='';
+                    $scope.chooseData.datas='';
+                    ids = [];
+                }).error(function(data,status,headers,config){
+                    layer.msg('保存失败！',{icon : 2,time : 1000});
+                });
+            }
+        };
+
+        $scope.deleteDistrict = function(){
+            if($scope.deleteData.datas.length == 0){
+                layer.alert('请选择要删除的区！',{icon : 0});
+            }else{
+                layer.confirm("您确定要删除选定的区吗?", {btn: ['是', '否']}, function () {
+                    var idss;
+                    for(var i=0; i<$scope.deleteData.datas.length; i++){
+                        if(i==0){
+                            idss = $scope.deleteData.datas[i].id;
+                        } else {
+                            idss += "," + $scope.deleteData.datas[i].id;
+                        }
+                    }
+                    $http.get(url + "/areaService/deleteArea/"+idss).success(function(data){
+                        $scope.loadDistrict();
+                        $scope.deleteData.datas=[];
+                        layer.msg('删除成功！',{icon : 1,time : 1000});
+                    }).error(function (data, status, headers, config) {
+                        layer.msg('删除失败！',{icon : 2,time : 1000});
+                    });
+                })
+            }
+
+        };
+
+
+        //查看完整数据
+        $scope.getInfo = function(info){
+            $http.get(urlbase + "/BuildingStructureNew/getBuildingByIds/"+info).success(function(data){
+                var fullNames;
+                for(var i=0; i<data.BuildingStructureNew.length; i++){
+                    if(i==0){
+                        fullNames = data.BuildingStructureNew[i].fullName;
+                    } else {
+                        fullNames += ",<br/>" + data.BuildingStructureNew[i].fullName;
+                    }
+                }
+                layer.alert("所属组为：<br/>"+fullNames);
+            }).error(function(data){
+
+            });
+        };
+
+        /****************************   分页start   ******************************/
+
+        $scope.currentPage = 1;             //分页相关参数
+        $scope.totalPage = 1;
+        $scope.pageSize = 6;
+        $scope.pages = [];
+        $scope.endPage = 1;
+
+        /**
+         * 实现分页
+         */
+        $scope.listPages=function(currentPage,pageSize,array){
+            var dataArray=[];
+            if(currentPage*pageSize>array.length){
+                for(var i=(currentPage-1)*pageSize;i<array.length;i++) {
+                    dataArray.push(array[i]);
+                }
+            }else{
+                for(var i=(currentPage-1)*pageSize;i<currentPage*pageSize;i++){
+                    dataArray.push(array[i]);
+                }
+            }
+            return dataArray;
+        };
+
+        /**
+         * 实现分页及参数改变
+         */
+        $scope.currentHouse = [];
+        $scope.loadPages = function (array) {
+            //for(var i=0;i<$scope.checked.length;i++){
+            //    $scope.checked[i]=false;
+            //}
+            $scope.currentHouse = $scope.listPages($scope.currentPage,$scope.pageSize,array);
+            $scope.totalPage = Math.ceil(array.length / $scope.pageSize);
+            $scope.endPage = $scope.totalPage;
+            //生成数字链接
+            if ($scope.currentPage > 1 && $scope.currentPage < $scope.totalPage) {
+                $scope.pages = [
+                    $scope.currentPage - 1,
+                    $scope.currentPage,
+                    $scope.currentPage + 1
+                ];
+            } else if ($scope.currentPage == 1 && $scope.totalPage > 1) {
+                $scope.pages = [
+                    $scope.currentPage,
+                    $scope.currentPage + 1
+                ];
+            } else if ($scope.currentPage == $scope.totalPage && $scope.totalPage > 1) {
+                $scope.pages = [
+                    $scope.currentPage - 1,
+                    $scope.currentPage
+                ];
+            }else if($scope.currentPage == 1 && $scope.totalPage == 1){
+                $scope.pages = [
+                    $scope.currentPage
+                ];
+            }
+        };
+
+        /**
+         *查询下一页
+         */
+        $scope.next = function () {
+            if ($scope.currentPage < $scope.totalPage) {
+                $scope.currentPage++;
+            }
+            $scope.loadPages($scope.DisteamList);
+        };
+
+        /**
+         *  查询前一页
+         */
+        $scope.prev = function () {
+            if ($scope.currentPage > 1) {
+                $scope.currentPage--;
+            }
+            $scope.loadPages($scope.DisteamList);
+        };
+
+        /**
+         * 查询当前页
+         */
+        $scope.loadPage = function (page) {
+            $scope.currentPage = page;
+            $scope.loadPages($scope.DisteamList);
+        };
+
+        /****************************   分页end   ******************************/
+
+
+
+
+
+
+
+
+
+    }]);
+});

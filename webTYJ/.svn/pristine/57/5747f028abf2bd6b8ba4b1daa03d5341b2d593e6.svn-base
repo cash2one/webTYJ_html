@@ -1,0 +1,54 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 消息公告管理
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../app');
+
+    app.controller('villageNoticeCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+        $scope.doClick(2);
+        var url=$rootScope.url;
+        /**
+         * 初始化富文本编辑器
+         */
+        var ue = UE.getEditor('container',{
+            elementPathEnabled:false,
+            //autoHeightEnabled: true,
+            //autoFloatEnabled: true
+            //serverUrl:'http://127.0.0.1:8080/webTYJ/FileService'
+            //serverUrl:'http://127.0.0.1:8080/webTYJ/FileService'
+        });
+        /**
+         * 点击发布
+         */
+        $scope.Communtitnotice={};
+        $scope.Communtitnotice.title="";
+        $scope.Communtitnotice.founder="";
+        $scope.Communtitnotice.department="";
+        $scope.Communtitnotice.abstracts="";
+        $scope.Communtitnotice.project="";
+        $scope.Communtitnotice.briefContent="";
+        $scope.updateVillageNotice=function(){
+            $http.post(url+'/Communtitnotice/AddCommuntitnotice',{Communtitnotice:$scope.Communtitnotice}).success(function(){
+                layer.msg('发布成功',{icon : 1,time : 2000});
+                //$scope.load();
+
+
+            }).error(function(data,status,headers,config){
+                alert("发布失败！");
+            });
+        };
+
+        /**
+         * 显示标题信息
+         */
+        $scope.Communtitnotices={};
+        $http.get(url + '/Communtitnotice/listAllsCommuntitnotice').success(function(data) {
+            $scope.Communtitnotices = data.Communtitnotice;
+        });
+
+    }]);
+});

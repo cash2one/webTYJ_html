@@ -1,0 +1,163 @@
+<!--
+    创建人:彭婷婷  创建时间：2015/06/08
+    页面名称:人员管理新增
+    js路径:js/controllers/internalProfession/postPersonnelConfiguration.js
+    修改人：倪明   修改时间:2015/6/4
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>岗位人员配置</title>
+</head>
+<body>
+    <div id="content-first">
+        <div id="tab">
+            <a lang="no" class="this_action">岗位员工设置</a>
+        </div>
+        <div class="row">
+            <div class="body_user">
+                <!--<div class="col-lg-5 col-md-5 col-sm-6">
+                    <div class="user_pannel_a">
+                        <div class="user_pannel_title_a">
+                            团队成员
+                        </div>
+                        <div class="user_pannel_body">
+                            <div class="col-lg-6 col-md-6 col-sm-6" ng-repeat="items in staffs">
+                                <div class="user_information">
+                                    <div class="user_information_img">
+                                        <img src="images/project/user/user_3.png">
+                                    </div>
+                                    <div class="user_information_body">
+                                        <div class="user_information_name">
+                                            <span ng-class="{0:'grey',1: 'yellow',2: 'green'}[items.colorState]" >{{items.staffName}}</span>
+                                        </div>
+                                        <div class="user_information_info">
+                                            二级信息显示
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                    </div>
+
+                </div>-->
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                    <div class="user_pannel_a">
+                        <div class="user_pannel_title_a">
+                            岗位配置列表
+                        </div>
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>项目名称</th>
+                                <th ng-repeat="items in title">
+                                    {{items.SpecialtyInfo.specialtyName}}
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="data in data1">
+                                <td>{{data.tr.project.projectName}}</td>
+                                <td style="cursor: pointer" ng-repeat="td in data.td" ng-class="{0:'grey',1: ''}[td.TeamPermissions]" ng-click="showPost($index,
+                                    $parent.$index,td.count,isFull(td.count,td.countTeamStaff))">{{isFull(td.count,td.countTeamStaff)}}</td>
+                                <!--<td ng-repeat="td in data.td" ng-class="{0:'grey',1: ''}[td.TeamPermissions]"  ng-show="td.count==0 " >满编</td>-->
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </div>
+    <!--岗位模态框开始-->
+    <div class="modal fade" id="postShow" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+        <div class="modal-dialog" style="width:900px">
+            <div class="modal-content" >
+                <div class="modal-header">
+                    <button type="button" class="close"
+                            data-dismiss="modal" aria-hidden="true" ng-click="frameclose()">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" id="ImpClient">
+                        岗位添加人数
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="padding">
+                        <div class="search-padding-10">
+                            岗位
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-center" ng-repeat="prepare in prepares" style="margin-top:4px;cursor:pointer;">
+                                    <li class="gw">
+                                        <input type="radio" name="chickenEgg"  ng-click="choicePrepare(prepare)" class="gw_radio"/>
+                                        <span>{{prepare.nameOfCustom}}</span>
+                                    </li>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="user_pannel_title_a">
+                                选择成员
+                            </div>
+                            <div>
+                                <div class="col-lg-3 col-md-3 col-sm-3" ng-class="{'this_info':chocieCss(items.staffId)}" ng-click="choicePerson(items)" ng-repeat="items in staffs track by $index">
+                                    <div class="user_information">
+                                        <div class="user_information_img">
+                                            <img src="images/project/user/user_3.png">
+                                        </div>
+                                        <div class="user_information_body">
+                                            <div class="user_information_name">
+                                                {{items.staffName}}
+                                            </div>
+                                            <div class="user_information_info">
+                                                二级信息显示
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="user_pannel_title_a">
+                                已分配到岗位的员工
+                            </div>
+                            <div>
+                                <div class="col-lg-3 col-md-3 col-sm-3"  ng-click="shanchufenpei(items)" ng-repeat="items in fenpeiStaffs ">
+                                    <div class="user_information">
+                                        <div class="user_information_img">
+                                            <img src="images/project/user/user_3.png">
+                                        </div>
+                                        <div class="user_information_body">
+                                            <div class="user_information_name">
+                                                {{items.staff.staffName}}
+                                            </div>
+                                            <div class="user_information_info">
+                                                二级信息显示
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="frameclose()">关闭</button>
+                    <button type="button" class="btn btn-primary" ng-click="save()" data-dismiss="modal">保存</button>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+    <!--岗位模态框结束-->
+</div>
+</body>
+</html>

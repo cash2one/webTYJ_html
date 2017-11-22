@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div class="sel_top">
+    <div class="row">
+        <div class="col-lg-8 col-md-6 col-sm-6"></div>
+    <div class="col-lg-4 col-md-4 col-sm-4 text-right">
+        <button type="button" class="btn btn-default btn-primary" ng-click="gridChange()">
+            <span class="glyphicon glyphicon-th-large btn_icon"></span>
+            网格
+        </button>
+        <button type="button" class="btn btn-default btn-primary" ng-click="list()">
+            <span class="glyphicon glyphicon-th-list btn_icon"></span>
+            列表
+        </button>
+    </div>
+    </div>
+</div>
+
+<div class="row padding">
+    <!--网格显示-->
+    <div class="row padding"  ng-show="grids==false">
+        <div class="col-lg-12">
+            <div class="col-lg-4 col-md-6 col-sm-6 " ng-repeat="item in searchPaginator.object.inspectionPlan" ng-show="item.inspectionPlanId!=null">
+                <div id="pannel">
+                    <div class="downList">
+                        <div class="col-xs-12 col-lg-12 col-md-12 col-sm-12 text-right" >
+                        <span class="glyphicon glyphicon-chevron-down"id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        </span>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                <li ng-show="item.state==0"><a ng-click="open(item)">启用</a></li>
+                                <li ng-show="item.state==1"><a ng-click="close(item)">失效</a></li>
+                                <li><a ng-click="show(item)">查看</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="title">
+                        <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                            <h3>巡检方案</h3>
+                        </div>
+                    </div>
+                    <div class="pannel_content" >
+                        <div class="row search-padding-10">
+                            <div class="col-lg-6 col-md-6 col-sm-6">方案名称：</div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 text-right">{{item.inspectionPlanName}}</div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-6 col-md-6 col-sm-6">状态：</div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+                            <span ng-switch on="item.state">
+                                <span ng-switch-when="0">失效</span>
+                                <span ng-switch-when="1">有效</span>
+                                <!--<span ng-switch-when="2">启用</span>-->
+                            </span>
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-6 col-md-6 col-sm-6">创建人：</div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 text-right">{{item.createPersonId}}</div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-6 col-md-6 col-sm-6">创建时间：</div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 text-right">{{item.createTime|date:'yyyy-MM-dd'}}</div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-6 col-md-6 col-sm-6">备注：</div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 text-right">{{item.remarks}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="padding">
+            <div class="bill_paging">
+                <span>共{{searchPaginator.object.page.totalResult}}条</span>
+                <ul class="pagination">
+                    <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-click="searchPaginator.go(1)">首页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a>
+                    </li>
+                    <li ng-class="{true:'active'}[searchPaginator.page.currentPage==i]" ng-repeat="i in searchPaginator.pages">
+                        <a href="javascript:void(0)"  ng-click="searchPaginator.go(i)">{{i}}</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                        <a href="javascript:void(0)" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[projectItem.page.currentPage==projectItem.page.totalPage]">
+                        <a href="javascript:void(0)" ng-click="projectItem.go(projectItem.page.totalPage)">尾页</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!--列表显示-->
+    <div class="row padding" ng-show="grids==true">
+        <div class="col-lg-12">
+            <table>
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>方案名称</th>
+                    <th>状态</th>
+                    <th>创建人</th>
+                    <th>创建时间</th>
+                    <th>备注</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="item in searchPaginator.object.inspectionPlan" ng-show="item.inspectionPlanId!=null"
+                    style="cursor: pointer"
+                    ng-click="getData(item)" ng-dblclick="show(item)">
+                    <td><input type="checkbox" id="{{item.inspectionPlanId}}" ng-click="getData(item)" ></td>
+                    <td>{{item.inspectionPlanName}}</td>
+
+                    <td ng-switch on="item.state">
+                                <span ng-switch-when="0">失效</span>
+                                <span ng-switch-when="1">有效</span>
+                    </td>
+                    <td>{{item.createPersonId}}</td>
+                    <td>{{item.createTime|date:'yyyy-MM-dd'}}</td>
+
+
+                    <td>{{item.remarks}}</td>
+                    <td>
+
+
+                        <span ng-show="item.state==0"><a ng-click="open(item)">启用</a></span>
+                        <span ng-show="item.state==1"><a ng-click="close(item)">失效</a></span>
+                        <span><a ng-click="show(item)"> | 查看</a></span>
+                    </td>
+
+                </tr>
+                <tr ng-show="searchPaginator.object.inspectionPlan.length == null">
+                    <td colspan="8">没有数据！</td>
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
+        <div class="padding">
+            <div class="bill_paging">
+                <span>共{{searchPaginator.object.page.totalResult}}条</span>
+                <ul class="pagination">
+                    <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-click="searchPaginator.go(1)">首页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a>
+                    </li>
+                    <li ng-class="{true:'active'}[searchPaginator.page.currentPage==i]" ng-repeat="i in searchPaginator.pages">
+                        <a href="javascript:void(0)"  ng-click="searchPaginator.go(i)">{{i}}</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                        <a href="javascript:void(0)" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[projectItem.page.currentPage==projectItem.page.totalPage]">
+                        <a href="javascript:void(0)" ng-click="projectItem.go(projectItem.page.totalPage)">尾页</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="detail" role="dialog" aria-label="personDatil" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>详情</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th>检查项名称</th>
+                            <th>单位</th>
+                            <th>输入类型</th>
+                            <th>默认值</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="item in checkItem">
+                            <td>{{$index}}</td>
+                            <td>{{item.checkItemName}}</td>
+                            <td>{{item.checkItemUnit}}</td>
+                            <td>
+                                <span ng-switch on="item.inputType">
+                                <span ng-switch-when="0">填写输入</span>
+                                <span ng-switch-when="1">选择输入</span>
+                            </span>
+                            <td>{{item.checkItemReference}}</td>
+                        </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" >取消</button>
+                <button type="button" class="btn bg-primary" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="novail" role="dialog" aria-label="personDatil" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>失效</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="sel1">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-12 col-md-2 col-sm-2">
+                            说明
+                        </div>
+                        <div class="col-lg-12 col-md-4 col-sm-4">
+                            <textarea class="text_min"  placeholder="请输入内容" ng-model="object1.closeRemarks"></textarea>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" >取消</button>
+                <button type="button" class="btn bg-primary" data-dismiss="modal" ng-click="saveUpdate(item)">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

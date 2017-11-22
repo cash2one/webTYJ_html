@@ -1,0 +1,377 @@
+<!--
+    创建人：彭婷婷
+    创建时间：2015-10-10
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>账户管理</title>
+    <link rel="stylesheet" href="bower_components/skins/zyupload-1.0.0.min.css " type="text/css">
+</head>
+<body>
+<div class="sel">
+    <div class="row search-padding-10">
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            客户姓名：
+        </div>
+        <div class="col-lg-2 col-md-2 col-sm-2">
+            <input class="form-control" type="text" placeholder="请输入客户姓名" ng-model="searchAssetAccount.name">
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            证件号：
+        </div>
+        <div class="col-lg-2 col-md-2 col-sm-2">
+            <input class="form-control" type="text" placeholder="请输入客户证件号" ng-model="searchAssetAccount.cardNum">
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            房屋地址：
+        </div>
+        <div class="col-lg-2 col-md-2 col-sm-2">
+            <input class="form-control" type="text" placeholder="请输入房屋地址" ng-model="searchAssetAccount.houseAddress">
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            资产类型：
+        </div>
+        <div class="col-lg-2 col-md-2 col-sm-2" style="width:100px;">
+            <select ng-options="a.slaveName as a.description for a in accountType" class="form-control" ng-model="searchAssetAccount.assetAccountType">
+                <option value="">--请选择--</option>
+            </select>
+        </div>
+        <div style="margin-left:50px;">
+            <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="searchData()">
+                搜索
+            </button>
+        </div>
+    </div>
+
+</div>
+<div class="row padding">
+    <div class="col-lg-12">
+        <div class="search-padding-10">
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right" style="width: 100px;">
+                资产账户信息：
+            </div>
+            <button type="button" class="btn btn-default btn-primary" ng-click="addMoney()">充值</button>
+            <button type="button" class="btn btn-default btn-primary" ng-click="showList()">交易记录</button>
+            <button type="button" class="btn btn-default btn-primary" ng-click="showInquiry()">查询账单信息</button>
+            <!-- 增加查看交易记录的按钮 王洲 2015.12.31 -->
+            <div class="col-lg-12 text-right">单位：元</div>
+        </div>
+        <table id="currentMeterTr">
+            <thead>
+            <tr>
+                <th></th>
+                <th>业主名称</th>
+                <th>资产类型</th>
+                <th>资产编号</th>
+                <th>地址</th>
+                <th>资产账户编号</th>
+                <th>绑定银行卡</th>
+                <th>物业公司</th>
+                <th>账户余额</th>
+                <th>账户详情</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="items in  currentMeter.object['assetAccounts']" id="{{items.assetAccountId}}"
+                ng-show="items['assetAccountId'] != null" ng-click="getdata(items)">
+                <td><input type="checkbox" name="aaa" ng-click="getdata(items)"></td>
+                <td>{{items.name}}</td>
+                <td>{{items.areaTypeName}}</td>
+                <td>{{items.assetNum}}</td>
+                <td>{{items.houseAddress}}</td>
+                <td>{{items.assetAccountNum}}</td>
+                <td>
+                    <span ng-if="items.isBankCard!=0">未绑定银行卡</span>
+                    <span ng-if="items.isBankCard==0">已绑定银行卡</span>
+                </td>
+                <td>{{items.companyName}}</td>
+                <td>{{items.generalBalance+items.disSum |number:2}}</td>
+                <td><a data-toggle="modal" class="btn btn-default btn-primary" data-target="#and" ng-click="searchAsset(items)">查看详情</a></td>
+            </tr>
+            <tr ng-show="currentMeter.object.assetAccounts.length ==null" >
+                <td colspan="9">暂无数据</td>
+            </tr>
+
+            </tbody>
+        </table>
+        <div class="bill_paging">
+            <ul class="pagination">
+                <li ng-class="{true:'disabled'}[currentMeter.page.currentPage==1]">
+                    <a href="javascript:void(0)" ng-click="currentMeter.go(1)">首页</a>
+                </li>
+                <li ng-class="{true:'disabled'}[currentMeter.page.currentPage==1]">
+                    <a href="javascript:void(0)" ng-show="currentMeter.hasPrevious()"
+                       ng-click="currentMeter.previous()">上一页</a>
+                </li>
+                <li ng-class="{true:'active'}[currentMeter.page.currentPage==i]" ng-repeat="i in currentMeter.pages">
+                    <a href="javascript:void(0)" ng-click="currentMeter.go(i)">{{i}}</a>
+                </li>
+                <li ng-class="{true:'disabled'}[currentMeter.page.currentPage==currentMeter.page.totalPage]">
+                    <a href="javascript:void(0)" ng-show="currentMeter.hasNext()" ng-click="currentMeter.next()">下一页</a>
+                </li>
+                <li ng-class="{true:'disabled'}[currentMeter.page.currentPage==currentMeter.page.totalPage]">
+                    <a href="javascript:void(0)" ng-click="currentMeter.go(currentMeter.page.totalPage)">尾页</a>
+                </li>
+            </ul>
+            <span>共{{currentMeter.object.page.totalResult}}条</span>
+        </div>
+    </div>
+</div>
+<div class="row padding">
+    <div class="col-lg-12" ng-show="show1">
+        <div class="search-padding-10">
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right" style="width: 100px;">
+                账户收支信息：
+            </div>
+            <!-- hulili 2016.6.29 退款按钮 -->
+            <button type="button" class="btn btn-default btn-primary" ng-click="refundMoney()">退款</button>
+            <div class="col-lg-12 text-right">单位：元</div>
+        </div>
+        <table>
+            <thead>
+            <tr>
+                <th></th>
+                <th>收支类别</th>
+                <th>资产账户编号</th>
+                <th>收费项目</th>
+                <th>支付类型</th>
+                <th>交易金额</th>
+                <th>可退金额</th>
+                <th>交易时间</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="item in  currentAdvance.object['advancePaymentsDetails']"
+                ng-show="item['advancePaymentsDetailsId'] != null" ng-click="refundData(item)">
+                <td>
+                    <span ng-if="item.isOutIn==1">
+                        <input id="{{item.advancePaymentsDetailsId}}" type="checkbox"  ng-click="refundData(item)" name="advancePaymentsDetails">
+                    </span>
+                    <span ng-if="item.isOutIn!=1"><input type="checkbox" disabled></span>
+                </td>
+                <td>
+                    <span ng-if="item.isOutIn==0">收入</span>
+                    <span ng-if="item.isOutIn==1">支出</span>
+                    <span ng-if="item.isOutIn==2">抵扣</span>
+                    <span ng-if="item.isOutIn==3">退款</span>
+                    <span ng-if="item.isOutIn==4">回盘</span>
+                </td>
+                <td>{{item.assetAccountNum}}</td>
+                <td ng-if="item.chargeTypeName!=null">{{item.chargeTypeName}}</td>
+                <td ng-if="item.chargeTypeName==null">\</td>
+                <td>
+                    <span ng-if="item.paymentType==0">现金</span>
+                    <span ng-if="item.paymentType==1">刷卡</span>
+                    <span ng-if="item.paymentType==2">微信</span>
+                    <span ng-if="item.paymentType==3">预支付</span>
+                    <span ng-if="item.paymentType==10">刷卡、现金</span>
+                    <span ng-if="item.paymentType==20">微信支付、现金</span>
+                    <span ng-if="item.paymentType==12">刷卡、微信支付</span>
+                    <span ng-if="item.paymentType==120">刷卡、微信支付、现金</span>
+                </td>
+                <td>{{item.transactionAmount|number:2}}</td>
+                <td ng-if="item.isOutIn==1">{{item.refundableDepositAmount|number:2}}</td>
+                <td ng-if="item.isOutIn!=1">\</td>
+                <td>{{item.transactionDate | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+            </tr>
+            <tr ng-show="currentAdvance.object.advancePaymentsDetails == null">
+                <td colspan="8">暂无数据</td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="bill_paging">
+            <ul class="pagination">
+                <li ng-class="{true:'disabled'}[currentAdvance.page.currentPage==1]">
+                    <a href="javascript:void(0)" ng-click="currentAdvance.go(1)">首页</a>
+                </li>
+                <li ng-class="{true:'disabled'}[currentAdvance.page.currentPage==1]">
+                    <a href="javascript:void(0)" ng-show="currentAdvance.hasPrevious()"
+                       ng-click="currentAdvance.previous()">上一页</a>
+                </li>
+                <li ng-class="{true:'active'}[currentAdvance.page.currentPage==i]"
+                    ng-repeat="i in currentAdvance.pages">
+                    <a href="javascript:void(0)" ng-click="currentAdvance.go(i)">{{i}}</a>
+                </li>
+                <li ng-class="{true:'disabled'}[currentAdvance.page.currentPage==currentAdvance.page.totalPage]">
+                    <a href="javascript:void(0)" ng-show="currentAdvance.hasNext()"
+                       ng-click="currentAdvance.next()">下一页</a>
+                </li>
+                <li ng-class="{true:'disabled'}[currentAdvance.page.currentPage==currentAdvance.page.totalPage]">
+                    <a href="javascript:void(0)" ng-click="currentAdvance.go(currentAdvance.page.totalPage)">尾页</a>
+                </li>
+            </ul>
+            <span>共{{currentAdvance.object.page.totalResult}}条</span>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="and" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                账户详情
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="padding20">
+                    <div class="col-lg-12 text-right">单位：元</div>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th>账户明细</th>
+                            <th>可支配余额</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="items in AssetAccountDetail">
+                            <td>{{$index+1}}</td>
+                            <td>{{items.detailName}}</td>
+                            <td>{{items.disposableBalance|number:2}}</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span ng-if="AssetAccountDetail.length == null">1</span>
+                                <span ng-if="AssetAccountDetail.length != null">{{AssetAccountDetail.length+1}}</span>
+                            </td>
+                            <td>通用费</td>
+                            <td>{{generalBalance|number:2}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="bbb" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                预付款充值
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="padding20">
+                    <div class="row search-padding">
+                        <div class="col-lg-4 col-md-4 col-sm-4 text-right">
+                            资产账户编号：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            {{assetForSearch.assetAccountNum}}
+                        </div>
+                    </div>
+                    <!--hulili 2016.6.29-->
+                    <div class="row search-padding">
+                        <div class="col-lg-4 col-md-4 col-sm-4 text-right">
+                            充值金额：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <input type="text" class="form-control" placeholder="请输入充值金额" id="addPrice">
+                        </div>
+                    </div>
+                    <div class="row search-padding" ng-show="assetForSearch.assetNum!=''" id="assetCharge">
+                        <div class="col-lg-4 col-md-4 col-sm-4 text-right">
+                            可抵扣收费项目：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <select class="form-control" id="chargeType" ng-model="option.chargeTypeId" ng-options="option.chargeTypeId as option.chargeTypeName for option in chargeTypeList">
+                                <option value="">全部</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" ng-click="clear()">取消</button>
+                <button type="button" class="btn btn-primary" ng-click="topUPDemo()">充值</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="refundMoney" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span ng-if="assetForSearch.assetAccountType==1">押金退款</span>
+                <span ng-if="assetForSearch.assetAccountType!=1">非押金退款</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="padding20">
+                    <div class="search-padding-10 text-center" ng-show="assetForSearch.assetAccountType==1">
+                        <div class="col-md-6 text-center">
+                            <input type="radio" ng-model="depositNumber" value="0" ng-click="depositChange()"/>押金单号
+                        </div>
+                        <div class="col-md-6 text-center">
+                            <input type="radio" ng-model="depositNumber" value="1" ng-click="depositChange()"/>无押金单号
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="search-padding-10 text-center" ng-show="depositNumber==1">
+                        <div id="uploadImg" class="padding15"></div>
+                        <div class="col-md-6">
+                            <div class="col-xs-3">付款类型:</div>
+                            <div class="col-xs-9">
+                                <select class="form-control" id="type1" ng-model="searchAssetAccount.type">
+                                    <option value="">请选择</option>
+                                    <option value="1">现金</option>
+                                    <option value="2">预付款</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="col-xs-3">退款金额:</div>
+                            <div class="col-xs-9"><input class="form-control" ng-model="refundSum" type="text" placeholder="请输入退款金额" /></div>
+                        </div>
+                        <div class="col-md-12" ng-show="assetForSearch.assetAccountType==1">
+                            <div id="remove">
+                                <div id="excelupload" class="zyupload"></div>
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="search-padding-10 text-center" ng-show="depositNumber==0">
+                        <div class="search-padding-10 text-center">
+                            <div class="col-md-6">
+                                <div class="col-xs-3">付款类型:</div>
+                                <div class="col-xs-9">
+                                    <select class="form-control" id="type2" ng-model="searchAssetAccount.type">
+                                        <option value="">请选择</option>
+                                        <option value="1">现金</option>
+                                        <option value="2">预付款</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6" ng-show="assetForSearch.assetAccountType==1">
+                                <div class="col-xs-3">押金单号:</div>
+                                <div class="col-xs-9"><input class="form-control" ng-model="depositSum" id="depositSum" type="text"/></div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="col-xs-3">退款金额:</div>
+                                <div class="col-xs-9"><input class="form-control" ng-model="refundSum" type="text" placeholder="请输入退款金额"/></div>
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" ng-click="deposit()">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

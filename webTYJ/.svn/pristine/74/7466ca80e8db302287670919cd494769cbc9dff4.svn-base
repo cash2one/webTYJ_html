@@ -1,0 +1,222 @@
+<!--
+author:程健
+pageName:可视对讲设备管理
+jsPath: 'controllers/videoIntercom/equipmentManage/queryGatings'
+
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>查询门控机(视频对讲)设备管理</title>
+<!--    &lt;!&ndash;实现单选效果&ndash;&gt;
+    <script>
+        function check(obj) {
+            $(':checkbox').each(function () {
+                if (this != obj)
+                    $(this).attr("checked", false);
+                else {
+                    if ($(this).prop("checked")){
+                        $(this).attr("checked", true);
+                    }
+                    else
+                        $(this).attr("checked", false);
+                }
+            });
+        }
+    </script>-->
+
+
+
+</head>
+<body>
+<!--<div ng-show="gatingDatil" >-->
+    <div class="information_box1">
+        <div class="row sel">
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">项目：</div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                <select id="projectSe" class="form-control" ng-model="Gating.projectId" ng-options="item.projectId as item.projectName for item in projectIdList">
+                    <option value="">--请选择项目--</option>
+                </select>
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right" >名称：</div>
+            <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control" placeholder="请输入设备名称" ng-model="Gating.equipmentName"></div>
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">型号：</div>
+            <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control" placeholder="请输入型号" ng-model="Gating.equipmentModel"></div>
+            <!--<div class="col-lg-1 col-md-2 col-sm-2 text-right">芯片号：</div>
+            <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"></div>-->
+           <!-- <div class="col-lg-1 col-md-2 col-sm-2 text-right">质保日期：</div>
+            <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"></div>
+            <div class="col-lg-1 col-md-2 col-sm-2 text-center">至</div>
+            <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"></div>-->
+      <!--      <div class="col-lg-1 col-md-2 col-sm-2 text-right">出厂日期：</div>
+            <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"></div>-->
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">使用年限：</div>
+            <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control" placeholder="请输入使用年限" ng-model="Gating.employTerm"></div>
+           <!-- <div class="col-lg-1 col-md-2 col-sm-2 text-right">状态：</div>
+            <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"></div>-->
+            <div class="col-lg-12 col-md-12 col-sm-12 text-right">
+                <button type="button" class="btn btn-default btn-primary" ng-click="load()">
+                    <span class="glyphicon glyphicon-search btn_icon"></span>
+                    搜索
+                </button>
+ <!--               <a>
+                    <button type="button" class="btn btn-default btn-primary" >
+                        <span class="glyphicon glyphicon-th-large btn_icon"></span>
+                        网格
+                    </button>
+                </a>
+                <a>
+                    <button type="button" class="btn btn-default btn-primary" >
+                        <span class="glyphicon glyphicon-th-list btn_icon"></span>
+                        列表
+                    </button>
+                </a>-->
+            </div>
+
+        </div>
+        <div class="row padding">
+            <div class="col-lg-12 search-padding-10">
+                <div  class="text-center ">
+                    <canvas id="canvas_circle" width="500" height="300"  >
+                        浏览器不支持canvas
+                    </canvas>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="search-padding-10 text-right">
+<!--                    <button type="button" class="btn btn-default btn-primary" ng-click="changeGatingState('2')">
+                        禁用
+                    </button>-->
+                   <!-- <button type="button" class="btn btn-default btn-primary" ng-click="addgatings()">
+                        录入
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary" ng-click="addGatings()">
+                        批量录入
+                    </button>-->
+                    <button type="button" class="btn btn-default btn-primary" ng-click="changeGatingState('0')">
+                        注销
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary" ng-click="changeGatingState('1')">
+                        重启
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary" data-toggle="modal" data-target="#new">
+                        新建
+                    </button>
+                   <!-- <button type="button" class="btn btn-default btn-primary" >
+                        维修申请
+                    </button>-->
+                </div>
+            </div>
+            <table>
+                <thead>
+                <th>选择</th>
+                <!--<th>编号</th>-->
+                <th>公司</th>
+                <th>项目</th>
+                <th>地址</th>
+                <th>名称</th>
+                <th>型号</th>
+                <th>质保开始日期</th>
+                <th>质保结束日期</th>
+                <th>质保时间</th>
+                <th>状态</th>
+                </thead>
+                <tbody>
+                <tr ng-repeat="item in searchPaginator.object.gatingList" ng-show="item.id!=null">
+                    <td><input type="checkbox" id="{{item.id}}" ng-model="item.isActive" ng-click="getData(item)"/></td>
+                   <!-- <td>{{item.accountId}}</td>-->
+                    <td>{{item.employCompany}}</td>
+                    <td>{{item.employProject}}</td>
+                    <td>{{item.district}}</td>
+                    <td>{{item.equipmentName}}</td>
+                    <td>{{item.equipmentModel}}</td>
+                    <td>{{item.qualityTimeStart|date:'yyyy-MM-dd'}}</td>
+                    <td>{{item.qualityTimeEnd|date:'yyyy-MM-dd'}}</td>
+                    <td>{{item.qualityTerm}}</td>
+                    <td>
+                        <img src="images/icon/videoIntercom/black.png" width="20px" height="20px" ng-show="item.facilityState == '未使用'"/>
+                        <img src="images/icon/videoIntercom/green.png" width="20px" height="20px" ng-show="item.facilityState == '运行中'"/>
+                    </td>
+
+                </tr>
+                <tr ng-if="searchPaginator.page.totalResult == 0">
+                    <td colspan="12">暂无数据</td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="col-lg-12">
+                <div class="padding">
+                    <div class="bill_paging">
+                        <span>共{{searchPaginator.object.page.totalResult}}条</span>
+                        <ul class="pagination">
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-click="searchPaginator.go(1)">首页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a>
+                            </li>
+                            <li ng-class="{true:'active'}[searchPaginator.page.currentPage==i]" ng-repeat="i in searchPaginator.pages">
+                                <a href="javascript:void(0)"  ng-click="searchPaginator.go(i)">{{i}}</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                                <a href="javascript:void(0)" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                                <a href="javascript:void(0)" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--弹出模态框-->
+        <div class="modal fade" id="new" role="dialog" aria-label="personDatil" aria-hidden="true">
+            <div class="modal-dialog" >
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <span>新建</span>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row sel1">
+                            <div class="col-md-3 text-right">录入方式：</div>
+                            <div class="col-md-2">
+                                <label class="radio inline">
+                                    <input type="button" ng-click="simple()" value="单个">
+                                    <!--<span>单个</span>-->
+                                </label>
+                            </div>
+                            <div class="col-md-7">
+                                <label class="radio inline">
+                                    <input type="button" ng-click="many()" value="多个">
+                                    <!--<span>多个</span>-->
+                                </label>
+                            </div>
+                            <div class="col-md-3 text-right">设备编号：</div>
+                            <div class="col-md-3 "><input class="form-control" id="eqid"></div>
+                            <div class="col-md-3 text-right">设备名称：</div>
+                            <div class="col-md-3 "><input class="form-control" id="eqname"></div>
+                            <div class="col-md-3 text-right">设备质保开始日期：</div>
+                            <div class="col-md-3 "><input class="form-control" type="date" id="eqstarttime"></div>
+                            <div class="col-md-3 text-right">设备质保年限：</div>
+                            <div class="col-md-3 "><input class="form-control"  id="eqqualityterm"></div>
+                            <div class="col-md-3 text-right">设备个数：</div>
+                            <div class="col-md-3 "><input class="form-control" id="eqnum" value="1"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn bg-primary"  ng-click="eqsave()">保存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+</body>
+</html>

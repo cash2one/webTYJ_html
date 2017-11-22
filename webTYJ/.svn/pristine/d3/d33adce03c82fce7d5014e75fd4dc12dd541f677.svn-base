@@ -1,0 +1,25 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 消息公告管理
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../app');
+
+    app.controller('villageNoticeCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+        $scope.doClick(2);
+        /**
+         * 初始化富文本编辑器
+         */
+        var ue = UE.getEditor('container',{
+            elementPathEnabled:false,
+            //autoHeightEnabled: true,
+            //autoFloatEnabled: true
+            //serverUrl:'http://127.0.0.1:8080/webTYJ/FileService'
+            //serverUrl:'http://127.0.0.1:8080/webTYJ/FileService'
+        });
+
+    }]);
+});

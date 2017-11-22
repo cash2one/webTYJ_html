@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script>
+        function check(obj) {
+            $(':checkbox').each(function () {
+                if (this != obj)
+                    $(this).attr("checked", false);
+                else {
+                    if ($(this).prop("checked")){
+                        $(this).attr("checked", true);
+                    }
+                    else
+                        $(this).attr("checked", false);
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+
+<div class="sel">
+    <!--<div class="row search-padding-10">
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            筛选：
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            <label class="checkbox inline">
+                <input name="checkbox" type="checkbox">
+                <span>已失效</span>
+             </label>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            <label class="checkbox inline">
+                <input name="name1" type="checkbox" value="0">
+                <span>执行中</span>
+            </label>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            <label class="checkbox inline">
+                <input name="checkbox" type="checkbox">
+                <span>快失效</span>
+            </label>
+        </div>
+</div>-->
+        <div class="row search-padding-10">
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            合同编号：
+        </div>
+        <div class="col-lg-2 col-md-4 col-sm-4">
+            <input class="form-control"  ng-model="contract.contractNum"/>
+        </div>
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                启动时间：
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-4">
+                <input class="form-control" type="date" ng-model="contract.startTime" />
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2 text-center">
+                至
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-4">
+                <input class="form-control"  type="date" ng-model="contract.endTime" />
+            </div>
+        </div>
+    <div class="row search-padding-10">
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            合同项目：
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-4">
+       <!--     禅道BUG 249
+            修改人：陶勇超
+            2016年1月8日 16:28:56-->
+            <select class="form-control"  ng-model="contract.contractProject" ng-options="p.projectName as p.projectName for p in allProjects" >   <option value="">请选择</option></select>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-4 text-right">
+            <button type="button" class="btn btn-default btn-primary" ng-click="checkItem._load()" >
+                <span class="glyphicon glyphicon-search btn_icon"></span>
+                查询
+            </button>
+        </div>
+    </div>
+</div>
+<div class="row padding">
+    <div class="col-lg-12">
+           <div class="search-padding-10">
+            <button type="button" class="btn btn-default btn-primary" ng-click="addContra()">
+                <span class="glyphicon glyphicon-plus btn_icon"></span>
+                新增
+            </button>
+            <button type="button" class="btn btn-default btn-primary" ng-click="dele()">
+                <span class="glyphicon glyphicon-remove btn_icon"></span>
+                删除
+            </button>
+        </div>
+        <div class="rh" ng-class="{'this_info':btnIndex==item}" ng-dblclick="findContract(item)"  ng-click="showCheck(item)" ng-repeat="item in checkItem.object.contract" ng-show="item.id != null">
+            <div class="col-lg-1 col-md-1 col-sm-1 text-center" >
+                <input  type="checkbox"  name="aaa" ng-click="getdata(item) "onclick="check(this)">
+            </div>
+            <div class="col-lg-1 col-md-1 col-sm-1">
+                <img src="images/project/user/user_3.png"  width="55" height="55">
+            </div>
+            <div class="col-lg-10 col-md-11 col-sm-11">
+                <div class="col-lg-4 col-md-4 col-sm-4">
+                    合同项目：{{item.contractProject}}
+                </div>
+              <!--  <div class="col-lg-4 col-md-4 col-sm-4">
+
+                </div>-->
+                <div class="col-lg-7 col-md-4 col-sm-4">
+                    开始时间：{{item.startUsingDate|date:"yyyy-MM-dd"}}
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4">
+                    合同编号：{{item.contractNum}}
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4">
+                    合同类型：{{item.contractType}}
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4">
+
+                </div>
+            </div>
+            <div class="clear"></div>
+        </div>
+
+    <!--        右侧面板1
+            <div class="info_lista"  ng-repeat="item in checkItem.object.contract" ng-show="item.id != null" ng-click="findContract(item)">
+                <table class="table_lists">
+                    <tbody>
+                    <tr>
+                        <td width="6%" rowspan="2"><input  type="checkbox"  name="aaa" ng-click="getdata(item)"></td>
+                        <td width="6%" rowspan="2"><img src="images/qqIcon.png" width="55" height="58"></td>
+                        <td width="18%">合同项目</td>
+                        <td width="30%">{{item.contractProject}}</td>
+                        <td width="16%">质保时间</td>
+                        <td width="30%">{{}}</td>
+                    </tr>
+                    <tr>
+                        <td>合同编号</td>
+                        <td>{{item.contractNum}}</td>
+                        <td>合同类型</td>
+                        <td>{{item.contractType}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            右侧面板1 END-->
+            <!--分页开始-->
+        <div class="padding">
+            <div class="bill_paging">
+                <span>共{{checkItem.object.page.totalResult}}条</span>
+                <ul class="pagination">
+                    <li ng-class="{true:'disabled'}[checkItem.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-click="checkItem.go(1)">首页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[checkItem.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-show="checkItem.hasPrevious()" ng-click="checkItem.previous()">上一页</a>
+                    </li>
+                    <li ng-class="{true:'active'}[checkItem.page.currentPage==i]" ng-repeat="i in checkItem.pages">
+                        <a href="javascript:void(0)"  ng-click="checkItem.go(i)">{{i}}</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[checkItem.page.currentPage==checkItem.page.totalPage]">
+                        <a href="javascript:void(0)" ng-show="checkItem.hasNext()" ng-click="checkItem.next()">下一页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[checkItem.page.currentPage==checkItem.page.totalPage]">
+                        <a href="javascript:void(0)" ng-click="checkItem.go(checkItem.page.totalPage)">尾页</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+            <!--分页结束-->
+    </div>
+</div>
+<!--合同详情模态框开始-->
+<div class="modal fade" id="neworlostModal" role="dialog" aria-label="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 1000px">
+        <div class="modal-content">
+            <div class="modal-header">
+                合同详情
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="sel clearfix">
+                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                        合同单号：
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-4">
+                        {{dds.contractOddNum}}&nbsp;&nbsp;
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                        合同编号：
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-4">
+                        {{dds.contractNum}}&nbsp;&nbsp;
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                        合同类型：
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-4">
+                        {{dds.contractType}}&nbsp;&nbsp;
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                        合同项目：
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-4">
+                        {{dds.contractProject}}&nbsp;&nbsp;
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                        合同建设方：
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-4">
+                        {{dds.firstParty}}&nbsp;&nbsp;
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                        合同施工方：
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-4">
+                        {{dds.secondParty}}&nbsp;&nbsp;
+                    </div>
+                  <!--  禅道BUG 104
+                    修改人：陶勇超
+                    2016年1月7日 18:35:18-->
+                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                        合同维保方：
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-4">
+                        {{dds.thirdParty}}&nbsp;&nbsp;
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                        合同启动日期：
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-4">
+                        {{dds.startUsingDate|date:'yyyy-MM-dd'}}&nbsp;&nbsp;
+                    </div>
+               <!--     /*
+                    BUG 250
+                    陶勇超
+                    2016年1月12日 18:19:12
+                    */-->
+                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                        合同附件名：
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-4">
+                        {{dds.annexs.annexName}}&nbsp;&nbsp;
+                    </div>
+                </div>
+                <!--创建合同编辑框结束-->
+                <div class="padding">
+                    <!--专业类型选择表格-->
+                    <div class="col-lg-6 col-md-6 col-sm-6">
+                        <h2><strong>专业类型</strong></h2>
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>序号</th>
+                                <th>功能区</th>
+                                <th>资产名称</th>
+                                <th>资产规格</th>
+                                <th>启动日期</th>
+                                <th>质保期</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="user_dgItem" style="cursor: pointer" ng-repeat="itemss in datas" ng-show="itemss.id!=null" ng-click="getBuilding(itemss)">
+                                <td>{{$index+1}}</td>
+                                <td>{{itemss.functional.functionalName}}</td>
+                                <td>{{itemss.property.propertyName}}</td>
+                                <td>{{itemss.property.brand}}</td>
+                                <td>{{itemss.startTime|date:'yyyy-MM-dd'}}</td>
+                                <td>{{itemss.property.expirationDate}}月</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!--专业类型选择表格结束-->
+                    <!--楼层勾选列表-->
+                    <div class="col-lg-6 col-md-6 col-sm-6" ng-show="showBuilding">
+                        <h2><strong>施工范围</strong></h2>
+                        <table width="100%" >
+                            <thead>
+                            <tr>
+                                <th>序号</th>
+                                <th>详细地址</th>
+                                <th>房号</th>
+                                <th>建筑属性</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="user_dgItem" ng-repeat="item in builds" ng-show="item.buildingStructureId!=null">
+                                <td>{{$index+1}}</td>
+                                <td>{{item.buildingStructureNew.fullName}}</td>
+                                <td>{{item.buildingStructureNew.nodeName}}</td>
+                                <td>{{item.buildingStructureNew.buildingType}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <div class="save_concel_botton icon_float_else">
+                    <a href="" class="radius_all button_bule" data-dismiss="modal" aria-label="Close">关闭</a>
+                    <div class="clear"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

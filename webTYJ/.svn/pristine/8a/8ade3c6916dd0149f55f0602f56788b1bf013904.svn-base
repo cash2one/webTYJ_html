@@ -1,0 +1,27 @@
+/**
+ * Created by Administrator on 2015/12/15.
+ */
+
+        'use strict';
+
+        define(function (require) {
+            var app = require('../../../../../app');
+            app.controller('waterMeterDataReportCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+        $scope.test='水表数据报表';
+        var url=$rootScope.url;
+        $scope.myDate = new Date();   // 获取当前时间
+        $scope.month=$scope.myDate.getMonth()+1;
+        $scope.fileurl=$rootScope.fileUrl;
+        $scope.searchMeter={page:{}};
+        $scope.load=function(){
+            var waterCheckFunction = function(page,callback){
+                $scope.searchMeter.page=page;
+                $http.post(url + '/MeterReadingData/listPageMeterReadingDates',
+                    {MeterReadingData:$scope.searchMeter}).success(callback);
+            };
+            $scope.waterChecks = app.get('Paginator').list(waterCheckFunction,10);
+            console.log($scope.waterChecks);
+        };
+        $scope.load();
+    }]);
+});

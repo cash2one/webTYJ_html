@@ -1,0 +1,175 @@
+/**
+ * 登录js
+ */
+define(function (require) {
+    var app = require('../../app');
+
+    // dynamic load services here or add into dependencies of state config
+    // require('../services/usersService');
+
+    app.controller('loginCtrl',['$scope', '$http','$cookieStore','$rootScope','$location',
+        function ($scope,$http,$cookieStore,$rootScope,$location) {
+
+        /***************************************** 设置参数  *****************************************/
+        $scope.user = {loginName:'',password:''};          //用户对象
+        var fileUrl = $rootScope.fileUrl;
+        var saasUrl = $rootScope.saasUrl;
+        $scope.cookieUser = $cookieStore.get("USER");      //获取cookies中的user对象
+        if($scope.cookieUser != undefined){
+            $scope.user.loginName = $scope.cookieUser.loginName;
+            $scope.user.password = $scope.cookieUser.password;
+            document.getElementById("remenber").checked = $scope.cookieUser.checkbox;
+        }
+        $scope.companys = {};
+        /**
+         * 回车监控事件
+         * @param e
+         */
+        $("#css_form input").keyup(function(ev)
+        {
+            var e = event||ev;
+            if(e.keyCode==13)
+            {
+
+                $scope.login();
+
+
+            }
+        });
+            $("#css_form input").keyup(function(ev)
+            {
+                var e = event||ev;
+                if(e.keyCode==13)
+                {
+
+                    $scope.login();
+
+
+                }
+            });
+        //$scope.keyUp = function(e){
+        //    var keycode = window.event? e.keyCode: e.which;
+        //    if(keycode==13){
+        //        $scope.login();
+        //    }
+        //}
+
+        /**
+         * 登录
+         */
+        $scope.login= function(){
+
+            if($scope.user.loginName == ''){
+                layer.msg('账号不能为空！',{icon : 0,time : 1000});
+                return;
+            }
+            if($scope.user.password == ''){
+                layer.msg('密码不能为空！',{icon : 0,time : 1000});
+                return;
+            }
+
+            $http({
+                method:"GET",
+                url: fileUrl + "/login/loginSys.do",
+                params:{
+                    "loginName":$scope.user.loginName,
+                    "password":$scope.user.password
+                }
+            }).success(function(data){
+                var code = data.code;                                         //获取状态码
+                switch (code){
+                    case '200':
+                        var checked = $("input[type='checkbox']").is(':checked');
+                        if(checked){
+                            $cookieStore.put("USER",{
+                                loginName:$scope.user.loginName,
+                                password:$scope.user.password,
+                                checkbox:checked
+                            });
+                        }else{
+                            $cookieStore.remove("USER");
+                        }
+                        $scope.user_login = data.info;
+                        //$http.post(saasUrl + "/findCompany?companyId=" + $scope.user_login.companyId).success(function(data){
+                            //$scope.companys = data;
+                            $scope.user_login.Company = $scope.companys;
+                            $scope.user_login.passwordToSaas = $scope.user.password;
+                            sessionStorage.setItem('USER_LOGIN',JSON.stringify($scope.user_login));
+                            $rootScope.loginState=1;
+                            $location.path("/index");
+                        //});
+                        break;
+
+                    case '2001':
+                        layer.msg("用户不存在或以失效!",{time: 1000, icon:0});//删除掉登录对象清空方法，给出错误提示后保留错误信息  王洲  2016.04.12
+                        break;
+                    case '2002':
+                        layer.msg("账号或密码错误!",{time: 1000, icon:0});
+                        break;
+                    case '-1':
+                        layer.msg("登录失败!",{time: 1000, icon:0});
+                        break;
+                }
+            });
+        };
+/*            $scope.login= function(){
+            if($scope.user.loginName == ''){
+                layer.msg('账号不能为空！',{icon : 0,time : 1000});
+                return;
+            }
+            if($scope.user.password == ''){
+                layer.msg('密码不能为空！',{icon : 0,time : 1000});
+                return;
+            }
+
+            $http({
+                method:"GET",
+                url: fileUrl + "/login/loginAppUser.do",
+                params:{
+                    "loginName":$scope.user.loginName,
+                    "password":$scope.user.password
+                }
+            }).success(function(data){
+                var code = data.code;                                         //获取状态码
+                switch (code){
+                    case '200':
+                        var checked = $("input[type='checkbox']").is(':checked');
+                        if(checked){
+                            $cookieStore.put("USER",{
+                                loginName:$scope.user.loginName,
+                                password:$scope.user.password,
+                                checkbox:checked
+                            });
+                        }else{
+                            $cookieStore.remove("USER");
+                        }
+                        $scope.user_login = data.info;
+                        //$http.post(saasUrl + "/findCompany?companyId=" + $scope.user_login.companyId).success(function(data){
+                            //$scope.companys = data;
+                            $scope.user_login.Company = $scope.companys;
+                            $scope.user_login.passwordToSaas = $scope.user.password;
+                            sessionStorage.setItem('USER_LOGIN',JSON.stringify($scope.user_login));
+                            $rootScope.loginState=1;
+                            $location.path("/index");
+                        //});
+                        break;
+
+                    case '2001':
+                        layer.msg("用户不存在或以失效!",{time: 1000, icon:0});//删除掉登录对象清空方法，给出错误提示后保留错误信息  王洲  2016.04.12
+                        break;
+                    case '2002':
+                        layer.msg("账号或密码错误!",{time: 1000, icon:0});
+                        break;
+                    case '2010':
+                        layer.msg("该用户没有入职，不能公司系统!",{time: 1000, icon:0});
+                        break;
+                    case '-1':
+                        layer.msg("登录失败!",{time: 1000, icon:0});
+                        break;
+                }
+            });
+        };*/
+
+    }]);
+
+});

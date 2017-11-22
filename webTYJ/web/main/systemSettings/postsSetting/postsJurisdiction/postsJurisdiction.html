@@ -1,0 +1,50 @@
+<!--
+    创建人:彭婷婷  创建时间：2015/06/08
+    页面名称:专业线管理
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>岗位设置</title>
+</head>
+<body>
+
+<div class="row">
+    <div class="col-lg-4 col-md-4 col-sm-12">
+            <div class="ul-border-height">
+                <div class="padding">
+                    <div class="ul_border" ng-repeat="item in specialtyInfo" style="cursor: pointer">
+                        <h3>{{item.specialtyName}}专业线</h3>
+                        <div ng-repeat="items in item.posts" class="ul-body" ng-show="items.postId!=null" ng-class="{'this_info':btnIndex==items.postId}" ng-click="toDatils(items.postId)">
+                            <span style="padding:8px 15px;">{{items.nameOfCustom}}</span>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8 col-md-8 col-sm-12">
+        <div class="padding">
+            <table>
+                <thead>
+                    <th ng-repeat="ite in list.type">{{ite.name}}</th>
+                </thead>
+                <tbody>
+                    <tr >
+                        <td ng-repeat="ite in list.type">
+                            <ul ng-repeat="ins in datas" ng-show="ins.status==ite.id">
+                                <li><b>{{ins.permissionsName}}</b></li>
+                                <li ng-repeat="i in ins.actions">{{i.actionName}}</li>
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+    </div>
+    <div class="clear"></div>
+</div>
+</body>
+</html>

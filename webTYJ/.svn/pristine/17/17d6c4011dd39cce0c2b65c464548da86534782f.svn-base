@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>产品初始化--固定车位</title>
+    <link rel="stylesheet" href="css/ztree/ztreedf.css" type="text/css">
+    <link rel="stylesheet" href="css/ztree/zTreeStyle.css" type="text/css">
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.core-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.excheck-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.exedit-3.5.js"></script>
+</head>
+<body>
+<!--条件搜索-->
+    <div>
+        <div class="search-padding-10" style="margin:15px 15px;">
+            <button type="button" class="btn btn-default btn-primary" ng-click="toAdd();">
+                <span class="glyphicon  btn_icon"></span>新增
+            </button>
+            <button type="button" class="btn btn-default btn-primary" ng-click="toUpdate();">
+                <span class="glyphicon  btn_icon"></span>编辑
+            </button>
+            <button type="button" class="btn btn-default btn-primary" ng-click="toUpdatePfDate();">
+                <span class="glyphicon  btn_icon"></span>失效
+            </button>
+        </div>
+    </div>
+    <!--主表分页BEGIN-->
+    <div class="search-padding-10" style="margin-bottom:25px;">
+        <table>
+            <thead>
+            <tr>
+                <th></th>
+                <th>序号</th>
+                <th>生效日期</th>
+                <th>失效日期</th>
+                <th>金额</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr  ng-repeat="item in searchPaginator1.object.productFixedparkingspaces" ng-show="item.fixedparkingspaceId!=null" ng-click="showChild(item.fixedparkingspaceId)">
+                <td><input type="checkbox" id="{{item.fixedparkingspaceId}}" ng-click="showChild(item.fixedparkingspaceId)"></td>
+                <td>{{$index}}</td>
+                <td>{{item.beginDate}}</td>
+                <td>{{item.endDate}}</td>
+                <td>{{item.productPrice}}</td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="bill_paging">
+            <span>共{{searchPaginator1.object.page.totalResult}}条</span>
+            <ul class="pagination">
+                <li ng-class="{true:'disabled'}[searchPaginator1.page.currentPage==1]"><a href="javascript:void(0)" ng-click="searchPaginator1.go(1)">首页</a></li>
+                <li ng-class="{true:'disabled'}[searchPaginator1.page.currentPage==1]"><a href="javascript:void(0)" ng-show="searchPaginator1.hasPrevious()" ng-click="searchPaginator1.previous()">上一页</a></li>
+                <li ng-class="{true:'active'}[searchPaginator1.page.currentPage==i]" ng-repeat="i in searchPaginator1.pages"><a href="javascript:void(0)"   ng-click="searchPaginator1.go(i)">{{i}}</a></li>
+                <li ng-class="{true:'disabled'}[searchPaginator1.page.currentPage==searchPaginator1.page.totalPage]"><a href="javascript:void(0)" ng-show="searchPaginator1.hasNext()" ng-click="searchPaginator1.next()">下一页</a></li>
+                <li ng-class="{true:'disabled'}[searchPaginator1.page.currentPage==searchPaginator1.page.totalPage]"><a href="javascript:void(0)" ng-click="searchPaginator1.go(searchPaginator1.page.totalPage)">尾页</a></li>
+            </ul>
+        </div>
+    </div>
+    <!--主表分页END-->
+    <!--子表分页BEGIN-->
+    <div class="search-padding-10">
+        <table>
+            <thead>
+            <tr>
+                <th>生效日期</th>
+                <th>失效日期</th>
+                <th>金额</th>
+                <th>车库号</th>
+                <th>车位地址</th>
+                <th>使用状态</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr  ng-repeat="itemt in searchPaginator2.object.productFixedparkingspaceChilds"  ng-show="itemt.fullName!=null">
+                <td>{{searchPaginator2.object.productFixedparkingspace.beginDate}}</td>
+                <td>{{searchPaginator2.object.productFixedparkingspace.endDate}}</td>
+                <td>{{searchPaginator2.object.productFixedparkingspace.productPrice}}</td>
+                <td>{{itemt.fullName}}</td>
+                <td>{{itemt.codeName}}</td>
+                <td>{{searchPaginator2.object.productFixedparkingspace.state}}</td>
+            </tr>
+            <tr ng-if="searchPaginator2.object.productFixedparkingspaceChilds.length == null">
+                <td colspan="9" style="cursor: default">暂无数据！</td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="bill_paging"  style="margin-top:15px;">
+            <span>共{{searchPaginator2.object.page.totalResult}}条</span>
+            <ul class="pagination">
+                <li ng-class="{true:'disabled'}[searchPaginator2.page.currentPage==1]"><a href="javascript:void(0)" ng-click="searchPaginator2.go(1)">首页</a></li>
+                <li ng-class="{true:'disabled'}[searchPaginator2.page.currentPage==1]"><a href="javascript:void(0)" ng-show="searchPaginator2.hasPrevious()" ng-click="searchPaginator2.previous()">上一页</a></li>
+                <li ng-class="{true:'active'}[searchPaginator2.page.currentPage==i]" ng-repeat="i in searchPaginator2.pages"><a href="javascript:void(0)"   ng-click="searchPaginator2.go(i)">{{i}}</a></li>
+                <li ng-class="{true:'disabled'}[searchPaginator2.page.currentPage==searchPaginator2.page.totalPage]"><a href="javascript:void(0)" ng-show="searchPaginator2.hasNext()" ng-click="searchPaginator2.next()">下一页</a></li>
+                <li ng-class="{true:'disabled'}[searchPaginator2.page.currentPage==searchPaginator2.page.totalPage]"><a href="javascript:void(0)" ng-click="searchPaginator2.go(searchPaginator2.page.totalPage)">尾页</a></li>
+            </ul>
+        </div>
+    </div>
+    <!--子表分页END-->
+
+    <!--新建BEGIN-->
+    <div class="modal fade ng-scope in" id="newWindow" role="dialog" aria-label="personDatil" aria-hidden="false">
+        <div class="modal-backdrop fade in" style="height: 666px;"></div>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span>新增固定车位：</span>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" ng-click="cancelChargeType()">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <!--内容框开始-->
+                <div class="modal-body">
+                    <div class="sel1">
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                生效日期：
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-sm-4">
+                                <input type="text" onclick="WdatePicker({readOnly:true})" name="beginDate"  class="Wdate form-control" ng-model="ProductFixedparkingspace.beginDate" onchange=""  ng-change="getStall(stallss.id,false)">
+                            </div>
+                            <div class="col-lg-1 col-md-1 col-sm-1"><span style="color: red">*</span></div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                失效日期：
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-sm-4">
+                                <input type="text" onclick="WdatePicker({readOnly:true})" name="endDate"  class="Wdate form-control" ng-model="ProductFixedparkingspace.endDate" onchange=""  ng-change="getStall(stallss.id,false)">
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                金额：
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-sm-4">
+                                <input type="text" ng-model="ProductFixedparkingspace.productPrice" class="form-control" placeholder="请输入金额" name="productPrice" >
+                            </div>
+                            <div class="col-lg-1 col-md-1 col-sm-1"><span style="color: red">*</span></div>
+                        </div>
+                        <div class="modal-header">
+                            车位信息
+
+                        </div>
+                        <div class="modal-body">
+                            <div class="row search-padding-10">
+                                <div class="col-lg-5 col-md-4 col-sm-4">
+                                    <h5>未选车位</h5>
+                                    <ul id="treeDemo"  class="ztree" style="height:200px;"></ul>
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">
+                                    <div style="margin-top: 180px;margin-left: 15px;">
+                                        <button class="glyphicon glyphicon-menu-right btn btn-sm btn-info" aria-hidden="true" ng-click="addWaterReading()"></button>
+                                    </div>
+                                </div>
+                                <div class="col-lg-5 col-md-4 col-sm-4">
+                                    <h5>已选车位<span ng-show="addWaterCheck.length!=0" style="position: absolute;right:5px;top:0;color:red;cursor: pointer;" ng-click="remove_all()">清空</span></h5>
+                                    <ul class="ztree" style="height:200px;" >
+                                        <li >
+                                            <table >
+                                                <tr ng-repeat="items11 in addWaterCheck">
+                                                    <td>{{items11.fullname}}<span style="color: #ff0000;float: right;" ng-click="removeItem($index,items11)">×</span></td>
+                                                </tr>
+                                            </table>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+                <!--内容框结束-->
+                <div class="modal-footer">
+                    <div  style="margin-left: 35%;">
+                        <button type="button" class="btn btn-default tab-btn" ng-click="btnCancle()">
+                            取消
+                        </button>
+                        <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="btnSubmit()">
+                            提交
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <!--新建END-->
+<!--tab页切换开始-->
+</body>
+</html>

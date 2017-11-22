@@ -1,0 +1,47 @@
+/**
+ * Created by NM on 2016/1/21.
+ *
+ */
+'use strict';
+
+define(function (require) {
+    var app = require('../app');
+
+    app.controller('indexCtrl', ['$scope','$http','$rootScope', function ($scope,$http,$rootScope) {
+        var filePath='';          //上传文件的路径
+        var fileUrl = $rootScope.fileUrl;           //获取请求路径
+        var url = $rootScope.url;//后台路径
+        var userCook = JSON.parse(sessionStorage.getItem("USER_LOGIN"));   //从cook中获取用户信息
+        $scope.user = userCook?userCook:user;                      //三目运算获取用户信息
+
+        //屏幕适配
+        $scope.loadDefault=function(){
+
+            var wWidth = $(window).width();
+            var wHeight = $(window).height();
+            $(".left").height(wHeight-70);
+            $(".content").height(wHeight-100);
+        };
+        $scope.loadDefault();
+      //  alert("我要修改logo");
+        console.log($scope.user.userId);
+        //
+        var userId = $scope.user.userId;
+        $http.get(url + '/PersonCustNew/getLogoByIdRestful/' + userId).success(function (date) {
+            console.log(date);
+           // console.log(date.Annex[0].annexAddress);
+            //取出截取好路径filePath:/upload\20160708\20160708144051_301.jpg
+            filePath=date.Annex[0].annexAddress;
+            var path = filePath.substring(filePath.lastIndexOf('\\')+1);
+            console.log(filePath);
+            //修改logo样式
+            filePath=filePath.replace(/\\/g,'/');
+            console.log(filePath);
+            $(".logo").css({"background":"url(" +fileUrl+ filePath + ")",'background-size':'126px 47px'}).css("height","47px");
+        }).error(function (data, status, headers, config) {
+            console.log(data);
+        });
+        //
+    }]);
+});
+

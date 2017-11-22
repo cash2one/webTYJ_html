@@ -1,0 +1,1170 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 物业项目计费模块
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../../../../app');
+
+    app.controller('propertyNewPlansCtrl', ['$scope', '$http','$rootScope','$location','$compile', function ($scope,$http,$rootScope,$location,$compile) {
+
+        var url = $rootScope.url;
+
+        $scope.currentEditIndex = null;
+        $scope.currentBuilding={areaNew:[]};
+        $scope.editArea=false;
+        $scope.currentEditArea={};
+        $scope.mark=false;
+        $scope._addCondition={};
+        $scope.addFormula = {}; //选择
+        $scope.chosestate = '0';
+        $scope.Formula = [];
+        $scope.map = {};           //通过ci_id查询对应的数据
+        $scope.map1 = {};           //通过ci_id查询对应的数据的状态
+        $scope.mapCiId = '';
+        $scope.constant = [];      //常量表
+        var project = sessionStorage.getItem("_project");
+        $scope.project = JSON.parse(project);
+        var arr_schemeId = sessionStorage.getItem('newSchemeID') || JSON.parse(sessionStorage.getItem('schemeId'))[0];
+        console.log(arr_schemeId);
+        $scope.newCurrentBuilding={             //新建筑对象
+            Formula:'',                         //公式
+            projectId:$scope.project.projectId, //项目id
+            areaNew:[]                          //面积属性详情列表
+        };
+
+        //编辑部分
+        if(!isEmpty(app.get('newProject').obj))
+        {
+            $scope.Scheme = {};
+            $scope.Scheme.schemeName = app.get('newProject').obj.schemeName;
+            $scope.Scheme.startDate = app.get('newProject').obj.startDate;
+            $scope.Scheme.endDate = app.get('newProject').obj.endDate;
+        }
+
+        //获取数据字典
+
+        //启用状态
+        $http.get(url + '/DataDictionarySlaveService/getDataDictionarySlaveRes/startType/' +$scope.project.projectId).success(function(data){
+            $scope.startTypeList = data.DataDictionarySlave;
+        });
+
+        //账户类型
+        $http.get(url + '/DataDictionarySlaveService/getDataDictionarySlaveRes/accountType/' +$scope.project.projectId).success(function(data){
+            $scope.accountTypeList = data.DataDictionarySlave;
+        });
+
+        //优先级
+        $http.get(url + '/DataDictionarySlaveService/getDataDictionarySlaveRes/priority/' +$scope.project.projectId).success(function(data){
+            $scope.priorityList = data.DataDictionarySlave;
+            console.log($scope.priorityList);
+        });
+
+        //公式条件
+        $http.get(url + '/DataDictionarySlaveService/getDataDictionarySlaveRes/conditionusetype/' +$scope.project.projectId).success(function(data){
+            $scope.conditionusetypeList = data.DataDictionarySlave;
+        });
+
+        //条件比较
+        $http.get(url + '/DataDictionarySlaveService/getDataDictionarySlaveRes/symbol/' +$scope.project.projectId).success(function(data){
+            $scope.symbolList = data.DataDictionarySlave;
+            console.log($scope.symbolList);
+        });
+
+
+        //获取收项目的信息列表
+        $scope.chooseData = {datas: []};
+        $scope.ChargeItemNew = [];
+        function chargeItemInit(){
+            $http.get(url + "/SchemeRelation/getSchemeRelationBySchemeId/"+arr_schemeId).success(function(data){
+                $scope.arr = [];
+                $scope.ChargeItemNew = data.SchemeRelation;
+                console.log($scope.ChargeItemNew);
+            }).error(function(){
+                layer.alert("获取方案明细列表失败!",{icon:1,time:1000});
+            });
+        }
+
+        //初始化
+        chargeItemInit();
+
+        //新增收费项目
+        $scope.f_ChargeItem = {};
+        //$scope.s_ChargeItem = [];
+        /*$scope.addChargeItem = function(){
+
+            //删除二级项目(项目修改功能)
+            if(parseInt(del_arr.length)>0){
+                $http.get(url + "/ChargeItemNew/deleteChargeItemParentsAndSon/" + del_arr.join(","));
+                del_arr  = [];
+            }
+
+            $scope.f_ChargeItem.projectId = $scope.project.projectId;
+            $scope.f_ChargeItem.chargeItemNewList = $scope.currentBuilding.areaNew;
+            $http.post(url + "/ChargeItemNew/insertChargeItemNew",{ChargeItemNew:$scope.f_ChargeItem}).success(function(data){
+                chargeItemInit();
+                $scope.arr = [];
+                layer.alert("操作成功!",{icon:1,time:1000});
+            }).error(function(){
+                layer.alert("操作失败!",{icon:1,time:1000});
+            });
+        };*/
+
+        $scope.addChargeItem = function(){
+            $('#new').modal('show');
+            var ciName = app.get('valueCheck').isNull($scope.f_ChargeItem.ciName);
+            var ciNum = app.get('valueCheck').isOnlyNumberAndNotNull($scope.f_ChargeItem.ciNum);
+            var startType = app.get('valueCheck').isNull($scope.f_ChargeItem.startType);
+            var accountType = app.get('valueCheck').isNull($scope.f_ChargeItem.accountType);
+            var priority = app.get('valueCheck').isNull($scope.f_ChargeItem.priority);
+            var billingType = app.get('valueCheck').isNull($scope.f_ChargeItem.billingType);
+            var billingDate = app.get('valueCheck').isTimerRightAndNotNull($scope.f_ChargeItem.billingDate);
+            var dateTime = app.get('valueCheck').isrightTime($scope.f_ChargeItem.startDate,$scope.f_ChargeItem.endDate);
+
+            if(!ciName.state)
+            {
+                layer.msg('项目名称不能为空',{icon:0});
+                return;
+            }else if(!ciNum.state)
+            {
+                layer.msg('项目编号'+ciNum.info,{icon:0});
+                return;
+            } else if(!startType.state)
+            {
+                layer.msg('请选择启用状态',{icon:0});
+                return;
+            }else if(!accountType.state)
+            {
+                layer.msg('请选择账户类型',{icon:0});
+                return;
+            }else if(!dateTime.state)
+            {
+                layer.msg(dateTime.info,{icon:0});
+                return;
+            }else if(!priority.state)
+            {
+                layer.msg('优先级不能为空',{icon:0});
+                return;
+            }else if($scope.f_ChargeItem.billingType!=2)
+            {
+                if(!billingType.state)
+                {
+                    layer.msg('请选择计费设置',{icon:0});
+                    return;
+                }else if(!billingDate.state)
+                {
+                    layer.msg('计费时间'+billingDate.info,{icon:0});
+                    return;
+                }
+            }else if($scope.currentBuilding.areaNew.length==0)
+            {
+                layer.msg('请新增收费详情',{icon:0});
+                return;
+            }
+
+            //删除二级项目(项目修改功能)
+            if(parseInt(del_arr.length)>0){
+                $http.get(url + "/ChargeItemNew/deleteChargeItemParentsAndSon/" + del_arr.join(","));
+                del_arr  = [];
+            }
+
+            $scope.f_ChargeItem.projectId = $scope.project.projectId;
+            $scope.f_ChargeItem.chargeItemNewList = $scope.currentBuilding.areaNew;
+
+            $http.post(url + "/ChargeItemNew/insertChargeItemNewAndRelation/"+arr_schemeId,{ChargeItemNew:$scope.f_ChargeItem}).success(function(data){
+                $('#new').modal('hide');
+                layer.msg("操作成功!",{icon:1,time:1000});
+                chargeItemInit();  //刷新数据
+            }).error(function(){
+                layer.msg("操作失败!",{icon:1,time:1000});
+            });
+        };
+
+        /**
+         * 新增按钮事件
+         */
+        $scope.addItem=function(){
+            //if(angular.isUndefined($scope.currentEditArea.ciName)){
+            if($scope.currentEditArea.ciName==null || $scope.currentEditArea.ciName==''){
+                $scope.editArea=true;
+                $scope.currentEditIndex=null;
+            }else{
+                layer.msg('请先保存数据！',{icon : 0,time : 1000});
+            }
+
+        };
+
+        /**
+         * 新增二级收费项目保存功能
+         */
+        $scope.addSave=function(){
+            if($scope.currentEditIndex!=null){
+                $scope.currentBuilding.areaNew[$scope.currentEditIndex]={
+                    ciName:$scope.currentEditArea.ciName,
+                    ciNum:$scope.currentEditArea.ciNum,
+                    ciId:$scope.currentBuilding.areaNew[$scope.currentEditIndex].ciId
+                };
+            }
+            else{
+                if($scope.currentEditArea.ciName==null || $scope.currentEditArea.ciName==''){
+                    layer.msg('收费详情不能为空', {icon: 0});
+                    return;
+                }
+                if($scope.currentEditArea.ciNum==null || $scope.currentEditArea.ciNum==''){
+                    layer.msg('编号不能为空', {icon: 0});
+                    return;
+                }
+                if(/^[0-9]*$/.test($scope.currentEditArea.ciNum)==false){
+                    layer.msg('编号非纯数字！',{icon:0})
+                    return;
+                }
+                $scope.currentBuilding.areaNew.push({
+                    ciName:$scope.currentEditArea.ciName,
+                    ciNum:$scope.currentEditArea.ciNum
+                });
+            }
+            $scope.editArea=false;
+            chargeItemInit();   //刷新数据
+            $scope.currentEditArea={};
+            //$scope.s_ChargeItem = $scope.currentBuilding.areaNew;
+            //console.log($scope.s_ChargeItem);
+        };
+
+
+
+        /**
+         * 点击选中  2016/2/25 By yeshengqiang 开始
+         */
+
+        $scope.getDate = function(item)
+        {
+
+            var allData = $scope.Formula;
+            //var num = [];
+            for(var i=0;i<allData.length;i++)
+            {
+                if(item.id == allData[i].id)
+                {
+                    if(document.getElementById(item.id).checked)
+                    {
+                        document.getElementById(item.id).checked = false;
+                        document.getElementById(item.id).parentNode.parentNode.style.background = '';
+                        var temp = $scope.chooseData.datas;
+                        $scope.chooseData = {datas: []};
+                        for (var i = 0; i < temp.length; i++) {
+                            if (temp[i].id != item.id) {
+                                $scope.chooseData.datas.push(temp[i]);
+                            }
+                        }
+                        break;
+                    }else
+                    {
+                        document.getElementById(item.id).checked = true;
+                        document.getElementById(item.id).parentNode.parentNode.style.background = '#f6f8fa';
+                        $scope.chooseData.datas.push(item);
+                        break;
+                    }
+                }
+            }
+            console.log($scope.chooseData);
+            /*for(var i=0;i<allData.length;i++)
+            {
+                if(document.getElementById(allData[i].id).checked)
+                {
+                    num.push(i);
+                }
+            }
+            if(num.length == allData.length)
+            {
+                $scope.chosestate = '0';
+                var datastaffList = allData;
+                allcheck(datastaffList);
+            }else
+            {
+                document.getElementById('allchose').checked = false;
+            }*/
+        };
+
+
+        /**
+         * 点击全选
+         */
+
+        /*$scope.allchose = function(item)
+        {
+            var datastaffList=item;
+            allcheck(datastaffList);
+        };
+        //全选
+        function allcheck(datastaffList)
+        {
+            if($scope.chosestate=='0'){
+                $scope.chooseData= {datas:[]};
+                for(var i=0;i<datastaffList.length;i++){
+                    document.getElementById(datastaffList[i].id).checked = true;
+                    $scope.chooseData.datas.push(datastaffList[i]);
+                    document.getElementById(datastaffList[i].id).parentNode.parentNode.style.background = '#f6f8fa';
+                }
+                document.getElementById("allchose").checked = true;
+                $scope.chosestate = '1';
+            }else{
+                for(var i=0;i<datastaffList.length;i++){
+                    document.getElementById(datastaffList[i].id).checked = false;
+                    document.getElementById(datastaffList[i].id).parentNode.parentNode.style.background = '';
+                }
+                $scope.chosestate = '0';
+                $scope.chooseData = {datas:[]};
+                document.getElementById("allchose").checked = false;
+            }
+        };*/
+        /**
+         * 点击选中  2016/2/25 By yeshengqiang 结束
+         */
+
+        //
+        $scope.cleaner = function()
+        {
+            $scope._addCondition.totalship='';
+        };
+        /**
+         *  新增公式
+         */
+        $scope.addNew = function()
+        {
+            $scope.msg = '新建公式';
+            $('#new1').modal('show');
+            $scope.zTreeMark = true;
+            $scope.mark1 = true;
+            $scope.newCurrentBuilding={             //新建筑对象
+                Formulaname:'',                         //公式
+                Formulavalue:'',                         //公式
+                projectId:$scope.project.projectId, //项目id
+                areaNew:[]                          //面积属性详情列表
+            };
+            $scope._addCondition.totalship='';
+            $('#logDiv').children().remove();
+            $scope.addFormula.conditionusetype = '';
+            formulas = {names:'',values:''};
+            $scope.currentEdit = {};
+        };
+
+        /**
+         * 判断对象是否为空对象
+         */
+        function isEmpty(obj)
+        {
+            for(var i in obj)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        /**
+         * 编辑
+         */
+        $scope.currentEdit = {};
+        $scope.editItem = function(items)
+        {
+            if($scope.chooseData.datas.length==1)
+            {
+                var index = -1;
+                angular.forEach(items,function(item,key)
+                {
+                    if(item.id==$scope.chooseData.datas[0].id)
+                    {
+                        index = key;
+                    }
+                });
+                if(index!=-1)
+                {
+                    $scope.currentEdit.id = $scope.chooseData.datas[0].id;
+                    $scope.currentEdit.index = index;
+                }
+                $scope.msg = '编辑公式';
+                $('#new1').modal('show');
+                $scope.mark1 = false;
+                $scope.newCurrentBuilding={                                   //新建筑对象
+                    Formulaname:$scope.chooseData.datas[0],                       //公式
+                    Formulavalue:$scope.chooseData.datas[0],                       //公式
+                    projectId:$scope.project.projectId,                       //项目id
+                    areaNew:$scope.chooseData.datas[0].areaNew                          //面积属性详情列表
+                };
+                $scope.addFormula.conditionusetype = $scope.chooseData.datas[0].conditionusetype;
+                $("#log").text($scope.chooseData.datas[0].Formulaname);
+                return;
+            }else if($scope.chooseData.datas.length>1)
+            {
+                layer.msg('只能编辑一条数据！',{icon : 0});
+                return;
+            }else
+            {
+                layer.msg('请选择需要编辑的数据！',{icon : 0});
+                return;
+            }
+        };
+
+        /**
+         * 删除
+         */
+        $scope.delectItem = function(items)
+        {
+            if($scope.chooseData.datas.length<1)
+            {
+                layer.msg('请选择需要删除的数据！',{icon : 0});
+                return;
+            }else if($scope.chooseData.datas.length>1)
+            {
+                layer.msg('一次只能删除一条数据！',{icon : 0});
+                return
+            }else
+            {
+                var index = -1;
+                angular.forEach(items,function(item,key)
+                {
+                    if(item.id==$scope.chooseData.datas[0].id)
+                    {
+                        index = key;
+                    };
+                });
+                if(index!=-1)
+                {
+                    $scope.Formula.splice(index,1);
+                    $scope.chooseData = {datas: []};
+                }
+            }
+        };
+
+        /**
+         *  复选框点击事件
+         */
+        $scope.arr = [];
+        $scope.getCheckBoxs = function(arg){
+            var index = $scope.arr.indexOf(arg)
+            if(index > -1){
+                $scope.arr.splice(index,1);
+            }else{
+                $scope.arr.push(arg);
+            }
+            console.log($scope.arr);
+        }
+        /**
+         * 删除功能
+         */
+
+        $scope.deleteChargeItem = function(){
+            var checkNum = $scope.arr.length;
+            if(parseInt(checkNum) < 1){
+                layer.alert("请选择一个项目删除!",{icon:0,time:1000});
+                return;
+            }
+
+            layer.confirm('确定要删除该条记录？', {
+                btn: ['确定','取消'] //按钮
+            }, function(){
+                $http.get(url + "/ChargeItemNew/deleteChargeItemParentsAndSon/"+$scope.arr.join(",")).success(function(data){
+                    chargeItemInit();
+                    $scope.arr = [];
+                    layer.alert(data.Info.info.$,{icon:1,time:1000});
+                }).error(function(){
+                    layer.alert("删除失败!",{icon:1,time:1000});
+                });
+            }, function(){
+                /*layer.msg('也可以这样', {
+                 time: 20000, //20s后自动关闭
+                 btn: ['明白了', '知道了']
+                 });*/
+            });
+            /*if(confirm("是否确定删除！")){
+                $http.get(url + "/ChargeItemNew/deleteChargeItemParentsAndSon/"+arr.join(",")).success(function(data){
+                    chargeItemInit();
+                    arr = [];
+                    alert(data.Info.info.$);
+                }).error(function(){
+                    alert("删除失败!");
+                });
+            }*/
+        }
+
+
+        /**
+         *  修改按钮点击事件
+         * @param index  行下标
+         */
+        $scope.updateItem=function(index){
+            $scope.editArea=true;
+            $scope.currentEditIndex=index;
+            var current=$scope.currentBuilding.areaNew[index];
+            $scope.currentEditArea={
+                chargeItemType:current.chargeItemType,
+                chargeItemArea:current.chargeItemArea,
+                unitPrice:current.unitPrice,
+                chargeUnit:current.chargeUnit
+            };
+        };
+
+
+        /**
+         * 修改保存
+         * @param index 行下标
+         */
+        $scope.updateSave=function(index){
+            $scope.tenementPact[index].editing=false;
+        };
+
+        /**
+         * 取消
+         * @param index 行下标
+         */
+        $scope.updateCancel=function(index){
+            $scope.tenementPact[index]=$scope.cloneItem;
+            $scope.tenementPact[index].editing=false;
+        };
+
+        /**
+         * 删除数据
+         * @param index 行下标
+         */
+        var del_arr = [];
+        $scope.deleteItem=function(index){
+            if($scope.editArea){
+                layer.msg('请先保存正在编辑的数据！', {icon: 0});
+                return;
+            }
+            layer.confirm('是否确认删除？',{btn:['是','否']},function(){
+                $scope.$apply(function(){
+                    $scope._deleteChargeItem = $scope.currentBuilding.areaNew.splice(index,1);
+                    if($scope._deleteChargeItem[0].ciId != undefined){
+                        del_arr.push($scope._deleteChargeItem[0].ciId);
+                    }
+                    $scope.editArea=false;
+                    $scope.currentEditArea.ciName = null;
+                    $scope.currentEditArea.ciNum = null;
+                });
+                layer.msg('删除成功！', {icon: 1});
+            },function(){
+            });
+            //console.log(del_arr.join(","));
+        };
+
+        /**
+         * 新增取消
+         */
+        $scope.addCancel=function(){
+            $scope.editArea=false;
+            $scope.currentEditArea ={};
+        };
+
+        /**
+         * 点击编辑按钮的事件
+         */
+        $scope.editChargeItem = function(){
+            $scope.alertName = "编辑";
+
+            var checkNum = $scope.arr.length;
+            if(parseInt(checkNum)== 0){
+                layer.alert("请选择一个项目进行修改!",{icon:0,time:1000});
+                return;
+            }
+
+            if(parseInt(checkNum)>1){
+                layer.alert("请选择一个项目进行修改!",{icon:1,time:1000});
+                return;
+            }
+
+            $("#_addBtn").hide();
+            $http.get(url + "/ChargeItemNew/getChargeItemNewById/" + $scope.arr[0]).success(function(data){
+                $scope.f_ChargeItem = {};
+                $scope.currentBuilding.areaNew = [];
+                $scope.f_ChargeItem = data.ChargeItemNew;
+                $scope.f_ChargeItem.startDate = new Date(data.ChargeItemNew.startDate);
+                $scope.f_ChargeItem.endDate = new Date(data.ChargeItemNew.endDate);
+                $scope.f_ChargeItem.billingDate = new Date(data.ChargeItemNew.billingDate);
+                if(angular.isObject($scope.f_ChargeItem)){
+                    if(angular.isObject($scope.f_ChargeItem.chargeItemNewList)){
+                        $scope.currentBuilding.areaNew.push($scope.f_ChargeItem.chargeItemNewList);
+                    }
+                    if(angular.isArray($scope.f_ChargeItem.chargeItemNewList)){
+                        $scope.currentBuilding.areaNew = $scope.f_ChargeItem.chargeItemNewList;
+                    }
+                }
+                $("#new").modal("show");
+            }).error(function(){
+                layer.alert("获取数据失败！",{icon:1,time:1000});
+            });
+        }
+
+
+
+        $scope.show4 = true;
+        $scope.show5 = false;
+        $scope.show6 = false;
+
+        /**
+         * 显示新建二级收费项目
+         */
+        $scope.plan = function(temp){
+            console.log(temp);
+            $scope.show4 = false;
+            $scope.show5 = true;
+            $scope.show6 = false;
+            $scope.temp = temp;
+            $http.get(url+ "/ChargeItemNew/getChargeItemNewbyciIdAndSchemeId/" + $scope.temp.ciId).success(function(data){
+                $scope.addChargeItemNew_two = data.ChargeItemNew;
+
+            }).error(function(){
+                layer.alert("获取收费项目明细表信息失败!",{icon:1,time:1000});
+            });
+        };
+
+        /**
+         * 根据二级收费项目获取公式和条件信息
+         */
+        $scope.itemIndex = '';
+        $scope.newPlan = function(param){
+            $scope.mapCiId = param.ciId;
+            $scope.itemIndex = param;
+            $scope.mapParentId = param.parentId;
+            $scope.show4 = false;
+            $scope.show5 = true;
+            $scope.show6 = true;
+            if(isEmpty($scope.map))
+            {
+                $http.get(url + "/Formula/getFormulaByciId/" + param.ciId).success(function(data){
+                    $scope.Formula = data.Formula;
+                }).error(function(){
+                    layer.alert("获取公式信息失败!",{icon:1,time:1000});
+                });
+            }else
+            {
+                $scope.Formula = $scope.map[param.ciId];
+            }
+        };
+
+        //清空
+        $scope.clean = function(){
+            $scope.f_ChargeItem = {};
+        }
+
+        //新增时清空记录
+        $scope.addModal = function(){
+            $scope.alertName = '新增';
+
+            $scope.f_ChargeItem = {};
+            $scope.currentBuilding.areaNew = [];
+            $("#_addBtn").show();
+        }
+
+        $scope.AboutScheme = {};
+        //添加建筑结构id
+        $scope.addBuildingIdListToDetails = function(){
+            $scope.buildingids = [];
+            $scope.buildingIdlist = [];
+            $scope.buildingids = $scope.addWaterCheck;
+            $scope.schemeDetails = [];
+            console.log($scope.buildingids);
+            $scope.buildingIdlist = [];
+            for(var i = 0; i < $scope.buildingids.length; i ++){
+                $scope.SchemeDatails={};
+
+                $scope.SchemeDatails.buildingId = $scope.addWaterCheck[i].id;
+                $scope.buildingIdlist.push($scope.addWaterCheck[i].id);
+                $scope.SchemeDatails.buildingIdlist = $scope.buildingIdlist;
+                $scope.schemeDetails.push($scope.SchemeDatails);
+            }
+            console.log($scope.buildingIdlist);
+        };
+
+        //查询所有建筑结构信息.
+        $http.get(url+'/BuildingStructureNew/listAllBuildingStructureNewByAllIdOptimize/'+$scope.id).success(function(data){
+            $scope.zNodes =[{}];
+            //获取json数据
+            $scope.buildingStructureNews = data.BuildingStructureNew;
+            var tasks =  $scope.buildingStructureNews;
+            if(tasks!=null){
+                for(var i=0;i<tasks.length;i++){
+                    $scope.zNode ={ id:tasks[i].id, pId:tasks[i].parentId, name:tasks[i].nodeName,fullname:tasks[i].fullName,checked:tasks[i].checked};
+                    $scope.zNodes.push($scope.zNode);
+                }
+                $.fn.zTree.init($("#treeDemo"), setting, $scope.zNodes);
+
+                var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+                var nodes = zTree.getNodes();
+                nodes[0].name = "建筑信息";
+                zTree.updateNode(nodes[0]);
+            }
+        }).error(function(data,status,headers,config){
+            layer.alert("建筑信息查询失败！",{icon:1,time:1000});
+        });
+
+        var zTreeOnCheck=function(event, treeId, treeNode) {
+            var treeObj=$.fn.zTree.getZTreeObj("treeDemo");
+            var nodes=treeObj.getCheckedNodes(true);
+            $scope.treeResult={treeList:[]};
+            for(var i=0;i<nodes.length;i++){
+                if(nodes[i].isParent==false) {
+                    $scope.treeResult.treeList.push(nodes[i]);
+                }
+                if(nodes[i].check_Child_State == -1)
+                {
+                    $rootScope.addressIdT=nodes[i].id;
+                    console.log($rootScope.addressIdT);
+                }
+            }
+            console.log("treeList:" + $scope.treeResult.treeList);
+        };
+        /**
+         * 显示选中的树状数据
+         */
+        $scope.addWaterReading = function(){
+            $scope.addWaterCheck = $scope.treeResult.treeList;
+        };
+        var setting = {
+            check:{
+                enable:true
+            },
+            view: {
+                selectedMulti: false
+            },
+            edit: {
+                enable: false,
+                editNameSelectAll: false
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            },
+            callback: {
+                onCheck:zTreeOnCheck
+            }
+        };
+
+        function selectAll() {
+            var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+            zTree.setting.edit.editNameSelectAll =  $("#selectAll").attr("checked");
+        }
+
+        $(document).ready(function(){
+            $("#selectAll").bind("click", selectAll);
+        });
+
+        $scope.backList = function(){
+            $scope.show4 = true;
+            $scope.show5 = false;
+            $scope.show6 = false;
+            if($scope.map1[$scope.mapCiId]!=1)
+            {
+                $scope.map[$scope.mapCiId] = [];
+            }
+        };
+
+        //方案保存
+        $scope.Scheme = {};
+
+        $scope.addScheme = function(){
+            if($scope.Scheme.schemeName==''||$scope.Scheme.schemeName==undefined||$scope.Scheme.schemeName==null)
+            {
+                layer.msg('请输入方案名称！',{icon:1});
+                return;
+            }
+            $scope.schemeRelationId = [];
+            //方案id，方案名称
+            $scope.AboutScheme.scheme = {};
+            $scope.AboutScheme.scheme.schemeId = arr_schemeId;
+            $scope.AboutScheme.scheme.schemeName = $scope.Scheme.schemeName;
+            $scope.AboutScheme.scheme.startDate = $scope.Scheme.startDate;
+            $scope.AboutScheme.scheme.endDate = $scope.Scheme.endDate;
+            $scope.AboutScheme.scheme.buildingList = $scope.buildingIdlist;
+            $scope.AboutScheme.scheme.projectId = $scope.project.projectId;
+
+
+            //一级收费项目id
+            for(var i=0;i<$scope.ChargeItemNew.length;i++)
+            {
+                var temp ={};
+                temp.chargeItemId = $scope.ChargeItemNew[i].chargeItemNew.ciId;
+                $scope.schemeRelationId.push(temp);
+            }
+            $scope.AboutScheme.schemeRelation = $scope.schemeRelationId;
+            var rightTime = app.get('valueCheck').isrightTime($scope.Scheme.startDate,$scope.Scheme.endDate)
+            if(!rightTime.state){
+                layer.msg(rightTime.info,{icon: 0,time:2000});
+                return;
+            }
+            //公司条件数组
+
+            if($scope.addChargeItemNew_two==undefined)
+            {
+                layer.msg('请新建二级收费项目！',{icon:1});
+                return;
+            }else
+            {
+                var tenp =[];
+                for(var i=0;i<$scope.addChargeItemNew_two.length;i++)
+                {
+                    var formula = {};
+                    formula.chargeItemId = $scope.addChargeItemNew_two[i].ciId;
+                    formula.chargeItemName = $scope.addChargeItemNew_two[i].ciName;
+                    formula.formulaList = $scope.map[$scope.addChargeItemNew_two[i].ciId];
+                    tenp.push(formula);
+                }
+                $scope.AboutScheme.schemeDetails = tenp;
+            }
+
+            $http.post(url + "/Scheme/addScheme",{AboutScheme:$scope.AboutScheme}).success(function(){
+                layer.msg("保存成功!",{icon : 1,time : 1000});
+                $location.path('/index/accountManagement/productAndProperty/product/propertyProject/plan/detailPlan/');
+                if(sessionStorage.getItem('newSchemeID')!=null)
+                {
+                    sessionStorage.removeItem('newSchemeID');
+                }
+                chargeItemInit();
+            }).error(function(){
+                layer.msg("保存失败!",{icon : 0,time : 1000});
+            });
+        };
+
+        /**
+         *
+         * 方案取消
+         */
+        $scope.backDetail = function()
+        {
+            if(sessionStorage.getItem('newSchemeID')!=null)
+            {
+                sessionStorage.removeItem('newSchemeID');
+            }
+            $location.path('/index/accountManagement/productAndProperty/product/propertyProject/plan/detailPlan/');
+        };
+
+
+        $scope.Constant = {};
+        $scope.addConstant = function(){
+            $scope.Constant.schemeId = $scope.project.projectId;
+            $scope.Scheme.projectName = $scope.project.projectName;
+            $scope.AboutScheme.scheme = $scope.Scheme;
+            $scope.AboutScheme.schemeRelation = $scope.arr;
+            $http.post(url + "/Scheme/addScheme",{AboutScheme:$scope.AboutScheme}).success(function(){
+                layer.msg("保存成功!",{icon : 1,time : 1000});
+                chargeItemInit();   //刷新数据
+            }).error(function(){
+                layer.msg("保存失败!",{icon : 0,time : 1000});
+            });
+        };
+        
+        var setting1 = {
+            check:{
+                enable:false
+            },
+            view: {
+                selectedMulti: false
+            },
+            edit: {
+                enable: false,
+                editNameSelectAll: false
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            },
+            callback: {
+            	onClick:zTreeOnClick
+            }
+        };
+        
+        //查询常用常量及符号
+        $http.get(url+'/Constant/listAllConstant').success(function(data){
+            $scope.zNodes =[{}];
+            angular.forEach(data.Constant,function(item,key)
+            {
+                if(item.parentsId==1)
+                {
+                    $scope.constant.push(item);
+                }
+            });
+            //获取json数据
+            var tasks =  data.Constant;
+            if(tasks!=null){
+                for(var i=0;i<tasks.length;i++){
+                	if (tasks[i].parentsId == '0') {
+                		$scope.zNode ={id:tasks[i].constantId, pId:tasks[i].parentsId, name:tasks[i].constantName,value:tasks[i].commonValue, isParent:true};
+                	} else {
+                		$scope.zNode ={id:tasks[i].constantId, pId:tasks[i].parentsId, name:tasks[i].constantName,value:tasks[i].commonValue, isParent:false};
+                	}
+                	$scope.zNodes.push($scope.zNode);
+                }
+                console.log($scope.zNodes);
+                $.fn.zTree.init($("#treeConstant"), setting1, $scope.zNodes);
+                var zTree = $.fn.zTree.getZTreeObj("treeConstant");
+                var nodes = zTree.getNodes();
+                nodes[0].name = "常量信息";
+                zTree.updateNode(nodes[0]);
+            }
+        }).error(function(data,status,headers,config){
+            layer.alert("常用常量及符号查询失败！",{icon:1,time:1000});
+        });
+
+        var log ="";
+        var formulas = {names:'',values:''};
+        function zTreeOnClick(event, treeId, treeNode) {
+            console.log(treeNode);
+            if(treeNode.isParent==false) {
+                if((treeNode.pId==3)&&$scope.zTreeMark){
+                    layer.msg('请先选择计算项目！',{icon:0,time:2000});
+                    return;
+                }else{
+                    $scope.zTreeMark = false;
+                }
+            	if (!log) log = $("#logDiv");
+    			log.append("<span>"+treeNode.name+"</span>");
+                formulas.names += treeNode.name;
+                formulas.values += treeNode.value;
+            }
+        }
+
+        //清除公式
+        $scope.clearAll = function()
+        {
+            if (!log) log = $("#logDiv");
+            log.find('span').remove();
+            formulas = {names:'',values:''};
+            $scope.zTreeMark = true;
+        };
+
+     	//清除条件
+        $scope.cleanCon = function(id){
+            var index = -1;
+            angular.forEach($scope.newCurrentBuilding.areaNew,function(item,key)
+            {
+                if(item.areaTypeId == id)
+                {
+                    index = key;
+                }
+            });
+            if(index!=-1)
+            {
+                $scope.newCurrentBuilding.areaNew.splice(index,1);
+            }
+        };
+        
+        //插入条件
+        $scope.newCurrentBuilding={             //新建筑对象
+            Formulaname:'',                         //公式
+            Formulavalue:'',                         //公式
+            projectId:$scope.project.projectId, //项目id
+            areaNew:[]                          //面积属性详情列表
+        };
+        $scope.mark1 = true;
+        $scope.addCon = function(){
+            if(angular.isUndefined($scope._addCondition.commonName)){
+                $scope.mark1 = true;
+                $scope.currentEditIndex=null;
+            }else{
+                layer.msg('请先保存正在修改的数据！',{icon : 0,time : 1000});
+            }
+        };
+
+        //保存
+        $scope.addConstants1 = function()
+        {
+            var commonName = app.get('valueCheck').isNull($scope._addCondition.commonName);
+            var symbol = app.get('valueCheck').isNull($scope._addCondition.symbol);
+            var commonvalue = app.get('valueCheck').isNumberAndNotNull($scope._addCondition.commonvalue);
+            var relationship = app.get('valueCheck').isNull($scope._addCondition.relationship);
+            if(!commonName.state){
+                layer.msg('请选择条件!',{icon:0,time:2000});
+                return
+            }else if(!symbol.state){
+                layer.msg('请选择变量!',{icon:0,time:2000});
+                return
+            }else if(!commonvalue.state){
+                layer.msg('变量'+commonvalue.info+'!',{icon:0,time:2000});
+                return
+            }else if(!relationship.state){
+                layer.msg('请选择关系!',{icon:0,time:2000});
+                return
+            }
+
+            for(var i=0;i<$scope.symbolList.length;i++)
+            {
+                if($scope.symbolList[i].slaveId==$scope._addCondition.symbol)
+                {
+                    $scope._addCondition.symbol = $scope.symbolList[i].slaveName;
+                    $scope._addCondition.symbolDescription = $scope.symbolList[i].description;
+                    break;
+                }
+            }
+            for(var i=0;i<$scope.constant.length;i++)
+            {
+                if($scope.constant[i].constantId==$scope._addCondition.commonName)
+                {
+                    $scope._addCondition.commonName = $scope.constant[i].constantName;
+                    $scope._addCondition.constantValue = $scope.constant[i].commonValue;
+                    break;
+                }
+            }
+            console.log($scope._addCondition.totalship);
+            if($scope.currentEditIndex!=null){
+                $scope.newCurrentBuilding.areaNew[$scope.currentEditIndex]={
+                    areaTypeId:sessionStorage.getItem('itemId'),
+                    commonName:$scope._addCondition.commonName,
+                    constantValue:$scope._addCondition.constantValue,
+                    symbolName:$scope._addCondition.symbol,
+                    symbolDescription:$scope._addCondition.symbolDescription,
+                    commonvalue:$scope._addCondition.commonvalue,
+                    relationship:$scope._addCondition.relationship
+                };
+            }
+            else{
+                $scope.newCurrentBuilding.areaNew.push({
+                    areaTypeId:app.get('tyjUtil').uuid(),
+                    commonName:$scope._addCondition.commonName,
+                    constantValue:$scope._addCondition.constantValue,
+                    symbolName:$scope._addCondition.symbol,
+                    symbolDescription:$scope._addCondition.symbolDescription,
+                    commonvalue:$scope._addCondition.commonvalue,
+                    relationship:$scope._addCondition.relationship
+                });
+            }
+            $scope.mark1 = true;
+            $scope.currentEditIndex=null;
+            $scope._addCondition={};
+
+
+        };
+
+        $scope.createCon = function()
+        {
+            $scope._addCondition.totalshipDescription = '';
+            $scope._addCondition.totalship = '';
+            var ship = $scope.newCurrentBuilding.areaNew;
+            for(var i=0;i<ship.length;i++)
+            {
+                $scope._addCondition.totalshipDescription += ship[i].constantValue+' '+ship[i].symbolName+' '+ship[i].commonvalue+' '+ship[i].relationship;
+                $scope._addCondition.totalship += ship[i].commonName+ship[i].symbolName+ship[i].commonvalue+ship[i].relationship;
+            }
+            var cube = $scope._addCondition.totalshipDescription.replace(ship[ship.length-1].relationship,'');
+            $scope._addCondition.totalshipDescription = cube;
+            var cuba = $scope._addCondition.totalship.replace(ship[ship.length-1].relationship,'');
+            $scope._addCondition.totalship = cuba;
+            $scope.mark1 = false;
+        };
+
+        /**
+         *  零时中转函数
+         */
+        $scope.centerChange = function(item)
+        {
+            $scope.newDate = {};
+            for(var i in item)
+            {
+                $scope.newDate[i] = item[i];
+            };
+            return $scope.newDate;
+        };
+
+        //修改
+        $scope.addConstants2 = function(id)
+        {
+            sessionStorage.setItem('itemId',id);
+            $scope._addCondition = {};
+            var index = -1;
+            angular.forEach($scope.newCurrentBuilding.areaNew,function(item,key)
+            {
+                if(item.areaTypeId == id)
+                {
+                    index = key;
+                }
+            });
+            if(index!=-1)
+            {
+                $scope._addCondition = $scope.centerChange($scope.newCurrentBuilding.areaNew[index]);
+                $scope.currentEditIndex = index;
+                $scope.mark1 = true;
+            }
+        };
+
+        $scope.saveCon = function () {
+        	$scope.mark1 = false;
+        }
+        
+        //确认新增物业类常项
+        var len = 1;
+        $scope.addConstants = function(index) {
+        	$scope.mark=true;
+        }
+        
+        //确认删除物业类常项
+        $scope.delConstants = function(index) {
+        	$scope.tenementPact[index].editing=false;
+        }
+
+
+        //公式保存
+        $scope.saveFormula = function(){
+            var temp =[];
+            var tnp={};
+            if($scope.Formula==undefined)
+            {
+                $scope.Formula = [];
+            }
+
+            $scope.newCurrentBuilding.conditionusetype = $scope.addFormula.conditionusetype;
+
+            $scope.newCurrentBuilding.Formulaname = formulas.names;
+            $scope.newCurrentBuilding.Formulavalue = formulas.values;
+
+            if($scope._addCondition.totalship==null||$scope._addCondition.totalship==""){
+                layer.msg('请先生成条件！',{icon:0,time:2000});
+                return
+            }
+            if($scope.newCurrentBuilding.Formulaname==null||$scope.newCurrentBuilding.Formulaname==""){
+                layer.msg('请输入公式！',{icon:0,time:2000});
+                return
+            }
+
+            var abc ={};//临时对象
+            abc.conditionName=$scope._addCondition.totalship.replace($scope.newCurrentBuilding.areaNew[$scope.newCurrentBuilding.areaNew.length-1].relationship,'');
+            abc.conditionExpression = $scope._addCondition.totalshipDescription.replace($scope.newCurrentBuilding.areaNew[$scope.newCurrentBuilding.areaNew.length-1].relationship,''); //条件组合
+            temp.push(abc);
+
+            tnp.conditionList = temp;
+            tnp.conditionusetype = $scope.addFormula.conditionusetype;
+            tnp.formulaName = $scope.newCurrentBuilding.Formulaname;
+            tnp.formulaExpression = $scope.newCurrentBuilding.Formulavalue;
+            tnp.areaNew = $scope.newCurrentBuilding.areaNew;
+
+            $('#new1').modal('hide');
+            if(!isEmpty($scope.currentEdit))
+            {
+                tnp.id = $scope.currentEdit.id;
+                $scope.Formula[$scope.currentEdit.index]=tnp;
+                $scope.chooseData = {datas: []};
+            }else
+            {
+                tnp.id = app.get('tyjUtil').uuid();
+                $scope.Formula.push(tnp);
+            }
+        };
+        $scope.formulaList = [];
+        //二级保存
+        $scope.saveList = function()
+        {
+
+            if($scope.mapCiId!='')
+            {
+                $scope.map[$scope.mapCiId] = $scope.Formula;
+                $scope.map1[$scope.mapCiId] = 1;
+                $scope.show4 = true;
+                $scope.show5 = false;
+                $scope.show6 = false;
+
+            }
+        };
+
+    }]);
+});

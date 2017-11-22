@@ -1,0 +1,57 @@
+<!--
+    前端负责人：倪明
+    页面名称：顶部导航条
+    创建时间：2015/4/1
+    修改时间：2015/9/20
+-->
+<nav class="navbar navbar-default navbar_top">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false" >
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a ui-sref="index.enterprise" ng-class="{'navigation_this ':btnIndex==1}" ng-click="doClick(1)" class="navbar-brand">企业信息</a>
+        <!--<a ui-sref="index.workBench" ng-class="{'navigation_this ':btnIndex==2}" ng-click="doClick(2)" class="navbar-brand">工作台</a>-->
+        <!--<a ui-sref="index.order" ng-class="{'navigation_this ':btnIndex==3}" ng-click="doClick(3)" class="navbar-brand">工单管理</a>-->
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1"><!-- 将链接更改为跳转，在跳转前增加权限判断  王洲  2016.1.30 -->
+        <ul class="nav navbar-nav">
+            <li>
+                <a style="cursor: pointer" ng-class="{'navigation_this ':btnIndex==4}" ng-click="doClick(4)">基础管理</a>
+            </li>
+            <li>
+                <a style="cursor: pointer" ng-class="{'navigation_this ':btnIndex==5}" ng-click="doClick(5)">人事管理</a>
+            </li>
+            <li>
+                <a style="cursor: pointer" ng-class="{'navigation_this ':btnIndex==6}" ng-click="doClick(6)">系统设置</a>
+            </li>
+           <li>
+                <a ui-sref="index.propertyService" ng-class="{'navigation_this ':btnIndex==7}" ng-click="doClick(7)">物业服务</a>
+            </li>
+            <!-- <li>
+                <a ui-sref="index.businessManagement" ng-class="{'navigation_this ':btnIndex==8}" ng-click="doClick(8)">业务管理</a>
+            </li>
+            <li>
+                <a ui-sref="index.accountManagement" ng-class="{'navigation_this ':btnIndex==9}" ng-click="doClick(9)">计费管理</a>
+            </li>
+            <li>
+                <a ui-sref="index.serviceRequest" ng-class="{'navigation_this ':btnIndex==10}" ng-click="doClick(10)">服务请求</a>
+            </li>
+            <li>
+                <a ui-sref="index.cashier" ng-class="{'navigation_this ':btnIndex==11}" ng-click="doClick(11)">收款台</a>
+            </li>-->
+            <li>
+                <a ui-sref="index.videoIntercom.equipmentManage" ng-class="{'navigation_this ':btnIndex==12}" ng-click="doClick(12)">可视对讲</a>
+            </li>
+
+           <!-- <li>
+                <a ui-sref="index.business" ng-class="{'navigation_this ':btnIndex==15}" ng-click="doClick(15)">商业智能</a>
+            </li>-->
+        </ul>
+    </div><!-- /.navbar-collapse -->
+</nav>

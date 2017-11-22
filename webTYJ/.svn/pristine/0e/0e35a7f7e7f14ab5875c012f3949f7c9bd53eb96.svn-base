@@ -1,0 +1,232 @@
+<!--
+    创建人：彭婷婷
+    创建时间：2015-10-10
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>账户管理</title>
+</head>
+<body>
+<div class="sel">
+    <div class="row search-padding-10">
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            客户姓名：
+        </div>
+        <div class="col-lg-3 col-md-3 col-sm-3">
+            <input class="form-control" type="text" ng-model="searchAssetAccount.name">
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            资产类型：
+        </div>
+        <div class="col-lg-3 col-md-3 col-sm-3">
+            <select class="form-control" ng-model="searchAssetAccount.assetAccountType">
+              <option value="">请选择</option>
+              <option value="0">资产账户</option>
+              <option value="1">押金账户</option>
+            </select>
+        </div>
+        <div class="col-lg-4 col-md-2 col-sm-2 text-right">
+            <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="searchData()">
+                <span class="glyphicon glyphicon-search btn_icon"></span>
+                搜索
+            </button>
+        </div>
+    </div>
+
+</div>
+<div class="row padding">
+    <div class="col-lg-12">
+        <div class="search-padding-10">
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                资产账户信息：
+            </div>
+            <button type="button" class="btn btn-default btn-primary" ng-click="addMoney()">充值</button>
+            <button type="button" class="btn btn-default btn-primary" ng-click="showList()">交易记录</button><!-- 增加查看交易记录的按钮 王洲 2015.12.31 -->
+        </div>
+        <table>
+            <thead>
+            <tr>
+                <th></th>
+                <th>资产类型</th>
+                <th>资产编号</th>
+                <th>地址</th>
+                <th>资产账户编号</th>
+                <th>绑定银行卡</th>
+                <th>物业公司</th>
+                <th>账户余额</th>
+                <th>账户详情</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="items in  currentMeter.object['assetAccounts']" ng-show="items['assetAccountId'] != null">
+                <td><input type="checkbox" id="{{items.assetAccountId}}" name="aaa" ng-click="getdata(items)"></td>
+                <td ng-switch="items.assetAccountType">
+                    <span ng-switch-when="0">资产账户</span>
+                    <span ng-switch-when="1">押金账户</span>
+                </td>
+                <td>{{items.assetNum}}</td>
+                <td>{{items.fullName}}</td>
+                <td>{{items.assetAccountNum}}</td>
+                <td><span ng-switch on="items.isBankCard">
+                    <span ng-switch-when="1">未绑定银行卡</span>
+                    <span ng-switch-when="0">已绑定银行卡</span>
+                </span></td>
+                <td>{{items.companyName}}</td>
+                <td>{{items.generalBalance}}</td>
+                <td><a data-toggle="modal" data-target="#and" ng-click="searchAsset(items)">详情</a></td>
+            </tr>
+
+            </tbody>
+        </table>
+        <div class="bill_paging">
+            <ul class="pagination">
+                <li><a style="cursor:pointer;" ng-click="currentMeter.go(1)">首页</a></li>
+                <li><a style="cursor:pointer;" ng-show="currentMeter.hasPrevious()" ng-click="currentMeter.previous()">上一页</a></li>
+                <li><a style="cursor:pointer;" ng-repeat="i in currentMeter.pages"  ng-click="currentMeter.go(i)">{{i}}</a></li>
+                <li><a style="cursor:pointer;" ng-show="currentMeter.hasNext()" ng-click="currentMeter.next()">下一页</a></li>
+                <li><a style="cursor:pointer;" ng-click="currentMeter.go(currentMeter.page.totalPage)">尾页</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="row padding">
+    <div class="col-lg-12" ng-show="show1">
+        <div class="search-padding-10">
+    账户收支信息
+        </div>
+        <table>
+            <thead>
+            <tr>
+                <th>收支类别</th>
+                <th>资产账户编号</th>
+                <th>收费项目</th>
+                <th>支付类型</th>
+                <th>交易金额</th>
+                <th>交易时间</th>
+                <th>账户余额</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="item in  currentAdvance.object['advancePaymentsDetails']" ng-show="item['advancePaymentsDetailsId'] != null">
+                <td><span ng-if="item.isOutIn==0">收入</span><span ng-if="item.isOutIn==1">支出</span></td>
+                <td>{{item.assetAccountNum}}</td>
+                <td>{{item.chargeItemName}}</td>
+                <td><span ng-if="item.paymentType==0">现金</span><span ng-if="item.paymentType==1">刷卡</span><span ng-if="item.paymentType==2">微信</span></td>
+                <td>{{item.transactionAmount}}</td>
+                <td>{{item.transactionDate | date:'yyyy-MM-dd'}}</td>
+                <td>{{item.accountBalance}}</td>
+            </tr>
+
+            </tbody>
+        </table>
+        <div class="bill_paging">
+            <ul class="pagination">
+                <li><a style="cursor:pointer;" ng-click="currentAdvance.go(1)">首页</a></li>
+                <li><a style="cursor:pointer;" ng-show="currentAdvance.hasPrevious()" ng-click="currentAdvance.previous()">上一页</a></li>
+                <li><a style="cursor:pointer;" ng-repeat="i in currentAdvance.pages"  ng-click="currentAdvance.go(i)">{{i}}</a></li>
+                <li><a style="cursor:pointer;" ng-show="currentAdvance.hasNext()" ng-click="currentAdvance.next()">下一页</a></li>
+                <li><a style="cursor:pointer;" ng-click="currentAdvance.go(currentAdvance.page.totalPage)">尾页</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="and" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                账户详情
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="padding20">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>账户明细</th>
+                        <th>可支配余额</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="items in AssetAccountDetail">
+                        <td>{{$index+1}}</td>
+                        <td>{{items.detailName}}</td>
+                        <td>{{items.disposableBalance}}</td>
+                    </tr>
+                    <tr><td colspan="3">通用余额：{{generalBalance}}</td></tr>
+                    </tbody>
+                </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="bbb" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+              预付款充值
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="padding20">
+                <div class="row search-padding">
+                    <div class="col-lg-3 col-md-2 col-sm-2 text-right">
+                        资产账户编号：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        {{assetForSearch.assetNum}}
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                        充值金额：
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4">
+                        <input type="text" class="form-control" placeholder="请输入充值金额" id="addPrice">
+                    </div>
+                </div>
+                <div class="row search-padding">
+                    <div class="col-lg-4 col-md-4 col-sm-4 text-right">
+                        是否设置可抵扣收费项目：
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2">
+                        <label class="checkbox inline">
+                            <input type="checkbox" id="1" name="isCharge" value="1" ng-click="setCharge(1)">
+                            <span>是</span>
+                        </label>
+                    </div>
+                <div class="col-lg-2 col-md-2 col-sm-2">
+                    <label class="checkbox inline">
+                        <input type="checkbox" id="2" name="isCharge" value="0" ng-click="setCharge(2)">
+                        <span>否</span>
+                    </label>
+                </div>
+                </div>
+                <div class="row search-padding">
+                    <div class="col-lg-4 col-md-4 col-sm-4 text-right">
+                       可抵扣收费项目：
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2" ng-repeat="cil in ChargeItemNewList">
+                        <label class="checkbox inline">
+                            <input type="checkbox" name="cilist" id="{{cil.ciId}}" ng-click="chooseCharge(cil)">
+                            <span>{{cil.ciName}}</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" ng-click="clear()">取消</button>
+                <button type="button" class="btn btn-primary" ng-click="topUPDemo()">充值</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

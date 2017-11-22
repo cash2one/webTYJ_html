@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+    <div id="content-first">
+        <!--tab页切换开始-->
+        <div id="tab">
+            <a ui-sref="index.accountManagement.productAndProperty.product.propertyProject.plan.detailPlan">方案列表</a>
+            <a lang="no" ui-sref="index.accountManagement.productAndProperty.product.propertyProject.plan.newPlan" id="newplan" style="display:none"> 新增方案</a>
+            <a lang="no" ui-sref="index.accountManagement.productAndProperty.product.propertyProject.plan.newPlan" id="updateplan" style="display:none"> 修改方案</a>
+        </div>
+        <!--tab页切换结束-->
+        <div ui-view></div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,15 @@
+<!--
+    前端负责人：倪明
+    页面名称：首页加载
+    创建时间：2015/5/25
+    修改时间：2015/9/20
+-->
+
+<div class="bottom-navigation">
+    <!--<div class="bottom-nav-btn">-->
+        <!--<div class="nav-btn"><a style="cursor: pointer"><img src="images/down/home-img01.png" width="43" height="46"></a></div>-->
+        <!--<div class="nav-btn"><a href="javascript:window.history.back()"><img src="images/down/home-img02.png" width="43" height="46"></a> </div>-->
+        <!--<div class="nav-btn"><a style="cursor: pointer"><img src="images/down/home-img03.png" width="43" height="46"></a> </div>-->
+        <!--<div class="clear"></div>-->
+    <!--</div>-->
+</div>

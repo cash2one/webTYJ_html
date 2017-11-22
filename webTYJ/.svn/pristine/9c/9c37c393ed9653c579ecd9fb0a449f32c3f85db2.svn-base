@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>项目团队管理</title>
+    <style>
+        /*.group_user_height{width:100%;}*/
+        .user_check_pannel {
+            width: 100%;
+            margin-top: 30px;
+        }
+
+        .chooseThisOne {
+            width: 0;
+            height: 0;
+            border-bottom: 30px solid rgb(40, 137, 216);
+            border-left: 30px solid transparent;
+            float: right;
+            bottom: -12px;
+            position: relative;
+        }
+
+        .divX {
+            z-index: 100;
+            border-style: solid;
+            border-width: 1px;
+            border-color: #FF0000;
+            -moz-border-radius: 20px;
+            -webkit-border-radius: 20px;
+            background-color: #ffffff;
+            line-height: 10px;
+            text-align: center;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 10px;
+            color: red;
+            display: none;
+        }
+
+        .team_img {
+            width: 100px;
+            height: 100px;
+            float: left;
+            text-align: center;
+        }
+    </style><!-- 为团队详情负责人处图片设置新样式  王洲  2016.1.9  -->
+</head>
+<body>
+<!--
+ 修改所有引用图片的样式，更换缺失的图片
+ 王洲
+ 2016.1.9
+ -->
+<div id="content-first">
+    <div id="tab">
+        <a lang="no" class="this_action ">项目团队管理</a>
+    </div>
+    <div ng-show="indexStaff==1">
+        <div class="sel">
+            <div class="row search-padding-10">
+                <div class="col-lg-1 col-md-1 col-sm-1">
+
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    查询条件：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <input class="form-control" placeholder="请输入查询条件" ng-model="teamwork.leader" ng-keyup="clickSearch()">
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    <button type="button" class="btn btn-default btn-primary" ng-click="searchPaginator._load()">
+                        <span class="glyphicon glyphicon-search btn_icon"></span>
+                        查询
+                    </button>
+                </div>
+                <div class="col-lg-2 col-md-1 col-sm-1">
+
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4 text-right">
+                    <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="listview()">
+                        <span class="glyphicon glyphicon-search btn_icon"></span>
+                        列表
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="tabview()">
+                        <span class="glyphicon glyphicon-search btn_icon"></span>
+                        网格
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!--显示团队开始-->
+        <!--<div class="padding">
+            <button type="button" class="btn btn-default btn-primary">
+                返回
+            </button>
+            <button type="button" class="btn btn-default btn-primary">
+                编辑
+            </button>
+        </div>-->
+        <div class="padding">
+
+            <div class="col-lg-12">
+                <!-- 网格的显示与隐藏 songjia 2016-02-05 start -->
+                <div class="search-padding-10" ng-show="showStatus==0">
+                    <div class="col-lg-4 col-md-6 col-sm-6" ng-repeat="item in searchPaginator.object.teamworks"
+                         ng-show="item.id!=null">
+                        <div id="pannel">
+                            <div class="title">
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                    <h3>项目团队信息</h3>
+                                </div>
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                    <span class="glyphicon glyphicon-search" data-toggle="modal" data-target="#datil"
+                                          ng-click="getTeam(item)"></span>
+                                </div>
+                            </div>
+                            <div class="pannel_content">
+                                <div class="row">
+                                    <div class="col-xs-4 col-lg-4 col-md-4">
+                                        <a style="cursor: pointer" data-toggle="modal" data-target="#datil"
+                                           ng-click="getTeam(item)">
+                                            <img src="images/project/user/user_3.png" width="100%">
+                                        </a>
+                                    </div>
+                                    <div class="col-xs-8 col-lg-8 col-md-8">
+                                        <div class="row search-padding 10">
+                                            <div class="col-lg-6 col-md-4 col-sm-4 text-right">团队经理：</div>
+                                            <div class="col-lg-6 col-md-8 col-sm-8">{{item.staff.staffName}}</div>
+                                            <div class="col-lg-6 col-md-4 col-sm-4 text-right">核心岗位数量：</div>
+                                            <div class="col-lg-6 col-md-8 col-sm-8">{{item.corePostNumber}}</div>
+                                            <div class="col-lg-6 col-md-4 col-sm-4 text-right">成员数量：</div>
+                                            <div class="col-lg-6 col-md-8 col-sm-8">
+                                                <span ng-if="item.teamworkAmount != null">{{item.teamworkAmount}}</span>
+                                                <span ng-if="item.teamworkAmount == null">0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-sm-6" ng-show="searchPaginator.object.teamworks.length == null">
+                        <div id="pannel">
+                            <div class="title">
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                    <h3>项目团队信息</h3>
+                                </div>
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                    <span class="glyphicon glyphicon-search"></span>
+                                </div>
+                            </div>
+                            <div class="pannel_content">
+                                <div class="row">
+                                    <div class="col-xs-4 col-lg-4 col-md-4">
+                                        <a style="cursor: pointer">
+                                            <img src="images/project/user/user_3.png" width="100%">
+                                        </a>
+                                    </div>
+                                    <div class="col-xs-8 col-lg-8 col-md-8">
+                                        <div class="row search-padding 10">
+                                            暂无数据！
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 网格的显示与隐藏 songjia 2016-02-05 end-->
+                </div>
+            </div>
+
+            <!-- 列表的显示与隐藏 songjia 2016-02-05 start -->
+            <div class="search-padding-10" ng-show="showStatus==1">
+                <table>
+                    <thead>
+                    <tr>
+                        <th><span style="width: 15px">&nbsp;</span></th>
+                        <th>团队经理</th>
+                        <th>核心岗位数量</th>
+                        <th>成员数量</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr style="cursor:pointer;" ng-repeat="item in searchPaginator.object.teamworks"
+                        ng-show="item.staff.staffId!=null" ng-dblclick="toShow(items);" data-toggle="modal"
+                        data-target="#datil" ng-click="getTeam(item)">
+                        <td>{{$index}}</td>
+                        <td>{{item.staff.staffName}}</td>
+                        <td>{{item.corePostNumber}}</td>
+                        <td>{{item.teamworkAmount}}</td>
+                    </tr>
+                    <tr ng-if="searchPaginator.object.teamworks.length == null">
+                        <td colspan="12">暂无数据！</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+            </div> <!-- 列表的显示与隐藏 songjia 2016-02-06 end -->
+            <div class="bill_paging">
+                <span>共{{searchPaginator.object.page.totalResult}}条</span>
+                <ul class="pagination">
+                    <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-click="searchPaginator.go(1)">首页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-show="searchPaginator.hasPrevious()"
+                           ng-click="searchPaginator.previous()">上一页</a>
+                    </li>
+                    <li ng-class="{true:'active'}[searchPaginator.page.currentPage==i]"
+                        ng-repeat="i in searchPaginator.pages">
+                        <a href="javascript:void(0)" ng-click="searchPaginator.go(i)">{{i}}</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                        <a href="javascript:void(0)" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                        <a href="javascript:void(0)" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a>
+                    </li>
+                </ul>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </div>
+
+    <!--显示团队结束-->
+    <!--团队人员开始-->
+    <div class="padding" ng-show="indexStaff==2">
+            <div class="row">
+                <div class="sel row">
+                    <div class="col-lg-4 col-md-4 col-sm-4">
+                        <b>团队成员</b>
+                    </div>
+                    <div class="col-lg-8 col-md-8 col-sm-8">
+                        <button type="button" class="btn btn-primary pull-right" ng-click="backToList()">
+                            <span class="glyphicon glyphicon-backward btn_icon"></span>返回列表
+                        </button>
+                    </div>
+                </div>
+                <div class="row sel">
+                    <div class="row padding">
+                        <!--人员面版1-->
+                        <div class="row">
+                            <div class="row ">
+                                <div id="pannel">
+                                    <div class="title">
+                                        <h3>团队经理</h3>
+                                    </div>
+                                    <div class="pannel_content2">
+                                        <div class="team_img">
+                                            <img src="images/project/user/user_3.png" width="100%"
+                                                 style="cursor: pointer" ng-click="ifUsers(teamLeaderInfo.staff,1)">
+                                        </div>
+                                        <div class="user_scher_text">
+                                            团队经理：{{teamLeaderInfo.staff.staffName}}<br/>
+                                            登录名：<span>{{TUserInfo1.loginName}}</span><br/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--人员面版1结束-->
+                        <!--人员面版1-->
+                        <div class="row">
+                            <div class="row ">
+                                <div id="pannel">
+                                    <div class="title">
+                                        <h3>管理岗位</h3>
+                                    </div>
+                                    <div class="pannel_content2">
+                                        <div class="col-lg-4 col-md-12 col-sm-12" ng-repeat="itemsPost in teamPost.Post">
+                                            <div class="col-lg-5 col-md-12 col-sm-12"></div>
+                                            <div class="col-lg-7 col-md-12 col-sm-12">
+                                                {{itemsPost.nameOfCustom}}
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="row">
+
+                                <div id="pannel">
+                                    <div class="title">
+                                        <h3>团队成员</h3>
+                                    </div>
+                                    <div class="pannel_content">
+                                        <div class="user_guoupa_pannel_25s">
+                                            <a style="cursor: pointer" data-toggle="modal" data-target="#addNumber"
+                                               ng-click="getStaff()">
+                                                <img src="images/icon/mn/add.png" width="49" height="49"
+                                                     class="ourguoupimg">
+                                            </a>
+                                        </div>
+                                        <!--<div class="user_guoupa_pannel_25" ng-repeat="items in staffInfo" id="items.staffId"
+                                             onclick="if(this.style.background == ''){this.style.background='#f6f8fa';}else{this.style.background='';}">-->
+                                        <div class="user_guoupa_pannel_25s" ng-repeat="items in staffInfo" id="{{items.staffId}}">
+                                            <div class="text-right"><a style="font-size: 20px;cursor: pointer"ng-click="delMember(items,$index)">×</a></div>
+                                            <img src="images/project/user/user_3.png" width="50px"
+                                                 style="margin-top:-15px;cursor: pointer" ng-click="ifUsers(items,2)">
+
+                                            <br>
+                                            <!-- 修复明显的标识来标明这个人是团队操作员 zhuqi2016-2-16 start -->
+                                            <span class="user_group_name_grey" style="cursor: pointer;"
+                                                  ng-click="ifUsers(items,2)" ng-if="items.markState == 0">{{items.staffName}}</span>
+                                            <span class="user_group_name_grey" style="cursor: pointer; color: #2e8ded"
+                                                  ng-click="ifUsers(items,2)" ng-if="items.markState == 1">{{items.staffName}}</span>
+                                            <!-- 修复明显的标识来标明这个人是团队操作员 zhuqi2016-2-16 end -->
+                                        </div>
+                                        <div class="user_guoupa_pannel_25s" ng-repeat="itemes in insertStaff.staffs"
+                                             ng-if="itemes.staffName != null" style="cursor: pointer;"
+                                             onclick="if(this.style.background == ''){this.style.background='#f6f8fa';}else{this.style.background='';}">
+                                            <div class="text-right"><a style="font-size: 20px;cursor: pointer"
+                                                                       ng-click="removelist($index)">x</a></div>
+                                            <img src="images/project/user/user_3.png" width="50px"
+                                                 style="margin-top:-15px;cursor: pointer">
+
+                                            <br>
+                                            <div class="user_group_name_grey" style="cursor: pointer;">{{itemes.staffName}}</div>
+                                        </div>
+                                        <div style="text-align: center;line-height:90px;" ng-if="staffInfo.length == 0 && insertStaff.staffs.length == 0">
+                                            此团队中尚无人员，请添加人员！
+                                        </div>
+                                        <div class="clear"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" ng-show="tuserInfo == true">
+                                <div id="pannel">
+                                    <div class="title">
+                                        <h3>用户信息</h3>
+                                    </div>
+                                    <div class="pannel_content">
+                                        <div class="user_guoupa_pannel_100">
+                                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                                        <div class="col-lg-5 col-md-5 col-sm-5 text-right">登录名：</div>
+                                                        <div class="col-lg-7 col-md-7 col-sm-7">
+                                                            {{TUserInfo.loginName}}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                                        <div class="col-lg-5 col-md-5 col-sm-5 text-right">创建人：</div>
+                                                        <div class="col-lg-7 col-md-7 col-sm-7">
+                                                            {{TUserInfo.createrId}}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                                        <div class="col-lg-5 col-md-5 col-sm-5 text-right">创建时间：</div>
+                                                        <div class="col-lg-7 col-md-7 col-sm-7">{{TUserInfo.createTime |
+                                                            date:'yyyy-MM-dd'}}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                                        <div class="col-lg-5 col-md-5 col-sm-5 text-right">修改人：</div>
+                                                        <div class="col-lg-7 col-md-7 col-sm-7">{{TUserInfo.modifyId}}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                                        <div class="col-lg-5 col-md-5 col-sm-5 text-right">修改时间：</div>
+                                                        <div class="col-lg-7 col-md-7 col-sm-7">
+                                                            {{TUserInfo.modifyTime}}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                                        <div class="col-lg-5 col-md-5 col-sm-5 text-right">账号状态：</div>
+                                                        <div class="col-lg-7 col-md-7 col-sm-7">
+                                                         <span ng-switch on="TUserInfo.state">
+                                                             <span ng-switch-when="1">启用</span>
+                                                             <span ng-switch-when="0">禁用</span>
+                                                             <span ng-switch-default>启用</span>
+                                                         </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-8 col-md-8 col-sm-8" ng-show="showteaminfo">
+                                                    <div class="sel1">
+                                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                                            尚不是团队操作员，是否设置为团队操作员？
+                                                        </div>
+                                                        <div class="col-lg-12 col-md-12 col-sm-12 text-right">
+                                                            <button type="button" class="btn btn-default btn-primary"
+                                                                    ng-click="changeRole()">
+                                                                是
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-8 col-md-8 col-sm-8" ng-show="showteam">
+                                                    <div class="sel1" style="overflow: auto;height:350px">
+                                                        <table>
+                                                            <thead>
+                                                            <tr>
+                                                                <th>项目名称</th>
+                                                                <th ng-repeat="items in title">
+                                                                    {{items.SpecialtyInfo.specialtyName}}
+                                                                </th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            <tr ng-repeat="data in data1">
+                                                                <td>{{data.tr.project.projectName}}</td>
+                                                                <td ng-repeat="td in data.td">
+                                                                    <input
+                                                                            id="{{data.tr.project.projectId}}{{$index}}"
+                                                                            name="teamids" type="checkbox"
+                                                                            value="{{td.teamid}}"
+                                                                            ng-click="updateTeamToUser(data.tr.project.projectId+$index,data,td.corePositionId)">
+                                                                </td>
+                                                            </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="clear"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--人员面版1结束-->
+                    <div class="clear"></div>
+                </div>
+                <div class="row text-center padding">
+                    <div class="">
+                        <button type="button" class="btn btn-default" ng-click="cancle()">取消
+                        </button>
+                        <button type="button" class="btn btn-default btn-primary"
+                                ng-click="insert()">提交
+                        </button>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+            </div>
+    </div>
+    <!--团队人员模态框结束-->
+    <!--团队人员模态框开始-->
+    <!--<div class="modal fade" id="datil" role="dialog" aria-label="personDatil" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span>团队人员</span>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row padding">
+                        &lt;!&ndash;人员面版1&ndash;&gt;
+                        <div class="col-lg-6 col-md-6 col-sm-6">
+                            <div class="row building_padding">
+                                <div class="user_new_pannel">
+                                    <div class="user_new_pannel_title">
+                                        <span>团队经理</span>
+                                    </div>
+                                    <div class="user_scher_pannel_text">
+                                        <div class="team_img">
+                                            <img src="images/project/user/user_3.png" width="100%"
+                                                 style="cursor: pointer" ng-click="ifUsers(teamLeaderInfo.staff,1)">
+                                        </div>
+                                        <div class="user_scher_text">
+                                            团队经理：{{teamLeaderInfo.staff.staffName}}<br/>
+                                            登录名：<span>{{TUserInfo1.loginName}}</span><br/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        &lt;!&ndash;人员面版1结束&ndash;&gt;
+                        &lt;!&ndash;人员面版1&ndash;&gt;
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <div class="row building_padding">
+                                <div class="user_new_pannel">
+                                    <div class="user_new_pannel_title">
+                                        <span>管理岗位</span>
+                                    </div>
+                                    <div class="user_guoupa_pannel_text">
+                                        <div class="col-lg-4 col-md-12 col-sm-12" ng-repeat="itemsPost in teamPost.Post">
+                                            <div class="col-lg-5 col-md-12 col-sm-12"></div>
+                                            <div class="col-lg-7 col-md-12 col-sm-12">
+                                                    {{itemsPost.nameOfCustom}}
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <div class="row building_padding">
+
+                                <div class="user_new_pannel">
+                                    <div class="user_new_pannel_title">
+                                        <span>团队成员</span>
+                                    </div>
+                                    <div class="user_guoupa_pannel_text">
+                                        <div class="user_guoupa_pannel_25">
+                                            <a style="cursor: pointer" data-toggle="modal" data-target="#addNumber"
+                                               ng-click="getStaff()">
+                                                <img src="images/icon/mn/add.png" width="49" height="49"
+                                                     class="ourguoupimg">
+                                            </a>
+                                        </div>
+                                        &lt;!&ndash;<div class="user_guoupa_pannel_25" ng-repeat="items in staffInfo" id="items.staffId"
+                                             onclick="if(this.style.background == ''){this.style.background='#f6f8fa';}else{this.style.background='';}">&ndash;&gt;
+                                        <div class="user_guoupa_pannel_25" ng-repeat="items in staffInfo" id="{{items.staffId}}">
+                                            <div class="text-right"><a style="font-size: 20px;cursor: pointer"ng-click="delMember(items,$index)">×</a></div>
+                                            <img src="images/project/user/user_3.png" width="50px"
+                                                 style="margin-top:-15px;cursor: pointer" ng-click="ifUsers(items,2)">
+
+                                            <br>
+                                            &lt;!&ndash; 修复明显的标识来标明这个人是团队操作员 zhuqi2016-2-16 start &ndash;&gt;
+                                            <span class="user_group_name_grey" style="cursor: pointer;"
+                                                  ng-click="ifUsers(items,2)" ng-if="items.markState == 0">{{items.staffName}}</span>
+                                            <span class="user_group_name_grey" style="cursor: pointer; color: #2e8ded"
+                                                  ng-click="ifUsers(items,2)" ng-if="items.markState == 1">{{items.staffName}}</span>
+                                            &lt;!&ndash; 修复明显的标识来标明这个人是团队操作员 zhuqi2016-2-16 end &ndash;&gt;
+                                        </div>
+                                        <div class="user_guoupa_pannel_25" ng-repeat="itemes in insertStaff.staffs"
+                                             ng-if="itemes.staffName != null" style="cursor: pointer;"
+                                             onclick="if(this.style.background == ''){this.style.background='#f6f8fa';}else{this.style.background='';}">
+                                            <div class="text-right"><a style="font-size: 20px;cursor: pointer"
+                                                                       ng-click="removelist($index)">x</a></div>
+                                            <img src="images/project/user/user_3.png" width="50px"
+                                                 style="margin-top:-15px;cursor: pointer">
+
+                                            <br>
+                                            <span class="user_group_name_grey" style="cursor: pointer;">{{itemes.staffName}}</span>
+                                        </div>
+                                        <div style="text-align: center;line-height:90px;" ng-if="staffInfo.length == 0 && insertStaff.staffs.length == 0">
+                                            此团队中尚无人员，请添加人员！
+                                        </div>
+                                        <div class="clear"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row building_padding" ng-show="tuserInfo == true">
+                                <div class="user_new_pannel">
+                                    <div class="user_new_pannel_title">
+                                        <span>用户信息</span>
+                                    </div>
+                                    <div class="user_guoupa_pannel_text">
+                                        <div class="user_guoupa_pannel_100">
+                                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                                        <div class="col-lg-5 col-md-5 col-sm-5 text-right">登录名：</div>
+                                                        <div class="col-lg-7 col-md-7 col-sm-7">
+                                                            {{TUserInfo.loginName}}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                                        <div class="col-lg-5 col-md-5 col-sm-5 text-right">创建人：</div>
+                                                        <div class="col-lg-7 col-md-7 col-sm-7">
+                                                            {{TUserInfo.createrId}}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                                        <div class="col-lg-5 col-md-5 col-sm-5 text-right">创建时间：</div>
+                                                        <div class="col-lg-7 col-md-7 col-sm-7">{{TUserInfo.createTime |
+                                                            date:'yyyy-MM-dd'}}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                                        <div class="col-lg-5 col-md-5 col-sm-5 text-right">修改人：</div>
+                                                        <div class="col-lg-7 col-md-7 col-sm-7">{{TUserInfo.modifyId}}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                                        <div class="col-lg-5 col-md-5 col-sm-5 text-right">修改时间：</div>
+                                                        <div class="col-lg-7 col-md-7 col-sm-7">
+                                                            {{TUserInfo.modifyTime}}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                                        <div class="col-lg-5 col-md-5 col-sm-5 text-right">账号状态：</div>
+                                                        <div class="col-lg-7 col-md-7 col-sm-7">
+                                                         <span ng-switch on="TUserInfo.state">
+                                                             <span ng-switch-when="1">启用</span>
+                                                             <span ng-switch-when="0">禁用</span>
+                                                             <span ng-switch-default>启用</span>
+                                                         </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-8 col-md-8 col-sm-8" ng-show="showteaminfo">
+                                                    <div class="sel1">
+                                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                                            尚不是团队操作员，是否设置为团队操作员？
+                                                        </div>
+                                                        <div class="col-lg-12 col-md-12 col-sm-12 text-right">
+                                                            <button type="button" class="btn btn-default btn-primary"
+                                                                    ng-click="changeRole()">
+                                                                是
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-8 col-md-8 col-sm-8" ng-show="showteam">
+                                                    <div class="sel1">
+                                                        <table>
+                                                            <thead>
+                                                            <tr>
+                                                                <th>项目名称</th>
+                                                                <th ng-repeat="items in title">
+                                                                    {{items.SpecialtyInfo.specialtyName}}
+                                                                </th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            <tr ng-repeat="data in data1">
+                                                                <td>{{data.tr.project.projectName}}</td>
+                                                                <td ng-repeat="td in data.td">
+                                                                    <input
+                                                                        id="{{data.tr.project.projectId}}{{$index}}"
+                                                                        name="teamids" type="checkbox"
+                                                                        value="{{td.teamid}}"
+                                                                        ng-click="updateTeamToUser(data.tr.project.projectId+$index,data,td.corePositionId)">
+                                                                </td>
+                                                            </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="clear"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        &lt;!&ndash;人员面版1结束&ndash;&gt;
+                        <div class="clear"></div>
+                    </div>
+                <div class="modal-footer">
+                    <div class="save_concel_botton icon_float_else">
+                        <button type="button" class="btn btn-default" ng-click="cancle()">取消
+                        </button>
+                        <button type="button" class="btn btn-default btn-primary" data-dismiss="modal"
+                                ng-click="insert()">提交
+                        </button>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    -->
+    <!--团队人员模态框结束-->
+    <!--添加团队人员开始-->
+    <div class="modal fade" id="addNumber" role="dialog" aria-label="personDatil" aria-hidden="true"
+         data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span>添加团队人员</span>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true" ng-click="css()">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="padding">
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <div class="user_new_pannel">
+                                <div class="user_check_pannel_title">人员选择列表
+                            </div>
+                                <div class="user_check_pannel_text">
+                                    <!--所有团队人员开始-->
+                                    <div class="user_check_pannel_20 thisOne choose"
+                                         onclick="if(this.style.background==''){this.style.background='#f6f8fa'}else{this.style.background=''}"
+                                         ng-repeat="choose in staffsone" ng-click="checkIt(choose)">
+                                        <img src="images/project/user/user_3.png" width="50px"><br>
+                                        <span>{{choose.staffName}}</span>
+                                    </div>
+                                    <!--所有团队人员结束-->
+                                    <div class="clear"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="save_concel_botton icon_float_else">
+                        <a href="" class="radius_all button_bule" data-dismiss="modal"
+                           ng-click="addTeamNumber();">确定</a>
+
+                        <div class="clear"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--添加团队人员结束-->
+    <div class="clear"></div>
+</div>
+</body>
+</html>

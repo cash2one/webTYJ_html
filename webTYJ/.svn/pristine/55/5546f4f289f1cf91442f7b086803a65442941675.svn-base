@@ -1,0 +1,582 @@
+<!--
+    作者：尹霞
+    名称：账户管理
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>账户管理</title>
+</head>
+<body>
+<div class="padding_info">
+
+    <div id="content-first">
+        <!--tab页切换开始-->
+        <div id="tab">
+            <a ng-class="{'this_action ':btnIndex==1}" ng-click="showCheck1(1)">账户信息</a>
+            <a ng-class="{'this_action ':btnIndex==2}" ng-click="showCheck2(2)">计费账单</a>
+            <a ng-class="{'this_action ':btnIndex==3}" ng-click="showCheck3(3)" lang="no">押金</a>
+            <!--<a ng-click="showCheck4()">收款台</a>
+            <a lang="no" ng-click="showCheck5()">客户消费记录</a>-->
+        </div>
+        <!--tab页切换结束-->
+        <!--账户信息-->
+        <div ng-show="show1">
+            <div class="row padding">
+                <div class="col-lg-12">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>个人账号</th>
+                            <th>项目名称</th>
+                            <th>欠费账户总金额</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>{{account.accountNum}}</td>
+                            <td>{{account.projectName}}</td>
+                            <td>{{account.totalBalanceOfDelinquentAccounts}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row padding">
+                <div class="col-lg-12">
+                    <h5>资产账户信息</h5>
+                    <!--<div class="search-padding-10">
+                        <button type="button" class="btn btn-default btn-primary" data-toggle="modal" data-target="#charge"><span class="glyphicon glyphicon-search btn_icon"></span>查看明细</button>
+                    </div>-->
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>资产类型</th>
+                            <th>资产编号</th>
+                            <th>地址</th>
+                            <th>资产账户编号</th>
+                            <th>绑定银行卡</th>
+                            <th>物业公司</th>
+                            <th>账户余额</th>
+                            <th>账户详情</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="item in assetAccounts" ng-click="showDetails(item.account.assetAccountNum)" ng-show="item.accountRelationId">
+                            <td><span ng-switch on="item.account.assetAccountType">
+                                <span ng-switch-when="0">资产账户</span>
+                                <span ng-switch-when="1">押金账户</span>
+                            </span>
+                            </td>
+                            <td>{{item.account.assetNum}}</td>
+                            <td>{{item.account.buildingStructureNew.fullName}}</td>
+                            <td>{{item.account.assetAccountNum}}</td>
+                            <td>{{item.account.isBankCard}}</td>
+                            <td>{{item.account.company}}</td>
+                            <td>{{item.account.assetAccountBalance}}</td>
+                            <td><a>详情</a></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row padding">
+                <div class="col-lg-12">
+                    <h5>收支明细</h5>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>收支类别</th>
+                            <th>资产账户编号</th>
+                            <th>收费项目</th>
+                            <th>支付类型</th>
+                            <th>交易金额</th>
+                            <th>交易时间</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="item in currentAdvancePaymentDetails.object.advancePaymentsDetails" ng-show="item.advancePaymentsDetailsId!=null">
+                            <td><span ng-switch on="item.isOutIn">
+                                <span ng-switch-when="0">收入</span>
+                                <span ng-switch-when="1">支出</span>
+                            </span></td>
+                            <td>{{item.assetAccountNum}}</td>
+                            <td>{{'收费项目'}}</td>
+                            <td><span ng-switch on="item.paymentType">
+                                <span ng-switch-when="0">现金</span>
+                                <span ng-switch-when="1">刷卡</span>
+                                <span ng-switch-when="2">微信</span>
+                            </span>
+                            </td>
+                            <td>{{item.transactionAmount}}</td>
+                            <td>{{item.transactionDate | date : 'yyyy-MM-dd'}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row padding">
+                <div class="col-lg-12">
+                    <!--分页开始-->
+                    <div class="bill_paging pull-right">
+                        <ul class="pagination">
+                            <li><a style="cursor:pointer;" ng-click="currentAdvancePaymentDetails.go(1)">首页</a></li>
+                            <li><a style="cursor: pointer;" ng-show="currentAdvancePaymentDetails.hasPrevious()" ng-click="currentAdvancePaymentDetails.previous()">上一页</a></li>
+                            <li><a style="cursor: pointer;" ng-repeat="i in currentAdvancePaymentDetails.pages"  ng-click="currentAdvancePaymentDetails.go(i)">{{i}}</a></li>
+                            <li><a style="cursor: pointer;" ng-show="currentAdvancePaymentDetails.hasNext()" ng-click="currentAdvancePaymentDetails.next()">下一页</a></li>
+                            <li><a style="cursor:pointer;" ng-click="currentAdvancePaymentDetails.go(currentAdvancePaymentDetails.page.totalPage)">尾页</a></li>
+                        </ul>
+                    </div>
+                    <!--分页结束-->
+                </div>
+            </div>
+        </div>
+        <!--账户信息 结束-->
+
+        <!--计费账单-->
+        <div ng-show="show2">
+            <div class="sel">
+                <div class="col-lg-1 col-md-2 col-sm-2">
+
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right" >
+                    <!--修改时间控件
+                    2016/5/18
+                    徐文广
+                    -->
+                到账时间：
+                 </div>
+                <div class="col-lg-2 col-md-4 col-sm-4 ">
+                    <input type="text" onclick="WdatePicker({readOnly:true})"  class="Wdate form-control" ng-model="electronicBillingQuery.billDate" onchange=""  ng-blur="checkDates()" ng-change="getStall(stallss.id,false)">
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    账单编号：
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-4">
+                    <input type="text" class="form-control" ng-model="electronicBillingQuery.electronicBillingNum" placeholder="请输入账单编号">
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    收费对象：
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-4">
+                    <input type="text" class="form-control" ng-model="electronicBillingQuery.fullName" placeholder="请输入收款对象">
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-4 text-left">
+                    <button type="button" class="btn btn-default btn-primary" ng-click="queryElectronicBills()"><span class="glyphicon glyphicon-search btn_icon"></span>查看</button>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="row padding">
+                <div class="col-lg-12">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>账单时间</th>
+                            <th>账单编号</th>
+                            <th>地址</th>
+                            <th>本期应收金额</th>
+                            <th>本期应收余额</th>
+                            <th>上期未结清累计金额</th>
+                            <th>滞纳金</th>
+                            <th>本期欠款累计金额</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="item in electronicBilling" ng-click="showBills(item)">
+                            <td>{{item.billDate | date : 'yyyy-MM-dd'}}</td>
+                            <td>{{item.electronicBillingNum}}</td>
+                            <td>{{item.fullName}}</td>
+                            <td>{{item.currentSum}}</td>
+                            <td>{{item.currentSum-item.collectSum}}</td>
+                            <td>{{item.lastOweSum}}</td>
+                            <td>{{item.overdue}}</td>
+                            <td>{{item.currentOweSum}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="sel">
+                <div class="row search-padding-10">
+                    <div class="col-lg-1 col-md-2 col-sm-2">
+                        账单编号
+                    </div>
+                    <div class="col-lg-5 col-md-4 col-sm-4">
+                                {{info.billNum}}
+                    </div>
+                    <div class="col-lg-1 col-md-2 col-sm-2">
+                        总欠款
+                    </div>
+                    <div class="col-lg-5 col-md-4 col-sm-4">
+                                {{info.oweSum}}
+                    </div>
+                </div>
+            </div>
+            <div class="row padding">
+                <div class="col-lg-12">
+                    <div class="search-padding-10">
+                        本月明细
+                        <button ng-click="showHistory()" class="btn btn-default btn-primary pull-right">查询历史明细</button>
+                    </div>
+
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>出账时间</th>
+                            <th>应收月份</th>
+                            <th>收费单号</th>
+                            <th>收费项目</th>
+                            <th>本期应收金额</th>
+                            <th>本期应收余额</th>
+                            <th>上期未结清累计金额</th>
+                            <th>滞纳金</th>
+                            <th>本期欠款累计金额</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="item in bills">
+                            <td>{{item.billDate | date : 'yyyy-MM-dd'}}</td>
+                            <td>{{item.billDate | date : 'yyyy-MM'}}</td>
+                            <td>{{item.billNum}}</td>
+                            <td>{{item.chargeItemName}}</td>
+                            <td>{{item.billingSum}}</td>
+                            <td>{{item.billingSum-item.collectSum}}</td>
+                            <td>{{item.noCollectSum}}</td>
+                            <td>{{item.overdue}}</td>
+                            <td>{{item.cumulativeAmountOfArrears}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!--<div class="row padding">-->
+                <!--<div class="pull-right" style="margin-right: 15px;">-->
+                    <!--<button class="btn btn-primary">保存</button>-->
+                <!--</div>-->
+            <!--</div>-->
+        </div>
+        <!--计费账单 结束-->
+
+        <!--押金-->
+        <div ng-show="show3">
+            <div class="row padding">
+                <div class="col-lg-12">
+                    <h5>账户信息</h5>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>账户所有人</th>
+                            <th>账户编号</th>
+                            <th>绑定银行卡</th>
+                            <th>物业公司</th>
+                            <th>账户余额</th>
+                            <th>押金总额</th>
+                            <th>可退押金总额</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="item in assetAccountForDeposit" ng-click="showDepositDetail(item)">
+                            <td>{{custId}}</td>
+                            <td>{{item.assetAccountNum}}</td>
+                            <td>{{item.isBankCard}}</td>
+                            <td>{{item.company}}</td>
+                            <td>{{item.assetAccountBalance}}</td>
+                            <td>{{item.totalDeposits}}</td>
+                            <td>{{item.totalRefundableDeposit}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row padding">
+                <div class="col-lg-12">
+                    <h5>押金明细</h5>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>操作</th>
+                            <th>退款人</th>
+                            <th>收费对象</th>
+                            <th>收费项目</th>
+                            <th>账户编号</th>
+                            <th>支付类型</th>
+                            <th>交易类型</th>
+                            <th>交易金额</th>
+                            <th>交易时间</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="item in currentDetail.object.advancePaymentsDetails" ng-click="showDepositDeduct(item.advancePaymentsDetailsId)" ng-show="item.advancePaymentsDetailsId!=null">
+                            <td>2015-05</td>
+                            <td>{{custId}}</td>
+                            <td>{{chargeObject}}</td>
+                            <td>{{chargeItemName}}</td>
+                            <td>{{item.assetAccountNum}}</td>
+                            <td><span ng-switch on="item.paymentType">
+                                <span ng-switch-when="0">现金</span>
+                                <span ng-switch-when="1">刷卡</span>
+                                <span ng-switch-when="2">微信</span>
+                            </span>
+                            </td>
+                            <td>押金</td>
+                            <td>{{item.transactionAmount}}</td>
+                            <td>{{item.transactionDate | date : 'yyyy-MM-dd'}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row padding">
+                <div class="col-lg-12">
+                    <!--分页开始-->
+                    <div class="bill_paging pull-right">
+                        <ul class="pagination">
+                            <li><a style="cursor:pointer;" ng-click="currentDetail.go(1)">首页</a></li>
+                            <li><a style="cursor: pointer;" ng-show="currentDetail.hasPrevious()" ng-click="currentDetail.previous()">上一页</a></li>
+                            <li><a style="cursor: pointer;" ng-repeat="i in currentDetail.pages"  ng-click="currentDetail.go(i)">{{i}}</a></li>
+                            <li><a style="cursor: pointer;" ng-show="currentDetail.hasNext()" ng-click="currentDetail.next()">下一页</a></li>
+                            <li><a style="cursor:pointer;" ng-click="currentDetail.go(currentDetail.page.totalPage)">尾页</a></li>
+                        </ul>
+                    </div>
+                    <!--分页结束-->
+                </div>
+            </div>
+            <div class="row padding" ng-show="depositDeducts!=null">
+                <div class="col-lg-12">
+                    <h5>押金付款信息</h5>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>扣款日期</th>
+                            <th>扣款项名称</th>
+                            <th>扣款金额</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="item in depositDeducts">
+                            <td>{{item.deductionsDate | date : 'yyyy-MM-dd'}}</td>
+                            <td>{{item.deductionsName}}</td>
+                            <td>{{item.deductionsSum}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!--押金 结束-->
+
+        <!--收款台-->
+        <div ng-show="show4">
+            <div class="row padding">
+                <div class="col-lg-12">
+                    <h5>账户信息</h5>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>账户所有人</th>
+                            <th>账户编号</th>
+                            <th>绑定银行卡</th>
+                            <th>物业公司</th>
+                            <th>账户余额</th>
+                            <th>押金总额</th>
+                            <th>可退押金总额</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>2015-05</td>
+                            <td>1101123422</td>
+                            <td>世外桃源大厦A座501</td>
+                            <td>500.00</td>
+                            <td>500.00</td>
+                            <td>300.00</td>
+                            <td>20.00</td>
+                        </tr>
+                        <tr>
+                            <td>2015-05</td>
+                            <td>1101123422</td>
+                            <td>世外桃源大厦A座501</td>
+                            <td>500.00</td>
+                            <td>500.00</td>
+                            <td>300.00</td>
+                            <td>20.00</td>
+                        </tr>
+                        <tr>
+                            <td>2015-05</td>
+                            <td>1101123422</td>
+                            <td>世外桃源大厦A座501</td>
+                            <td>500.00</td>
+                            <td>500.00</td>
+                            <td>300.00</td>
+                            <td>20.00</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row padding">
+                <div class="col-lg-12">
+                    <h5>押金明细</h5>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>操作</th>
+                            <th>退款人</th>
+                            <th>收费对象</th>
+                            <th>收费项目</th>
+                            <th>账户编号</th>
+                            <th>支付类型</th>
+                            <th>交易类型</th>
+                            <th>交易金额</th>
+                            <th>交易时间</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td><input type="radio"></td>
+                            <td>1101123422</td>
+                            <td>世外桃源大厦A座501</td>
+                            <td>500.00</td>
+                            <td>500.00</td>
+                            <td>300.00</td>
+                            <td>20.00</td>
+                            <td>933.00</td>
+                            <td>933.00</td>
+                        </tr>
+                        <tr>
+                            <td>2015-05</td>
+                            <td>1101123422</td>
+                            <td>世外桃源大厦A座501</td>
+                            <td>500.00</td>
+                            <td>500.00</td>
+                            <td>300.00</td>
+                            <td>20.00</td>
+                            <td>933.00</td>
+                            <td>200</td>
+                        </tr>
+                        <tr>
+                            <td>2015-05</td>
+                            <td>1101123422</td>
+                            <td>世外桃源大厦A座501</td>
+                            <td>500.00</td>
+                            <td>500.00</td>
+                            <td>300.00</td>
+                            <td>20.00</td>
+                            <td>933.00</td>
+                            <td>200</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row padding">
+                <div class="col-lg-12">
+                    <!--分页开始-->
+                    <div class="bill_paging pull-right">
+                        <ul class="pagination">
+                            <li><a href="#">首页</a></li>
+                            <li><a href="#">上一页</a></li>
+                            <li><a href="#">1</a></li>
+                            <li><a href="#">2</a></li>
+                            <li><a href="#">3</a></li>
+                            <li><a href="#">4</a></li>
+                            <li><a href="#">5</a></li>
+                            <li><a href="#">下一页</a></li>
+                            <li><a href="#">尾页</a></li>
+                        </ul>
+                    </div>
+                    <!--分页结束-->
+                </div>
+            </div>
+        </div>
+        <!--收款台 结束-->
+
+        <!--客户消费记录-->
+        <div ng-show="show5">
+            <div class="sel">
+                <div class="row search-padding-10">
+                    <div class="col-lg-1 col-md-2 col-sm-2">
+                        交易时间
+                    </div>
+                    <div class="col-lg-5 col-md-4 col-sm-4">
+                                <input class="form-control">
+                    </div>
+                    <div class="col-lg-1 col-md-2 col-sm-2">
+                        ————
+                    </div>
+                    <div class="col-lg-5 col-md-4 col-sm-4">
+                                <input class="form-control">
+                    </div>
+                </div>
+                <div class="row search-padding-10">
+                    <div class="col-lg-1 col-md-2 col-sm-2">
+                        支付类型
+                    </div>
+                    <div class="col-lg-5 col-md-4 col-sm-4">
+                                <select class="form-control">
+                                    <option>现金</option>
+                                </select>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6">
+                                <button type="button" class="btn btn-default btn-primary"><span class="glyphicon glyphicon-search btn_icon"></span>搜索</button>
+                    </div>
+                </div>
+            </div>
+            <div class="row padding">
+                <div class="col-lg-12">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th>收支类型</th>
+                            <th>收费项目</th>
+                            <th>支付类型</th>
+                            <th>收费对象</th>
+                            <th>交易金额</th>
+                            <th>交易时间</th>
+                            <th>备注</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>1101123422</td>
+                            <td>世外桃源大厦A座501</td>
+                            <td>500.00</td>
+                            <td>500.00</td>
+                            <td>300.00</td>
+                            <td>20.00</td>
+                            <td>933.00</td>
+                        </tr>
+                        <tr>
+                            <td>2015-05</td>
+                            <td>1101123422</td>
+                            <td>世外桃源大厦A座501</td>
+                            <td>500.00</td>
+                            <td>500.00</td>
+                            <td>300.00</td>
+                            <td>20.00</td>
+                            <td>933.00</td>
+                        </tr>
+                        <tr>
+                            <td>2015-05</td>
+                            <td>1101123422</td>
+                            <td>世外桃源大厦A座501</td>
+                            <td>500.00</td>
+                            <td>500.00</td>
+                            <td>300.00</td>
+                            <td>20.00</td>
+                            <td>933.00</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!--客户消费记录 结束-->
+    </div>
+</div>
+
+</body>
+</html>

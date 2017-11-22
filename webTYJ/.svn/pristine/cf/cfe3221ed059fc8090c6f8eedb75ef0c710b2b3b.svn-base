@@ -1,0 +1,1137 @@
+<!--前端负责人：倪明
+    页面名称：规章制度
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>工单列表</title>
+    <link rel="stylesheet" href="bower_components/skins/zyupload-1.0.0.min.css " type="text/css">
+</head>
+<body >
+<div id="">
+    <!-- 公告标题 -->
+   <!-- <div class="row title">
+        <div class="col-md-6 col-xs-6">
+            <h4><strong>工单列表</strong></h4>
+        </div>
+    </div>-->
+
+
+    <div class="row padding" id="content-first">
+        <div class="row">
+            <div class="row search-padding-10">
+                <div class="col-lg-12 col-md-12 col-sm-12 text-right">
+                    <button type="button" class="btn btn-default btn-primary" ng-click="backToList()"  ng-show="index!=0">
+                        <span class="glyphicon glyphicon-backward btn_icon"></span>
+                        返回列表
+                    </button>
+                    <!--<button type="button" class="btn btn-default btn-primary" ng-click="deleteRules()">-->
+                        <!--<span class="glyphicon glyphicon-trash btn_icon"></span>-->
+                        <!--删除-->
+                    <!--</button>-->
+                </div>
+            </div>
+            <div class="row search-padding-10"  ng-show="index==0">
+                <table ng-show="page1==1">
+                    <thead>
+                    <tr>
+                        <!--<th><input  type="checkbox" id="allchose" ng-click="allchose(searchPaginator.object.ruless)" style="vertical-align: -4px;"></th>-->
+                        <th>序号</th>
+                        <th>工单类型</th>
+                        <th>状态</th>
+                        <th>创建时间</th>
+                        <th>备注</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!--<tr ng-repeat="item in searchPaginator.object.ruless" ng-show="item.id!=null" ng-click="getDataaa(item)">
+                        &lt;!&ndash;<td ng-if="slaves.masterId == currentCheck[tmpIndex].masterId"><input type="checkbox" ng-disabled="dis" ></td>&ndash;&gt;
+                        &lt;!&ndash;<td ng-if="slaves.masterId != currentCheck[tmpIndex].masterId"><input type="checkbox" id="{{slaves.slaveId}}" ng-disabled="dis"  ng-click="addOrUpdateSlaveId(slaves)"></td>&ndash;&gt;
+                        <td><input type="checkbox" id="{{item.id}}"></td>
+                        <td><a data-toggle="modal" data-target="#editRulesModal" ng-click="editRules(item)" style="color: #00a0e9;">{{item.title}}</a></td>
+                        <td>{{item.lastModtime | date:"yyyy-MM-dd"}}</td>
+                        <td>已发布</td>
+                    </tr>-->
+                    <tr ng-click="showDetails(1)">
+                        <td>1</td>
+                        <td>报价工单</td>
+                        <td>已完成</td>
+                        <td>2016-02-12</td>
+                        <td>无优惠</td>
+                    </tr>
+                    <tr ng-click="showDetails(2)">
+                        <td>2</td>
+                        <td>检测工单</td>
+                        <td>失效</td>
+                        <td>2016-02-18</td>
+                        <td>工单失效</td>
+                    </tr>
+                    <tr ng-click="showDetails(3)">
+                        <td>3</td>
+                        <td>处理工单</td>
+                        <td>已完成</td>
+                        <td>2016-03-14</td>
+                        <td>处理的较好</td>
+                    </tr>
+                    <tr ng-click="showDetails(4)">
+                        <td>4</td>
+                        <td>完成确认工单</td>
+                        <td>已完成</td>
+                        <td>2016-06-03</td>
+                        <td>已完成</td>
+                    </tr>
+                    <tr ng-click="showDetails(5)">
+                        <td>5</td>
+                        <td>赔偿给业主</td>
+                        <td>已完成</td>
+                        <td>2016-04-22</td>
+                        <td>已赔偿</td>
+                    </tr>
+                    <tr ng-click="showDetails(6)">
+                        <td>6</td>
+                        <td>表扬工单</td>
+                        <td>已完成</td>
+                        <td>2016-05-17</td>
+                        <td>表现优异</td>
+                    </tr>
+                    <tr ng-click="showDetails(7)">
+                        <td>7</td>
+                        <td>结算工单</td>
+                        <td>已完成</td>
+                        <td>2016-05-14</td>
+                        <td>已结算</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <table ng-show="page1==2">
+                    <thead>
+                    <tr>
+                        <!--<th><input  type="checkbox" id="allchose" ng-click="allchose(searchPaginator.object.ruless)" style="vertical-align: -4px;"></th>-->
+                        <th>序号</th>
+                        <th>工单类型</th>
+                        <th>状态</th>
+                        <th>创建时间</th>
+                        <th>备注</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-click="showDetails(8)">
+                        <td>8</td>
+                        <td>查抄水表</td>
+                        <td>已完成</td>
+                        <td>2016-05-18</td>
+                        <td>查抄完成</td>
+                    </tr>
+                    <tr ng-click="showDetails(9)">
+                        <td>9</td>
+                        <td>投诉工单</td>
+                        <td>失效</td>
+                        <td>2016-03-19</td>
+                        <td>工单失效</td>
+                    </tr>
+                    <tr ng-click="showDetails(10)">
+                        <td>10</td>
+                        <td>咨询工单</td>
+                        <td>失效</td>
+                        <td>2016-07-11</td>
+                        <td>紧急</td>
+                    </tr>
+                    <tr ng-click="showDetails(11)">
+                        <td>11</td>
+                        <td>固定车位</td>
+                        <td>已完成</td>
+                        <td>2016-08-01</td>
+                        <td>无</td>
+                    </tr>
+                    <tr ng-click="showDetails(12)">
+                        <td>12</td>
+                        <td>维修工单</td>
+                        <td>已完成</td>
+                        <td>2016-06-12</td>
+                        <td>维修过程顺利</td>
+                    </tr>
+                    <tr ng-click="showDetails(13)">
+                        <td>13</td>
+                        <td>失效工单</td>
+                        <td>已完成</td>
+                        <td>2016-06-14</td>
+                        <td>无</td>
+                    </tr>
+                    <tr ng-click="showDetails(14)">
+                        <td>14</td>
+                        <td>查抄电表</td>
+                        <td>已完成</td>
+                        <td>2016-05-18</td>
+                        <td>查抄完成</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="padding">
+                    <div class="bill_paging">
+                        <span>共14条</span>
+                        <ul class="pagination">
+                            <li ng-class="{true:'disabled'}[page1==1]">
+                                <a href="javascript:void(0)" ng-click="changePage(1)">首页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[page1==1]">
+                                <a href="javascript:void(0)" ng-show="page1==2" ng-click="changePage(1)">上一页</a>
+                            </li>
+                            <li ng-class="{true:'active'}[1==1]">
+                                <a href="javascript:void(0)"  ng-click="changePage(page1)">{{page1}}</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[page1==3]">
+                                <a href="javascript:void(0)" ng-show="page1==1" ng-click="changePage(2)">下一页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[page1==2]">
+                                <a href="javascript:void(0)" ng-click="changePage(2)">尾页</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--报价单详情-->
+        <div id="content-first" ng-show="index==1">
+            <!--tab页切换开始-->
+            <div id="tab">
+                <a lang="no" class="this_action">报价单--详情</a>
+            </div>
+            <div class="row padding">
+                <div class="col-lg-12 ">
+                    <div class="search-padding-10">
+                        <div class="col-lg-12 text-right" ng-show="1">
+                            <button type="button" class="btn btn-default btn-primary disabled"   data-toggle="modal" data-target="#QuoteOrder" ng-click="CloseNew(4)">
+                                <span class="glyphicon glyphicon-ban-circle btn_icon"></span>
+                                失效
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            状态：<span ng-switch on="1">
+                               <span ng-switch-when="0">失效</span>
+                                <span ng-switch-when="1">完成</span>
+                                </span>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4 ">
+                            负责人：小陈
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4 ">
+                            完成时间：2014-9-2
+                        </div>
+                    </div>
+                    <div class="search-padding-10">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>类型</th>
+                                <th>名称</th>
+                                <th>单价</th>
+                                <th>数量</th>
+                                <th>总额</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td ng-if="1">人工费</td>
+                                <td ng-if="0">物料费</td>
+                                <td>打扫</td>
+                                <td>55元</td>
+                                <td>2</td>
+                                <td>110元</td>
+                            </tr>
+                            <tr>
+                                <td ng-if="0">人工费</td>
+                                <td ng-if="1">物料费</td>
+                                <td>爱迪生</td>
+                                <td>67元</td>
+                                <td>1</td>
+                                <td>67元</td>
+                            </tr>
+                            <tr>
+                                <td ng-if="1">人工费</td>
+                                <td ng-if="0">物料费</td>
+                                <td>地方时</td>
+                                <td>23元</td>
+                                <td>2</td>
+                                <td>46元</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <b>总额：223元</b>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4 ">
+                            <b> 折扣：0.5</b>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4 ">
+                            <b>最终价格：111.5元</b>
+                        </div>
+                    </div>
+                    <div class="search-padding-10">
+                        <div>签字人：小王</div>
+                    </div>
+                    <div class="search-padding-10">
+                        <div>附件列表：</div>
+                    </div>
+                    <div class=" search-padding-10 ">
+                         <span>
+                             <img src="images/project/animal/a_01.png" style="width: 100px;height: 100px">
+                            <img src="images/project/animal/a_02.png" style="width: 100px;height: 100px">
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 检测单详情 -->
+        <div id="content-first" ng-show="index==2">
+            <div id="tab">
+                <a lang="no">检查单--详情</a>
+            </div>
+            <div class="row sel1">
+                <div class="col-lg-12">
+                    <div class="search-padding-10 text-right" ng-show="1">
+                        <button type="button" class="btn btn-default btn-primary disabled"  data-toggle="modal" data-target="#CheckOrders" ng-click="CloseNew(9)">
+                            <span class="glyphicon glyphicon-ban-circle btn_icon"></span>
+                            失效
+                        </button>
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <b ng-switch on="1">状态：
+                                <b  ng-switch-when="0">失效</b>
+                                <b ng-switch-when="1">已完成</b>
+                            </b>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4 ">
+                            <b> 负责人：小李</b>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4 ">
+                            <b>完成时间：2016-05-04</b>
+                        </div>
+                    </div>
+                    <div class="search-padding-10">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>检测项</th>
+                                <th>检测结果</th>
+                                <th>是否过保</th>
+                                <th>是否售后</th>
+                                <th>检测说明</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>丰盛的</td>
+                                <td>
+                                    <b ng-switch on="1">检查结果：
+                                        <b  ng-switch-when="0">正常</b>
+                                        <b ng-switch-when="1">异常</b>
+                                    </b>
+                                </td>
+                                <td>
+                                    <b ng-switch on="1">是否过保：
+                                        <b  ng-switch-when="0">未过保</b>
+                                        <b ng-switch-when="1">已过保</b>
+                                    </b>
+                                </td>
+                                <td>
+                                    <li ng-switch on="1">是否售后：
+                                        <b  ng-switch-when="0">否</b>
+                                        <b ng-switch-when="1">是</b>
+                                    </li>
+                                </td>
+                                <td>良好</td>
+                            </tr>
+                            <tr>
+                                <td>丰盛的</td>
+                                <td>
+                                    <b ng-switch on="1">检查结果：
+                                        <b  ng-switch-when="0">正常</b>
+                                        <b ng-switch-when="1">异常</b>
+                                    </b>
+                                </td>
+                                <td>
+                                    <b ng-switch on="1">是否过保：
+                                        <b  ng-switch-when="0">未过保</b>
+                                        <b ng-switch-when="1">已过保</b>
+                                    </b>
+                                </td>
+                                <td>
+                                    <li ng-switch on="1">是否售后：
+                                        <b  ng-switch-when="0">否</b>
+                                        <b ng-switch-when="1">是</b>
+                                    </li>
+                                </td>
+                                <td>良好</td>
+                            </tr>
+                            <tr>
+                                <td>打扫浮动</td>
+                                <td>
+                                    <b ng-switch on="0">检查结果：
+                                        <b  ng-switch-when="0">正常</b>
+                                        <b ng-switch-when="1">异常</b>
+                                    </b>
+                                </td>
+                                <td>
+                                    <b ng-switch on="0">是否过保：
+                                        <b  ng-switch-when="0">未过保</b>
+                                        <b ng-switch-when="1">已过保</b>
+                                    </b>
+                                </td>
+                                <td>
+                                    <li ng-switch on="1">是否售后：
+                                        <b  ng-switch-when="0">否</b>
+                                        <b ng-switch-when="1">是</b>
+                                    </li>
+                                </td>
+                                <td>良好</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="search-padding-10">
+                        <div><b>签字人：小吴</b></div>
+                    </div>
+                    <div class="search-padding-10">
+                        <b>  备注：非常不错</b>
+                    </div>
+
+                    <div class="search-padding-10">
+                        <div><b>附件列表：</b></div>
+                    </div>
+                    <div class=" search-padding-10 ">
+                         <span>
+                            <img src="images/project/animal/a_01.png" style="width: 100px;height: 100px">
+                             <img src="images/project/animal/a_02.png" style="width: 100px;height: 100px">
+                        </span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!--处理单详情-->
+        <div id="content-first" ng-show="index==3">
+            <div id="tab">
+                <a lang="no">处理单--详情</a>
+            </div>
+            <div class="sel1">
+                <div class="search-padding-10 text-right" ng-show="1">
+                    <button type="button" class="btn btn-default btn-primary disabled"  data-toggle="modal" data-target="#DisposeOrder"  ng-click="CloseNew(6)">
+                        <span class="glyphicon glyphicon-ban-circle btn_icon"></span>
+                        失效
+                    </button>
+                </div>
+                <div class="row search-padding-10">
+                    <div class="col-lg-4 col-md-4 col-sm-4">
+                        <li ng-switch on="1">工单状态：
+                            <b  ng-switch-when="0">失效</b>
+                            <b ng-switch-when="1">已完成</b>
+                        </li>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 ">
+                        <b> 负责人：小刘</b>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 ">
+                        <b>完成时间：2015-08-12</b>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        处理对象： 爱迪生
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        处理说明： 和拿倒萨打算。
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div>附件列表：</div>
+                    </div>
+                    <div class=" search-padding-10 ">
+                         <span>
+                            <img src="images/project/animal/a_01.png" style="width: 100px;height: 100px">
+                            <img src="images/project/animal/a_02.png" style="width: 100px;height: 100px">
+                            <img src="images/project/animal/a_03.png" style="width: 100px;height: 100px">
+                         </span>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 完成确认单详情 -->
+        <div id="content-first" ng-show="index==4">
+            <div id="tab">
+                <a lang="no">完成确认单--详情</a>
+            </div>
+            <div class="sel1">
+                <div class="search-padding-10 text-right" ng-show="1">
+                    <button type="button" class="btn btn-default btn-primary disabled" data-toggle="modal" data-target="#AcceptanceOrders" ng-click="CloseNew(10)">
+                        <span class="glyphicon glyphicon-ban-circle btn_icon"></span>
+                        申诉
+                    </button>
+                </div>
+                <div class="row search-padding-10">
+                    <div class="col-lg-4 col-md-4 col-sm-4">
+                        <b ng-switch on="1">状态：
+                            <b  ng-switch-when="0">失效</b>
+                            <b ng-switch-when="1">已完成</b>
+                        </b>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 ">
+                        <b> 负责人：kobe</b>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 ">
+                        <b>完成时间：2014-09-02</b>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <b ng-switch on="1"> 完成确认结果：
+                            <b ng-switch-when="0">合格</b>
+                            <b ng-switch-when="1">不合格</b>
+                        </b>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div style="float:left;"><b>满意度：</b></div>
+                        <div ng-init="items=[1,2,3,4,5]" class="col-lg-3 col-md-4 col-sm-4" style="font-size: 15px;margin-top:2px" id="star">
+                            <span ng-class="{'font-red':true}" ng-repeat="tem in items" class="glyphicon glyphicon-star-empty"></span>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <b>签字人：Michael</b>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <b>  完成确认说明：完成的非常好！</b>
+                    </div>
+
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div><b>附件列表：</b></div>
+                    </div>
+                    <div class=" search-padding-10 ">
+                        <span>
+                            <img src="images/project/animal/a_01.png" style="width: 100px;height: 100px">
+                            <img src="images/project/animal/a_02.png" style="width: 100px;height: 100px">
+                            <img src="images/project/animal/a_03.png" style="width: 100px;height: 100px">
+                    </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!---赔偿给业主详情--->
+        <div id="content-first" ng-show="index==5">
+            <!--tab页切换开始-->
+            <div id="tab">
+                <a lang="no">赔偿给业主单--详情</a>
+            </div>
+            <div class="sel1">
+                <div class="search-padding-10 text-right">
+                    <button type="button" class="btn btn-default btn-primary disabled" data-toggle="modal" data-target="#CompensateOwner99" ng-click="CloseNew(55)">
+                        <span class="glyphicon glyphicon-ban-circle btn_icon"></span>
+                        失效
+                    </button>
+                </div>
+                <div class="row search-padding-10">
+                    <div class="col-lg-4 col-md-4 col-sm-4">
+                        <b ng-switch on="1">状态：
+                            <b ng-switch-when="0">失效</b>
+                            <b ng-switch-when="1">完成</b>
+                        </b>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 text-center">
+                        <b> 负责人:Paul</b>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 text-right">
+                        <b>完成时间:2016-4-2</b>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>赔付对象</th>
+                                <th>赔付金额</th>
+                                <th>赔付方式</th>
+                                <th>赔付说明</th>
+                                <th>失效原因</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>爱疯</td>
+                                <td>234</td>
+                                <td>现金</td>
+                                <td>阿斯顿</td>
+                                <td>的方式风格</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        签字人:Wade
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div>附件列表:</div>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12 text_left">
+                        <span>
+                            <img src="images/project/animal/a_01.png" style="width: 100px;height: 100px">
+                            <img src="images/project/animal/a_02.png" style="width: 100px;height: 100px">
+                            <img src="images/project/animal/a_03.png" style="width: 100px;height: 100px">
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!---赔偿给业主详情end--->
+
+        <!--表扬工单详情-->
+        <div id="content-first" ng-show="index==6">
+            <div id="tab" >
+                <a class="this_action" lang="no">表扬单--详情</a>
+            </div>
+            <div class="sel1">
+                <div class="search-padding-10 text-right" ng-show="1">
+                    <button type="button" class="btn btn-default btn-primary disabled" data-toggle="modal" data-target="#PraiseOrders" ng-click="CloseNew(7)">
+                        <span class="glyphicon glyphicon-ban-circle btn_icon"></span>
+                        失效
+                    </button>
+                </div>
+                <div class="row search-padding-10">
+                    <div class="col-lg-2 col-md-2 col-sm-2">
+                        <li ng-switch on="1">工单状态：
+                            <b  ng-switch-when="0">失效</b>
+                            <b ng-switch-when="1">已完成</b>
+
+                        </li>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 ">
+                        <b>完成时间：2016-02-09</b>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div class="col-lg-1 col-md-1 col-sm-1">
+                            表扬对象：
+                        </div>
+                        <div class="col-lg-10 col-md-10 col-sm-10">
+                            <img src="images/project/user/user_3.png" width="50px"
+                                 style="margin-top:15px;cursor: pointer;">
+                            <img src="images/project/user/user_3.png" width="50px"
+                                 style="margin-top:15px;cursor: pointer;">
+                            <img src="images/project/user/user_3.png" width="50px"
+                                 style="margin-top:15px;cursor: pointer;">
+                            <img src="images/project/user/user_3.png" width="50px"
+                                 style="margin-top:15px;cursor: pointer;">
+                            <img src="images/project/user/user_3.png" width="50px"
+                                 style="margin-top:15px;cursor: pointer;">
+                        </div>
+
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        表扬说明： 做事认真负责
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div>附件列表：</div>
+                    </div>
+                    <div class=" search-padding-10 ">
+                     <span>
+                        <img src="images/project/animal/a_01.png" style="width: 100px;height: 100px">
+                        <img src="images/project/animal/a_02.png" style="width: 100px;height: 100px">
+                        <img src="images/project/animal/a_03.png" style="width: 100px;height: 100px">
+                    </span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!--结算单详情-->
+        <div id="content-first" ng-show="index==7" >
+            <!--tab页切换开始-->
+            <div id="tab">
+                <a lang="no">结算单--详情</a>
+            </div>
+            <div class="sel1">
+                <div class="row search-padding-10">
+                    <div class="col-lg-12 col-md-12 col-sm-12 text-right" ng-show="1">
+                        <button type="button" class="btn btn-default btn-primary disabled" data-toggle="modal" data-target="#SettleAccountsOrder" style="cursor:pointer" tabindex="-1" data-toggle="tab" ng-click="CloseNew(12)">
+                            <span class="glyphicon glyphicon-ban-circle btn_icon"></span>
+                            失效
+                        </button>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 ">
+                        负责人：James
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 ">
+                        完成时间：2015-9-4
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>类型</th>
+                                <th>名称</th>
+                                <th>单价</th>
+                                <th>数量</th>
+                                <th>总额</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td ng-if="0">人工费</td>
+                                <td ng-if="1">物料费</td>
+                                <td ng-if="2">工具费</td>
+                                <td>阿凡达</td>
+                                <td>322</td>
+                                <td>12</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4">
+                        总额：12332元
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 ">
+                        折扣：无
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 ">
+                        最终价格：23423元
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        签字人：Obama
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div>附件列表：</div>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12 ">
+                        <span>
+                            <img src="images/project/animal/a_01.png" style="width: 100px;height: 100px">
+                            <img src="images/project/animal/a_02.png" style="width: 100px;height: 100px">
+                            <img src="images/project/animal/a_03.png" style="width: 100px;height: 100px">
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--查抄水表-->
+        <div id="content-first" ng-show="index==8">
+            <div id="tab">
+                <a lang="no" class="this_action">查抄水表单--详情</a>
+            </div>
+            <div class="sel1">
+                <div class="col-lg-12 col-md-12 col-sm-12 text-right">
+                    <button type="button" class="btn btn-default btn-primary" disabled="true">
+                        <span class="glyphicon glyphicon-ban-circle btn_icon"></span>
+                        扫一扫
+                    </button>
+                </div>
+                <!--<li data-toggle="modal" data-target="#consultationOrders" style="cursor:pointer" tabindex="-1" data-toggle="tab">关闭</li>-->
+                <div class="row search-padding-10">
+                    <div class="sel1">
+                        <div class="row search-padding-10">
+                            <!--<div class="col-lg-4 col-md-4 col-sm-4">
+                                <div ng-switch on="aa.waterMeterOrders.orderState">状态：
+                                    <span ng-switch-when="0">失效</span>
+                                    <span ng-switch-when="1">完成</span>
+                                </div>
+                            </div>-->
+                            <!--<div class="col-lg-12 col-md-12 col-sm-12">
+                                表编号：{{waterMaster.waterMeterNum}}
+                            </div>-->
+                            <!--<div class="col-lg-12 col-md-12 col-sm-12">
+                                本次读数：{{aa.waterMeterOrders.waterMeterOrderRecords.waterMeterReading}}
+                            </div>-->
+                            <div class="col-lg-3 col-md-6 col-sm-4">
+                                备注 ：非常好
+                            </div>
+                            <div class="sel">
+                                <table>
+                                    <thead>
+                                    <tr>
+                                        <th>房屋</th>
+                                        <th>上次抄表读数</th>
+                                        <th>本次抄表读数</th>
+                                        <th>操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td ng-click="waterClick(item)" data-target="#meterInfo" data-toggle="modal">阿斯蒂芬</td>
+                                        <td ng-show="1">324</td>
+                                        <td ng-show="0">无</td>
+                                        <td>371</td>
+                                        <td ><button type="button" class="btn btn-default btn-primary" ng-click="watersUpdate(item)" ng-show="1" ng-disabled="aa.waterMeterOrders.state==1">
+                                            修改
+                                        </button>
+                                            <button type="button" class="btn btn-default btn-primary" ng-click="watersUpdate(item)" ng-show="0">
+                                                完成
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr style="background:#FFF" ng-show="0">
+                                        <td colspan="2">
+                                            暂无数据！
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <div class="sel1 text_center">
+                                    <button type="button" class="btn btn-default btn-primary disabled" ng-click="watersSubmit()" ng-show="1">
+                                        提交
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--查抄水表-->
+        <div id="content-first" ng-show="index==14">
+            <div id="tab">
+                <a lang="no" class="this_action">查抄电表单--详情</a>
+            </div>
+            <div class="sel1">
+                <div class="col-lg-12 col-md-12 col-sm-12 text-right">
+                    <button type="button" class="btn btn-default btn-primary" disabled="true">
+                        <span class="glyphicon glyphicon-ban-circle btn_icon"></span>
+                        扫一扫
+                    </button>
+                </div>
+                <!--<li data-toggle="modal" data-target="#consultationOrders" style="cursor:pointer" tabindex="-1" data-toggle="tab">关闭</li>-->
+                <div class="row search-padding-10">
+                    <div class="sel1">
+                        <div class="row search-padding-10">
+                            <!--<div class="col-lg-4 col-md-4 col-sm-4">
+                                <div ng-switch on="aa.waterMeterOrders.orderState">状态：
+                                    <span ng-switch-when="0">失效</span>
+                                    <span ng-switch-when="1">完成</span>
+                                </div>
+                            </div>-->
+                            <!--<div class="col-lg-12 col-md-12 col-sm-12">
+                                表编号：{{waterMaster.waterMeterNum}}
+                            </div>-->
+                            <!--<div class="col-lg-12 col-md-12 col-sm-12">
+                                本次读数：{{aa.waterMeterOrders.waterMeterOrderRecords.waterMeterReading}}
+                            </div>-->
+                            <div class="col-lg-3 col-md-6 col-sm-4">
+                                备注 ：非常好
+                            </div>
+                            <div class="sel">
+                                <table>
+                                    <thead>
+                                    <tr>
+                                        <th>房屋</th>
+                                        <th>上次抄表读数</th>
+                                        <th>本次抄表读数</th>
+                                        <th>操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td ng-click="waterClick(item)" data-target="#meterInfo" data-toggle="modal">阿斯蒂芬</td>
+                                        <td ng-show="1">324</td>
+                                        <td ng-show="0">无</td>
+                                        <td>371</td>
+                                        <td ><button type="button" class="btn btn-default btn-primary" ng-click="watersUpdate(item)" ng-show="1" ng-disabled="aa.waterMeterOrders.state==1">
+                                            修改
+                                        </button>
+                                            <button type="button" class="btn btn-default btn-primary" ng-click="watersUpdate(item)" ng-show="0">
+                                                完成
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr style="background:#FFF" ng-show="0">
+                                        <td colspan="2">
+                                            暂无数据！
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <div class="sel1 text_center">
+                                    <button type="button" class="btn btn-default btn-primary disabled" ng-click="watersSubmit()" ng-show="1">
+                                        提交
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 投诉单详情 -->
+        <div id="content-first" ng-show="index==9">
+            <div id="tab">
+                <a lang="no">投诉单--详情</a>
+            </div>
+            <div class="sel1">
+                <div class="search-padding-10 text-right" ng-show="1">
+                    <button type="button" class="btn btn-default btn-primary disabled"  data-toggle="modal" data-target="#ComplaintOrders"  ng-click="CloseNew(6)">
+                        <span class="glyphicon glyphicon-ban-circle btn_icon"></span>
+                        失效
+                    </button>
+                </div>
+                <div class="row search-padding-10">
+                    <div class="col-lg-4 col-md-4 col-sm-4">
+                        <li ng-switch on="1">工单状态：
+                            <b  ng-switch-when="0">失效</b>
+                            <b ng-switch-when="1">已完成</b>
+                        </li>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 ">
+                        <b> 负责人：Michael</b>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 ">
+                        <b>完成时间：2015-03-09</b>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        投诉对象： 松岛枫
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        投诉说明： 打发第三方
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div>附件列表：</div>
+                    </div>
+                    <div class=" search-padding-10 ">
+                         <span>
+                        <img src="images/project/animal/a_01.png" style="width: 100px;height: 100px">
+                        <img src="images/project/animal/a_02.png" style="width: 100px;height: 100px">
+                        <img src="images/project/animal/a_03.png" style="width: 100px;height: 100px">
+                    </span>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!--咨询单详情-->
+        <div id="content-first" ng-show="index==10">
+            <div id="tab">
+                <a class="this_action" lang="no">咨询单--详情</a>
+            </div>
+            <div class="sel1">
+                <!--<li data-toggle="modal" data-target="#consultationOrders" style="cursor:pointer" tabindex="-1" data-toggle="tab">关闭</li>-->
+                <div class="row search-padding-10">
+                    <div class="col-lg-12 col-md-12 col-sm-12 text-right" ng-show="1">
+                        <button type="button" class="btn btn-default btn-primary disabled" data-toggle="modal" data-target="#consultationOrders" style="cursor:pointer" tabindex="-1" data-toggle="tab" ng-click="CloseNew(1)">
+                            <span class="glyphicon glyphicon-ban-circle btn_icon"></span>
+                            失效
+                        </button>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>业主咨询类型</th>
+                                <th>客户问题描述</th>
+                                <th>处理说明</th>
+                                <th>关闭时间</th>
+                                <!--<th>关闭操作人</th>-->
+                                <th>关闭原因</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>撒大声地</td>
+                                <td>阿斯蒂芬</td>
+                                <td>爱迪生</td>
+                                <td>2015-09-03</td>
+                                <!--<td>{{aa.consultationOrders.faqs.staff.staffName}}</td>-->
+                                <td>房顶上是否</td>
+                            </tr>
+                            <tr>
+                                <td>房顶上</td>
+                                <td>打扫</td>
+                                <td>FD</td>
+                                <td>2015-09-03</td>
+                                <!--<td>{{aa.consultationOrders.faqs.staff.staffName}}</td>-->
+                                <td>房顶上是否</td>
+                            </tr>
+                            <tr>
+                                <td>打扫</td>
+                                <td>第三方</td>
+                                <td>阿斯顿</td>
+                                <td>2015-09-03</td>
+                                <!--<td>{{aa.consultationOrders.faqs.staff.staffName}}</td>-->
+                                <td>恶趣味</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 固定车位单详情 -->
+        <div id="content-first" ng-show="index==11">
+            <div id="tab">
+
+                <a lang="no">固定车位单--详情</a>
+            </div>
+            <div class="sel1">
+                <div class="row search-padding-10">
+                    <div class="col-lg-12 col-md-12 col-sm-12 text-right" ng-show="1">
+                        <button type="button" class="btn btn-default btn-primary disabled"  data-toggle="modal" data-target="#FixedParkingOrders" ng-click="CloseNew(8)">
+                            <span class="glyphicon glyphicon-ban-circle btn_icon"></span>
+                            失效
+                        </button>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6">
+                        <b ng-switch on="1">工单状态：
+                            <b ng-switch-when="0">失效</b>
+                            <b ng-switch-when="1">已完成</b>
+                        </b>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 ">
+                        <b>完成时间：2015-09-08</b>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                <span ng-switch on="1">操作：
+                    <span ng-switch-when="0">取消固定车位</span>
+                    <span ng-switch-when="1">开启固定车位</span>
+                </span>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <b> 说明：是的发送到</b>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div><b>附件列表：</b></div>
+                    </div>
+                    <div class=" search-padding-10 ">
+                         <span>
+                            <img src="images/project/animal/a_01.png" style="width: 100px;height: 100px">
+                            <img src="images/project/animal/a_02.png" style="width: 100px;height: 100px">
+                            <img src="images/project/animal/a_03.png" style="width: 100px;height: 100px">
+                        </span>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 维修单详情开始 -->
+        <div id="content-first" ng-show="index==12">
+            <div id="tab">
+                <a  lang="no">维修单--详情</a>
+            </div>
+            <div class="sel1">
+                <div class="row search-padding-10">
+                    <div class="col-lg-12 col-md-12 col-sm-12 text-right" ng-show="1">
+                        <button type="button" class="btn btn-default btn-primary disabled" data-toggle="modal" data-target="#RepairOrders" style="cursor:pointer" tabindex="-1" data-toggle="tab" ng-click="CloseNew(2)">
+                            <span class="glyphicon glyphicon-ban-circle btn_icon"></span>
+                            失效
+                        </button>
+                    </div>
+                    <div class="sel1">
+                        <div class="row search-padding-10">
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                分类：阿斯顿
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                实际耗费：321
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-4">
+                                人工费：244
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-sm-4">
+                                物料费：123
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                处理说明：阿达
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                签字人：房顶上
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3">状态：
+                        <span ng-switch on="1">
+                            <span ng-switch-when="0"><b>已关闭</b></span>
+                            <span ng-switch-when="1"><b>完成</b></span>
+                        </span>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3">
+                                <b> 关闭人：爱迪生
+                                </b>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3">
+                                <b>关闭时间：2015-09-04</b>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3">
+                                <b>关闭说明：第三方第三方</b>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <div>附件列表：</div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <span>
+                                    <img src="images/project/animal/a_01.png" style="width: 100px;height: 100px">
+                                    <img src="images/project/animal/a_02.png" style="width: 100px;height: 100px">
+                                    <img src="images/project/animal/a_03.png" style="width: 100px;height: 100px">
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--失效单-->
+        <div id="content-first" ng-show="index==13">
+            <!--tab页切换开始-->
+            <div id="tab">
+                <a lang="no">失效单--详情</a>
+            </div>
+            <div class="sel1">
+                <div class="row search-padding-10">
+                    <div class="col-lg-12 col-md-12 col-sm-12 text-right" ng-show="1">
+                        <button type="button" class="btn btn-default btn-primary disabled" data-toggle="modal" data-target="#ClosedOrders" ng-click="CloseNew(3)">
+                            <span class="glyphicon glyphicon-ban-circle btn_icon"></span>
+                            失效
+                        </button>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4">
+                        状态： <span ng-switch on="1">
+                            <span ng-switch-when="0">失效</span>
+                            <span ng-switch-when="1">完成</span>
+                        </span>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 ">
+                        负责人：老王
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 ">
+                        完成时间：2015-09-07
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        说明：阿达撒是的
+                    </div>
+                    <div class="col-lg-4 col-md-3 col-sm-3">
+                        <b> 关闭人：
+                            <span ng-switch on="14">
+                                <span ng-switch-when="14">高元</span>
+                            </span>
+                        </b>
+                    </div>
+                    <div class="col-lg-4 col-md-3 col-sm-3">
+                        <b>关闭时间：2015-09-07</b>
+                    </div>
+                    <div class="col-lg-4 col-md-3 col-sm-3">
+                        <b>关闭说明：按时大大</b>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

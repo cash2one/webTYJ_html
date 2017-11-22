@@ -1,0 +1,140 @@
+<!--作者：杨雨琪
+名称：质检管理-查看清洁评分标准
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div class="rightpadding">
+<div class="contract_panner charge_project">
+    <div  class="contract_detail_nav">
+        <a>清洁日检评分标准</a>
+        <div class="clear"></div>
+    </div>
+    <div class="row rightpadding">
+        <div class="col-lg-4 col-md-4 col-sm-6" ng-repeat="day in DayCheck" ng-click="checkGrade(day.criteriaId)">
+            <div class="program_panel">
+                <div class="program_panel_people_title">
+                    <span class="panel_title_left">清洁日检</span>
+                </div>
+                <div class="program_panel_info">
+                    <div class="col-md-3" style="margin-left: -10px" >
+                        <div style="width: 80px;height: 80px;background-color: #ffffff;margin-top: 10px;padding: 5px">
+                            <a>
+                                <p style="font-size: 18px;margin-left: 15px">评分</p>
+                                <p style="font-size: 18px;margin-left: 15px">标准</p>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-offset-4">
+                        <p>创建时间：{{day.createTime}}</p>
+                        <p>标准名称：{{day.criteriaName}}</p>
+                        <p>备注：{{day.remarks}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<div class="rightpadding">
+<div class="contract_panner charge_project">
+    <div  class="contract_detail_nav">
+        <a>清洁周检评分标准</a>
+        <div class="clear"></div>
+    </div>
+    <div class="row rightpadding">
+        <div class="col-lg-4 col-md-4 col-sm-6" ng-repeat="week in weekCheck" ng-click="checkGrade(week.criteriaId)">
+            <div class="program_panel">
+                <div class="program_panel_people_title">
+                    <span class="panel_title_left">清洁周检</span>
+                </div>
+                <div class="program_panel_info">
+                    <div class="col-md-3" style="margin-left: -10px" >
+                        <div style="width: 80px;height: 80px;background-color: #ffffff;margin-top: 10px;padding: 5px">
+                            <a ui-sref="index.externalProfession.templateDetails">
+                                <p style="font-size: 18px;margin-left: 15px">评分</p>
+                                <p style="font-size: 18px;margin-left: 15px">标准</p>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-offset-4">
+                        <p>创建时间：{{week.createTime}}</p>
+                        <p>标准名称：{{week.criteriaName}}</p>
+                        <p>备注：{{week.remarks}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<div class="rightpadding">
+<div class="contract_panner charge_project">
+    <div  class="contract_detail_nav">
+        <a>清洁半月检评分标准</a>
+        <div class="clear"></div>
+    </div>
+    <div class="row rightpadding">
+        <div class="col-lg-4 col-md-4 col-sm-6" ng-repeat="halfMonth in halfMonthCheck" ng-click="checkGrade(halfMonth.criteriaId)">
+            <div class="program_panel">
+                <div class="program_panel_people_title">
+                    <span class="panel_title_left">清洁半月检</span>
+                </div>
+                <div class="program_panel_info">
+                    <div class="col-md-3" style="margin-left: -10px" >
+                        <div style="width: 80px;height: 80px;background-color: #ffffff;margin-top: 10px;padding: 5px">
+                            <a ui-sref="index.externalProfession.templateDetails">
+                                <p style="font-size: 18px;margin-left: 15px">评分</p>
+                                <p style="font-size: 18px;margin-left: 15px">标准</p>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-offset-4">
+                        <p>创建时间：{{halfMonth.createTime}}</p>
+                        <p>标准名称：{{halfMonth.criteriaName}}</p>
+                        <p>备注：{{halfMonth.remarks}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<div class="rightpadding">
+<div class="contract_panner charge_project">
+    <div  class="contract_detail_nav">
+        <a>清洁月检评分标准</a>
+        <div class="clear"></div>
+    </div>
+    <div class="row rightpadding">
+        <div class="col-lg-4 col-md-4 col-sm-6" ng-repeat="month in monthCheck" ng-click="checkGrade(month.criteriaId)">
+            <div class="program_panel">
+                <div class="program_panel_people_title">
+                    <span class="panel_title_left">清洁月检</span>
+                </div>
+                <div class="program_panel_info">
+                    <div class="col-md-3" style="margin-left: -10px" >
+                        <div style="width: 80px;height: 80px;background-color: #ffffff;margin-top: 10px;padding: 5px">
+                            <a ui-sref="index.externalProfession.templateDetails">
+                                <p style="font-size: 18px;margin-left: 15px">评分</p>
+                                <p style="font-size: 18px;margin-left: 15px">标准</p>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-offset-4">
+                        <p>创建时间：{{month.createTime}}</p>
+                        <p>标准名称：{{month.criteriaName}}</p>
+                        <p>备注：{{month.remarks}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+</html>

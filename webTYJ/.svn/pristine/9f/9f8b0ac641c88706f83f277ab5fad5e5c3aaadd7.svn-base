@@ -1,0 +1,85 @@
+/**
+ * Created by 彭婷婷 on 2015/6/1.
+ * 名称：人员管理新增
+ * 修改人：倪明   修改时间：2015/8/26
+ */
+define(function (require) {
+    var app = require('../../../../app');
+    app.controller('appWorkingStaffCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+        var url = $rootScope.url;
+        var fileUrl=$rootScope.fileUrl;    //上传的文件路径
+        var filePath='';
+        $scope.addStaff={annexs:[]};
+        //$scope.doClick(0);
+        var user = {};                                             //设置默认用户信息为空
+        var userSession= JSON.parse(sessionStorage.getItem("USER_LOGIN"));   //从cook中获取用户信息
+        $scope.user = userSession?userSession:user;                      //三目运算获取用户信息
+
+        /**
+         * 在职员工页面网格列表切换
+         */
+        $scope.grid = true;
+        $scope.list=function(){
+            $scope.grid=true;
+        };
+        $scope.gridChange=function(){
+            $scope.grid=false;
+        };
+
+        $scope.staff = {page: {}};
+        var fetchFunction = function (page, callback) {
+            $scope.staff.page = page;
+            $http.post(url + '/staff/listPageStaffRestful', {Staff: $scope.staff}).success(callback)
+        };
+        $scope.searchPaginator = app.get('Paginator').list(fetchFunction, 6);
+
+        $scope.getStaffInfo = function (item) {
+            $scope.index=item.staffId;
+          $scope.staffInfo = item;
+        };
+        /**
+         * 上传文件
+         * @type {{annexAddress: string, annexName: string}}
+         */
+        //$scope.annex = {annexAddress:'',annexName:''};
+        //    $(function(){
+        //        // 初始化插件
+        //        angular.element("#zyupload").zyUpload({
+        //            width            :   "90%",                 // 宽度
+        //            height           :   "auto",                 // 宽度
+        //            itemWidth        :   "140px",                 // 文件项的宽度
+        //            itemHeight       :   "115px",                 // 文件项的高度
+        //            url              :   fileUrl+"/FileService",  // 上传文件的路径
+        //            fileType         :   ["jpg","png","jpeg","gif","xls","docx","xlsx","pdf","txt","doc","ppt"],// 上传文件的类型
+        //            fileSize         :   51200000,                // 上传文件的大小
+        //            multiple         :   true,                    // 是否可以多个文件上传
+        //            dragDrop         :   true,                    // 是否可以拖动上传文件
+        //            tailor           :   true,                    // 是否可以裁剪图片
+        //            del              :   true,                    // 是否可以删除文件
+        //            finishDel        :   false,  				  // 是否在上传文件完成后删除预览
+        //            //外部获得的回调接口
+        //            onSelect: function(selectFiles, allFiles){    // 选择文件的回调方法  selectFile:当前选中的文件  allFiles:还没上传的全部文件
+        //
+        //            },
+        //            onDelete: function(file, files){
+        //            },
+        //            onSuccess: function(file, response){          // 文件上传成功的回调方法
+        //                $scope.annex = {annexAddress:'',annexName:''};
+        //                filePath=response;
+        //                $scope.annex.annexName = file.name;
+        //                $scope.annex.annexAddress = filePath;
+        //                $scope.addStaff.annexs.push($scope.annex);
+        //                layer.msg("上传成功",{icon : 1,time : 2000});
+        //            },
+        //            onFailure: function(file, response){          // 文件上传失败的回调方法
+        //                layer.msg("上传失败",{icon : 1,time : 2000});
+        //            },
+        //            onComplete: function(response){           	  // 上传完成的回调方法
+        //
+        //            }
+        //        });
+        //
+        //    });
+
+    }]);
+});

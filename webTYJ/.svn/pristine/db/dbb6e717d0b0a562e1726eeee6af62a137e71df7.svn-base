@@ -1,0 +1,127 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 门禁卡
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../../app');
+
+    app.controller('accessCardCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+        var url = $rootScope.url;
+        var productid = '';//
+        productid = JSON.parse(localStorage.getItem("product_id"));
+        $scope.Product = {};
+        //查询相关产品信息
+        if(productid != ''){
+            if($scope.productId==undefined)
+            {
+                $scope.productId = productid;
+            };
+            $http.post(url + '/Product/getProductByProductId/' + $scope.productId).success(function(data){
+                $scope.Product = data.Product;
+                if(angular.isDefined($scope.Product)){
+                    $scope.Product.effectDate = new Date($scope.Product.effectDate);
+                }
+            }).error(function(data){
+                layer.alert('没有对应的产品信息！',{icon : 2});
+            });
+        }
+
+
+        /**
+         * 正则匹配式
+         * @param r
+         * @param s
+         * @returns {boolean}
+         */
+        function regx(r,s)
+        {
+            if (r == null || r == ""){
+                return false;
+            }
+            var patrn= new RegExp(r);
+            if (patrn.exec(s))
+                return true;
+            return false
+        }
+
+        /**
+         * 新增门禁卡
+         */
+        $scope.addProduct = function (){
+            if(angular.isUndefined($scope.Product)){
+                layer.alert('不能提交空产品',{icon : 0});
+                return ;
+            }else{
+                var pName = app.get('valueCheck').isNull($scope.Product.productName);
+                if(!pName.state){
+                    layer.msg('产品名称' + pName.info,{icon : 0,time : 1000});
+                    return;
+                }
+                $scope.checkName();
+                var pNum = app.get('valueCheck').isNull($scope.Product.productNum);
+                if(!pNum.state){
+                    layer.msg('产品编号' + pNum.info, {icon : 0,time : 1000});
+                    return;
+                }
+                var pEffect = app.get('valueCheck').isNull($scope.Product.effectDate);
+                if(!pEffect.state){
+                    layer.msg('产品生效日期' + pEffect.info,{icon : 0,time : 1000});
+                    return;
+                }
+                var pPrice = app.get('valueCheck').isNumberAndNotNull($scope.Product.price);
+                if(!pPrice.state){
+                    layer.msg('产品金额' + pPrice.info,{icon : 0,time : 1000});
+                    return;
+                }
+            }
+            $scope.Product.productType = 2;
+            //判断产品id是否存在，如果存在就修改，如果不存在就新增
+            if(angular.isUndefined($scope.Product.productId) || $scope.Product.productId == null){
+                $http.post(url + '/Product/addProduct',{Product : $scope.Product}).success(function(){
+                    layer.msg('新增成功！',{icon : 1,time : 1000});
+                    $location.path("/index/accountManagement/productAndProperty/product");
+                }).error(function(){
+                    layer.msg('新增失败！',{icon : 2,time : 1000});
+                });
+            }else{
+                $http.post(url + '/Product/updateProduct',{Product : $scope.Product}).success(function(){
+                    layer.msg('修改成功！',{icon : 1,time : 1000});
+                    $location.path("/index/accountManagement/productAndProperty/product");
+                }).error(function(){
+                    layer.msg('修改失败！',{icon : 2,time : 1000});
+                });
+            }
+        };
+
+        //新增取消
+        $scope.cancle=function(){
+            $location.path("/index/accountManagement/productAndProperty/product");
+        };
+
+        /**
+         * 判断产品名称是否重复
+         * 王洲
+         * 2016.04.22
+         */
+        $scope.checkNames = false;
+        $scope.checkName = function(){
+            if(app.get('valueCheck').isNull($scope.Product.productName).state){
+                $scope.check = {productId : '',productName : ''};
+                $scope.check.productId = productid;
+                $scope.check.productName = $scope.Product.productName;
+                $http.post(url + '/Product/checkProductName',{Product : $scope.check}).success(function(data){
+                    $scope.checkNames = data.Info.state;
+                    if(!$scope.checkNames){
+                        layer.msg('此产品名称已存在，请重试！',{icon : 0,time : 1000});
+                    }
+                }).error(function(data){
+                    layer.msg('数据查询异常，请重试！',{icon : 0,time : 1000});
+                });
+            }
+        };
+
+    }]);
+});

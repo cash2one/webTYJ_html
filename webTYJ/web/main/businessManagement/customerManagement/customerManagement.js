@@ -1,0 +1,817 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 售后管理
+ */
+
+'use strict';
+
+/*
+define(function (require) {
+    var app = require('../../../app');
+
+    app.controller('customerCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        $scope.btnIndex = 1;
+        var url=$rootScope.url;
+        $scope.AfterSale={page:{}};
+        $scope.AfterSaleQuery={page:{},responsibleDepartmentId:{},propertyTypeName:{},sourceList:{},process:{},propertyName:{},propertyTypeNameList:{}};
+        $scope.addAfterSale={};
+        $scope.pptname='';
+        $scope.deplist='';
+        $scope.Project={};
+        $scope.PropertyType={};
+        $scope.propertytypenames =[];
+
+        var fetchFunction = function(page,callback) {
+            $scope.AfterSaleQuery.page=page;
+            $scope.AfterSaleQuery.propertyName = $scope.pptname;
+            $scope.AfterSaleQuery.responsibleDepartmentId =$scope.deplist;
+            var temp = document.getElementsByName("propertypename");
+            for(var i=0;i<temp.length;i++){
+                if(temp[i].checked==true){
+                    $scope.propertytypenames.push(temp[i].id);
+                }
+            }
+            $scope.AfterSaleQuery.propertyTypeName = [];
+            $scope.AfterSaleQuery.propertyTypeNameList = $scope.propertytypenames;        
+            //alert($scope.AfterSaleQuery.propertyTypeName);
+            //$http.post(url + '/AfterSale/listPageAfterSaleRestful',{AfterSaleQuery:$scope.AfterSaleQuery}).success(callback);
+            $http.post(url + '/AfterSale/listProjectAndTypeName',{AfterSaleQuery:$scope.AfterSaleQuery}).success(callback);
+        };
+
+        $scope.Psearchaginator=app.get('Paginator').list(fetchFunction,5);
+
+
+        //查询所有项目
+        $scope.Project = {};
+        $scope.listprojectname = function(){
+            $http.get(url + '/AfterSale/listprojectname').success(function(data){
+                $scope.Project = data.Project;
+            }).error(function(data){
+                layer.msg('查询项目失败', {icon: 2});
+            })
+        };
+
+        $scope.showlist = function()
+        {
+            //$scope.AfterSaleQuery.responsibleDepartmentId =$scope.deplist;
+        };
+
+        //查询所有专业
+        $scope.PropertyType={};
+        $scope.listpropertytype = function(){
+            $http.get(url + '/AfterSale/listpropertytype').success(function(data){
+                $scope.PropertyType = data.PropertyType;
+            }).error(function(){
+                layer.msg('查询专业失败', {icon: 2});
+            })
+        };
+
+        $scope.listprojectname();
+        $scope.listpropertytype();
+
+        //不保修时发送通知
+        $scope.sendnotice = function(aftersale)
+        {
+            $scope.AfterSale = aftersale;
+            $http.put(url+'/Tasks/createTasksFromAfterSale',{AfterSale:$scope.AfterSale}).success(function()
+            {
+                $scope.Psearchaginator._load();
+            }).error(function(data, status, headers, config){
+            });
+        };
+
+        $scope.view=function(id)
+        {
+            $http.get(url+'/AfterSale/getAfterSaleByIdRestful/'+id).success(function(data)
+            {
+                $scope.afterSale=data.AfterSale;
+            });
+        };
+        $scope.update=function()
+        {
+            $http.put(url+'/AfterSale/updateAfterSaleRestful',{AfterSale:$scope.afterSale}).success(function()
+            {
+                $scope.searchPaginator._load();//ˢ�����
+                layer.msg('查询失败！', {icon: 2});
+            }).error(function(data, status, headers, config){
+                layer.msg('查询失败！', {icon: 2});
+            }) ;
+        };
+        $scope.insert=function()
+        {
+            $http.post(url+'/AfterSale/insertAfterSaleRestful',{AfterSale:$scope.addAfterSale}).success(function()
+            {
+                $scope.searchPaginator._load();//ˢ�����
+                layer.msg('查询失败！', {icon: 2});
+            }).error(function(data, status, headers, config){
+                layer.msg('查询失败！', {icon: 2});
+            }) ;
+        };
+        $scope.deleteAfterSales=function()
+        {
+            if(confirm("查询失败"))
+            {
+                var indexchekbox=0;
+                var indexsuccess=0;
+                for(var i=0;i<$scope.searchPaginator.object.afterSales.length;i++){
+                    if($scope.searchPaginator.object.afterSales[i].checkbox==true){
+                        indexchekbox++;
+                        $http({
+                            method:'DELETE',
+                            url:url + '/AfterSale/deleteAfterSaleRestful/'+$scope.searchPaginator.object.afterSales[i].id
+                        })
+                            .success(function(data, status, headers, config){
+                                indexsuccess++;
+                                if(indexchekbox==indexsuccess)
+                                {
+                                    $scope.searchPaginator._load();
+                                }
+                            }).error(function(data, status, headers, config){
+                                 layer.msg('查询失败！', {icon: 2});
+                                return;
+                            }) ;
+                    };
+                }
+            }
+        };
+
+    }]);
+});*/
+
+/**
+ * Created by NM on 2018/1/18.
+ * 售后管理
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../app');
+
+    app.controller('customerCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        $scope.btnIndex = 1;
+        //$scope.show_search_after_sale = 1;
+
+        var url=$rootScope.url;
+        var user = {};
+        var userSession = JSON.parse(sessionStorage.getItem("USER_LOGIN"));
+        $scope.user = userSession?userSession:user;
+        console.log("用户名为："+$scope.user.userName);
+        console.log("用户ID为："+$scope.user.userId);
+       /* $http.get(url+'/AfterSaleProcess/getUserNameByUserId/'+$scope.user.userId).success(function (data) {
+            $scope.userName = data.userName;
+            console.log("用户名为："+$scope.userName);
+        }).error(function () {
+            layer.msg('查询用户名出错！',{icon:2,time:2000});
+        });*/
+
+        $scope.AfterSale={page:{}};
+        $scope.AfterSaleQuery={page:{},responsibleDepartmentId:{},propertyTypeName:{},sourceList:{},process:{},propertyName:{},propertyTypeNameList:{}};
+        $scope.addAfterSale={};
+        $scope.pptname='';
+        $scope.deplist='';
+        $scope.Project={};
+        $scope.PropertyType={};
+        $scope.propertytypenames =[];
+        $scope.AfterSaleQuery.process="";
+        $scope.AfterSaleQuery.propertyTypeName = "";
+        $scope.searchProject = {page:{}};
+        $scope.mainPage = 0;
+        $scope.show_after_sale_letters=1;
+
+        $scope.days=[1,2,3,4,5,6,7,8];
+        $scope.listPageAfterSaleByClickProject = function () {
+            var fetchFunction = function(page,callback) {
+                $scope.AfterSaleQuery.page=page;
+                $scope.AfterSaleQuery.propertyName = $scope.pptname;
+                $scope.AfterSaleQuery.responsibleDepartmentId =$scope.deplist;
+                /*var temp = document.getElementsByName("propertypename");
+                for(var i=0;i<temp.length;i++){
+                    if(temp[i].checked==true){
+                        $scope.propertytypenames.push(temp[i].id);
+                    }
+                }*/
+                //$scope.AfterSaleQuery.propertyTypeName = "";
+                $scope.AfterSaleQuery.propertyTypeNameList = $scope.propertytypenames;
+                //alert($scope.AfterSaleQuery.propertyTypeName);
+                //$http.post(url + '/AfterSale/listPageAfterSaleRestful',{AfterSaleQuery:$scope.AfterSaleQuery}).success(callback);
+                $http.post(url + '/AfterSale/listProjectAndTypeName',{AfterSaleQuery:$scope.AfterSaleQuery}).success(callback);
+            };
+            $scope.Psearchaginator=app.get('Paginator').list(fetchFunction,5);
+        };
+        $scope.searchInfo=function(){
+            $scope.Psearchaginator._load();
+            $scope.btn_after_sale=0;
+            //$scope.show_search_after_sale=0;
+        };
+        /**
+         * enter 搜索
+         *
+         */
+        $scope.inputSearch = function(ev)
+        {
+            var e = ev||event;
+            if(e.keyCode == 13)
+            {
+                $scope.searchInfo();
+            }
+        };
+
+        $scope.toPage=function(index,items){
+            if(index==2){
+                $scope.btnIndex = 2;
+            }
+            if(index==1){
+                $scope.btnIndex = 1;
+            }
+            if(items==1){
+                $scope.show_search_after_sale=1;
+            }else if(items==0){
+                $scope.show_search_after_sale=0;
+            }
+        };
+
+        $scope.loadProjectList=function()
+        {
+            var loadProject = function(page, callback){
+                $scope.searchProject.page=page;
+                $http.post(url + '/Project/listPageProject',{Project:$scope.searchProject}).success(callback);
+            };
+            $scope.loadProjectPaginator = app.get('Paginator').list(loadProject, 6);
+            console.log($scope.loadProjectPaginator);
+        };
+
+        $scope.loadProjectList();
+
+        /*
+         $scope.Psearchaginator=app.get('Paginator').list(loadProjectList,3);
+         //查询任务列表
+         var searchTaskList=function(page,callback){
+
+        };
+         $scope.Psearchaginator=app.get('Paginator').list(searchTaskList,3);
+
+         //根据任务列表联动工单列表
+         var searchOrdersList=function(page,callback){
+
+        };
+         $scope.Psearchaginator=app.get('Paginator').list(searchOrdersList,3);
+         **/
+
+            //查询所有项目
+        $scope.Project = {};
+        $scope.listprojectname = function(){
+            $http.get(url + '/AfterSale/listprojectname').success(function(data){
+                $scope.Project = data.Project;
+            }).error(function(data){
+                layer.msg('查询项目失败', {icon: 2});
+            })
+        };
+        $scope.listprojectname();
+
+        $scope.showlist = function()
+        {
+            //$scope.AfterSaleQuery.responsibleDepartmentId =$scope.deplist;
+        };
+
+        //查询所有专业
+        $scope.PropertyType={};
+        $scope.listpropertytype = function(){
+            $http.get(url + '/AfterSale/listpropertytype').success(function(data){
+                $scope.PropertyType = data.PropertyType;
+            }).error(function(){
+                layer.msg('查询专业失败', {icon: 2});
+            })
+        };
+
+        //$scope.listprojectname();
+        $scope.listpropertytype();
+
+        //不保修时发送通知
+        $scope.sendnotice = function(aftersale)
+        {
+            $scope.AfterSale = aftersale;
+            $http.put(url+'/Tasks/createTasksFromAfterSale',{AfterSale:$scope.AfterSale}).success(function()
+            {
+                $scope.Psearchaginator._load();
+            }).error(function(data, status, headers, config){
+            });
+        };
+
+        $scope.view=function(id)
+        {
+            $http.get(url+'/AfterSale/getAfterSaleByIdRestful/'+id).success(function(data)
+            {
+                $scope.afterSale=data.AfterSale;
+            });
+        };
+        $scope.update=function()
+        {
+            $http.put(url+'/AfterSale/updateAfterSaleRestful',{AfterSale:$scope.afterSale}).success(function()
+            {
+                $scope.searchPaginator._load();//ˢ�����
+                layer.msg('查询失败！', {icon: 2});
+            }).error(function(data, status, headers, config){
+                layer.msg('查询失败！', {icon: 2});
+            }) ;
+        };
+        /*
+         $scope.showOrHidden = function (flag) {
+            if(flag==1){
+                $scope.element('#show_after_sale_list').modal("hidden");
+                $scope.element('#after_sale_information').modal("show");
+            }else{
+                $scope.element('#show_after_sale_list').modal("show");
+                $scope.element('#after_sale_information').modal("hidden");
+            }
+
+
+        }
+         $scope.showOrHidden(1);
+         */
+        $scope.insert=function()
+        {
+            $http.post(url+'/AfterSale/insertAfterSaleRestful',{AfterSale:$scope.addAfterSale}).success(function()
+            {
+                $scope.searchPaginator._load();
+                layer.msg('查询失败！', {icon: 2});
+            }).error(function(data, status, headers, config){
+                layer.msg('查询失败！', {icon: 2});
+            }) ;
+        };
+        $scope.deleteAfterSales=function()
+        {
+            if(confirm("查询失败?"))
+            {
+                var indexchekbox=0;
+                var indexsuccess=0;
+                for(var i=0;i<$scope.searchPaginator.object.afterSales.length;i++){
+                    if($scope.searchPaginator.object.afterSales[i].checkbox==true){
+                        indexchekbox++;
+                        $http({
+                            method:'DELETE',
+                            url:url + '/AfterSale/deleteAfterSaleRestful/'+$scope.searchPaginator.object.afterSales[i].id
+                        })
+                            .success(function(data, status, headers, config){
+                                indexsuccess++;
+                                if(indexchekbox==indexsuccess)
+                                {
+                                    $scope.searchPaginator._load();
+                                }
+                            }).error(function(data, status, headers, config){
+                            layer.msg('查询失败！', {icon: 2});
+                            return;
+                        }) ;
+                    };
+                }
+            }
+        };
+
+        $scope.clickProjectName= function (item) {
+          $scope.btnIndex = 3;
+          $scope.show_search_after_sale=0;
+          $scope.btn_after_sale=0;
+            $scope.AfterSaleQuery.responsibleProject=item.projectName;
+            $scope.listPageAfterSaleByClickProject();
+        };
+        
+        $scope.chooseAfterSaleList = function (item) {
+            if(document.getElementById(item.id).checked)
+            {
+                document.getElementById(item.id).checked = false;
+                document.getElementById(item.id).parentNode.parentNode.style.background = '';
+            }else
+            {
+                document.getElementById(item.id).checked = true;
+                document.getElementById(item.id).parentNode.parentNode.style.background = '#f6f8fa';
+            }
+        };
+
+        //生成随机的ID
+        var chars = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
+        function generateMixed() {
+            var res = "";
+            for(var i = 0; i < 30 ; i ++) {
+                var id = Math.ceil(Math.random()*35);
+                res += chars[id];
+            }
+            return res;
+        }
+
+        $scope.afterSaleProcess={};
+        //点击发函售后责任单位按钮
+        $scope.clickAfterSaleCompany = function () {
+            var count = 0;
+            angular.forEach($scope.Psearchaginator.object.afterSales,function(item){
+                if(item.id!=null) {
+                    console.log("item.id的值为：" + item.id);
+                    if (document.getElementById(item.id).checked) {
+                        count++;
+                    }
+                }
+            });
+            if(count==0){
+                //layer.msg('请选择需要的行！',{icon:0,time:2000});
+                //return;
+            }
+            var temp,tag=1;
+            var a = null;
+            temp = $scope.Psearchaginator.object.afterSales;
+            for(var i = 0;i<temp.length;i++){
+                if(temp[i].id!=null) {
+                    //console.log(document.getElementById(temp[i].id).checked);
+                    if (document.getElementById(temp[i].id).checked) {
+                        if(temp[i].process!=0){
+                            layer.msg('只能选择待处理项！',{icon:0,time:2000});
+                            return;
+                        }
+                        if(a == null){
+                            a = temp[i];
+                        }
+                        else{
+                            if(temp[i].guarantee != a.guarantee){
+                                tag=0;
+                            }
+                            a = temp[i];
+                        }
+                    }
+                    if(tag==0){
+                        layer.msg('选择的报修单位必须一致！',{icon:0,time:2000});
+                        return;
+                    }
+                }
+            }
+            if(count!=0) {
+                var j = 0;
+                //var randomID = generateMixed();
+                var randomID = app.get('tyjUtil').uuid();
+                console.log("随机的id为：" + randomID);
+                $scope.afterSale = {};
+                $scope.afterSale.processId = randomID;
+                //$.ajaxSetup({async: false});
+                for (i = 0; i < temp.length; i++) {
+                    if (temp[i].id != null) {
+                        console.log(document.getElementById(temp[i].id).checked);
+                        if (document.getElementById(temp[i].id).checked) {
+                            $scope.afterSale.id = temp[i].id;
+                            console.log($scope.afterSale.id);
+
+                            $.ajax({
+
+                                type: "PUT",
+
+                                url: url + '/AfterSale/updateAfterSaleRelationIdById',
+
+                                data: JSON.stringify({AfterSale: $scope.afterSale}),
+                                contentType: 'application/json;charset=UTF-8',
+
+                                success: function (msg) {
+
+                                    j++;
+                                    console.log("这是第" + j + "次请求," + "id为：" + $scope.afterSale.id);
+
+                                }
+
+                            });
+
+                            /*$.put(url+'/AfterSale/updateAfterSaleRelationIdById',{AfterSale:$scope.afterSale}).success(function()
+                             {
+                             j++;
+                             console.log("这是第"+j+"次请求,"+"id为："+$scope.afterSale.id);
+                             //layer.msg('更新成功！', {icon: 1,time:1000});
+                             }).error(function(data, status, headers, config){
+                             layer.msg('更新失败！', {icon: 0});
+                             });*/
+                        }
+                    }
+                }
+
+                //$scope.afterSaleProcess.letterDate = new Date();
+                $scope.afterSaleProcess.state = 0;
+                if (tag == 1) {
+                    $scope.afterSaleProcess.guarantee = a.guarantee;
+                }
+                $scope.afterSaleProcess.id = randomID;
+                $scope.afterSaleProcess.responsibleProject = a.responsibleProject;
+                console.log("随机的id为：" + $scope.afterSaleProcess.id);
+
+                $http.post(url + '/AfterSaleProcess/insertAfterSaleProcessRestful', {AfterSaleProcess: $scope.afterSaleProcess}).success(function () {
+                    $scope.clickProcessListToListPageFirst($scope.afterSaleProcess);
+                    //layer.msg('插入成功！', {icon: 1,time:1000});
+                    $scope.listPageAfterSaleProcess();
+                }).error(function (data, status, headers, config) {
+                    layer.msg('插入失败！', {icon: 0});
+                });
+            }else {
+                $scope.listPageAfterSaleProcess();
+            }
+            $scope.btnIndex=4;
+            $scope.show_search_after_sale = 2;
+            //将售后管理列表复选框置空
+            /*for( i = 0;i<temp.length;i++){
+                if(temp[i].id!=null) {
+                    console.log(document.getElementById(temp[i].id).checked);
+                    document.getElementById(temp[i].id).checked=false;
+                }
+            }*/
+        };
+
+        $scope.listPageAfterSaleProcess = function () {
+            var loadAfterSaleProcess = function(page, callback){
+                $scope.afterSaleProcess.page=page;
+                $http.post(url + '/AfterSaleProcess/listPageAfterSaleProcess',{AfterSaleProcess:$scope.afterSaleProcess}).success(callback).error(function(data, status, headers, config){
+                    layer.msg('分页失败！', {icon: 0});
+                });
+            };
+            $scope.loadProcessPaginator = app.get('Paginator').list(loadAfterSaleProcess, 5);
+        };
+
+        $scope.listIndex = 0;
+        var listAfterSales = function () {
+            var fetchFunction = function(page, callback){
+                $scope.afterSales.page=page;
+                $http.post(url + '/AfterSale/listPageAfterSaleByProcessId',{AfterSale:$scope.afterSales}).success(callback).error(function(data, status, headers, config){
+                    layer.msg('分页失败！', {icon: 0});
+                });
+            };
+            $scope.loadPageAfterSalePaginator = app.get('Paginator').list(fetchFunction, 6);
+        };
+
+        $scope.clickProcessListToListPage = function (item) {
+            $scope.listIndex = item.id;
+            $scope.afterSales={};
+            document.getElementById(item.id).checked = document.getElementById(item.id).checked?false:true;
+            $scope.afterSales.processId=item.id;
+            var temp2 = $scope.loadProcessPaginator.object.afterSaleProcess;
+            console.log(temp2);
+            for(var i=0;i<temp2.length;i++){
+                if(temp2[i].id!=null) {
+                    if ((temp2[i].id != item.id) && (document.getElementById(temp2[i].id).checked)) {
+                        document.getElementById(temp2[i].id).checked = false;
+                    }
+                }
+            }
+            listAfterSales();
+        };
+        $scope.clickProcessListToListPageFirst = function (item) {
+            $scope.listIndex = item.id;
+            $scope.afterSales={};
+            $scope.afterSales.processId=item.id;
+            listAfterSales();
+        };
+
+        //点击发函维修委托单位按钮
+        $scope.clickRepairCompany = function () {
+            $scope.btnIndex=4;
+            $scope.show_search_after_sale = 3;
+        };
+
+        //格式化日期时间
+        Date.prototype.Format = function(fmt)
+        {
+            var o = {
+                "M+" : this.getMonth()+1,         //月份
+                "d+" : this.getDate(),          //日
+                "H+" : this.getHours(),          //小时
+                "m+" : this.getMinutes(),         //分
+                "s+" : this.getSeconds(),         //秒
+                "q+" : Math.floor((this.getMonth()+3)/3), //季度
+                "S" : this.getMilliseconds()       //毫秒
+            };
+            if(/(y+)/.test(fmt))
+                fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
+            for(var k in o)
+                if(new RegExp("("+ k +")").test(fmt))
+                    fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
+            return fmt;
+        };
+        //点击发送维修通知函
+        $scope.tag1 = 0;
+        $scope.clickRepairLetter = function () {
+            $scope.repairLetter = {};
+            var temp = $scope.loadProcessPaginator.object.afterSaleProcess;
+                for (var i = 0; i < temp.length; i++) {
+                    if(temp[i].id!=null) {
+                    if (document.getElementById(temp[i].id).checked) {
+                        $scope.tag1 = 1;
+                        $scope.repairLetter.id = temp[i].id;
+                        $scope.repairLetter.responsibleProject = temp[i].responsibleProject;
+                        if(temp[i].state>0){
+                            layer.msg('已发送过维修通知函！',{icon:0,time:2000});
+                            return;
+                        }
+                    }
+                }
+            }
+            if($scope.tag1 == 0){
+                layer.msg('请选择需要发送维修通知函的行！',{icon:0,time:2000});
+                return;
+            }
+            angular.element("#repairLetter").modal('show');
+            //$scope.repairLetter.exactLetterDate1 = new Date().Format("yyyy-MM-dd");
+            $scope.repairLetter.exactLetterDate1 = new Date();
+            console.log($scope.repairLetter.exactLetterDate1);
+            $scope.repairLetter.letterType1="维修通知函";
+            $scope.repairLetter.state=1;
+            $scope.repairLetter.operater1=$scope.user.userName;
+            $scope.tag1 = 0;
+        };
+
+        //维修函提交
+        $scope.repairTag = 0;
+        $scope.afterSaleChangeState = {};
+        $scope.submitRepairLetter  = function () {
+            $http.put(url+'/AfterSaleProcess/updateAfterSaleProcessSelectiveRestful',{AfterSaleProcess:$scope.repairLetter}).success(function()
+            {
+                $scope.repairTag = 1;
+                $scope.loadProcessPaginator._load();
+                //$scope.listPageAfterSaleProcess();
+                layer.msg('更新成功！', {icon: 1,time:1000});
+            }).error(function(data, status, headers, config){
+                layer.msg('更新失败！', {icon: 0});
+            });
+            //更新售后管理信息的状态
+            $scope.afterSaleChangeState.processId = $scope.repairLetter.id;
+            $scope.afterSaleChangeState.process = 1;
+            $http.put(url+'/AfterSale/updateAfterSaleProcessStateByProcessId',{AfterSale:$scope.afterSaleChangeState}).success(function()
+            {
+                layer.msg('更新成功！', {icon: 1,time:1000});
+            }).error(function(data, status, headers, config){
+                layer.msg('更新失败！', {icon: 0});
+            });
+        };
+        //点击发送确认不来函
+        $scope.tag2 = 0;
+        $scope.clickConfirmNoLetter = function () {
+            $scope.confirmNoLetter = {};
+            var temp = $scope.loadProcessPaginator.object.afterSaleProcess;
+                for (var i = 0; i < temp.length; i++) {
+                    if(temp[i].id!=null) {
+                    if (document.getElementById(temp[i].id).checked) {
+                        $scope.tag2 = 1;
+                        $scope.confirmNoLetter.id = temp[i].id;
+                        $scope.confirmNoLetter.responsibleProject = temp[i].responsibleProject;
+                        if(temp[i].state==1){
+                            $scope.repairTag = 1;
+                        }else if(temp[i].state>1){
+                            layer.msg('已发送过确认不来函！',{icon:0,time:2000});
+                            return;
+                        }
+                    }
+                }
+            }
+            if($scope.tag2 == 0){
+                layer.msg('请选择需要发送确认不来函的行！',{icon:0,time:2000});
+                return;
+            }
+            if($scope.repairTag == 0){
+                layer.msg('请先发送维修通知函！',{icon:0,time:2000});
+                $scope.tag2 = 0;
+                return;
+            }
+            angular.element("#confirmNoLetter").modal('show');
+            $scope.confirmNoLetter.exactLetterDate2 = new Date();
+            $scope.confirmNoLetter.letterType2="确认不来函";
+            $scope.confirmNoLetter.state=2;
+            $scope.confirmNoLetter.operater2=$scope.user.userName;
+        };
+
+        //维修函提交
+        $scope.confirmNoLetterTag = 0;
+        $scope.submitConfirmLetter  = function () {
+            $http.put(url+'/AfterSaleProcess/updateAfterSaleProcessSelectiveRestful',{AfterSaleProcess:$scope.confirmNoLetter}).success(function()
+            {
+                $scope.confirmNoLetterTag = 1;
+                $scope.loadProcessPaginator._load();
+                layer.msg('更新成功！', {icon: 1,time:1000});
+            }).error(function(data, status, headers, config){
+                layer.msg('更新失败！', {icon: 0});
+            });
+            //更新售后管理信息的状态
+            $scope.afterSaleChangeState.processId = $scope.confirmNoLetter.id;
+            $scope.afterSaleChangeState.process = 2;
+            $http.put(url+'/AfterSale/updateAfterSaleProcessStateByProcessId',{AfterSale:$scope.afterSaleChangeState}).success(function()
+            {
+                layer.msg('更新成功！', {icon: 1,time:1000});
+            }).error(function(data, status, headers, config){
+                layer.msg('更新失败！', {icon: 0});
+            });
+        };
+        //点击发送扣款函
+        $scope.tag3 = 0;
+        $scope.clickChargeLetter = function () {
+            $scope.chargeLetter = {};
+            var temp = $scope.loadProcessPaginator.object.afterSaleProcess;
+                for (var i = 0; i < temp.length; i++) {
+                    if(temp[i].id!=null) {
+                    if (document.getElementById(temp[i].id).checked) {
+                        $scope.tag3 = 1;
+                        $scope.chargeLetter.id = temp[i].id;
+                        $scope.chargeLetter.responsibleProject = temp[i].responsibleProject;
+                        if(temp[i].state==1){
+                            $scope.repairTag = 1;
+                        }else if(temp[i].state==2){
+                            $scope.repairTag = 1;
+                            $scope.confirmNoLetterTag = 1;
+                        }else if(temp[i].state==3){
+                            layer.msg('已发送过扣款函！',{icon:0,time:2000});
+                            return;
+                        }
+                    }
+                }
+            }
+            if($scope.tag3 == 0){
+                layer.msg('请选择需要发送扣款函的行！',{icon:0,time:2000});
+                return;
+            }
+            if($scope.repairTag == 0){
+                layer.msg('请先发送维修通知函！',{icon:0,time:2000});
+                $scope.tag3 = 0;
+                return;
+            }
+            if($scope.confirmNoLetterTag == 0){
+                layer.msg('请先发送确认不来函！',{icon:0,time:2000});
+                $scope.tag3 = 0;
+                return;
+            }
+            angular.element("#chargeLetter").modal('show');
+            $scope.chargeLetter.exactLetterDate3 = new Date();
+            $scope.chargeLetter.letterType3="扣款函";
+            $scope.chargeLetter.state=3;
+            $scope.chargeLetter.operater3=$scope.user.userName;
+            $scope.tag3 = 0;
+        };
+
+        //维修函提交
+        $scope.submitChargeLetter  = function () {
+            $http.put(url+'/AfterSaleProcess/updateAfterSaleProcessSelectiveRestful',{AfterSaleProcess:$scope.chargeLetter}).success(function()
+            {
+                $scope.loadProcessPaginator._load();
+                layer.msg('更新成功！', {icon: 1,time:1000});
+            }).error(function(data, status, headers, config){
+                layer.msg('更新失败！', {icon: 0});
+            });
+            //更新售后管理信息的状态
+            $scope.afterSaleChangeState.processId = $scope.chargeLetter.id;
+            $scope.afterSaleChangeState.process = 3;
+            $http.put(url+'/AfterSale/updateAfterSaleProcessStateByProcessId',{AfterSale:$scope.afterSaleChangeState}).success(function()
+            {
+                layer.msg('更新成功！', {icon: 1,time:1000});
+            }).error(function(data, status, headers, config){
+                layer.msg('更新失败！', {icon: 0});
+            });
+        };
+
+        //点击快递单号
+        $scope.clickExpressNum = function (item) {
+            $scope.expressInfo = item;
+        };
+
+        //第一个录入
+        $scope.loadOne = function () {
+          $scope.mainPage = 1;
+        };
+        //第二个录入
+        $scope.loadTwo = function () {
+          $scope.mainPage = 2;
+        };
+        //第三个录入
+        $scope.loadThree = function () {
+          $scope.mainPage = 3;
+        };
+
+        //返回
+        $scope.backToHome = function () {
+            $scope.mainPage = 0;
+            $scope.btnIndex = 1;
+            $scope.show_search_after_sale = 0;
+            $scope.show_after_sale_letters = 1;
+        };
+    //点击售后列表，跳到售后处理
+        $scope.clickAfterSaleList = function () {
+          $scope.show_search_after_sale = 1;
+        };
+
+    //点击业主函件管理，状态
+        $scope.clickState = function () {
+            $scope.show_after_sale_letters = 2;
+        };
+
+    //返回到业主函件管理
+        $scope.backToHome2 = function () {
+            $scope.show_after_sale_letters = 1;
+        };
+
+    //返回到列表
+        $scope.backToList = function () {
+            $scope.btn_after_sale = 0;
+            $scope.show_search_after_sale=0;
+            //重新分页
+            $scope.btnIndex=3;
+            $scope.listPageAfterSaleByClickProject();
+        };
+
+    }]);
+});

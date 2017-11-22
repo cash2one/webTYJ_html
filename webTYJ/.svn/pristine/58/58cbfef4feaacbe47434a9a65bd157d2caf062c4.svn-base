@@ -1,0 +1,2498 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 任务详情
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../app');
+
+    app.controller('taskDetailCtrl', ['$scope', '$http','$rootScope','$stateParams','$window','$location', function ($scope,$http,$rootScope,$stateParams,$window,$location) {
+
+        var url=$rootScope.url;
+        $scope.seleted = '';
+        $scope.tyc={
+            op:[
+                { id: '0',value:'报价' },
+                { id: '1',value:'检测' },
+                { id: '2',value:'处理' },
+                { id: '3',value:'验收' },
+                { id: '4',value:'结算' },
+                { id: '5',value:'向业主索赔' },
+                { id: '6',value:'表扬' },
+                { id: '7',value:'回访' }
+            ]};
+
+        $scope.apt={
+            op:[
+                { id: '0',value:'合格' },
+                { id: '1',value:'不合格' },
+                { id: '2',value:'好' },
+                { id: '3',value:'非常好' }
+            ]};
+
+        $scope.at={
+            ot:[
+                { id: '1',value:'一折' },
+                { id: '2',value:'二折' },
+                { id: '3',value:'三折' },
+                { id: '4',value:'四折' },
+                { id: '5',value:'五折' },
+                { id: '6',value:'六折' },
+                { id: '7',value:'七折' },
+                { id: '8',value:'八折' },
+                { id: '9',value:'九折' },
+                { id: '10',value:'不打折' }
+            ]};
+        $scope.way={
+            od:[
+                { id: '1',value:'水费' },
+                { id: '2',value:'电费' },
+                { id: '3',value:'现金' },
+                { id: '4',value:'停车费' },
+                { id: '5',value:'物业费' },
+                { id: '6',value:'服务费' }
+            ]};
+        $scope.cycle={
+            oy:[
+                { id: '0',value:'一次性' },
+                { id: '1',value:'1个月' },
+                { id: '2',value:'2个月' },
+                { id: '3',value:'3个月' },
+                { id: '4',value:'4个月' },
+                { id: '5',value:'5个月' },
+                { id: '6',value:'6个月' },
+                { id: '7',value:'7个月' },
+                { id: '8',value:'8个月' },
+                { id: '9',value:'9个月' },
+                { id: '10',value:'10个月' },
+                { id: '11',value:'11个月' },
+                { id: '12',value:'12个月' }
+            ]};
+
+
+
+        $scope.WaterMeterRecords = {};
+        //显示隐藏新建工单
+        var map = {"报价单":"div1", "检测":"div2", "处理":"div3","验收":"div4","向业主索赔":"div5","表扬":"div6",
+            "结算":"div7","回访":"div8","查抄电表":"div9","查抄水表":"div10","申诉工单":"div11","投诉工单":"div12",
+            "咨询工单":"div13","固定车位工单":"div14","维修":"div15","部门质检":"div16"};
+        $("#s").bind("change", function(){
+            var divId = map[this.value];
+            if(divId=='div10'){
+                $http.get(url +'/WaterMeterRecords/waterMeterRecordsbybuildigIds/'+ $scope.Tasks.addressId).success(function(data){
+                    $scope.WaterMeterRecords = data.WaterMeterRecords;
+                    //console.log(data);
+                });
+            }
+            if(divId=='div9'){
+                $http.get(url +'/ElectricityMeterRecords/electricityMeterRecordsbybuildigId/'+ $scope.Tasks.addressId).success(function(data){
+                    $scope.ElectricityMeterRecords = data.ElectricityMeterRecords;
+                    console.log(data);
+                });
+            }
+            $("#"+divId).show().siblings().hide();
+        });
+
+        $scope.order1=true;       //显示新建工单
+        $scope.closed=false;      //显示工单关闭原因
+        $scope.star1=false;
+        $scope.star2=false;
+        $scope.star3=false;
+        $scope.star4=false;
+        $scope.star5=false;
+        $scope.star6=false;
+        $scope.star7=false;
+        $scope.star8=false;
+        $scope.star9=false;
+        $scope.star10=false;
+        $scope.star11=false;
+        $scope.star12=false;
+        $scope.star13=false;
+        $scope.star14=false;
+        $scope.star15=false;
+
+        $scope.Tasks={};
+        //绑定任务ID
+        $scope.Tasks.taskId=$stateParams.taskDetailsId;
+        //console.log($scope.Tasks.taskId);
+        //查询任务信息
+        $http.get(url+'/Tasks/getTasksbyId/'+$scope.Tasks.taskId).success(function(data){
+            $scope.Tasks= data.Tasks;
+            console.log($scope.Tasks);
+        }).error(function(data,status,headers,config){
+            alert("失败！");
+        });
+
+
+        //获取任务催促次数
+        $http.get(url +'/UrgeTaskRecords/getUrgeTaskRecordsCount/' + $scope.Tasks.taskId).success(function(data){
+            $scope.UrgeTaskRecordsCount = data;
+        });
+        //获取任务催促次数
+        $http.get(url +'/ApplicationDelayRecords/getApplicationDelayRecordsCount/' + $scope.Tasks.taskId).success(function(data){
+            $scope.ApplicationDelayRecordsCount = data;
+        });
+
+
+
+        //任务日志查询
+        $scope.TasksJournal={};
+        $scope.TasksJournal.taskId=$stateParams.taskDetailsId;
+        $scope.enableToAdd=true;//判断是从历史跳转还是处理中跳转而来页面为：serviceRequest/claimToCustomerManagement
+        $http.get(url +'/TasksJournal/getTasksJournalbyTasksId/'+$scope.TasksJournal.taskId).success(function(data) {
+            //alert("查询成功！");
+            console.log(data);
+            $location.path("/index/serviceRequest/taskDetails/"+$scope.TasksJournal.taskId).search({taskDetailsId:$scope.TasksJournal.taskId});
+            $scope.TasksJournal = data.TasksJournal;
+        }).error(function(data,status,headers,config){
+            alert("查询失败！");
+        });
+
+        $scope.load=function(){
+
+            $scope.TasksJournal.taskId=$stateParams.taskDetailsId;
+            $http.get(url +'/TasksJournal/getTasksJournalbyTasksId/'+$scope.TasksJournal.taskId).success(function(data) {
+                //alert("查询成功！");
+                //console.log(data);
+                $location.path("/index/serviceRequest/taskDetails/"+$scope.TasksJournal.taskId).search({taskDetailsId:$scope.TasksJournal.taskId});
+                $scope.TasksJournal = data.TasksJournal;
+                console.log($scope.TasksJournal);
+            }).error(function(data,status,headers,config){
+                console.log("查询失败！");
+            });
+            $scope.order1=false
+        };
+        //查询任务下所有报价工单信息
+        $scope.personC={
+            personCust1:"",
+            toolCust1:"",
+            wuLiaoCust1:"",
+            FinalPice:""
+        };
+        $scope.Alltotall=0;
+        $scope.finalPrice=0;
+        $scope.getAllSettleAccount=function(){
+            $http.get(url+'/QuoteOrders/getQuoteOrdersbyTasksId/'+$scope.Tasks.taskId).success(function(data){
+                $scope.quoteOrder= data.QuoteOrders;
+                console.log($scope.quoteOrder);
+                var tasksJ = $scope.quoteOrder;
+                var pcust=0;
+                var tcust=0;
+                var wcust=0;
+                var fin=0;
+                for(var i=0;i<tasksJ.length;i++) {
+                    //console.log( tasksJ[i].itemRecords);
+                    var tas=tasksJ[i].itemRecords;
+                    fin+=parseFloat(tasksJ[i].finalPrice);
+                    for(var j=0;j<tas.length;j++){
+                        if(tas[j].quoteItemType==1){
+                            pcust += parseFloat(tas[j].quoteItemTotal)*parseFloat(tas[j].quoteItemNum);
+                        }else if(tas[j].quoteItemType==2){
+                            wcust += parseFloat(tas[j].quoteItemTotal)*parseFloat(tas[j].quoteItemNum);
+                        }else if(tas[j].quoteItemType==3){
+                            tcust += parseFloat(tas[j].quoteItemTotal)*parseFloat(tas[j].quoteItemNum);
+                        }
+                    }
+                }
+                $scope.personC.personCust1 = pcust;
+                $scope.personC.toolCust1=tcust;
+                $scope.personC.wuLiaoCust1=wcust;
+                $scope.Alltotall+=wcust+tcust+pcust;
+                $scope.personC.FinalPice=fin;
+                //console.log( $scope.Alltotall); console.log(pcust);console.log(wcust);
+                //    if(tasksJ[i].quoteItemType == '1'){
+                //        pcust += parseFloat(tasksJ[i].quoteItemTotal)*parseFloat(tasksJ[i].quoteItemNum);
+                //    }else if(tasksJ[i].quoteItemType == '2'){
+                //        wcust += parseFloat(tasksJ[i].quoteItemTotal)*parseFloat(tasksJ[i].quoteItemNum);
+                //    }else if(tasksJ[i].quoteItemType == '3'){
+                //        tcust +=parseFloat(tasksJ[i].quoteItemTotal)*parseFloat(tasksJ[i].quoteItemNum);
+                //    }
+                //}
+                //console.log(pcust);  console.log(tcust);  console.log(wcust);
+                //$scope.personCust1 = pcust;
+                //$scope.toolCust1=tcust;
+                //$scope.wuLiaoCust1=wcust;
+
+            }).error(function(data,status,headers,config){
+                console.log("查询报价错误！");
+            });
+        };
+        $scope.getAllSettleAccount();
+
+        /*******/
+        //循环获取
+        $scope.typeShow=0;
+        $scope.personCust =0;
+        $scope.wuLiaoCust =0;
+        $scope.toolCust =0;
+        $scope.item1=function(item){
+            //$scope.btnIndex=item;
+            $http.get(url +'/TasksJournal/getTasksJournalbyDateandType/'+ item.creOrderType+"/"+item.operationTime).success(function(data) {
+
+                //alert("查询成功！");
+                //console.log(data)
+                $scope.aa=data.TasksJournal;
+                console.log($scope.aa);
+                //赔偿给业主关闭先显示
+                if($scope.aa.compensateOwner!=null){
+                    if($scope.aa.compensateOwner.orderState==0){
+                        $scope.closed=true;
+                    }else{
+                        $scope.closed=false;
+                    }
+                }
+                //if($scope.aa.compensateOwner!=null){
+                //
+                //    $scope.imgList =  $scope.aa.compensateOwner.annexs;
+                //}
+
+                //表扬单关闭显示
+                if($scope.aa.praiseOrders!=null){
+                    if($scope.aa.praiseOrders.orderState==0){
+                        $scope.closed=true;
+                    }else{
+                        $scope.closed=false;
+                    }
+                }
+                //结算单关闭显示
+                if($scope.aa.settleAccountsOrders!=null){
+                    if($scope.aa.settleAccountsOrders.orderState==0){
+                        $scope.closed=true;
+                    }else{
+                        $scope.closed=false;
+                    }
+                }
+
+                //验收单关闭显示
+                if($scope.aa.acceptanceOrders!=null){
+                    if($scope.aa.acceptanceOrders.orderState==0){
+                        alert($scope.aa.acceptanceOrders.orderState);
+                        $scope.closed=true;
+                    }else{
+                        $scope.closed=false;
+                    }
+                }
+
+                //处理单关闭显示
+                if($scope.aa.disposeOrder!=null){
+                    if($scope.aa.disposeOrder.orderState==0){
+                        alert($scope.aa.disposeOrder.orderState);
+                        $scope.closed=true;
+                    }else{
+                        $scope.closed=false;
+                    }
+                }
+                //if($scope.aa.disposeOrder!=null){
+                //    $scope.imgList =  $scope.aa.disposeOrder.annexs;
+                //}
+                //检测单关闭显示
+                if($scope.aa.checkOrders!=null){
+                    if($scope.aa.checkOrders.orderState==0){
+                        $scope.closed=true;
+                    }else{
+                        $scope.closed=false;
+                    }
+                }
+                //申诉单关闭显示
+                if($scope.aa.appealOrders!=null){
+                    if($scope.aa.appealOrders.orderState==0){
+                        $scope.closed=true;
+                    }else{
+                        $scope.closed=false;
+                    }
+                }
+                //投诉单关闭显示
+                if($scope.aa.complaintOrders!=null){
+                    if($scope.aa.complaintOrders.orderState==0){
+                        $scope.closed=true;
+                    }else{
+                        $scope.closed=false;
+                    }
+                }
+                //咨询单关闭显示
+                if($scope.aa.consultationOrders!=null){
+                    if($scope.aa.consultationOrders.orderState==0){
+                        $scope.closed=true;
+                    }else{
+                        $scope.closed=false;
+                    }
+                }
+                //固定车位单关闭显示
+                if($scope.aa.fixedParkingOrders!=null){
+                    if($scope.aa.fixedParkingOrders.orderState==0){
+                        $scope.closed=true;
+                    }else{
+                        $scope.closed=false;
+                    }
+                }
+                //回访单关闭
+                if($scope.aa.returnVisitOrders!=null){
+                    switch($scope.aa.returnVisitOrders.attitude){
+                        case 1:
+                            $scope.aa.returnVisitOrders.attitude=1;
+                            $scope.star1=true;
+                            break;
+                        case 2:
+                            $scope.aa.returnVisitOrders.attitude=2;
+                            $scope.star1=true;
+                            $scope.star2=true;
+                            break;
+                        case 3:
+                            $scope.aa.returnVisitOrders.attitude=3;
+                            $scope.star1=true;
+                            $scope.star2=true;
+                            $scope.star3=true;
+                            break;
+                        case 4:
+                            $scope.aa.returnVisitOrders.attitude=4;
+                            $scope.star1=true;
+                            $scope.star2=true;
+                            $scope.star3=true;
+                            $scope.star4=true;
+                            break;
+                        case 5:
+                            $scope.aa.returnVisitOrders.attitude=5;
+                            $scope.star1=true;
+                            $scope.star2=true;
+                            $scope.star3=true;
+                            $scope.star4=true;
+                            $scope.star5=true;
+                            break;
+                    }
+                    switch($scope.aa.returnVisitOrders.completion){
+                        case 1:
+                            $scope.aa.returnVisitOrders.completion=1;
+                            $scope.star6=true;
+                            break;
+                        case 2:
+                            $scope.aa.returnVisitOrders.completion=2;
+                            $scope.star6=true;
+                            $scope.star7=true;
+                            break;
+                        case 3:
+                            $scope.aa.returnVisitOrders.completion=3;
+                            $scope.star6=true;
+                            $scope.star7=true;
+                            $scope.star8=true;
+                            break;
+                        case 4:
+                            $scope.aa.returnVisitOrders.completion=4;
+                            $scope.star6=true;
+                            $scope.star7=true;
+                            $scope.star8=true;
+                            $scope.star9=true;
+                            break;
+                        case 5:
+                            $scope.aa.returnVisitOrders.completion=5;
+                            $scope.star6=true;
+                            $scope.star7=true;
+                            $scope.star8=true;
+                            $scope.star9=true;
+                            $scope.star10=true;
+                            break;
+                    }
+
+                    switch($scope.aa.returnVisitOrders.processing){
+                        case 1:
+                            $scope.aa.returnVisitOrders.processing=1;
+                            $scope.star11=true;
+                            break;
+                        case 2:
+                            $scope.aa.returnVisitOrders.processing=2;
+                            $scope.star11=true;
+                            $scope.star12=true;
+                            break;
+                        case 3:
+                            $scope.aa.returnVisitOrders.processing=3;
+                            $scope.star11=true;
+                            $scope.star12=true;
+                            $scope.star13=true;
+                            break;
+                        case 4:
+                            $scope.aa.returnVisitOrders.processing=4;
+                            $scope.star11=true;
+                            $scope.star12=true;
+                            $scope.star13=true;
+                            $scope.star14=true;
+                            break;
+                        case 5:
+                            $scope.aa.returnVisitOrders.processing=5;
+                            $scope.star11=true;
+                            $scope.star12=true;
+                            $scope.star13=true;
+                            $scope.star14=true;
+                            $scope.star15=true;
+                            break;
+                    }
+                    if($scope.aa.returnVisitOrders.orderState==0){
+                        $scope.closed=true;
+                    }else{
+                        $scope.closed=false;
+                    }
+                }
+                //if($scope.aa.checkOrders!=null){
+                //    $scope.imgList =  $scope.aa.checkOrders.annexs;
+                //  alert( $scope.aa.checkOrders.annexs.annexAddress)
+                //}
+                //报价单
+                if($scope.aa.quoteOrders!=null){
+                    if($scope.aa.quoteOrders.orderState==0){
+                        $scope.closed=true;
+                    }else{
+                        $scope.closed=false;
+                    }
+                }
+                if($scope.aa.quoteOrders!=null){
+                    var tasksJ = $scope.aa.quoteOrders.itemRecords;
+                    var pcust=0;
+                    var tcust=0;
+                    var wcust=0;
+                    for(var i=0;i<tasksJ.length;i++){
+                        if(tasksJ[i].quoteItemType == '1'){
+                            pcust += parseFloat(tasksJ[i].quoteItemTotal)*parseFloat(tasksJ[i].quoteItemNum);
+                        }else if(tasksJ[i].quoteItemType == '2'){
+                            wcust += parseFloat(tasksJ[i].quoteItemTotal)*parseFloat(tasksJ[i].quoteItemNum);
+                        }else if(tasksJ[i].quoteItemType == '3'){
+                            tcust +=parseFloat(tasksJ[i].quoteItemTotal)*parseFloat(tasksJ[i].quoteItemNum);
+                        }
+                    }
+                    $scope.personCust = pcust;
+                    $scope.toolCust=tcust;
+                    $scope.wuLiaoCust=wcust;
+                    //  console.log( $scope.aa.quoteOrders. annexs.annexAddress)
+                    $scope.imgList =  $scope.aa.quoteOrders.annexs;
+                    //console.log( $scope.aa.quoteOrders.annexs.annexAddress)
+                }
+                //维修单
+                if($scope.aa.repairOrders!=null){
+                    if($scope.aa.repairOrders.orderState==0){
+                        $scope.closed=true;
+                    }else{
+                        $scope.closed=false;
+                    }
+                }
+                //部门质检单
+                if($scope.aa.departmentOrders!=null){
+                    if($scope.aa.departmentOrders.orderState==0){
+                        $scope.closed=true;
+                    }else{
+                        $scope.closed=false;
+                    }
+                }
+            }).error(function(data,status,headers,config){
+                alert("查询失败！");
+            });
+            $scope.order=false;
+            $scope.order1=false;
+            if(item.creOrderType==1){
+                //console.log(item.creOrderType);
+                $scope.typeShow=3;
+            }else if(item.creOrderType==2){
+                //console.log(item.creOrderType);
+                $scope.typeShow=4;
+            }else if(item.creOrderType==3){
+                //console.log(item.creOrderType);
+                $scope.typeShow=2;
+            }else if(item.creOrderType==4){
+                $scope.typeShow=7;
+            }else if(item.creOrderType==5){
+                //赔偿给业主
+                $scope.typeShow=5;
+                //console.log(item.creOrderType);
+            }else if(item.creOrderType==6){
+                //console.log(item.creOrderType);
+                //部门质检单
+                $scope.typeShow=6;
+            }else  if(item.creOrderType==0){
+                //报价单
+                //console.log(item.creOrderType);
+                $scope.typeShow=1;
+            }else  if(item.creOrderType==7){
+                //回访
+                //console.log(item.creOrderType);
+                $scope.typeShow=8;
+            }else  if(item.creOrderType==8){
+                //申诉
+                //console.log(item.creOrderType);
+                $scope.typeShow=9;
+            }else  if(item.creOrderType==9){
+                //抄水表
+                //console.log(item.creOrderType);
+                $scope.typeShow=10;
+            }else  if(item.creOrderType==10){
+                //抄电表
+                //console.log(item.creOrderType);
+                $scope.typeShow=11;
+            }else  if(item.creOrderType==11){
+                //投诉
+                //console.log(item.creOrderType);
+                $scope.typeShow=12;
+            }
+            else  if(item.creOrderType==12){
+                //咨询
+                //console.log(item.creOrderType);
+                $scope.typeShow=13;
+            }
+            else  if(item.creOrderType==13){
+                //固定工单
+                //console.log(item.creOrderType);
+                $scope.typeShow=14;
+            }
+            else  if(item.creOrderType==17){
+                //表扬表
+                //console.log(item.creOrderType);
+                $scope.typeShow=17;
+            }
+            else if(item.creOrderType==22){
+                //维修单
+                $scope.typeShow=22;
+            }
+            else{
+                alert("工单类型不存在")
+            }
+            //console.log(item);
+        };
+        $scope.order=false;
+        $scope.addTask=function(){
+            $scope.typeShow=0;
+            $scope.order=true;
+            $scope.order1=true;
+        };
+
+        //通过任务ID新增工单
+        $scope.Tasks={};
+        $scope.GetTasks=function(taskId){
+            //console.log(taskId);
+            if(taskId!=0){
+                $http.get(url +'/Tasks/taskId' ).success(function(data){
+                    //console.log(taskId);
+                    $scope.Tasks=data.Tasks;
+                })
+            }
+        };
+        //修改或新增报价工单
+        $scope.editPrice=false;      //物料费修改
+        $scope.editPrice1=false;   //工具费修改
+        $scope.editPrice2=false;    //人工费修改
+        //添加人工费行
+        $scope.itemRecord0=[{}];
+        $scope.addRow=function(){
+            var item1={};
+            $scope.itemRecord0.push(item1)
+        };
+        //删除人工行
+        $scope.deleteArea1=function(index){
+            $scope.itemRecord0 .splice(index,1);
+
+        };
+        //添加物料费行
+        $scope.itemRecord1=[{}];
+        $scope.addRow1=function(){
+            var item2={};
+
+            $scope.itemRecord1.push(item2)
+        };
+
+        //删除物料行
+        $scope.deleteArea2=function(index){
+            $scope.itemRecord1 .splice(index,1);
+
+        };
+        //添加工具费行
+        $scope.itemRecord2=[{}];
+        $scope.add1=function(){
+            var item3={};
+            $scope.itemRecord2.push(item3)
+
+        };
+
+        //删除工具行
+        $scope.deleteArea3=function(index){
+            $scope.itemRecord2 .splice(index,1);
+
+        };
+        //取消
+        $scope.cancel=function(){
+            $scope.order1=false;
+        };
+
+        //计算总价
+        $scope.calculation=function(){
+            var total=0;         //人工总价
+            var total1=0;      //物料总价
+            var total2=0;       //工具总价
+            var allTotal1=0;   //总价
+            var getTd = document.getElementById("artificial");
+            var rowsLength = getTd.rows.length;
+
+            //console.log( getTd.rows.length);
+            for (var i = 1; i < rowsLength; i++) {
+                var bsh2 = getTd.rows[i].cells[1].getElementsByTagName("INPUT")[0].value;
+                var bsh3 = getTd.rows[i].cells[2].getElementsByTagName("INPUT")[0].value;
+                total +=parseFloat(bsh2)*parseFloat(bsh3);
+            }
+            //console.log(total);
+            var getTd1 = document.getElementById("addIte");
+            var rowsLength1= getTd1.rows.length;
+            //console.log( getTd1.rows.length);
+            for (var j= 1; j < rowsLength1;  j++) {
+                var bsh5 = getTd1.rows[j].cells[1].getElementsByTagName("INPUT")[0].value;
+                var bsh6 = getTd1.rows[j].cells[2].getElementsByTagName("INPUT")[0].value;
+                total1 +=parseFloat(bsh5)*parseFloat(bsh6);
+            }
+            //console.log(total1);
+            var getTd2 = document.getElementById("tool");
+            var rowsLength2= getTd2.rows.length;
+            //console.log( getTd2.rows.length);
+            for (var g= 1; g< rowsLength2;  g++) {
+                var bsh8 = getTd2.rows[g].cells[1].getElementsByTagName("INPUT")[0].value;
+                var bsh9 = getTd2.rows[g].cells[2].getElementsByTagName("INPUT")[0].value;
+                total2 +=parseFloat(bsh8)*parseFloat(bsh9);
+            }
+            //console.log(total2);
+            allTotal1=total+total1+total2;
+            $scope.QuoteOrders.allTotal=allTotal1;
+            if($scope.QuoteOrders.discount==null){
+                $scope.QuoteOrders.finalPrice=allTotal1
+            }else {
+                $scope.QuoteOrders.finalPrice=allTotal1*parseFloat(  $scope.QuoteOrders.discount/10)}
+            //$scope.QuoteOrders.itemRecords.push($scope.QuoteOrders.itemRecords.finalPrice);
+            //$scope.QuoteOrders.itemRecords.push($scope.QuoteOrders.itemRecords.discount)
+        };
+        $scope.reloadRoute = function() {
+            $window.location.reload();
+        };
+        //新建报价单
+        $scope.QuoteOrders={orderState:1,orderType:0,serviceRequestId:$scope.Tasks.serverId};
+        $scope.QuoteOrders.itemRecords=[];
+        $scope.QuoteOrders.taskId=$stateParams.taskDetailsId;
+        $scope.QuoteOrders.itemRecords.quoteItemType=[{}];
+        $scope.AddOrUpdateQuoteOrders=function(taskId){
+            //console.log($scope.QuoteOrders);
+            var item={};
+            if($scope.Tasks.taskId!=0 || $scope.Tasks.taskId!=null){
+                //添加人工费
+                var getTd = document.getElementById("artificial");
+                var rowsLength = getTd.rows.length;
+                for (var i = 1; i < rowsLength; i++) {
+                    $scope.itemRecord = {
+                        quoteItemType:"1",
+                        quoteItemName: "",
+                        quoteItemNum: "",
+                        quoteItemTotal: "",
+                        finalPrice:"",
+                        discount:""
+                    };
+                    var bsh1 = getTd.rows[i].cells[0].getElementsByTagName("INPUT")[0].value;
+                    //console.log(bsh1);
+                    $scope.itemRecord.quoteItemName = bsh1;
+                    var bsh2 = getTd.rows[i].cells[1].getElementsByTagName("INPUT")[0].value;
+                    //console.log(bsh2);
+                    $scope.itemRecord.quoteItemNum = bsh2;
+                    var bsh3 = getTd.rows[i].cells[2].getElementsByTagName("INPUT")[0].value;
+                    //console.log(bsh3);
+                    $scope.itemRecord.quoteItemTotal = bsh3;
+
+                    $scope.QuoteOrders.itemRecords.push($scope.itemRecord);
+                }
+                //添加物品费
+                var getTd1 = document.getElementById("addIte");
+                var rowsLength1= getTd.rows.length;
+                for (var j= 1; j < rowsLength1;  j++) {
+                    $scope.itemRecord = {
+                        quoteItemType:"2",
+                        quoteItemName: "",
+                        quoteItemNum: "",
+                        quoteItemTotal: "",
+                        finalPrice:"",
+                        discount:""
+                    };
+                    var bsh4 = getTd1.rows[j].cells[0].getElementsByTagName("INPUT")[0].value;
+                    //console.log(bsh4);
+                    $scope.itemRecord.quoteItemName = bsh4;
+                    var bsh5 = getTd1.rows[j].cells[1].getElementsByTagName("INPUT")[0].value;
+                    //console.log(bsh5);
+                    $scope.itemRecord.quoteItemNum = bsh5;
+                    var bsh6 = getTd1.rows[j].cells[2].getElementsByTagName("INPUT")[0].value;
+                    //console.log(bsh6);
+                    $scope.itemRecord.quoteItemTotal= bsh6;
+
+                    $scope.QuoteOrders.itemRecords.push($scope.itemRecord);
+                }
+                //添加工具费
+                var getTd2 = document.getElementById("tool");
+                var rowsLength2= getTd.rows.length;
+                for (var g= 1; g< rowsLength2;  g++) {
+                    $scope.itemRecord = {
+                        quoteItemType:"3",
+                        quoteItemName: "",
+                        quoteItemNum: "",
+                        quoteItemTotal: "",
+                        finalPrice:"",
+                        discount:""
+                    };
+                    var bsh7 = getTd2.rows[g].cells[0].getElementsByTagName("INPUT")[0].value;
+                    //console.log(bsh7);
+                    $scope.itemRecord.quoteItemName = bsh7;
+                    var bsh8 = getTd2.rows[g].cells[1].getElementsByTagName("INPUT")[0].value;
+                    //console.log(bsh8);
+                    $scope.itemRecord.quoteItemNum = bsh8;
+                    var bsh9 = getTd2.rows[g].cells[2].getElementsByTagName("INPUT")[0].value;
+                    //console.log(bsh9);
+                    $scope.itemRecord.quoteItemTotal= bsh9;
+
+                    $scope.QuoteOrders.itemRecords.push($scope.itemRecord);
+                }
+                ////计算总价
+                //var calculation3=function(){
+                //    var allTotal1=0;
+                //    allTotal1=calculation().total+calculation().total1+calculation().total2;
+                //
+                //    $scope.QuoteOrders.allTotal=allTotal1;
+                //};
+                $http.post(url+'/QuoteOrders/insertQuoteOrders',{QuoteOrders:$scope.QuoteOrders}).success(function(){
+                    //console.log($scope.QuoteOrders);
+                    // $scope.QuoteOrders.itemRecords.push($scope.QuoteOrders.itemRecords.discount);
+                    //$scope.QuoteOrders.itemRecords.push($scope.QuoteOrders.itemRecords.finalPrice);
+                    //$scope.order1=false;
+
+                    //self.location.reload();
+                    $scope.QuoteOrders.taskId= $stateParams.taskDetailsId;
+                    $scope.order=false;
+                    $scope.getAllSettleAccount();
+                    $location.path("/index/serviceRequest/taskDetails/"+$scope.QuoteOrders.taskId).search({taskDetailsId:$scope.QuoteOrders.taskId});
+                    $scope.load();
+                    $scope.reloadRoute();
+
+                }).error(function(data,status,headers,config){
+                    alert("新增失败！");
+                });
+
+            }else{
+                alert("任务不存在！");
+            }
+            $scope.QuoteOrders={}
+        };
+        //修改或新增检测工单
+        $scope.CheckOrdersService={orderState:1,orderType:3,serviceRequestId:$scope.Tasks.serverId};
+        $scope.CheckOrdersService.checkItemRecords=[{}];
+        //添加行
+        $scope.addJian=function(){
+            var item={};
+            $scope.CheckOrdersService.checkItemRecords.push(item);
+        };
+        //删除
+        $scope.deleteSonArea=function(index){
+            $scope.CheckOrdersService.checkItemRecords.splice(index,1);
+        };
+        $scope.CheckOrdersService.taskId=$stateParams.taskDetailsId;
+        $scope.AddOrUpdateCheckOrdersService=function(taskId){
+            //console.log($scope.CheckOrdersService);
+            var item={};
+            if($scope.Tasks.taskId!=0 || $scope.Tasks.taskId!=null){
+                //$scope.CheckOrdersService.checkItemRecords.push(item);
+                $http.post(url+'/CheckOrdersService/insertCheckOrders',{CheckOrders:$scope.CheckOrdersService}).success(function(data){
+
+                    //alert("新增成功！",
+                    //$scope.order1=false,
+                    //$scope.TasksJournal={},
+                    //$scope.TasksJournal.taskId=$stateParams.taskDetailsId,
+                    //$http.get(url +'/TasksJournal/getTasksJournalbyTasksId/'+$scope.TasksJournal.taskId).success(function(data) {
+                    //    //alert("查询成功！");
+                    //    console.log(data);
+                    //    $location.path("/index/serviceRequest/taskDetails/"+$scope.TasksJournal.taskId).search({taskDetailsId:$scope.TasksJournal.taskId});
+                    //    $scope.TasksJournal = data.TasksJournal;
+                    //}).error(function(data,status,headers,config){
+                    //    alert("查询失败！");
+                    //})
+                    //);
+                    //console.log($scope.CheckOrdersService);
+                    //self.location.reload();
+                    $scope.CheckOrdersService.taskId= $stateParams.taskDetailsId;
+                    $scope.reloadRoute();
+                    $location.path("/index/serviceRequest/taskDetails/"+$scope.CheckOrdersService.taskId).search({taskDetailsId:$scope.CheckOrdersService.taskId});
+                    $scope.load();
+                }).error(function(data,status,headers,config){
+                    alert("新增失败！");
+
+                });
+            }else{
+                alert("任务不存在！");
+            }
+            $scope.CheckOrdersService={}
+        };
+        //修改或新增结算工单
+        $scope.SettleAccountsOrders={orderState:1,orderType:4,serviceRequestId:$scope.Tasks.serverId};
+        $scope.SettleAccountsOrders.saiRecords=[{}];
+        $scope.SettleAccountsOrders.taskId=$stateParams.taskDetailsId;
+        $scope.AddOrUpdateSettleAccountsOrders=function(taskId){
+            //console.log($scope.SettleAccountsOrders);
+            var item={};
+            if($scope.Tasks.taskId!=0 || $scope.Tasks.taskId!=null){
+                $http.post(url+'/SettleAccountsOrders/insertSettleAccountsOrders',{SettleAccountsOrders:$scope.SettleAccountsOrders}).success(function(data){
+                    //console.log($scope.SettleAccountsOrders);
+                    $scope.SettleAccountsOrders.allTotal=$scope.Alltotall;
+                    $scope.SettleAccountsOrders.saiRecords.push( $scope.personC);
+                    //$scope.SettleAccountsOrders.saiRecords.push(item);
+                    //alert("新增结算！",
+                    //    $scope.order1=false,
+                    //    $scope.TasksJournal={},
+                    //    $scope.TasksJournal.taskId=$stateParams.taskDetailsId,
+                    //    $http.get(url +'/TasksJournal/getTasksJournalbyTasksId/'+$scope.TasksJournal.taskId).success(function(data) {
+                    //        //alert("查询成功！");
+                    //        console.log(data);
+                    //        $location.path("/index/serviceRequest/taskDetails/"+$scope.TasksJournal.taskId).search({taskDetailsId:$scope.TasksJournal.taskId});
+                    //        $scope.TasksJournal = data.TasksJournal;
+                    //    }).error(function(data,status,headers,config){
+                    //        alert("查询失败！");
+                    //    })
+                    //);
+                    //self.location.reload();
+                    $scope.QuoteOrders.taskId= $stateParams.taskDetailsId;
+                    $scope.order=false;
+                    $location.path("/index/serviceRequest/taskDetails/"+$scope.QuoteOrders.taskId).search({taskDetailsId:$scope.QuoteOrders.taskId});
+                    $scope.load();
+                }).error(function(data,status,headers,config){
+                    alert("新增失败！");
+                });
+            }else{
+                alert("任务不存在！");
+            }
+            $scope.SettleAccountsOrders={}
+        };
+        //修改或新增处理工单
+        //删除
+        $scope.deleteArea=function(index){
+
+            $scope.DisposeOrder.informationRecords.splice(index,1);
+        };
+        $scope.addChu=function(){
+            var item={};
+            $scope.DisposeOrder.informationRecords.push(item);
+        };
+        $scope.DisposeOrder={orderState:1,orderType:1,serviceRequestId:$scope.Tasks.serverId};
+        $scope.DisposeOrder.informationRecords=[{}];
+        $scope.DisposeOrder.taskId=$stateParams.taskDetailsId;
+        $scope.AddOrUpdateDisposeOrder=function(taskId){
+            //console.log($scope.DisposeOrder.taskId);
+            var item={};
+            if($scope.Tasks.taskId!=0 || $scope.Tasks.taskId!=null){
+                //$scope.DisposeOrder.informationRecords.push(item);
+                //$scope.DisposeOrder.informationRecords.push( $scope.informationRecord);
+                $http.post(url+'/DisposeOrder/insertDisposeOrder',{DisposeOrder:$scope.DisposeOrder}).success(function(data){
+                    //console.log($scope.DisposeOrder);
+
+                    //alert("新增成功！",
+                    //    $scope.order1=false,
+                    //    $scope.TasksJournal={},
+                    //    $scope.TasksJournal.taskId=$stateParams.taskDetailsId,
+                    //    $http.get(url +'/TasksJournal/getTasksJournalbyTasksId/'+$scope.TasksJournal.taskId).success(function(data) {
+                    //        alert("查询成功！");
+                    //        console.log(data);
+                    //        $location.path("/index/serviceRequest/taskDetails/"+$scope.TasksJournal.taskId).search({taskDetailsId:$scope.TasksJournal.taskId});
+                    //        $scope.TasksJournal = data.TasksJournal;
+                    //        $scope.DisposeOrder=null;
+                    //    }).error(function(data,status,headers,config){
+                    //        alert("查询失败！");
+                    //    })
+                    //);
+                    $scope.DisposeOrder.taskId=$stateParams.taskDetailsId;
+
+                    $location.path("/index/serviceRequest/taskDetails/"+$scope.DisposeOrder.taskId).search({taskDetailsId:$scope.DisposeOrder.taskId});
+                    $scope.load();
+                }).error(function(data,status,headers,config){
+                    alert("新增失败！");
+                });
+            }else{
+                alert("任务不存在！");
+            }
+            $scope.DisposeOrder={}
+        };
+        //修改或新增验收工单
+        $scope.AcceptanceOrders={orderState:1,orderType:2,serviceRequestId:$scope.Tasks.serverId};
+        $scope.AcceptanceOrders.taskId=$stateParams.taskDetailsId;
+        $scope.AddOrUpdateAcceptanceOrders=function(taskId){
+            //console.log($scope.AcceptanceOrders);
+            if($scope.Tasks.taskId!=0 || $scope.Tasks.taskId!=null){
+                $http.post(url+'/AcceptanceOrders/insertAcceptanceOrders',{AcceptanceOrders:$scope.AcceptanceOrders}).success(function(data){
+                    //console.log($scope.AcceptanceOrders);
+                    //alert("新增成功！",
+                    //    $scope.order1=false,
+                    //    $scope.TasksJournal={},
+                    //    $scope.TasksJournal.taskId=$stateParams.taskDetailsId,
+                    //    $http.get(url +'/TasksJournal/getTasksJournalbyTasksId/'+$scope.TasksJournal.taskId).success(function(data) {
+                    //        alert("查询成功！");
+                    //        console.log(data);
+                    //        $location.path("/index/serviceRequest/taskDetails/"+$scope.TasksJournal.taskId).search({taskDetailsId:$scope.TasksJournal.taskId});
+                    //        $scope.TasksJournal = data.TasksJournal;
+                    //    }).error(function(data,status,headers,config){
+                    //        alert("查询失败！");
+                    //    })
+                    //);
+                    $scope.AcceptanceOrders.taskId=$stateParams.taskDetailsId;
+
+                    $location.path("/index/serviceRequest/taskDetails/"+$scope.AcceptanceOrders.taskId).search({taskDetailsId:$scope.AcceptanceOrders.taskId});
+                    $scope.load();
+                }).error(function(data,status,headers,config){
+                    alert("新增失败！");
+                });
+            }else{
+                alert("任务不存在！");
+            }
+            $scope.AcceptanceOrders={}
+        };
+        //赔偿给业主
+        $scope.CompensateOwnerService={orderState:1,orderType:5,serviceRequestId:$scope.Tasks.serverId};
+        $scope.CompensateOwnerService.compensateMethods={};
+        $scope.CompensateOwnerService.taskId=$stateParams.taskDetailsId;
+        $scope.AddOrUpdateCompensateOwner=function(taskId){
+            //console.log($scope.CompensateOwnerService.taskId);
+            if($scope.Tasks.taskId!=0 || $scope.Tasks.taskId!=null){
+                $http.post(url+'/CompensateOwnerService/insertCompensateOwner',{CompensateOwner:$scope.CompensateOwnerService}).success(function(data){
+                    //console.log($scope.CompensateOwnerService);
+                    //alert("新增成功！",
+                    //    $scope.order1=false,
+                    //    $scope.TasksJournal={},
+                    //    $scope.TasksJournal.taskId=$stateParams.taskDetailsId,
+                    //    $http.get(url +'/TasksJournal/getTasksJournalbyTasksId/'+$scope.TasksJournal.taskId).success(function(data) {
+                    //        alert("查询成功！");
+                    //        console.log(data);
+                    //        $location.path("/index/serviceRequest/taskDetails/"+$scope.TasksJournal.taskId).search({taskDetailsId:$scope.TasksJournal.taskId});
+                    //        $scope.TasksJournal = data.TasksJournal;
+                    //
+                    //    }).error(function(data,status,headers,config){
+                    //        alert("查询失败！");
+                    //    })
+                    //);
+                    $scope.CompensateOwnerService.taskId=$stateParams.taskDetailsId;
+
+                    $location.path("/index/serviceRequest/taskDetails/"+$scope.CompensateOwnerService.taskId).search({taskDetailsId:$scope.CompensateOwnerService.taskId});
+                    $scope.load();
+                }).error(function(data,status,headers,config){
+                    alert("新增失败！");
+                });
+            }else{
+                alert("任务不存在！");
+            }
+            $scope.CompensateOwnerService={};
+        };
+
+        //表扬单
+        $scope.PraiseOrders={orderState:1,orderType:17,serviceRequestId:"17",operatorId:"1",praiseObjectId:"1",praiseObjectName:""};
+        $scope.PraiseOrders.taskId=$stateParams.taskDetailsId;
+        $scope.AddOrUpdatePraiseOrders=function(taskId){
+            //console.log("get taskId value ...");
+            //console.log($scope.PraiseOrders.taskId);
+            //console.log($scope.PraiseOrders);
+            if($scope.Tasks.taskId!=0 || $scope.Tasks.taskId!=null){
+                $http.post(url+'/PraiseOrders/addPraiseOrder',{PraiseOrders:$scope.PraiseOrders}).success(function(data){
+                    //console.log($scope.PraiseOrders);
+                    //alert("新增成功！",
+                    //    $scope.order1=false,
+                    //    $scope.TasksJournal={},
+                    //    $scope.TasksJournal.taskId=$stateParams.taskDetailsId,
+                    //    $http.get(url +'/TasksJournal/getTasksJournalbyTasksId/'+$scope.TasksJournal.taskId).success(function(data) {
+                    //        alert("查询成功！");
+                    //        console.log(data);
+                    //        $location.path("/index/serviceRequest/taskDetails/"+$scope.TasksJournal.taskId).search({taskDetailsId:$scope.TasksJournal.taskId});
+                    //        $scope.TasksJournal = data.TasksJournal;
+                    //
+                    //    }).error(function(data,status,headers,config){
+                    //        alert("查询失败！");
+                    //    })
+                    //);
+                    $scope.PraiseOrders.taskId=$stateParams.taskDetailsId;
+                    $location.path("/index/serviceRequest/taskDetails/"+$scope.PraiseOrders.taskId).search({taskDetailsId:$scope.PraiseOrders.taskId});
+                    $scope.load();
+                }).error(function(data,status,headers,config){
+                    alert("新增失败！");
+                });
+            }else{
+                alert("任务不存在！");
+            }
+            $scope.PraiseOrders={};
+        };
+
+        //回访工单
+        $scope.ReturnVisitOrders={orderState:1,orderType:7,attitude:"",completion:"",processing:""};
+        $scope.ReturnVisitOrders.taskId=$stateParams.taskDetailsId;
+
+        /********************************回访评分********************************************/
+        $(document).ready(function(e) {
+            $(".formItemDiff").hover(function() {
+                $(this).css("background-position", "0px -555px");
+                $(this).prevAll().css("background-position", "0px -555px");
+                $(this).nextAll().css("background-position", "0px -575px");
+
+                $("#pointP").html($(this).prevAll().length+1+"分");
+
+                $scope.ReturnVisitOrders.processing=parseInt(  $(this).prevAll().length+1);
+                //console.log($scope.ReturnVisitOrders.processing)
+
+            });
+        });
+        $(document).ready(function(e) {
+            $(".formItemDiff1").hover(function() {
+                $(this).css("background-position", "0px -555px");
+                $(this).prevAll().css("background-position", "0px -555px");
+                $(this).nextAll().css("background-position", "0px -575px");
+                $("#pointB").html($(this).prevAll().length+1+"分");
+                $scope.ReturnVisitOrders.completion=parseInt( $(this).prevAll().length+1);
+            });
+        });
+        $(document).ready(function(e) {
+            $(".formItemDiff2").hover(function() {
+                $(this).css("background-position", "0px -555px");
+                $(this).prevAll().css("background-position", "0px -555px");
+                $(this).nextAll().css("background-position", "0px -575px");
+                $("#pointA").html($(this).prevAll().length+1+"分");
+                $scope.ReturnVisitOrders.attitude=parseInt($(this).prevAll().length+1);
+            });
+        });
+        /***************************************************************************************/
+        $scope.AddOrUpdateReturnVisitOrders=function(taskId){
+            if($scope.Tasks.taskId!=0 || $scope.Tasks.taskId!=null){
+                $http.post(url+'/ReturnVisitOrders/insertReturnVisitOrders',{ReturnVisitOrders:$scope.ReturnVisitOrders}).success(function(data){
+                    //console.log($scope.ReturnVisitOrders);
+                    //alert("新增成功！",
+                    //    $scope.order1=false,
+                    //    $scope.TasksJournal={},
+                    //    $scope.TasksJournal.taskId=$stateParams.taskDetailsId,
+                    //    $http.get(url +'/TasksJournal/getTasksJournalbyTasksId/'+$scope.TasksJournal.taskId).success(function(data) {
+                    //        alert("查询成功！");
+                    //        console.log(data);
+                    //        $location.path("/index/serviceRequest/taskDetails/"+$scope.TasksJournal.taskId).search({taskDetailsId:$scope.TasksJournal.taskId});
+                    //        $scope.TasksJournal = data.TasksJournal;
+                    //    }).error(function(data,status,headers,config){
+                    //        alert("查询失败！");
+                    //    })
+                    //);
+                    $scope.ReturnVisitOrders.taskId=$stateParams.taskDetailsId;
+
+                    $location.path("/index/serviceRequest/taskDetails/"+$scope.ReturnVisitOrders.taskId).search({taskDetailsId:$scope.ReturnVisitOrders.taskId});
+                    $scope.load();
+                }).error(function(data,status,headers,config){
+                    alert("新增失败！");
+                });
+            }else{
+                alert("任务不存在！");
+            }
+            $scope.ReturnVisitOrders={};
+        };
+        //申诉单
+        $scope.AppealOrders={orderState:1,orderType:8};
+        $scope.AppealOrders.tasksId=$stateParams.taskDetailsId;
+        $scope.AddOrUpdateAppealOrders=function(taskId){
+            //console.log($scope.AcceptanceOrders);
+            if($scope.Tasks.taskId!=0 || $scope.Tasks.taskId!=null){
+                $http.post(url+'/AppealOrders/insertAppealOrders',{AppealOrders:$scope.AppealOrders}).success(function(data){
+                    //console.log($scope.AppealOrders);
+                    //alert("新增成功！",
+                    //    $scope.order1=false,
+                    //    $scope.TasksJournal={},
+                    //    $scope.TasksJournal.taskId=$stateParams.taskDetailsId,
+                    //    $http.get(url +'/TasksJournal/getTasksJournalbyTasksId/'+$scope.TasksJournal.taskId).success(function(data) {
+                    //        alert("查询成功！");
+                    //        console.log(data);
+                    //        $location.path("/index/serviceRequest/taskDetails/"+$scope.TasksJournal.taskId).search({taskDetailsId:$scope.TasksJournal.taskId});
+                    //        $scope.TasksJournal = data.TasksJournal;
+                    //    }).error(function(data,status,headers,config){
+                    //        alert("查询失败！");
+                    //    })
+                    //);
+                    $scope.AppealOrders.tasksId=$stateParams.taskDetailsId;
+
+                    $location.path("/index/serviceRequest/taskDetails/"+$scope.AppealOrders.tasksId).search({taskDetailsId:$scope.AppealOrders.tasksId});
+                    $scope.load();
+                }).error(function(data,status,headers,config){
+                    alert("新增失败！");
+                });
+            }else{
+                alert("任务不存在！");
+            }
+            $scope.AppealOrders={}
+        };
+
+        //新增抄电表工单
+        $scope.MeterReadingOrders = {orderState:1,orderType:10};
+        $scope.MeterReadingOrders.taskId=$stateParams.taskDetailsId;
+        $scope.MeterReadingRecords = {};
+
+        $scope.AddOrUpdateMeterReadingOrders = function(){
+            if($scope.Tasks.taskId!=0 || $scope.Tasks.taskId!=null){
+                $scope.MeterReadingRecords.meterId = $scope.ElectricityMeterRecords.electricityMeter.electricityMeterNum;
+                $scope.MeterReadingRecords.waterLastReading = $scope.ElectricityMeterRecords.lastTimeReading;
+                $scope.MeterReadingOrders.meterReadingRecords = $scope.MeterReadingRecords;
+                $http.post(url+'/MeterReadingOrders/insertMeterReadingOrders',{MeterReadingOrders:$scope.MeterReadingOrders}).success(function(data){
+                    $scope.MeterReadingOrders.taskId=$stateParams.taskDetailsId;
+                    $location.path("/index/serviceRequest/taskDetails/"+$scope.MeterReadingOrders.taskId).search({taskDetailsId:$scope.MeterReadingOrders.taskId});
+                    $scope.load();
+                }).error(function(data,status,headers,config){
+                    //console.log(data)
+                    alert("新增失败！");
+                });
+            }else{
+                alert("任务不存在！");
+            }
+            $scope.MeterReadingOrders={};
+        };
+
+        //新增抄水表工单
+        $scope.waterMeterOrders = {orderState:1,orderType:9};
+        $scope.waterMeterOrders.taskId=$stateParams.taskDetailsId;
+        $scope.WaterMeterOrderRecords = {};
+        $scope.AddOrUpdateWaterMeterOrders = function(){
+            $scope.WaterMeterOrderRecords.waterMeterId = $scope.WaterMeterRecords.waterMeter.waterMeterNum;
+            $scope.WaterMeterOrderRecords.waterLastReading = $scope.WaterMeterRecords.lastTimeReading;
+            if($scope.Tasks.taskId!=0 || $scope.Tasks.taskId!=null){
+                $scope.waterMeterOrders.waterMeterOrderRecords = $scope.WaterMeterOrderRecords;
+                //console.log($scope.waterMeterOrders)
+                $http.post(url+'/WaterMeterOrders/insertWaterMeterOrders',{WaterMeterOrders:$scope.waterMeterOrders}).success(function(data){
+                    $scope.waterMeterOrders.taskId=$stateParams.taskDetailsId;
+                    $location.path("/index/serviceRequest/taskDetails/"+$scope.waterMeterOrders.taskId).search({taskDetailsId:$scope.waterMeterOrders.taskId});
+                    $scope.load();
+                }).error(function(data,status,headers,config){
+                    alert("新增失败！");
+                });
+            }else{
+                alert("任务不存在！");
+            }
+        };
+        //新增投诉单
+        $scope.ComplainOrders={orderState:1,orderType:11};
+        $scope.ComplainOrders.taskId=$stateParams.taskDetailsId;
+        $scope.AddOrUpdateComplainFile = function(taskId){
+            if($scope.Tasks.taskId!=0 || $scope.Tasks.taskId!=null){
+                $http.post(url+'/ComplaintOrders/insertComplaintOrders',{ComplaintOrders:$scope.ComplainOrders}).success(function(){
+                    //alert("新增成功！",
+                    //    $scope.order1=false,
+                    //    $scope.TasksJournal={},
+                    //    $scope.TasksJournal.taskId=$stateParams.taskDetailsId,
+                    //    $http.get(url +'/TasksJournal/getTasksJournalbyTasksId/'+$scope.TasksJournal.taskId).success(function(data) {
+                    //        alert("查询成功！");
+                    //        console.log(data);
+                    //        $location.path("/index/serviceRequest/taskDetails/"+$scope.TasksJournal.taskId).search({taskDetailsId:$scope.TasksJournal.taskId});
+                    //        $scope.TasksJournal = data.TasksJournal;
+                    //    }).error(function(data,status,headers,config){
+                    //        alert("查询失败！");
+                    //    })
+                    //);
+                    $scope.ComplainOrders.taskId=$stateParams.taskDetailsId;
+
+                    $location.path("/index/serviceRequest/taskDetails/"+$scope.ComplainOrders.taskId).search({taskDetailsId:$scope.ComplainOrders.taskId});
+                    $scope.load();
+                }).error(function(data,status,headers,config){
+                    alert("新增失败！");
+                });
+                //console.log($scope.ComplainOrders);
+            }else{
+                alert("新增投诉失败！");
+            }
+            $scope.ComplainOrders={}
+        };
+        //新增咨询单
+        $scope.ConsultationOrders={orderState:1,orderType:12};
+        $scope.ConsultationOrders.taskId=$stateParams.taskDetailsId;
+        $scope.AddOrUpdateConsultationFile = function(taskId){
+            if($scope.Tasks.taskId!=0 || $scope.Tasks.taskId!=null){
+                $http.post(url+'/ConsultationOrders/insertConsultationOrders',{ConsultationOrders:$scope.ConsultationOrders}).success(function(){
+                    //alert("新增成功！",
+                    //    $scope.order1=false,
+                    //    $scope.TasksJournal={},
+                    //    $scope.TasksJournal.taskId=$stateParams.taskDetailsId,
+                    //    $http.get(url +'/TasksJournal/getTasksJournalbyTasksId/'+$scope.TasksJournal.taskId).success(function(data) {
+                    //        alert("查询成功！");
+                    //        console.log(data);
+                    //        $location.path("/index/serviceRequest/taskDetails/"+$scope.TasksJournal.taskId).search({taskDetailsId:$scope.TasksJournal.taskId});
+                    //        $scope.TasksJournal = data.TasksJournal;
+                    //    }).error(function(data,status,headers,config){
+                    //        alert("查询失败！");
+                    //    })
+                    //);
+                    $scope.ConsultationOrders.taskId=$stateParams.taskDetailsId;
+
+                    $location.path("/index/serviceRequest/taskDetails/"+$scope.ConsultationOrders.taskId).search({taskDetailsId:$scope.ConsultationOrders.taskId});
+
+                    $scope.load();
+                }).error(function(data,status,headers,config){
+                    alert("新增失败！");
+                });
+                //console.log($scope.ConsultationOrders);
+            }else{
+                alert("新增咨询工单失败！");
+            }
+            $scope.ConsultationOrders={}
+        };
+        //新增固定车位单
+        $scope.FixedParkingOrders={orderState:1,orderType:13};
+        $scope.FixedParkingOrders.taskId=$stateParams.taskDetailsId;
+        $scope.AddOrUpdateFixedParkingFile = function(taskId){
+            if($scope.Tasks.taskId!=0 || $scope.Tasks.taskId!=null){
+                $http.post(url+'/FixedParkingOrders/insertFixedParkingOrders',{FixedParkingOrders:$scope.FixedParkingOrders}).success(function(){
+                    //alert("新增成功！",
+                    //    $scope.order1=false,
+                    //    $scope.TasksJournal={},
+                    //    $scope.TasksJournal.taskId=$stateParams.taskDetailsId,
+                    //    $http.get(url +'/TasksJournal/getTasksJournalbyTasksId/'+$scope.TasksJournal.taskId).success(function(data) {
+                    //        alert("查询成功！");
+                    //        console.log(data);
+                    //        $location.path("/index/serviceRequest/taskDetails/"+$scope.TasksJournal.taskId).search({taskDetailsId:$scope.TasksJournal.taskId});
+                    //        $scope.TasksJournal = data.TasksJournal;
+                    //    }).error(function(data,status,headers,config){
+                    //        alert("查询失败！");
+                    //    })
+                    //);
+                    $scope.FixedParkingOrders.taskId=$stateParams.taskDetailsId;
+
+                    $location.path("/index/serviceRequest/taskDetails/"+$scope.FixedParkingOrders.taskId).search({taskDetailsId:$scope.FixedParkingOrders.taskId});
+                    $scope.load();
+                }).error(function(data,status,headers,config){
+                    alert("新增失败！");
+                });
+                //console.log($scope.FixedParkingOrders);
+            }else{
+                alert("新增固定车位工单失败！");
+            }
+            $scope.FixedParkingOrders={}
+        };
+
+        //新建维修单
+        $scope.RepairOrders={orderState:1,orderType:22,serviceRequestId:$scope.Tasks.serverId};
+        $scope.RepairOrders.itemRecords=[];
+        $scope.RepairOrders.taskId=$stateParams.taskDetailsId;
+        $scope.RepairOrders.itemRecords.quoteItemType=[{}];
+        $scope.AddOrUpdateRepairOrders=function(taskId){
+            //console.log($scope.QuoteOrders);
+            var item={};
+            if($scope.Tasks.taskId!=0 || $scope.Tasks.taskId!=null){
+                //添加人工费
+                /*var getTd = document.getElementById("artificial");
+                 var rowsLength = getTd.rows.length;
+                 for (var i = 1; i < rowsLength; i++) {
+                 $scope.itemRecord = {
+                 quoteItemType:"1",
+                 quoteItemName: "",
+                 quoteItemNum: "",
+                 quoteItemTotal: "",
+                 finalPrice:"",
+                 discount:""
+                 };
+                 var bsh1 = getTd.rows[i].cells[0].getElementsByTagName("INPUT")[0].value;
+                 //console.log(bsh1);
+                 $scope.itemRecord.quoteItemName = bsh1;
+                 var bsh2 = getTd.rows[i].cells[1].getElementsByTagName("INPUT")[0].value;
+                 //console.log(bsh2);
+                 $scope.itemRecord.quoteItemNum = bsh2;
+                 var bsh3 = getTd.rows[i].cells[2].getElementsByTagName("INPUT")[0].value;
+                 //console.log(bsh3);
+                 $scope.itemRecord.quoteItemTotal = bsh3;
+
+                 $scope.QuoteOrders.itemRecords.push($scope.itemRecord);
+                 }*/
+                //添加物品费
+                /*var getTd1 = document.getElementById("addIte");
+                 var rowsLength1= getTd.rows.length;
+                 for (var j= 1; j < rowsLength1;  j++) {
+                 $scope.itemRecord = {
+                 quoteItemType:"2",
+                 quoteItemName: "",
+                 quoteItemNum: "",
+                 quoteItemTotal: "",
+                 finalPrice:"",
+                 discount:""
+                 };
+                 var bsh4 = getTd1.rows[j].cells[0].getElementsByTagName("INPUT")[0].value;
+                 //console.log(bsh4);
+                 $scope.itemRecord.quoteItemName = bsh4;
+                 var bsh5 = getTd1.rows[j].cells[1].getElementsByTagName("INPUT")[0].value;
+                 //console.log(bsh5);
+                 $scope.itemRecord.quoteItemNum = bsh5;
+                 var bsh6 = getTd1.rows[j].cells[2].getElementsByTagName("INPUT")[0].value;
+                 //console.log(bsh6);
+                 $scope.itemRecord.quoteItemTotal= bsh6;
+
+                 $scope.QuoteOrders.itemRecords.push($scope.itemRecord);
+                 }*/
+                //添加工具费
+                /*var getTd2 = document.getElementById("tool");
+                 var rowsLength2= getTd.rows.length;
+                 for (var g= 1; g< rowsLength2;  g++) {
+                 $scope.itemRecord = {
+                 quoteItemType:"3",
+                 quoteItemName: "",
+                 quoteItemNum: "",
+                 quoteItemTotal: "",
+                 finalPrice:"",
+                 discount:""
+                 };
+                 var bsh7 = getTd2.rows[g].cells[0].getElementsByTagName("INPUT")[0].value;
+                 //console.log(bsh7);
+                 $scope.itemRecord.quoteItemName = bsh7;
+                 var bsh8 = getTd2.rows[g].cells[1].getElementsByTagName("INPUT")[0].value;
+                 //console.log(bsh8);
+                 $scope.itemRecord.quoteItemNum = bsh8;
+                 var bsh9 = getTd2.rows[g].cells[2].getElementsByTagName("INPUT")[0].value;
+                 //console.log(bsh9);
+                 $scope.itemRecord.quoteItemTotal= bsh9;
+
+                 $scope.QuoteOrders.itemRecords.push($scope.itemRecord);
+                 }*/
+                ////计算总价
+                //var calculation3=function(){
+                //    var allTotal1=0;
+                //    allTotal1=calculation().total+calculation().total1+calculation().total2;
+                //
+                //    $scope.QuoteOrders.allTotal=allTotal1;
+                //};
+                $http.post(url+'/RepairOrders/insertRepairOrders',{RepairOrders:$scope.RepairOrders}).success(function(){
+                    //console.log($scope.QuoteOrders);
+                    // $scope.QuoteOrders.itemRecords.push($scope.QuoteOrders.itemRecords.discount);
+                    //$scope.QuoteOrders.itemRecords.push($scope.QuoteOrders.itemRecords.finalPrice);
+                    //$scope.order1=false;
+
+                    //self.location.reload();
+                    $scope.RepairOrders.taskId= $stateParams.taskDetailsId;
+                    $scope.order=false;
+                    $scope.getAllSettleAccount();
+                    $location.path("/index/serviceRequest/taskDetails/"+$scope.RepairOrders.taskId).search({taskDetailsId:$scope.RepairOrders.taskId});
+                    $scope.load();
+                    $scope.reloadRoute();
+
+                }).error(function(data,status,headers,config){
+                    alert("新增失败！");
+                });
+
+            }else{
+                alert("任务不存在！");
+            }
+            $scope.RepairOrders={}
+        };
+
+
+        //新建部门质检单
+        $scope.DepartmentOrders={orderState:1,orderType:6,serviceRequestId:$scope.Tasks.serverId,tasksId:$stateParams.taskDetailsId};
+        $scope.addDepartmentOrders=function(){
+            if($scope.Tasks.tasksId!=0 || $scope.Tasks.tasksId!=null){
+                $http.post(url+'/DepartmentOrders/insertDepartmentOrders',{DepartmentOrders:$scope.DepartmentOrders}).success(function(data) {
+                    alert("新增成功！");
+                    console.log($scope.DepartmentOrders);
+                    $scope.DepartmentOrders.tasksId=$stateParams.taskDetailsId;
+                    $location.path("/index/serviceRequest/taskDetails/"+$scope.DepartmentOrders.tasksId).search({taskDetailsId:$scope.DepartmentOrders.tasksId});
+
+                    $scope.load();
+                }).error(function(data,status,headers,config){
+                    alert("新增失败！");
+                });
+            }
+        };
+
+        //查询所有的员工
+        $http.get(url + '/staff/listAllStaffRestful').success(function(data) {
+            console.log(data);
+            $scope.staffs = data.Staff;
+        });
+
+        $(document).ready(function(e) {
+            $(".formItemDiff2").hover(function() {
+                $(this).css("background-position", "0px -555px");
+                $(this).prevAll().css("background-position", "0px -555px");
+                $(this).nextAll().css("background-position", "0px -575px");
+                $("#pointP").html($(this).prevAll().length+1+"分");
+                $scope.DepartmentOrders.attitude=parseInt($(this).prevAll().length+1);
+            });
+        });
+
+
+        //关闭报价单
+        $scope.CloseQuoteOrders=function(){
+            if( $scope.aa.quoteOrders.orderState=0){
+                alert("报价单已经是关闭状态!");
+                return;
+            }
+            $http.put(url+"/QuoteOrders/changeOrderState",{QuoteOrders: $scope.aa.quoteOrders}).success(function(data){
+
+                alert("关闭成功！");
+
+                $scope.aa.quoteOrders.orderState=0;
+                //$scope.aa.checkOrders.closePerson=4;
+                //console.log($scope.aa.quoteOrders);
+                $scope.closed=true;
+            }).error(function(data,status,headers,config){
+                alert("关闭失败！");
+            });
+            $scope.aa.quoteOrders={}
+        };
+        //关闭结算单
+        $scope.CloseSettleAccountsOrders=function(){
+            if( $scope.aa.settleAccountsOrders.orderState=0){
+                alert("结算单已经是关闭状态!");
+                return;
+            }
+            $http.put(url+"/SettleAccountsOrders/closeSettleAccountsOrdersState",{SettleAccountsOrders: $scope.aa.settleAccountsOrders}).success(function(data){
+                alert("关闭成功！");
+                $scope.aa.settleAccountsOrders.orderState=0;
+                //$scope.aa.checkOrders.closePerson=4;
+                //console.log($scope.aa.settleAccountsOrders);
+                $scope.closed=true;
+            }).error(function(data,status,headers,config){
+                alert("关闭失败！");
+            });
+            $scope.aa.settleAccountsOrders={};
+        };
+        //关闭表扬单
+        $scope.ClosePraiseOrders=function(){
+
+            if( $scope.aa.praiseOrders.orderState=0){
+                alert("表扬单已经是关闭状态!");
+                return;
+            }
+            $http.put(url+"/PraiseOrders/closePraiseOrders",{PraiseOrders: $scope.aa.praiseOrders}).success(function(data){
+                alert("关闭成功！");
+                $scope.aa.praiseOrders.orderState=0;
+                $scope.closed=true;
+            }).error(function(data,status,headers,config){
+                alert("关闭失败！");
+            });
+            $scope.aa.praiseOrders={};
+        };
+        //关闭检测单
+        $scope.CloseCheckOrders=function(){
+
+            if( $scope.aa.checkOrders.orderState=0){
+                alert("检测单已经是关闭状态!");
+                return;
+            }
+            $http.put(url+"/CheckOrdersService/closedCheckOrders",{CheckOrders: $scope.aa.checkOrders}).success(function(data){
+                alert("关闭成功！");
+                $scope.aa.checkOrders.orderState=0;
+                $scope.closed=true;
+            }).error(function(data,status,headers,config){
+                alert("关闭失败！");
+            });
+            $scope.aa.checkOrders={};
+        };
+        //关闭处理单
+        $scope.CloseDisposeOrder=function(){
+            if( $scope.aa.disposeOrder.orderState=0){
+                alert("处理单已经是关闭状态!");
+                return;
+            }
+            $http.put(url+"/DisposeOrder/closeDisposeOrder",{DisposeOrder: $scope.aa.disposeOrder}).success(function(data){
+                alert("关闭成功！");
+                $scope.aa.disposeOrder.orderState=0;
+                //$scope.aa.checkOrders.closePerson=4;
+                //console.log($scope.aa.disposeOrder);
+                $scope.closed=true;
+            }).error(function(data,status,headers,config){
+                alert("关闭失败！");
+            });
+            $scope.aa.disposeOrder={};
+        };
+        //关闭验收单
+        $scope.CloseAcceptanceOrders=function(){
+            if( $scope.aa.acceptanceOrders.orderState=0){
+                alert("验收单已经是关闭状态!");
+                return;
+            }
+            $http.put(url+"/AcceptanceOrders/changeAcceptanceOrders",{AcceptanceOrders: $scope.aa.acceptanceOrders}).success(function(data){
+                alert("关闭成功！");
+                $scope.aa.acceptanceOrders.orderState=0;
+                $scope.closed=true;
+            }).error(function(data,status,headers,config){
+                alert("关闭失败！");
+            });
+            $scope.aa.acceptanceOrders={}
+        };
+        //关闭水表单
+        $scope.CloseWaterMeterOrders=function(){
+            if( $scope.aa.waterMeterOrders.orderState=0){
+                alert("报价单已经是关闭状态!");
+                return;
+            }
+            console.log($scope.aa.waterMeterOrders);
+            $http.put(url+"/WaterMeterOrders/closeWaterMeterOrders",{WaterMeterOrders: $scope.aa.waterMeterOrders}).success(function(data){
+
+                alert("关闭成功！");
+
+                $scope.aa.waterMeterOrders.orderState=0;
+                //$scope.aa.checkOrders.closePerson=4;
+                //console.log($scope.aa.quoteOrders);
+                $scope.closed=true;
+            }).error(function(data,status,headers,config){
+                alert("关闭失败！");
+            });
+            $scope.aa.waterMeterOrders={}
+        };
+        //关闭电表单
+        $scope.CloseMeterReadingOrders=function(){
+            if( $scope.aa.meterReadingOrders.orderState=0){
+                alert("报价单已经是关闭状态!");
+                return;
+            }
+            console.log($scope.aa.meterReadingOrders);
+            $http.put(url+"/MeterReadingOrders/closeMeterReadingOrders",{MeterReadingOrders: $scope.aa.meterReadingOrders}).success(function(data){
+
+                alert("关闭成功！");
+
+                $scope.aa.meterReadingOrders.orderState=0;
+                //$scope.aa.checkOrders.closePerson=4;
+                //console.log($scope.aa.quoteOrders);
+                $scope.closed=true;
+            }).error(function(data,status,headers,config){
+                alert("关闭失败！");
+            });
+            $scope.aa.meterReadingOrders={}
+        };
+        //关闭赔偿给业主
+        $scope.CloseCompensateOwner=function(){
+            if( $scope.aa.compensateOwner.orderState=0){
+                alert("赔偿给业主单已经是关闭状态!");
+                return;
+            }
+            $http.put(url+"/CompensateOwnerService/closeCompensateOwner",{CompensateOwner: $scope.aa.compensateOwner}).success(function(data){
+                alert("关闭成功！");
+                $scope.aa.compensateOwner.orderState=0;
+                //$scope.aa.checkOrders.closePerson=4;
+                //console.log($scope.aa.compensateOwner);
+                $scope.closed=true;
+            }).error(function(data,status,headers,config){
+                alert("关闭失败！");
+            });
+            $scope.aa.compensateOwner={}
+        };
+        //关闭回访
+        $scope.CloseReturnVisitOrders=function(){
+            if( $scope.aa.returnVisitOrders.orderState=0){
+                alert("赔偿给业主单已经是关闭状态!");
+                return;
+            }
+            $http.put(url+"/ReturnVisitOrders/changeReturnVisitOrders",{ReturnVisitOrders: $scope.aa.returnVisitOrders}).success(function(data){
+                alert("关闭成功！");
+                $scope.aa.returnVisitOrders.orderState=0;
+                //$scope.aa.checkOrders.closePerson=4;
+                //console.log($scope.aa.returnVisitOrders);
+
+                $scope.closed=true;
+            }).error(function(data,status,headers,config){
+                alert("关闭失败！");
+            });
+            $scope.aa.returnVisitOrders={}
+        };
+        //关闭申诉
+        $scope.CloseAppealOrders=function(){
+            if( $scope.aa.appealOrders.orderState=0){
+                alert("申诉单已经是关闭状态!");
+                return;
+            }
+            $http.put(url+"/AppealOrders/changeAppealOrders",{AppealOrders: $scope.aa.appealOrders}).success(function(data){
+                alert("关闭成功！");
+                $scope.aa.appealOrders.orderState=0;
+                $scope.closed=true;
+            }).error(function(data,status,headers,config){
+                alert("关闭失败！");
+            });
+            $scope.aa.appealOrders={}
+        };
+        //关闭投诉
+        $scope.CloseComplaintOrders=function(){
+            if( $scope.aa.complaintOrders.orderState=0){
+                alert("投诉单已经是关闭状态!");
+                return;
+            }
+            $scope.aa.complaintOrders.closePersonId=14;
+            $http.put(url+"/ComplaintOrders/closeComplaintOrders",{ComplaintOrders: $scope.aa.complaintOrders}).success(function(){
+                alert("关闭投诉状态成功！");
+            }).error(function(data,status,headers,config){
+                alert("关闭投诉状态失败！");
+            });
+            $scope.aa.complaintOrders={}
+        };
+        //关闭咨询
+        $scope.CloseConsultationOrders=function(){
+            if( $scope.aa.consultationOrders.orderState=0){
+                alert("咨询单已经是关闭状态!");
+                return;
+            }
+            $scope.aa.consultationOrders.closePersonId=14;
+            $http.put(url+"/ConsultationOrders/closeConsultationOrders",{ConsultationOrders: $scope.aa.consultationOrders}).success(function(){
+                alert("关闭成功！");
+                //console.log($scope.aa.consultationOrders.orderState);
+                $scope.closed=true;
+            }).error(function(data,status,headers,config){
+                alert("关闭失败！");
+            });
+            $scope.aa.consultationOrders={}
+        };
+        //关闭固定车位工单
+        $scope.CloseFixedParkingOrders=function(){
+            if( $scope.aa.fixedParkingOrders.orderState=0){
+                alert("固定车位单已经是关闭状态!");
+                return;
+            }
+            $scope.aa.fixedParkingOrders.closePersonId=14;
+            $http.put(url+"/FixedParkingOrders/closeFixedParkingOrders",{FixedParkingOrders: $scope.aa.fixedParkingOrders}).success(function(){
+                alert("关闭成功！");
+                $scope.closed=true;
+            }).error(function(data,status,headers,config){
+                alert("关闭失败！");
+            });
+            $scope.aa.fixedParkingOrders={};
+        };
+        //关闭维修单
+        $scope.CloseRepairOrders=function(){
+            if( $scope.aa.repairOrders.orderState=0){
+                alert("维修单已经是关闭状态!");
+                return;
+            }
+            $http.put(url+"/RepairOrders/closeConsultationOrders",{RepairOrders: $scope.aa.repairOrders}).success(function(data){
+
+                alert("关闭成功！");
+
+                $scope.aa.repairOrders.orderState=0;
+                //$scope.aa.checkOrders.closePerson=4;
+                //console.log($scope.aa.quoteOrders);
+                $scope.closed=true;
+            }).error(function(data,status,headers,config){
+                alert("关闭失败！");
+            });
+            $scope.aa.repairOrders={};
+        };
+
+        //关闭部门质检工单
+        $scope.CloseDepartmentOrders=function(){
+            if( $scope.aa.departmentOrders.orderState=0){
+                alert("维修单已经是关闭状态!");
+                return;
+            }
+            $http.put(url+"/DepartmentOrders/closeDepartmentOrders",{DepartmentOrders: $scope.aa.departmentOrders}).success(function(data){
+                alert("关闭成功！");
+                $scope.aa.departmentOrders.orderState=0;
+                $scope.closed=true;
+            }).error(function(data,status,headers,config){
+                alert("关闭失败！");
+            });
+            $scope.aa.repairOrders={};
+        };
+
+
+        var fileUrl=$rootScope.fileUrl;    //上传的文件路径
+        var filePath='';          //上传文件的路径
+        $scope.fileState="";
+        $scope.QuoteOrders.annexs=[];   //报价单上传
+        $scope.CheckOrdersService.annexs=[];  //检测单上传
+        $scope.DisposeOrder.annexs=[];              //处理单上传
+        $scope.AcceptanceOrders.annexs=[];    //验收单上传
+        $scope.CompensateOwnerService.annexs=[];   //赔偿给业主单上传
+        $scope.AppealOrders.annexs=[];    //申诉单上传
+        $scope.ComplainOrders.annexs=[];    //投诉单上传
+        $scope.waterMeterOrders.annexs=[];
+        $scope.FixedParkingOrders.annexs=[];    //固定车位单上传
+        $scope.PraiseOrders.annexs=[];          //表扬单上传
+        $scope.MeterReadingOrders.annexs=[];    //电表上传
+
+        $scope.DepartmentOrders.annexs=[];//部门质检单上传
+
+        $scope.annex={
+            annexAddress:'',
+            annexName:'',
+            relationId:''
+        };
+        //报价单上传
+        $scope.QuoteOrdersfile=function(){
+            $scope.fileState="1";
+            $("#zyupload").remove();
+            $("#remove").append("<div id='zyupload' class='zyupload'></div>");
+            $(function(){
+                // 初始化插件
+                $("#zyupload").zyUpload({
+                    width            :   "900px",                 // 宽度
+                    height           :   "400px",                 // 宽度
+                    itemWidth        :   "140px",                 // 文件项的宽度
+                    itemHeight       :   "115px",                 // 文件项的高度
+                    url              :   fileUrl+"/FileService",  // 上传文件的路径
+                    fileType         :   ["jpg","png","jpeg","gif","xls","docx","xlsx","pdf","txt","doc","ppt"],// 上传文件的类型
+                    fileSize         :   51200000,                // 上传文件的大小
+                    multiple         :   true,                    // 是否可以多个文件上传
+                    dragDrop         :   true,                    // 是否可以拖动上传文件
+                    tailor           :   true,                    // 是否可以裁剪图片
+                    del              :   true,                    // 是否可以删除文件
+                    finishDel        :   false,  				  // 是否在上传文件完成后删除预览
+                    /* 外部获得的回调接口 */
+                    onSelect: function(selectFiles, allFiles){    // 选择文件的回调方法  selectFile:当前选中的文件  allFiles:还没上传的全部文件
+                        //console.info(selectFiles);
+                    },
+                    onDelete: function(file, files){
+                        //console.info(file.name);
+                    },
+                    onSuccess: function(file, response){          // 文件上传成功的回调方法
+                        //console.info("此文件上传成功：");
+                        //console.info(file.name);
+                        console.info("此文件上传到服务器地址：");
+                        filePath=response;
+                        $scope.annex.annexAddress=filePath;
+                        $scope.annex.annexName=file.name;
+                        if($scope.fileState="1"){
+                            $scope.QuoteOrders.annexs.push($scope.annex);
+                        }
+                        console.info(filePath);
+                    },
+                    onFailure: function(file, response){          // 文件上传失败的回调方法
+                        //console.info("此文件上传失败：");
+                        //console.info(file.name);
+                    },
+                    onComplete: function(response){           	  // 上传完成的回调方法
+                        //console.info("文件上传完成");
+                        //console.info(response);
+                    }
+                });
+
+            });
+
+        };
+        //检测单上传
+        $scope.CheckOrdersServicefile=function(){
+            $scope.fileState="2";
+            $("#zyupload").remove();
+            $("#remove").append("<div id='zyupload' class='zyupload'></div>");
+            $(function(){
+                // 初始化插件
+                $("#zyupload").zyUpload({
+                    width            :   "900px",                 // 宽度
+                    height           :   "400px",                 // 宽度
+                    itemWidth        :   "140px",                 // 文件项的宽度
+                    itemHeight       :   "115px",                 // 文件项的高度
+                    url              :   fileUrl+"/FileService",  // 上传文件的路径
+                    fileType         :   ["jpg","png","jpeg","gif","xls","docx","xlsx","pdf","txt","doc","ppt"],// 上传文件的类型
+                    fileSize         :   51200000,                // 上传文件的大小
+                    multiple         :   true,                    // 是否可以多个文件上传
+                    dragDrop         :   true,                    // 是否可以拖动上传文件
+                    tailor           :   true,                    // 是否可以裁剪图片
+                    del              :   true,                    // 是否可以删除文件
+                    finishDel        :   false,  				  // 是否在上传文件完成后删除预览
+                    /* 外部获得的回调接口 */
+                    onSelect: function(selectFiles, allFiles){    // 选择文件的回调方法  selectFile:当前选中的文件  allFiles:还没上传的全部文件
+                        console.info(selectFiles);
+                    },
+                    onDelete: function(file, files){
+                        console.info(file.name);
+                    },
+                    onSuccess: function(file, response){          // 文件上传成功的回调方法
+                        console.info("此文件上传成功：");
+                        console.info(file.name);
+                        console.info("此文件上传到服务器地址：");
+                        filePath=response;
+                        $scope.annex.annexAddress=filePath;
+                        $scope.annex.annexName=file.name;
+                        if($scope.fileState="2"){
+                            $scope.CheckOrdersService.annexs.push($scope.annex);
+                        }
+                        console.info(filePath);
+                    },
+                    onFailure: function(file, response){          // 文件上传失败的回调方法
+                        console.info("此文件上传失败：");
+                        console.info(file.name);
+                    },
+                    onComplete: function(response){           	  // 上传完成的回调方法
+                        console.info("文件上传完成");
+                        console.info(response);
+                    }
+                });
+            });
+        };
+        //处理单上传
+        $scope.DisposeOrderfile=function(){
+            $scope.fileState="3";
+            $("#zyupload").remove();
+            $("#remove").append("<div id='zyupload' class='zyupload'></div>");
+            $(function(){
+                // 初始化插件
+                $("#zyupload").zyUpload({
+                    width            :   "900px",                 // 宽度
+                    height           :   "400px",                 // 宽度
+                    itemWidth        :   "140px",                 // 文件项的宽度
+                    itemHeight       :   "115px",                 // 文件项的高度
+                    url              :   fileUrl+"/FileService",  // 上传文件的路径
+                    fileType         :   ["jpg","png","jpeg","gif","xls","docx","xlsx","pdf","txt","doc","ppt"],// 上传文件的类型
+                    fileSize         :   51200000,                // 上传文件的大小
+                    multiple         :   true,                    // 是否可以多个文件上传
+                    dragDrop         :   true,                    // 是否可以拖动上传文件
+                    tailor           :   true,                    // 是否可以裁剪图片
+                    del              :   true,                    // 是否可以删除文件
+                    finishDel        :   false,  				  // 是否在上传文件完成后删除预览
+                    /* 外部获得的回调接口 */
+                    onSelect: function(selectFiles, allFiles){    // 选择文件的回调方法  selectFile:当前选中的文件  allFiles:还没上传的全部文件
+                        console.info(selectFiles);
+                    },
+                    onDelete: function(file, files){
+                        console.info(file.name);
+                    },
+                    onSuccess: function(file, response){          // 文件上传成功的回调方法
+                        console.info("此文件上传成功：");
+                        console.info(file.name);
+                        console.info("此文件上传到服务器地址：");
+                        filePath=response;
+                        $scope.annex.annexAddress=filePath;
+                        $scope.annex.annexName=file.name;
+                        if($scope.fileState="3"){
+                            $scope.DisposeOrder.annexs.push($scope.annex);
+                        }
+                        console.info(filePath);
+                    },
+                    onFailure: function(file, response){          // 文件上传失败的回调方法
+                        console.info("此文件上传失败：");
+                        console.info(file.name);
+                    },
+                    onComplete: function(response){           	  // 上传完成的回调方法
+                        console.info("文件上传完成");
+                        console.info(response);
+                    }
+                });
+            });
+        };
+        //验收单上传
+        $scope.AcceptanceOrdersfile=function(){
+            $scope.fileState="4";
+            $("#zyupload").remove();
+            $("#remove").append("<div id='zyupload' class='zyupload'></div>");
+            $(function(){
+                // 初始化插件
+                $("#zyupload").zyUpload({
+                    width            :   "900px",                 // 宽度
+                    height           :   "400px",                 // 宽度
+                    itemWidth        :   "140px",                 // 文件项的宽度
+                    itemHeight       :   "115px",                 // 文件项的高度
+                    url              :   fileUrl+"/FileService",  // 上传文件的路径
+                    fileType         :   ["jpg","png","jpeg","gif","xls","docx","xlsx","pdf","txt","doc","ppt"],// 上传文件的类型
+                    fileSize         :   51200000,                // 上传文件的大小
+                    multiple         :   true,                    // 是否可以多个文件上传
+                    dragDrop         :   true,                    // 是否可以拖动上传文件
+                    tailor           :   true,                    // 是否可以裁剪图片
+                    del              :   true,                    // 是否可以删除文件
+                    finishDel        :   false,  				  // 是否在上传文件完成后删除预览
+                    /* 外部获得的回调接口 */
+                    onSelect: function(selectFiles, allFiles){    // 选择文件的回调方法  selectFile:当前选中的文件  allFiles:还没上传的全部文件
+                        console.info(selectFiles);
+                    },
+                    onDelete: function(file, files){
+                        console.info(file.name);
+                    },
+                    onSuccess: function(file, response){          // 文件上传成功的回调方法
+                        console.info("此文件上传成功：");
+                        console.info(file.name);
+                        console.info("此文件上传到服务器地址：");
+                        filePath=response;
+                        $scope.annex.annexAddress=filePath;
+                        $scope.annex.annexName=file.name;
+                        if($scope.fileState="4"){
+                            $scope.AcceptanceOrders.annexs.push($scope.annex);
+                        }
+                        console.info(filePath);
+                    },
+                    onFailure: function(file, response){          // 文件上传失败的回调方法
+                        console.info("此文件上传失败：");
+                        console.info(file.name);
+                    },
+                    onComplete: function(response){           	  // 上传完成的回调方法
+                        console.info("文件上传完成");
+                        console.info(response);
+                    }
+                });
+            });
+        };
+        //赔偿给业主单上传
+        $scope.CompensateOwnerServicefile=function(){
+            //$scope.fileState="5";
+            $("#zyupload").remove();
+            $("#remove").append("<div id='zyupload' class='zyupload'></div>");
+            //$scope.fileState="5";
+            $(function(){
+                // 初始化插件
+                $("#zyupload").zyUpload({
+                    //width            :   "900px",                 // 宽度
+                    //height           :   "400px",                 // 宽度
+                    itemWidth        :   "140px",                 // 文件项的宽度
+                    itemHeight       :   "115px",                 // 文件项的高度
+                    url              :   fileUrl+"/FileService",  // 上传文件的路径
+                    fileType         :   ["jpg","png","jpeg","gif","xls","docx","xlsx","pdf","txt","doc","ppt"],// 上传文件的类型
+                    fileSize         :   51200000,                // 上传文件的大小
+                    multiple         :   true,                    // 是否可以多个文件上传
+                    dragDrop         :   true,                    // 是否可以拖动上传文件
+                    tailor           :   true,                    // 是否可以裁剪图片
+                    del              :   true,                    // 是否可以删除文件
+                    finishDel        :   false,  				  // 是否在上传文件完成后删除预览
+                    /* 外部获得的回调接口 */
+                    onSelect: function(selectFiles, allFiles){    // 选择文件的回调方法  selectFile:当前选中的文件  allFiles:还没上传的全部文件
+                        console.info(selectFiles);
+                    },
+                    onDelete: function(file, files){
+                        console.info(file.name);
+                    },
+                    onSuccess: function(file, response){          // 文件上传成功的回调方法
+                        console.info("此文件上传成功：");
+                        console.info(file.name);
+                        console.info("此文件上传到服务器地址：");
+                        filePath=response;
+                        $scope.annex.annexAddress=filePath;
+                        $scope.annex.annexName=file.name;
+                        if($scope.fileState="5"){
+                            $scope.CompensateOwnerService.annexs.push($scope.annex);
+                        }
+                        console.info(filePath);
+                    },
+                    onFailure: function(file, response){          // 文件上传失败的回调方法
+                        console.info("此文件上传失败：");
+                        console.info(file.name);
+                    },
+                    onComplete: function(response){           	  // 上传完成的回调方法
+                        console.info("文件上传完成");
+                        console.info(response);
+                    }
+                });
+            });
+        };
+        //表扬工单上传
+        $scope.PraiseOrdersServicefile=function(){
+            $("#zyupload").remove();
+            $("#remove").append("<div id='zyupload' class='zyupload'></div>");
+            $(function(){
+                $("#remove").html('');
+                $("#remove").append('<div id="zyupload" class="zyupload"></div>');
+                // 初始化插件
+                $("#zyupload").zyUpload({
+                    //width            :   "900px",                 // 宽度
+                    //height           :   "400px",                 // 宽度
+                    itemWidth        :   "140px",                 // 文件项的宽度
+                    itemHeight       :   "115px",                 // 文件项的高度
+                    url              :   fileUrl+"/FileService",  // 上传文件的路径
+                    fileType         :   ["jpg","png","jpeg","gif","xls","docx","xlsx","pdf","txt","doc","ppt"],// 上传文件的类型
+                    fileSize         :   51200000,                // 上传文件的大小
+                    multiple         :   true,                    // 是否可以多个文件上传
+                    dragDrop         :   true,                    // 是否可以拖动上传文件
+                    tailor           :   true,                    // 是否可以裁剪图片
+                    del              :   true,                    // 是否可以删除文件
+                    finishDel        :   false,  				  // 是否在上传文件完成后删除预览
+                    /* 外部获得的回调接口 */
+                    onSelect: function(selectFiles, allFiles){    // 选择文件的回调方法  selectFile:当前选中的文件  allFiles:还没上传的全部文件
+                        console.info(selectFiles);
+                    },
+                    onDelete: function(file, files){
+                        console.info(file.name);
+                    },
+                    onSuccess: function(file, response){          // 文件上传成功的回调方法
+                        console.info("此文件上传成功：");
+                        console.info(file.name);
+                        console.info("此文件上传到服务器地址：");
+                        filePath=response;
+                        $scope.annex.annexAddress=filePath;
+                        $scope.annex.annexName=file.name;
+                        $scope.PraiseOrders.annexs.push($scope.annex);
+                        console.info(filePath);
+                    },
+                    onFailure: function(file, response){          // 文件上传失败的回调方法
+                        console.info("此文件上传失败：");
+                        console.info(file.name);
+                    },
+                    onComplete: function(response){           	  // 上传完成的回调方法
+                        console.info("文件上传完成");
+                        console.info(response);
+                    }
+                });
+            });
+        };
+        //申诉单上传
+        $scope.AppealOrdersfile=function(){
+            $("#zyupload").remove();
+            $("#remove").append("<div id='zyupload' class='zyupload'></div>");
+            //$scope.fileState="8";
+            $(function(){
+                // 初始化插件
+                $("#zyupload").zyUpload({
+                    //width            :   "900px",                 // 宽度
+                    //height           :   "400px",                 // 宽度
+                    itemWidth        :   "140px",                 // 文件项的宽度
+                    itemHeight       :   "115px",                 // 文件项的高度
+                    url              :   fileUrl+"/FileService",  // 上传文件的路径
+                    fileType         :   ["jpg","png","jpeg","gif","xls","docx","xlsx","pdf","txt","doc","ppt"],// 上传文件的类型
+                    fileSize         :   51200000,                // 上传文件的大小
+                    multiple         :   true,                    // 是否可以多个文件上传
+                    dragDrop         :   true,                    // 是否可以拖动上传文件
+                    tailor           :   true,                    // 是否可以裁剪图片
+                    del              :   true,                    // 是否可以删除文件
+                    finishDel        :   false,  				  // 是否在上传文件完成后删除预览
+                    /* 外部获得的回调接口 */
+                    onSelect: function(selectFiles, allFiles){    // 选择文件的回调方法  selectFile:当前选中的文件  allFiles:还没上传的全部文件
+                        console.info(selectFiles);
+                    },
+                    onDelete: function(file, files){
+                        console.info(file.name);
+                    },
+                    onSuccess: function(file, response){          // 文件上传成功的回调方法
+                        console.info("此文件上传成功：");
+                        console.info(file.name);
+                        console.info("此文件上传到服务器地址：");
+                        filePath=response;
+                        $scope.annex.annexAddress=filePath;
+                        $scope.annex.annexName=file.name;
+                        if($scope.fileState="8"){
+                            $scope.AppealOrders.annexs.push($scope.annex);
+                        }
+                        console.info(filePath);
+                    },
+                    onFailure: function(file, response){          // 文件上传失败的回调方法
+                        console.info("此文件上传失败：");
+                        console.info(file.name);
+                    },
+                    onComplete: function(response){           	  // 上传完成的回调方法
+                        console.info("文件上传完成");
+                        console.info(response);
+                    }
+                });
+            });
+        };
+        //投诉单上传
+        $scope.ComplainFile=function(){
+            $("#zyupload").remove();
+            $("#remove").append("<div id='zyupload' class='zyupload'></div>");
+            $scope.fileState="9";
+            $(function(){
+                // 初始化插件
+                $("#zyupload").zyUpload({
+                    //width            :   "900px",                 // 宽度
+                    //height           :   "400px",                 // 宽度
+                    itemWidth        :   "140px",                 // 文件项的宽度
+                    itemHeight       :   "115px",                 // 文件项的高度
+                    url              :   fileUrl+"/FileService",  // 上传文件的路径
+                    fileType         :   ["jpg","png","jpeg","gif","xls","docx","xlsx","pdf","txt","doc","ppt"],// 上传文件的类型
+                    fileSize         :   51200000,                // 上传文件的大小
+                    multiple         :   true,                    // 是否可以多个文件上传
+                    dragDrop         :   true,                    // 是否可以拖动上传文件
+                    tailor           :   true,                    // 是否可以裁剪图片
+                    del              :   true,                    // 是否可以删除文件
+                    finishDel        :   false,  				  // 是否在上传文件完成后删除预览
+                    /* 外部获得的回调接口 */
+                    onSelect: function(selectFiles, allFiles){    // 选择文件的回调方法  selectFile:当前选中的文件  allFiles:还没上传的全部文件
+                        console.info(selectFiles);
+                    },
+                    onDelete: function(file, files){
+                        console.info(file.name);
+                    },
+                    onSuccess: function(file, response){          // 文件上传成功的回调方法
+                        console.info("此文件上传成功：");
+                        console.info(file.name);
+                        console.info("此文件上传到服务器地址：");
+                        filePath=response;
+                        $scope.annex.annexAddress=filePath;
+                        $scope.annex.annexName=file.name;
+                        if($scope.fileState="9"){
+                            $scope.ComplainOrders.annexs.push($scope.annex);
+                        }
+                        console.info(filePath);
+                    },
+                    onFailure: function(file, response){          // 文件上传失败的回调方法
+                        console.info("此文件上传失败：");
+                        console.info(file.name);
+                    },
+                    onComplete: function(response){           	  // 上传完成的回调方法
+                        console.info("文件上传完成");
+                        console.info(response);
+                    }
+                });
+            });
+        };
+
+        //抄水表单上传
+        $scope.waterMeterOrderFiles=function(){
+            // $scope.fileState="8";
+            $("#zyupload").remove();
+            $("#remove").append("<div id='zyupload' class='zyupload'></div>");
+            $(function(){
+                $("#remove").html('');
+                $("#remove").append('<div id="zyupload" class="zyupload"></div>');
+                // 初始化插件
+                $("#zyupload").zyUpload({
+                    //width            :   "900px",                 // 宽度
+                    //height           :   "400px",                 // 宽度
+                    itemWidth        :   "140px",                 // 文件项的宽度
+                    itemHeight       :   "115px",                 // 文件项的高度
+                    url              :   fileUrl+"/FileService",  // 上传文件的路径
+                    fileType         :   ["jpg","png","jpeg","gif","xls","docx","xlsx","pdf","txt","doc","ppt"],// 上传文件的类型
+                    fileSize         :   51200000,                // 上传文件的大小
+                    multiple         :   true,                    // 是否可以多个文件上传
+                    dragDrop         :   true,                    // 是否可以拖动上传文件
+                    tailor           :   true,                    // 是否可以裁剪图片
+                    del              :   true,                    // 是否可以删除文件
+                    finishDel        :   false,  				  // 是否在上传文件完成后删除预览
+                    /* 外部获得的回调接口 */
+                    onSelect: function(selectFiles, allFiles){    // 选择文件的回调方法  selectFile:当前选中的文件  allFiles:还没上传的全部文件
+
+                        console.info(selectFiles);
+                    },
+                    onDelete: function(file, files){
+                        console.info(file.name);
+                    },
+                    onSuccess: function(file, response){          // 文件上传成功的回调方法
+                        console.info("此文件上传成功：");
+                        console.info(file.name);
+                        console.info("此文件上传到服务器地址：");
+
+                        filePath=response;
+
+                        $scope.annex.annexAddress=filePath;
+                        $scope.annex.annexName=file.name;
+
+
+
+                        if($scope.fileState="8"){
+                            $scope.waterMeterOrders.annexs.push($scope.annex);
+
+                        }
+                        console.info(filePath);
+
+                    },
+                    onFailure: function(file, response){          // 文件上传失败的回调方法
+                        console.info("此文件上传失败：");
+                        console.info(file.name);
+                    },
+                    onComplete: function(response){           	  // 上传完成的回调方法
+                        console.info("文件上传完成");
+                        console.info(response);
+                    }
+                });
+
+            });
+
+        };
+        //固定车位工单上传
+        $scope.FixedParkingFile=function(){
+            $scope.fileState="10";
+            $("#zyupload").remove();
+            $("#remove").append("<div id='zyupload' class='zyupload'></div>");
+            $(function(){
+                $("#remove").html('');
+                $("#remove").append('<div id="zyupload" class="zyupload"></div>');
+                // 初始化插件
+                $("#zyupload").zyUpload({
+                    //width            :   "900px",                 // 宽度
+                    //height           :   "400px",                 // 宽度
+                    itemWidth        :   "140px",                 // 文件项的宽度
+                    itemHeight       :   "115px",                 // 文件项的高度
+                    url              :   fileUrl+"/FileService",  // 上传文件的路径
+                    fileType         :   ["jpg","png","jpeg","gif","xls","docx","xlsx","pdf","txt","doc","ppt"],// 上传文件的类型
+                    fileSize         :   51200000,                // 上传文件的大小
+                    multiple         :   true,                    // 是否可以多个文件上传
+                    dragDrop         :   true,                    // 是否可以拖动上传文件
+                    tailor           :   true,                    // 是否可以裁剪图片
+                    del              :   true,                    // 是否可以删除文件
+                    finishDel        :   false,  				  // 是否在上传文件完成后删除预览
+                    /* 外部获得的回调接口 */
+                    onSelect: function(selectFiles, allFiles){    // 选择文件的回调方法  selectFile:当前选中的文件  allFiles:还没上传的全部文件
+                        console.info(selectFiles);
+                    },
+                    onDelete: function(file, files){
+                        console.info(file.name);
+                    },
+                    onSuccess: function(file, response){          // 文件上传成功的回调方法
+                        console.info("此文件上传成功：");
+                        console.info(file.name);
+                        console.info("此文件上传到服务器地址：");
+                        filePath=response;
+                        $scope.annex.annexAddress=filePath;
+                        $scope.annex.annexName=file.name;
+                        if($scope.fileState="10"){
+                            $scope.FixedParkingOrders.annexs.push($scope.annex);
+                        }
+                        console.info(filePath);
+                    },
+                    onFailure: function(file, response){          // 文件上传失败的回调方法
+                        console.info("此文件上传失败：");
+                        console.info(file.name);
+                    },
+                    onComplete: function(response){           	  // 上传完成的回调方法
+                        console.info("文件上传完成");
+                        console.info(response);
+                    }
+                });
+            });
+        };
+        //抄电表单上传
+        $scope.MeterReadingOrdersFiles=function(){
+            $("#zyupload").remove();
+            $("#remove").append("<div id='zyupload' class='zyupload'></div>");
+            $(function(){
+                $("#remove").html('');
+                $("#remove").append('<div id="zyupload" class="zyupload"></div>');
+                // 初始化插件
+                $("#zyupload").zyUpload({
+                    //width            :   "900px",                 // 宽度
+                    //height           :   "400px",                 // 宽度
+                    itemWidth        :   "140px",                 // 文件项的宽度
+                    itemHeight       :   "115px",                 // 文件项的高度
+                    url              :   fileUrl+"/FileService",  // 上传文件的路径
+                    fileType         :   ["jpg","png","jpeg","gif","xls","docx","xlsx","pdf","txt","doc","ppt"],// 上传文件的类型
+                    fileSize         :   51200000,                // 上传文件的大小
+                    multiple         :   true,                    // 是否可以多个文件上传
+                    dragDrop         :   true,                    // 是否可以拖动上传文件
+                    tailor           :   true,                    // 是否可以裁剪图片
+                    del              :   true,                    // 是否可以删除文件
+                    finishDel        :   false,  				  // 是否在上传文件完成后删除预览
+                    /* 外部获得的回调接口 */
+                    onSelect: function(selectFiles, allFiles){    // 选择文件的回调方法  selectFile:当前选中的文件  allFiles:还没上传的全部文件
+
+                        console.info(selectFiles);
+                    },
+                    onDelete: function(file, files){
+                        console.info(file.name);
+                    },
+                    onSuccess: function(file, response){          // 文件上传成功的回调方法
+                        console.info("此文件上传成功：");
+                        console.info(file.name);
+                        console.info("此文件上传到服务器地址：");
+
+                        filePath=response;
+
+                        $scope.annex.annexAddress=filePath;
+                        $scope.annex.annexName=file.name;
+
+                        $scope.MeterReadingOrders.annexs.push($scope.annex);
+
+                        console.info(filePath);
+
+                    },
+                    onFailure: function(file, response){          // 文件上传失败的回调方法
+                        console.info("此文件上传失败：");
+                        console.info(file.name);
+                    },
+                    onComplete: function(response){           	  // 上传完成的回调方法
+                        console.info("文件上传完成");
+                        console.info(response);
+                    }
+                });
+
+            });
+
+        };
+
+        //维修单上传
+        $scope.repairOrdersfile=function(){
+            $scope.fileState="1";
+            $("#zyupload").remove();
+            $("#remove").append("<div id='zyupload' class='zyupload'></div>");
+            $(function(){
+                // 初始化插件
+                $("#zyupload").zyUpload({
+                    width            :   "900px",                 // 宽度
+                    height           :   "400px",                 // 宽度
+                    itemWidth        :   "140px",                 // 文件项的宽度
+                    itemHeight       :   "115px",                 // 文件项的高度
+                    url              :   fileUrl+"/FileService",  // 上传文件的路径
+                    fileType         :   ["jpg","png","jpeg","gif","xls","docx","xlsx","pdf","txt","doc","ppt"],// 上传文件的类型
+                    fileSize         :   51200000,                // 上传文件的大小
+                    multiple         :   true,                    // 是否可以多个文件上传
+                    dragDrop         :   true,                    // 是否可以拖动上传文件
+                    tailor           :   true,                    // 是否可以裁剪图片
+                    del              :   true,                    // 是否可以删除文件
+                    finishDel        :   false,  				  // 是否在上传文件完成后删除预览
+                    /* 外部获得的回调接口 */
+                    onSelect: function(selectFiles, allFiles){    // 选择文件的回调方法  selectFile:当前选中的文件  allFiles:还没上传的全部文件
+                        //console.info(selectFiles);
+                    },
+                    onDelete: function(file, files){
+                        //console.info(file.name);
+                    },
+                    onSuccess: function(file, response){          // 文件上传成功的回调方法
+                        //console.info("此文件上传成功：");
+                        //console.info(file.name);
+                        console.info("此文件上传到服务器地址：");
+                        filePath=response;
+                        $scope.annex.annexAddress=filePath;
+                        $scope.annex.annexName=file.name;
+                        if($scope.fileState="1"){
+                            $scope.RepairOrders.annexs.push($scope.annex);
+                        }
+                        console.info(filePath);
+                    },
+                    onFailure: function(file, response){          // 文件上传失败的回调方法
+                        //console.info("此文件上传失败：");
+                        //console.info(file.name);
+                    },
+                    onComplete: function(response){           	  // 上传完成的回调方法
+                        //console.info("文件上传完成");
+                        //console.info(response);
+                    }
+                });
+
+            });
+
+        };
+
+        //部门质检单上传
+        $scope.uploadDepartmentOrders=function(){
+            $("#zyupload").remove();
+            $("#remove").append("<div id='zyupload' class='zyupload'></div>");
+            $(function(){
+                $("#remove").html('');
+                $("#remove").append('<div id="zyupload" class="zyupload"></div>');
+                // 初始化插件
+                $("#zyupload").zyUpload({
+                    //width            :   "900px",                 // 宽度
+                    //height           :   "400px",                 // 宽度
+                    itemWidth        :   "140px",                 // 文件项的宽度
+                    itemHeight       :   "115px",                 // 文件项的高度
+                    url              :   fileUrl+"/FileService",  // 上传文件的路径
+                    fileType         :   ["jpg","png","jpeg","gif","xls","docx","xlsx","pdf","txt","doc","ppt"],// 上传文件的类型
+                    fileSize         :   51200000,                // 上传文件的大小
+                    multiple         :   true,                    // 是否可以多个文件上传
+                    dragDrop         :   true,                    // 是否可以拖动上传文件
+                    tailor           :   true,                    // 是否可以裁剪图片
+                    del              :   true,                    // 是否可以删除文件
+                    finishDel        :   false,  				  // 是否在上传文件完成后删除预览
+                    /* 外部获得的回调接口 */
+                    onSelect: function(selectFiles, allFiles){    // 选择文件的回调方法  selectFile:当前选中的文件  allFiles:还没上传的全部文件
+
+                        console.info(selectFiles);
+                    },
+                    onDelete: function(file, files){
+                        console.info(file.name);
+                    },
+                    onSuccess: function(file, response){          // 文件上传成功的回调方法
+                        console.info("此文件上传成功：");
+                        console.info(file.name);
+                        console.info("此文件上传到服务器地址：");
+
+                        filePath=response;
+
+                        $scope.annex.annexAddress=filePath;
+                        $scope.annex.annexName=file.name;
+                        $scope.DepartmentOrders.annexs.push($scope.annex);
+
+                        console.info(filePath);
+
+                    },
+                    onFailure: function(file, response){          // 文件上传失败的回调方法
+                        console.info("此文件上传失败：");
+                        console.info(file.name);
+                    },
+                    onComplete: function(response){           	  // 上传完成的回调方法
+                        console.info("文件上传完成");
+                        console.info(response);
+                    }
+                });
+
+            });
+
+        };
+
+        //$scope.showUrgeTask = function(){
+        //    $http.get(url +"/UrgeTaskRecords/getUrgeTaskRecordsbyTaskId/" + $scope.Tasks.taskId).success(function(data){
+        //        $scope.UrgeTaskRecords = data.UrgeTaskRecords;
+        //    }).error(function(){
+        //        console.log("催促任务查询失败!");
+        //    });
+        //
+        //}
+
+        $scope.UrgeTask = {page:{}};
+        $scope.UrgeTask.taskId = $stateParams.taskDetailsId;
+        var showUrgeTask = function(page,callback) {
+            $scope.UrgeTask.page=page;
+            $http.post(url + '/UrgeTaskRecords/listPageUrgeTaskRecordsRestful',{UrgeTaskRecords:$scope.UrgeTask}).success(callback);
+        };
+        $scope.searchPaginator2=app.get('Paginator').list(showUrgeTask,10);
+
+        $scope.ApplicationDelay = {page:{}};
+        $scope.ApplicationDelay.taskId = $stateParams.taskDetailsId;
+        var showApplicationDelay = function(page,callback) {
+            $scope.ApplicationDelay.page=page;
+            $http.post(url + '/ApplicationDelayRecords/listPageApplicationDelayRecordsRestful',{ApplicationDelayRecords:$scope.ApplicationDelay}).success(callback);
+        };
+        $scope.searchPaginator1=app.get('Paginator').list(showApplicationDelay,10);
+
+        //输入客户问题时改变faq检索处的值
+        $scope.Faqs = {};
+        $scope.changeFaqs = function(){
+            var item = document.getElementById("faqquestion").value;
+            $scope.Faqs = {};
+            $scope.Faqs.faqQuestionName = item;
+            console.log($scope.Faqs);
+        };
+
+        //根据客户提问查询FAQS中的数据
+        $scope.getFaqs = function(){
+            if($scope.Faqs.faqQuestionName == "" || angular.isUndefined($scope.Faqs.faqQuestionName)){
+                alert("请输入问题！");
+            }else{
+                $http.post(url + '/Faqs/getFaqsByQuestionName/' + $scope.Faqs.faqQuestionName).success(function(data){
+                    $scope.FaqsList = data.Faqs;
+                    console.log($scope.FaqsList);
+                }).error(function(data){
+                    console.log("error");
+                });
+            }
+        };
+
+        //实现FAQS单选效果并将选中的问题的faqQuestionId存入咨询单
+        $scope.addfaqType = function(id){
+            var faqidList = document.getElementsByName("faqQuestionId");
+            if(document.getElementById(id).checked == true){
+                for(var i = 0; i < faqidList.length; i ++){
+                    if(faqidList[i].id == id){
+                        document.getElementById(id).checked = true;
+                        $scope.ConsultationOrders.faqQuestionId = id;
+                        for(var j = 0; j < $scope.FaqsList.length; j ++){
+                            if(faqidList[i].id == $scope.FaqsList[j].faqQuestionId){
+                                $scope.ConsultationOrders.problemType = $scope.FaqsList[j].faqTypes.faqTypeId;
+                            }
+                        }
+                    } else{
+                        document.getElementById(faqidList[i].id).checked = false;
+                    }
+                }
+            }else{
+                $scope.ConsultationOrders.faqQuestionId = '';
+                $scope.ConsultationOrders.problemType = '';
+            }
+            console.log($scope.ConsultationOrders);
+        };
+
+        //将选中的FAQS引用进咨询单引用显示
+        $scope.addFaqToConsultationOrders = function(){
+            var faqidList = document.getElementsByName("faqQuestionId");
+            if(faqidList.length == 0){
+                alert("请先查询出FAQ后再进行引用");
+            }else{
+                var num = 0;
+                for(var i = 0; i < faqidList.length; i ++){
+                    if(document.getElementById(faqidList[i].id).checked == true){
+                        for(var j = 0; j < $scope.FaqsList.length; j ++){
+                            if(faqidList[i].id == $scope.FaqsList[j].faqQuestionId){
+                                //console.log($scope.FaqsList[j]);
+                                var showfaq = "问题编号：" + $scope.FaqsList[j].faqQuestionNum + '\n'
+                                    + "问：" + $scope.FaqsList[j].faqQuestionName + '\n'
+                                    + "答：" + $scope.FaqsList[j].faqQuestionAnswer;
+                                document.getElementById("faqId").value = showfaq;
+                            }
+                        }
+                        num ++;
+                    }
+                }
+                if(num == 0){
+                    alert("请先选择一条问题记录后再引用！");
+                }
+            }
+        };
+
+        //测试
+        $scope.test=function(){
+            var CheckOrdersService={};
+            CheckOrdersService.checkItemRecords=[{checkItemName:"tao"}];
+            $http.post(url+'/CheckOrdersService/insertCheckOrders',{CheckOrders:CheckOrdersService}).success(function(){
+                alert("新增！");
+            }).error(function(data,status,headers,config){
+                alert("新增失败！");
+            });
+        }
+
+    }]);
+});

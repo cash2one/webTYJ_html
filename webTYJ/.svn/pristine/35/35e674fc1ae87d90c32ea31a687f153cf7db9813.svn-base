@@ -1,0 +1,343 @@
+define(function (require) {
+    var app = require('../app');
+
+    app.run(['$state', '$stateParams', '$rootScope', function ($state, $stateParams, $rootScope) {
+        $rootScope.$state = $state;
+        $rootScope.$stateParams = $stateParams;
+    }]);
+
+    app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
+
+        $urlRouterProvider.otherwise('/login');
+
+        $stateProvider
+            //登录验证start
+            .state('login', {
+                url: '/login',
+                views: {
+                    '': {
+                        templateUrl: 'main/login/login.html',
+                        controllerUrl: 'main/login/login',
+                        controller:'loginCtrl',
+                        // load more controllers, services, filters, ...
+                        dependencies: ['services/PageServices']
+                    }
+                }
+            })
+            .state('index', {
+                url: '/index',
+                views: {
+                    '': {
+                        templateUrl: 'main/index.html',
+                        controllerUrl: 'main/index',
+                        controller: 'indexCtrl'
+                    },
+                    'head@index': {
+                        templateUrl: 'main/head/head.html',
+                        controllerUrl: 'main/head/head',
+                        controller: 'headCtrl'
+                    },
+                    'top@index': {
+                        templateUrl: 'main/top/top.html',
+                        controllerUrl: 'main/top/top',
+                        controller: 'topCtrl'
+                    },
+                    'left@index': {
+                        templateUrl: 'main/left/left.html',
+                        controllerUrl: 'main/left/left',
+                        controller: 'leftCtrl'
+                    },
+                    'main@index': {
+                        templateUrl: 'main/enterprise/index.html',
+                        controllerUrl: 'main/enterprise/enterprise',
+                        controller: 'entCtrl'
+                    },
+                    'down@index': {
+                        templateUrl: 'main/down.html'
+                    }
+                }
+            })
+
+            //企业信息start
+            .state('index.enterprise', {
+                url: '/enterprise',
+                views: {
+                    'main@index': {
+                        templateUrl: 'main/enterprise/index.html',
+                        controllerUrl: 'main/enterprise/enterprise',
+                        controller: 'entCtrl'
+                    }
+                }
+            })
+
+            //工作台start
+            .state('index.workBench', {
+                url: '/workBench',
+                views: {
+                    'main@index': {
+                        templateUrl: 'main/workBench/index.html',
+                        controllerUrl: 'main/workBench/workBench',
+                        controller: 'workCtrl'
+                    }
+                }
+            })
+            //工作台end
+            //我的任务start
+            .state('index.workBench.myTask', {
+                url: '/myTask',
+                views: {
+                    'main@index': {
+                        templateUrl: 'main/workBench/myTask/myTask.html',
+                        controllerUrl: 'main/workBench/myTask/myTask',
+                        controller: 'myTaskCtrl',
+                        dependencies: ['services/PageServices']
+                    }
+                }
+            })
+            .state('index.workBench.myTask.toBeProcessed', {
+                url: '/toBeProcessed',
+                templateUrl: 'main/workBench/myTask/toBeProcessed/toBeProcessed.html',
+                controllerUrl: 'main/workBench/myTask/toBeProcessed/toBeProcessed',
+                controller: 'toBeProcessedCtrl'
+            })
+            .state('index.workBench.myTask.areDealingWith', {
+                url: '/areDealingWith',
+                templateUrl: 'main/workBench/myTask/areDealingWith/areDealingWith.html',
+                controllerUrl: 'main/workBench/myTask/areDealingWith/areDealingWith',
+                controller: 'areDealingWithCtrl'
+            })
+            .state('index.workBench.myTask.historicalRecord', {
+                url: '/historicalRecord',
+                templateUrl: 'main/workBench/myTask/historicalRecord/historicalRecord.html',
+                controllerUrl: 'main/workBench/myTask/historicalRecord/historicalRecord',
+                controller: 'historicalRecordCtrl'
+            })
+            //我的任务end
+            //任务池start
+            .state('index.workBench.taskPools', {
+                url: '/taskPools',
+                views: {
+                    'main@index': {
+                        templateUrl: 'main/workBench/taskPools/taskPools.html',
+                        controllerUrl: 'main/workBench/taskPools/taskPools',
+                        controller: 'taskPoolsCtrl',
+                        dependencies: ['services/PageServices']
+                    }
+                }
+            })
+            //任务池end
+            //集中处理项管理start
+            .state('index.workBench.focusOnManagement', {
+                url: '/focusOnManagement',
+                views: {
+                    'main@index': {
+                        templateUrl: 'main/workBench/focusOnManagement/focusOnManagement.html',
+                        controllerUrl: 'main/workBench/focusOnManagement/focusOnManagement',
+                        controller: 'focusOnManagementCtrl',
+                        dependencies: ['services/PageServices']
+                    }
+                }
+            })
+            .state('index.workBench.focusOnManagement.ongoing', {
+                url: '/ongoing',
+                templateUrl: 'main/workBench/focusOnManagement/ongoing/ongoing.html',
+                controllerUrl: 'main/workBench/focusOnManagement/ongoing/ongoing',
+                controller: 'ongoingCtrl'
+            })
+            .state('index.workBench.focusOnManagement.completed', {
+                url: '/completed',
+                templateUrl: 'main/workBench/focusOnManagement/completed/completed.html',
+                controllerUrl: 'main/workBench/focusOnManagement/completed/completed',
+                controller: 'completedCtrl'
+            })
+            .state('index.workBench.focusOnManagement.newFocus', {
+                url: '/newFocusCtrl',
+                templateUrl: 'main/workBench/focusOnManagement/newFocus/newFocus.html',
+                controllerUrl: 'main/workBench/focusOnManagement/newFocus/newFocus',
+                controller: 'newFocusCtrl'
+            })
+            //集中处理项管理end
+            //专项项目管理start
+            .state('index.workBench.specialProjectManagement', {
+                url: '/specialProjectManagement',
+                views: {
+                    'main@index': {
+                        templateUrl: 'main/workBench/specialProjectManagement/specialProjectManagement.html',
+                        controllerUrl: 'main/workBench/specialProjectManagement/specialProjectManagement',
+                        controller: 'specialProjectManagementCtrl',
+                        dependencies: ['services/PageServices']
+                    }
+                }
+            })
+            .state('index.workBench.specialProjectManagement.ongoing', {
+                url: '/ongoing',
+                templateUrl: 'main/workBench/specialProjectManagement/ongoing/ongoing.html',
+                controllerUrl: 'main/workBench/specialProjectManagement/ongoing/ongoing',
+                controller: 'ongoingSpecialCtrl'
+            })
+            .state('index.workBench.specialProjectManagement.completed', {
+                url: '/completed',
+                templateUrl: 'main/workBench/specialProjectManagement/completed/completed.html',
+                controllerUrl: 'main/workBench/specialProjectManagement/completed/completed',
+                controller: 'completedSpecialCtrl'
+            })
+            .state('index.workBench.specialProjectManagement.newSpecialProject', {
+                url: '/newSpecialProject',
+                templateUrl: 'main/workBench/specialProjectManagement/newSpecialProject/newSpecialProject.html',
+                controllerUrl: 'main/workBench/specialProjectManagement/newSpecialProject/newSpecialProject',
+                controller: 'newSpecialProjectCtrl'
+            })
+            //专项项目管理end
+            //审批代办start
+            .state('index.workBench.approvalPending', {
+                url: '/approvalPending',
+                views: {
+                    'main@index': {
+                        templateUrl: 'main/workBench/approvalPending/approvalPending.html',
+                        controllerUrl: 'main/workBench/approvalPending/approvalPending',
+                        controller: 'approvalPendingCtrl',
+                        dependencies: ['services/PageServices']
+                    }
+                }
+            })
+            //审批代办end
+
+            //收款台start
+            .state('index.cashier', {
+                url: '/cashier',
+                views: {
+                    'main@index': {
+                        templateUrl: 'main/cashier/index.html',
+                        controllerUrl: 'main/cashier/cashier',
+                        controller: 'cashierCtrl'
+                    }
+                }
+            })
+            //收款台end
+            //收款台开始
+            .state('index.cashier.cashier', {
+                url: '/cashier',
+                views: {
+                    'main@index': {
+                        templateUrl: 'main/cashier/cashier/cashier.html',
+                        controllerUrl: 'main/cashier/cashier/cashier',
+                        controller: 'cashiersCtrl'
+                    }
+                }
+            })
+            .state('index.cashier.cashier.cashierUI', {
+                url: '/cashierUI',
+                templateUrl: 'main/cashier/cashier/cashierUI/cashierUI.html',
+                controllerUrl: 'main/cashier/cashier/cashierUI/cashierUI',
+                controller: 'cashierUICtrl'
+            })
+            .state('index.cashier.cashier.accountFors', {
+                url: '/accountFors',
+                templateUrl: 'main/cashier/cashier/accountFors/accountFors.html',
+                controllerUrl: 'main/cashier/cashier/accountFors/accountFors',
+                controller: 'accountForCtrl',
+                dependencies: ['services/PageServices']
+            })
+            .state('index.cashier.cashier.cashierLeader', {
+                url: '/cashierLeader',
+                templateUrl: 'main/cashier/cashier/cashierLeader/cashierLeader.html',
+                controllerUrl: 'main/cashier/cashier/cashierLeader/cashierLeader',
+                controller: 'cashierLeaderCtrl',
+                dependencies: ['services/PageServices']
+            })
+            .state('index.cashier.cashier.cashierPay', {
+                url: '/cashierPay',
+                templateUrl: 'main/cashier/cashier/cashierPay/cashierPay.html',
+                controllerUrl: 'main/cashier/cashier/cashierPay/cashierPay',
+                controller: 'cashierPayCtrl',
+                dependencies: ['services/PageServices']
+            })
+            .state('index.cashier.cashier.accounting', {
+                url: '/accounting',
+                templateUrl: 'main/cashier/cashier/accounting/accounting.html',
+                controllerUrl: 'main/cashier/cashier/accounting/accounting',
+                controller: 'accountingCtrl',
+                dependencies: ['services/PageServices']
+            })
+
+            .state('index.cashier.cashier.cashierUI.cashiers', {
+                url: '/cashiers/:custId',
+                templateUrl: 'main/cashier/cashier/cashierUI/cashiers/cashiers.html',
+                controllerUrl: 'main/cashier/cashier/cashierUI/cashiers/cashiers',
+                controller: 'cashiersCtrl'
+            })
+
+            .state('index.cashier.cashier.cashierUI.billInquiry', {
+                url: '/billInquiry',
+                templateUrl: 'main/cashier/cashier/cashierUI/billInquiry/billInquiry.html',
+                controllerUrl: 'main/cashier/cashier/cashierUI/billInquiry/billInquiry',
+                controller: 'billInquiryCtrl',
+                dependencies: ['services/PageServices']
+            })
+
+            .state('index.cashier.cashier.cashierUI.accountManagements', {
+                url: '/accountManagements',
+                templateUrl: 'main/cashier/cashier/cashierUI/accountManagements/accountManagements.html',
+                controllerUrl: 'main/cashier/cashier/cashierUI/accountManagements/accountManagements',
+                controller: 'accountManagementsCtrl',
+                dependencies: ['services/PageServices']
+            })
+
+            .state('index.cashier.cashier.cashierUI.printReceipt', {
+                url: '/printReceipt',
+                templateUrl: 'main/cashier/cashier/cashierUI/printReceipt/printReceipt.html',
+                controllerUrl: 'main/cashier/cashier/cashierUI/printReceipt/printReceipt',
+                controller: 'printReceiptCtrl'
+            })
+
+            .state('index.cashier.cashier.cashierUI.accountFor', {
+                url: '/accountFor',
+                templateUrl: 'main/cashier/cashier/cashierUI/accountFor/accountFor.html',
+                controllerUrl: 'main/cashier/cashier/cashierUI/accountFor/accountFor',
+                controller: 'accountForCtrl',
+                dependencies: ['services/PageServices']
+            })
+
+            .state('index.cashier.cashier.cashierUI.historyRecords', {
+                url: '/historyRecords',
+                templateUrl: 'main/cashier/cashier/cashierUI/historyRecords/historyRecords.html',
+                controllerUrl: 'main/cashier/cashier/cashierUI/historyRecords/historyRecords',
+                controller: 'historyRecordsCtrl',
+                dependencies: ['services/PageServices']
+            })
+
+            .state('index.cashier.cashier.cashierUI.refund', {
+                url: '/refund',
+                templateUrl: 'main/cashier/cashier/cashierUI/refund/refund.html',
+                controllerUrl: 'main/cashier/cashier/cashierUI/refund/refund',
+                controller: 'refundCtrl',
+                dependencies: ['services/PageServices']
+            })
+            //收款台结束
+            //系统报表开始
+            .state('index.cashier.systemReport', {
+                url: '/systemReport',
+                views: {
+                    'main@index': {
+                        templateUrl: 'main/cashier/systemReport/systemReport.html',
+                        controllerUrl: 'main/cashier/systemReport/systemReport',
+                        controller: 'systemReportCtrl'
+                    }
+                }
+            })
+            //系统报表结束
+
+            //商业智能start
+            .state('index.business', {
+                url: '/business',
+                views: {
+                    'main@index': {
+                        templateUrl: 'main/business/index.html',
+                        controllerUrl: 'main/business/business',
+                        controller: 'busCtrl'
+                    }
+                }
+            })
+            //商业智能end
+    }]);
+});

@@ -1,0 +1,135 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 收款台js
+ */
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../app');
+
+    app.controller('accountingCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        var url = $rootScope.url;             //IP地址
+        $scope.searchAccountRecord = {page: {}};      //分页
+        $scope.AccountRecord={};
+        $scope.show1 = true;
+        $scope.show2 = false;
+        $scope.btnIndex =1;
+        $scope.doClick = function(index){
+            $scope.btnIndex = index;
+            if($scope.btnIndex ==1){
+                $scope.show1 = true;
+                $scope.show2 = false;
+            }
+            if($scope.btnIndex ==2){
+                $scope.show1 = false;
+                $scope.show2 = true;
+            }
+        };
+        /**
+         * 分页显示
+         */
+        $scope.AccountRecord={};
+        var checkAccountRecord = function (page, callback) {
+            $scope.searchAccountRecord.staffId='4440a9a6-4be1-11e5-9e04-74d4359b657c';
+            $scope.searchAccountRecord.page=page;
+            $http.post(url + '/AccountRecord/listPageAccountRecord', {AccountRecord: $scope.searchAccountRecord}).success(callback);
+        };
+        $scope.currentMeter = app.get('Paginator').list(checkAccountRecord, 5);
+
+        //分页显示未交账记录
+        var checkAccountRecordUnFinish = function(page, callback){
+            $scope.AccountRecordUnFinish = {};
+            $scope.AccountRecordUnFinish.staffId ='4440a9a6-4be1-11e5-9e04-74d4359b657c';
+            $scope.AccountRecordUnFinish.page=page;
+            $http.post(url + '/AccountRecord/listPageAccountRecordUnFinish', {AccountRecord : $scope.AccountRecordUnFinish}).success(callback);
+        };
+        $scope.currentAccountRecord = app.get('Paginator').list(checkAccountRecordUnFinish, 5);
+
+        $scope.lookAccount=function(accountRecordId){
+            $('#and').modal({backdrop: 'static', keyboard: false});
+            $http.get(url + "/BankDeposit/getBankDepositById/"+accountRecordId).success(function(data){
+                $scope.BankDeposit = data.BankDeposit;
+            }).error(function(data,status,headers,config){
+                alert("失败!")
+            });
+        };
+
+        //判断是否选中
+        $scope.chooseDatas={chooseData:[]};
+        $scope.getData=function(data){
+            var id=data.accountRecordId;
+            var chk = document.getElementById(id);
+            $scope.data={};
+            $scope.data=data;
+            if(chk.checked == true){
+                $scope.chooseDatas.chooseData.push($scope.data);
+            }else{
+                $scope.tem=[];
+                $scope.tem=$scope.chooseDatas.chooseData;
+                $scope.chooseDatas={chooseData:[]};
+                for(var i = 0; i < $scope.temp.length; i ++){
+                    if($scope.temp[i].accountRecordId != id){
+                        $scope.chooseDatas.chooseData.push($scope.data);
+                    }
+                }
+            }
+        };
+
+        //确认收账 将状态改为   已完成
+        $scope.updateData={accountRecordList:[]};
+        $scope.updateAccountRecord=function(){
+            if($scope.chooseDatas.chooseData.length>0){
+                for(var j=0;j<$scope.chooseDatas.chooseData.length;j++){
+                    if($scope.chooseDatas.chooseData[j].accountState!=0){
+                        layer.alert('不能进行收账操作，请检查重试！！',{icon : 0});
+                        $scope.currentMeter._load();//刷新
+                        $scope.chooseDatas={chooseData:[]};
+                        return;
+                    }else{
+                        $scope.updateData={accountRecordList:[]};
+                        $scope.updateData.accountRecordList=$scope.chooseDatas.chooseData;
+                        $http.put(url+'/AccountRecord/updateAccountState',{AccountRecord:$scope.updateData}).success(function(){
+                            layer.msg("收账成功",{icon : 1,time : 2000});
+                            $scope.currentMeter._load();//刷新
+                            $scope.chooseDatas={chooseData:[]};
+                        }).error(function(data, status, headers, config){
+                            layer.msg("收账失败",{icon : 3,time : 2000});
+                        }) ;
+                    }
+                }
+            }else{
+                layer.alert('请先选择收账数据',{icon : 0});
+            }
+        };
+
+        //将未收账的账单退回
+        $scope.accountRecords={accountRecordList:[]};
+        $scope.rejection=function(){
+            if($scope.chooseDatas.chooseData.length>0){
+                for(var j=0;j<$scope.chooseDatas.chooseData.length;j++){
+                    if($scope.chooseDatas.chooseData[j].accountState!=0){
+                        layer.alert('不能进行退回操作！！',{icon : 0});
+                        $scope.searchPaginator._load();//刷新
+                        $scope.chooseDatas={chooseData:[]};
+                        return;
+                    }else{
+                        $scope.accountRecords.accountRecordList=$scope.chooseDatas.chooseData;
+                        $scope.accounta.backState=1;
+                        $http.put(url+'/AccountRecord/backAccountRecord',{AccountRecord:$scope.accountRecords}).success(function(){
+                            layer.msg("退回成功",{icon : 1,time : 2000});
+                            $scope.searchPaginator._load();//刷新
+                            $scope.chooseDatas={chooseData:[]};
+                        }).error(function(data, status, headers, config){
+
+                            layer.msg("退回失败",{icon : 3,time : 2000});
+                        }) ;
+                    }
+                }
+            }else{
+                layer.alert('请选择需要退回的数据！！',{icon : 0});
+            }
+        };
+
+    }]);
+});

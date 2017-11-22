@@ -1,0 +1,49 @@
+<!--
+    创建人:彭婷婷  创建时间：2015/06/08
+    页面名称:专业线管理
+    js路径:js/controllers/systemSettings/professionallinemanagement.js
+    修改人：倪明   修改时间:2015/9/7
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>物业模块</title>
+</head>
+<body>
+<div id="content-first">
+    <!--tab页切换开始-->
+    <div id="tab">
+        <a lang="no" class="this_action">物业模块选择</a>
+    </div>
+    <!--tab页切换结束-->
+    <!--视图加载-->
+    <div class="search-padding-10 line_a_1">
+        <h4>请选择物业模块：</h4>
+        <ul>
+            <li ng-repeat="item in specialtyList" ng-model="specialtyList" ng-show="item.specialtyId!=null" ng-class="{'this_info':btnIndex==item.specialtyId}" style="cursor: pointer" ng-click="details(item)">
+                <input type="checkbox" class="checkboxa" name="checkbox" id={{item.specialtyId}} ng-true-value="1" ng-false-value="0" ng-model="item.state"  ng-click="chazhao(item)" >
+                <span class="span1">{{item.specialtyName}}</span>
+            </li>
+            <div class="clear"></div>
+        </ul>
+    </div>
+    <div class="padding">
+        <div class="rh">
+        <div class="row padding"style="min-height: 200px">
+        <p>{{datas.specialtyDescrible}}</p>
+        </div>
+        </div>
+    </div>
+    <!--<div class="search-padding-10 text-center">-->
+        <!--<button type="button" class="btn btn-default btn-primary" ng-click="cancle()">-->
+            <!--取消-->
+        <!--</button>-->
+        <!--<button type="button" class="btn btn-default btn-primary" ng-click="insert()">-->
+            <!--提交-->
+        <!--</button>-->
+    <!--</div>-->
+    <!--视图加载结束-->
+</div>
+</body>
+</html>

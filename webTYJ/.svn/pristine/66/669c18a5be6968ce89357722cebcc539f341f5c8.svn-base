@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html ng-app="firstApp" lang="zh-CN">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>设备申购</title>
+</head>
+<body>
+<div class="container-fluid">
+
+    <div class="row padding">
+
+        <div class="clear"></div>
+        <div id="content-first">
+
+            <div class="padding">
+
+                <div class="search-padding-10">
+                    <a ng-click="shopGo()">
+                        <button class="btn btn-primary"><span class="glyphicon glyphicon-chevron-left btn_icon"></span>
+                            继续购物
+                        </button>
+                    </a>
+                    <button class="btn btn-primary" ng-click="newAdd()"><span class="glyphicon glyphicon-plus btn_icon"></span> 新建</button>
+                </div>
+
+                <div class="rh" ng-repeat="item in custAddList">
+                    <div class="row text-center">
+                        <div class="col-md-1"><input type="radio" ng-checked="$index==0?true:false" name="r1" id="{{item.id}}" ng-click="chooseCust()"></div>
+                        <div class="col-md-3">{{item.consignee}}</div>
+                        <div class="col-md-3">{{item.phone}}</div>
+                        <div class="col-md-3">{{item.distric}}</div>
+                        <div class="col-md-2 text-right">
+                            <span class="glyphicon glyphicon-edit gray" ng-click="edit(item)"></span>
+                            <span class="glyphicon glyphicon-trash gray" ng-click="deleteCust(item.id)"></span>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="rh" ng-show="markShow">
+                    <div class="row">
+                        <div class="form-horizontal clearfix">
+                            <div class="form-group sel-position col-xs-6">
+                                <label class="col-xs-3 text-right">收货人：</label>
+                                <div class="col-xs-8">
+                                    <input class="form-control" ng-model="custAdd.consignee" />
+                                </div>
+                                <div class="col-xs-1">
+                                    <span style="color:red;">*</span>
+                                </div>
+                            </div>
+                            <div class="form-group sel-position col-xs-6">
+                                <label class="col-xs-3 text-right">所在地区：</label>
+                                <div class="col-xs-8">
+                                    <input class="form-control" ng-model="custAdd.distric" />
+                                </div>
+                                <div class="col-xs-1">
+                                    <span style="color:red;">*</span>
+                                </div>
+                            </div>
+                            <div class="form-group sel-position col-xs-6">
+                                <label class="col-xs-3 text-right">详细地址：</label>
+                                <div class="col-xs-8">
+                                    <input class="form-control" ng-model="custAdd.address" />
+                                </div>
+                                <div class="col-xs-1">
+                                    <span style="color:red;">*</span>
+                                </div>
+                            </div>
+                            <div class="form-group sel-position col-xs-6">
+                                <label class="col-xs-3 text-right">手机号码：</label>
+                                <div class="col-xs-8">
+                                    <input class="form-control" ng-model="custAdd.phone" />
+                                </div>
+                                <div class="col-xs-1">
+                                    <span style="color:red;">*</span>
+                                </div>
+                            </div>
+                            <div class="form-group sel-position col-xs-6">
+                                <label class="col-xs-3 text-right">固定号码：</label>
+                                <div class="col-xs-8">
+                                    <input class="form-control" ng-model="custAdd.telPhone" />
+                                </div>
+                                <div class="col-xs-1">
+                                    <span style="color:red;">*</span>
+                                </div>
+                            </div>
+                            <div class="form-group sel-position col-xs-6">
+                                <label class="col-xs-3 text-right">邮箱：</label>
+                                <div class="col-xs-8">
+                                    <input class="form-control" ng-model="custAdd.eMail" />
+                                </div>
+                            </div>
+
+                            <div class="sel-position col-xs-6 clear">
+                                用于接收订单提醒邮件，便于及时了解订单状态
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <button type="button" class="btn btn-default">取消</button>
+                        <button type="button" c class="btn btn-primary" ng-click="saveCust()">提交</button>
+                    </div>
+
+                </div>
+
+
+            </div>
+
+            <div class="padding">
+                <div class="search-padding-10">
+                    <a ng-click="shopGo()">
+                        <button class="btn btn-primary"><span class="glyphicon glyphicon-chevron-left btn_icon"></span>
+                            继续购物
+                        </button>
+                    </a>
+                    <button class="btn btn-primary" ng-click="chooseDelete()"><span class="glyphicon glyphicon-trash btn_icon"></span> 删除选中产品
+                    </button>
+                </div>
+
+                <table>
+                    <thead>
+                    <th width="60px">
+                        <input type="checkbox" id="chooseed" ng-click="allChoose()" />
+                    </th>
+                    <th>设备名称</th>
+                    <th>设备型号</th>
+                    <th>单价</th>
+                    <th>数量</th>
+                    <th>总计</th>
+                    <th>操作</th>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="item in cartList">
+                        <td><input type="checkbox" ng-click="getChecked(item.id)" id="{{item.id}}" name="choose" /></td>
+                        <td>{{item.eqProduct.pName}}</td>
+                        <td>{{item.eqProduct.pModel}}</td>
+                        <td>￥{{item.eqProduct.price}}</td>
+                        <td>
+                            <button class="btn btn-primary" ng-click="subCartNum(item)"><span class="glyphicon glyphicon-minus btn_icon"></span>
+                            </button>
+                            <div style="display:inline-block;width:80px;">
+                                <input class="form-control date-list-input" ng-model="item.number" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" ng-change="changeCartNum(item)">
+                            </div>
+                            <button class="btn btn-primary" ng-click="addCartNum(item)"><span class="glyphicon glyphicon-plus btn_icon"></span>
+                            </button>
+                        </td>
+                        <td>￥{{item.eqProduct.price * item.number}}</td>
+                        <td><span class="glyphicon glyphicon-trash gray" ng-click="delete(item)"></span></td>
+                    </tr>
+
+
+                    </tbody>
+                </table>
+                <div class="text-right">
+                    <button class="btn btn-primary" ng-click="save()">提交</button>
+                </div>
+
+            </div>
+
+
+        </div>
+    </div>
+
+    <script>
+        $(function () {
+            var wWidth = $(window).width();
+            var wHeight = $(window).height();
+            $(".container-fluid .left").height(wHeight - 75);
+            $(".container-fluid .right").height(wHeight - 105);
+            $(".container-fluid .rightheight").height(wHeight - 105);
+        });
+    </script>
+</body>
+</html>

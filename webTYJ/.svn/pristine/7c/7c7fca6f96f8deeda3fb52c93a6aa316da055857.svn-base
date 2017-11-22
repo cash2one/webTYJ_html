@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div class="complaint_user row" style="margin: 15px auto;width: 95%"; >
+    <div class="col-md-12" style="margin-top: 50px;;margin-left: 15%;margin-bottom: 50px;">
+        <div class="col-md-8">
+            <table style="text-align:right">
+                <tr>
+                    <td>
+                        专项项目名称：
+                    </td>
+                    <td>
+                        <label>
+                            <input style="width: 200px;height: 24px">
+                        </label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>类型：</td>
+                    <td> <label>
+                        <input style="width: 200px;height: 24px">
+                    </label></td>
+                </tr>
+
+                <tr>
+                    <td>备注：</td>
+                    <td> <label>
+                        <textarea style="width: 200px"></textarea>
+                    </label></td>
+                </tr>
+                <tr>
+                    <td><button style="height: 30px;width: 60px">取消</button></td>
+                    <td><button style="height: 30px;width: 60px">确认</button></td>
+                </tr>
+            </table>
+
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

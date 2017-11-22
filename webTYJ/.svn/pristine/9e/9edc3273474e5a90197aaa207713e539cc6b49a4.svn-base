@@ -1,0 +1,631 @@
+<!--
+    author:NM
+    pageName:企业客户管理新增客户
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <title></title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="bower_components/skins/zyupload-1.0.0.min.css " type="text/css">
+    <!--<script type="text/javascript" src="bower_components/zyupload-1.0.0.min.js"></script>-->
+</head>
+<body>
+<div id="content-first">
+    <div class="row padding">
+        <div class="row search-padding-10">
+            <div class="col-lg-4">
+                <button type="button" class="btn btn-default btn-primary" ng-click="cancle()">
+                    <span class="glyphicon glyphicon-arrow-left btn_icon"></span>
+                    返回
+                </button>
+            </div>
+        </div>
+        <form id="css_form" name="mainForm" novalidate>
+            <div class="sel1">
+                <div class="row search-padding-10">
+                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                        企业名称：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        <input type="text"  class="form-control" ng-model="addEnterpriseCustomer.enterpriseName" set-Focus="" name="enterpriseName"  placeholder="请输入单位名称">
+
+                    </div>
+                    <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                        <span style="color: red">*</span>
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                        注册日期：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        <input type="date" class="form-control" ng-model="addEnterpriseCustomer.registerDate"  name="registerDate" placeholder="请输入注册日期">
+                    </div>
+                    <div class="col-lg-1 col-md-6 col-sm-6 blankSpace"></div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                        经营类型：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        <select id="select"  class="form-control"  ng-model="addEnterpriseCustomer.manageType" ng-options="c.businessTypeName as c.businessTypeName for c in manageType">
+                            <option value="">请选择</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                        <span style="color: red">*</span>
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                        企业类型：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        <select id="select1" class="form-control"   ng-model="addEnterpriseCustomer.enterpriseProperty" ng-options="c.enterprisePropertyName as c.enterprisePropertyName for c in enterpriseProperty">
+                            <option value="">请选择</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                        注册地址：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        <input type="text" class="form-control"  ng-model="addEnterpriseCustomer.address" name="address" placeholder="请输入注册地址">
+                        <!--<span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.address.$dirty && mainForm.address.$invalid">-->
+                            <!--<p class="alter" ng-show="mainForm.address.$error.required">-->
+                                <!--不能为空-->
+                            <!--</p>-->
+                            <!--<p class="alter" ng-show="mainForm.address.defined ">-->
+                                <!--正确-->
+                            <!--</p>-->
+                        <!--</span>-->
+                    </div>
+                    <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                        <span style="color: red">*</span>
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                        企业委托人：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        <span name="principal" required ng-model="addEnterpriseCustomer.principal" required >{{addEnterpriseCustomer.principal}}</span>
+                    </div>
+                    <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                        <button type="button" class="btn btn-default btn-primary tab-btn" data-toggle="modal" data-target="#persons">
+                            <span class="glyphicon glyphicon-search btn_icon"></span>
+                            查询
+                        </button>
+                    </div>
+
+                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                        法人代表：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        <span name="representative" required ng-model="addEnterpriseCustomer.representative"  placeholder="请输入法人代表">{{addEnterpriseCustomer.representative}}</span>
+                    </div>
+                    <div class="col-lg-1 col-md-3 col-sm-3">
+                        <span style="color: red">*</span>
+                    </div>
+                    <div class="col-lg-1 col-md-3 col-sm-3">
+                        <button type="button" class="btn btn-default btn-primary tab-btn"  data-toggle="modal" data-target="#person"  style="margin-left: -50px">
+                            <span class="glyphicon glyphicon-search btn_icon"></span>
+                            查询
+                        </button>
+                    </div>
+                    <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                        企业邮箱：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        <input type="email"  class="form-control" ng-model="addEnterpriseCustomer.email" name="email" placeholder="请输入邮箱">
+                    </div>
+                    <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+
+                    </div>
+
+
+                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                        企业办公电话：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        <input type="text"  class="form-control" ng-model="addEnterpriseCustomer.officePhone" name="officePhone"  placeholder="请输入企业办公电话">
+                    </div>
+                    <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                        <span style="color: red">*</span>
+                    </div>
+                    <!--<div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                        企业紧急联系人：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        <input type="text" class="form-control"  ng-model="addEnterpriseCustomer.emergencyContact" name="emergencyContact"  placeholder="请输入企业紧急联系人">
+                    </div>
+                    <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+
+                    </div>-->
+                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                        企业紧急联系人：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        <span name="principal" required ng-model="addEnterpriseCustomer.contact" required >{{addEnterpriseCustomer.contact}}</span>
+                    </div>
+                    <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                        <button type="button" class="btn btn-default btn-primary tab-btn" data-toggle="modal" data-target="#emergencyContactPerson">
+                            <span class="glyphicon glyphicon-search btn_icon"></span>
+                            查询
+                        </button>
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                        企业地址：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        <input type="text" class="form-control" ng-model="addEnterpriseCustomer.businessAddress" name="businessAddress"  placeholder="请输入企业地址">
+
+                    </div>
+                    <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                    </div>
+
+                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                        紧急联系人电话：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        <input type="text" class="form-control" ng-model="addEnterpriseCustomer.registerPhone" name="emergencyContactPhone"  placeholder="请输入企业紧急联系人电话"
+                                disabled="disabled" value="{{addEnterpriseCustomer.registerPhone}}">
+
+                    </div>
+                    <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                    </div>
+
+                </div>
+            </div>
+
+
+        </form>
+        <div id="zyupload" class="zyupload" ></div>
+
+        <div class="text-center">
+            <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="cancle()">
+                取消
+            </button>
+            <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="insertEnterpriseCustomer();">
+                提交
+            </button>
+        </div>
+    </div>
+</div>
+
+
+    <div class="modal fade" id="person" tabindex="-1" role="dialog"
+         aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width: 60%">
+            <div class="modal-content">
+                <div class="modal-header">
+
+                    <button type="button" class="close"
+                            data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                <span>
+                 查询
+                </span>
+                </div>
+                <div class="modal-body">
+                    <div class="padding">
+                        <div class="sel">
+                            <div class="row search-padding-10">
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                    姓名：
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <input class="form-control" ng-model="personCustNews.name" >
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                    联系电话：
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <input class="form-control" ng-model="personCustNews.phoneNum" >
+                                </div>
+                            </div>
+                            <div class="row search-padding-10">
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                    身份证号：
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <input class="form-control" ng-model="personCustNews.cardNum" >
+                                </div>
+                                <div class="col-lg-6 col-md-4 col-sm-4 text-right">
+                                    <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="searchPaginator._load();">
+                                        <span class="glyphicon glyphicon-search btn_icon"></span>
+                                        查询
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div  class="sel" ng-repeat="items in  searchPaginator.object.personCustNew" ng-click="getPersonBycustId(items)" ng-class="{'this_info':btnIndex==items.custId}" ng-show="items.custId!=null">
+                            <div class="col-xs-2 col-lg-2 col-md-2 text-right" ng-show="items.uploadImage!=null">
+                                <img src="{{fileUrl}}/{{items.uploadImage}}"  width="65" height="65">
+                            </div>
+                            <div class="col-xs-2 col-lg-2 col-md-2 text-right" ng-show="items.uploadImage==null">
+                                <img src="images/project/user/user_3.png" ng-click="getPersonBycustId(items)" width="65" height="65">
+                            </div>
+                            <div class="col-xs-10 col-lg-10 col-md-10">
+                                <div class="col-xs-2 col-lg-2 col-md-2 text-right">
+                                    客户姓名：
+                                </div>
+                                <div class="col-xs-2 col-lg-2 col-md-2" ng-show="items.name!=null">
+                                    {{items.name}}
+                                </div>
+                                <div class="col-xs-2 col-lg-2 col-md-2" ng-show="items.name==null">
+                                    <b>暂无数据</b>
+                                </div>
+                                <div class="col-xs-2 col-lg-2 col-md-2 text-right">
+                                    家家号：
+                                </div>
+                                <div class="col-xs-2 col-lg-2 col-md-2 " ng-show="items.jiajiaNum!=null">
+                                    {{items.jiajiaNum}}
+                                </div>
+                                <div class="col-xs-2 col-lg-2 col-md-2 " ng-show="items.jiajiaNum==null">
+                                    <b>暂无数据</b>
+                                </div>
+                                <div class="col-xs-2 col-lg-2 col-md-2 text-right" >
+                                    客户编号：
+                                </div>
+                                <div class="col-xs-2 col-lg-2 col-md-2 " ng-show="items.custCode!=null">
+                                    {{items.custCode}}
+                                </div>
+                                <div class="col-xs-2 col-lg-2 col-md-2 " ng-show="items.custCode==null">
+                                    <b>暂无数据</b>
+                                </div>
+                                <div class="col-xs-2 col-lg-2 col-md-2 text-right">
+                                    联系电话：
+                                </div>
+                                <div class="col-xs-2 col-lg-2 col-md-2" ng-show="items.phoneNum!=null">
+                                    {{items.phoneNum}}
+                                </div>
+                                <div class="col-xs-2 col-lg-2 col-md-2" ng-show="items.phoneNum==null">
+                                    <b>暂无数据</b>
+                                </div>
+
+                                <div class="col-xs-2 col-lg-2 col-md-2 text-right">
+                                    证件号码：
+                                </div>
+                                <div class="col-xs-2 col-lg-2 col-md-2" ng-show="items.cardNum!=null">
+                                    {{items.cardNum| limitTo:18}}
+                                </div>
+                                <div class="col-xs-2 col-lg-2 col-md-2" ng-show="items.cardNum==null">
+                                    <b>暂无数据</b>
+                                </div>
+                                <div class="col-xs-2 col-lg-2 col-md-2 text-right">
+                                    性别：
+                                </div>
+                                <div class="col-xs-2 col-lg-2 col-md-2 "  ng-show="items.sex!=null">
+                                     <span ng-switch on="items.sex">
+                                         <span ng-switch-when="0">男</span>
+                                         <span ng-switch-when="1">女</span>
+                                     </span>
+                                </div>
+                                <div class="col-xs-2 col-lg-2 col-md-2 "  ng-show="items.sex==null">
+                                    <b>暂无数据</b>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                        <div class="bill_paging">
+                            <span>共{{searchPaginator.object.page.totalResult}}条</span>
+                            <ul class="pagination">
+                                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-click="searchPaginator.go(1)">首页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a>
+                                </li>
+                                <li ng-class="{true:'active'}[searchPaginator.page.currentPage==i]" ng-repeat="i in searchPaginator.pages">
+                                    <a href="javascript:void(0)"  ng-click="searchPaginator.go(i)">{{i}}</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" ng-click="frameclose()" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" ng-click="frameclose1()" data-dismiss="modal">确认</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+    <div class="modal fade" id="persons" tabindex="-1" role="dialog"
+         aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width: 60%">
+            <div class="modal-content">
+                <div class="modal-header">
+
+                    <button type="button" class="close"
+                            data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                <span>
+                 查询
+                </span>
+                </div>
+                <div class="modal-body">
+                    <div class="padding">
+                        <div class="sel">
+                            <div class="row search-padding-10">
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                    姓名：
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <input class="form-control" ng-model="personCustNews.name" >
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                    联系电话：
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <input class="form-control" ng-model="personCustNews.phoneNum" >
+                                </div>
+                            </div>
+                            <div class="row search-padding-10">
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                    证件号码：
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <input class="form-control" ng-model="personCustNews.cardNum" >
+                                </div>
+                                <div class="col-lg-6 col-md-4 col-sm-4 text-right">
+                                    <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="searchPaginator._load();">
+                                        <span class="glyphicon glyphicon-search btn_icon"></span>
+                                        查询
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div  class="sel" ng-repeat="items in  searchPaginator.object.personCustNew"  ng-class="{'this_info':btnIndex==items.custId}" ng-click="getPersonBycust(items)" ng-show="items.custId!=null">
+                            <div class="col-xs-2 col-lg-2 col-md-2 text-right" ng-show="items.uploadImage!=null">
+                                <img src="{{fileUrl}}/{{items.uploadImage}}" width="65" height="65">
+                            </div>
+                            <div class="col-xs-2 col-lg-2 col-md-2 text-right" ng-show="items.uploadImage==null">
+                                <img src="images/project/user/user_3.png" ng-click="getPersonBycust(items)" width="65" height="65">
+                            </div>
+                            <div class="col-xs-10 col-lg-10 col-md-10">
+                                <div class="col-xs-2 col-lg-2 col-md-2 text-right">
+                                    客户姓名：
+                                </div>
+                                <div class="col-xs-2 col-lg-2 col-md-2" ng-show="items.name!=null">
+                                    {{items.name}}
+                                </div>
+                                <div class="col-xs-2 col-lg-2 col-md-2" ng-show="items.name==null">
+                                    <b>暂无数据</b>
+                                </div>
+                                <div class="col-xs-2 col-lg-2 col-md-2 text-right">
+                                    家家号：
+                                </div>
+                                <div class="col-xs-2 col-lg-2 col-md-2 " ng-show="items.jiajiaNum!=null">
+                                    {{items.jiajiaNum}}
+                                </div>
+                                <div class="col-xs-2 col-lg-2 col-md-2 " ng-show="items.jiajiaNum==null">
+                                    <b>暂无数据</b>
+                                </div>
+                                <div class="col-xs-2 col-lg-2 col-md-2 text-right" >
+                                    客户编号：
+                                </div>
+                                <div class="col-xs-2 col-lg-2 col-md-2 " ng-show="items.custCode!=null">
+                                    {{items.custCode}}
+                                </div>
+                                <div class="col-xs-2 col-lg-2 col-md-2 " ng-show="items.custCode==null">
+                                    <b>暂无数据</b>
+                                </div>
+                                <div class="col-xs-2 col-lg-2 col-md-2 text-right">
+                                    联系电话：
+                                </div>
+                                <div class="col-xs-2 col-lg-2 col-md-2" ng-show="items.phoneNum!=null">
+                                    {{items.phoneNum}}
+                                </div>
+                                <div class="col-xs-2 col-lg-2 col-md-2" ng-show="items.phoneNum==null">
+                                    <b>暂无数据</b>
+                                </div>
+
+                                <div class="col-xs-2 col-lg-2 col-md-2 text-right">
+                                    身份证：
+                                </div>
+                                <div class="col-xs-2 col-lg-2 col-md-2" ng-show="items.cardNum!=null">
+                                    {{items.cardNum| limitTo:18}}
+                                </div>
+                                <div class="col-xs-2 col-lg-2 col-md-2" ng-show="items.cardNum==null">
+                                    <b>暂无数据</b>
+                                </div>
+                                <div class="col-xs-2 col-lg-2 col-md-2 text-right">
+                                    性别：
+                                </div>
+                                <div class="col-xs-2 col-lg-2 col-md-2 "  ng-show="items.sex!=null">
+                                     <span ng-switch on="items.sex">
+                                         <span ng-switch-when="0">男</span>
+                                         <span ng-switch-when="1">女</span>
+                                     </span>
+                                </div>
+                                <div class="col-xs-2 col-lg-2 col-md-2 "  ng-show="items.sex==null">
+                                    <b>暂无数据</b>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                        <div class="bill_paging">
+                            <span>共{{searchPaginator.object.page.totalResult}}条</span>
+                            <ul class="pagination">
+                                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-click="searchPaginator.go(1)">首页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a>
+                                </li>
+                                <li ng-class="{true:'active'}[searchPaginator.page.currentPage==i]" ng-repeat="i in searchPaginator.pages">
+                                    <a href="javascript:void(0)"  ng-click="searchPaginator.go(i)">{{i}}</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" ng-click="frameclose()" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" ng-click="frameclose2()" data-dismiss="modal">确认</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+
+<div class="modal fade" id="emergencyContactPerson" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 60%">
+        <div class="modal-content">
+            <div class="modal-header">
+
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <span>
+                 查询
+                </span>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                    <div class="sel">
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                姓名：
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input class="form-control" ng-model="personCustNews.name" >
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                联系电话：
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input class="form-control" ng-model="personCustNews.phoneNum" >
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                身份证号：
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input class="form-control" ng-model="personCustNews.cardNum" >
+                            </div>
+                            <div class="col-lg-6 col-md-4 col-sm-4 text-right">
+                                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="searchPaginator._load();">
+                                    <span class="glyphicon glyphicon-search btn_icon"></span>
+                                    查询
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div  class="sel" ng-repeat="items in  searchPaginator.object.personCustNew" ng-click="getPersonBycustIdThree(items)" ng-class="{'this_info':btnIndex==items.custId}" ng-show="items.custId!=null">
+                        <div class="col-xs-2 col-lg-2 col-md-2 text-right" ng-show="items.uploadImage!=null">
+                            <img src="{{fileUrl}}/{{items.uploadImage}}"  width="65" height="65">
+                        </div>
+                        <div class="col-xs-2 col-lg-2 col-md-2 text-right" ng-show="items.uploadImage==null">
+                            <img src="images/project/user/user_3.png" ng-click="getPersonBycustIdThree(items)" width="65" height="65">
+                        </div>
+                        <div class="col-xs-10 col-lg-10 col-md-10">
+                            <div class="col-xs-2 col-lg-2 col-md-2 text-right">
+                                客户姓名：
+                            </div>
+                            <div class="col-xs-2 col-lg-2 col-md-2" ng-show="items.name!=null">
+                                {{items.name}}
+                            </div>
+                            <div class="col-xs-2 col-lg-2 col-md-2" ng-show="items.name==null">
+                                <b>暂无数据</b>
+                            </div>
+                            <div class="col-xs-2 col-lg-2 col-md-2 text-right">
+                                家家号：
+                            </div>
+                            <div class="col-xs-2 col-lg-2 col-md-2 " ng-show="items.jiajiaNum!=null">
+                                {{items.jiajiaNum}}
+                            </div>
+                            <div class="col-xs-2 col-lg-2 col-md-2 " ng-show="items.jiajiaNum==null">
+                                <b>暂无数据</b>
+                            </div>
+                            <div class="col-xs-2 col-lg-2 col-md-2 text-right" >
+                                客户编号：
+                            </div>
+                            <div class="col-xs-2 col-lg-2 col-md-2 " ng-show="items.custCode!=null">
+                                {{items.custCode}}
+                            </div>
+                            <div class="col-xs-2 col-lg-2 col-md-2 " ng-show="items.custCode==null">
+                                <b>暂无数据</b>
+                            </div>
+                            <div class="col-xs-2 col-lg-2 col-md-2 text-right">
+                                联系电话：
+                            </div>
+                            <div class="col-xs-2 col-lg-2 col-md-2" ng-show="items.phoneNum!=null">
+                                {{items.phoneNum}}
+                            </div>
+                            <div class="col-xs-2 col-lg-2 col-md-2" ng-show="items.phoneNum==null">
+                                <b>暂无数据</b>
+                            </div>
+
+                            <div class="col-xs-2 col-lg-2 col-md-2 text-right">
+                                证件号码：
+                            </div>
+                            <div class="col-xs-2 col-lg-2 col-md-2" ng-show="items.cardNum!=null">
+                                {{items.cardNum| limitTo:18}}
+                            </div>
+                            <div class="col-xs-2 col-lg-2 col-md-2" ng-show="items.cardNum==null">
+                                <b>暂无数据</b>
+                            </div>
+                            <div class="col-xs-2 col-lg-2 col-md-2 text-right">
+                                性别：
+                            </div>
+                            <div class="col-xs-2 col-lg-2 col-md-2 "  ng-show="items.sex!=null">
+                                     <span ng-switch on="items.sex">
+                                         <span ng-switch-when="0">男</span>
+                                         <span ng-switch-when="1">女</span>
+                                     </span>
+                            </div>
+                            <div class="col-xs-2 col-lg-2 col-md-2 "  ng-show="items.sex==null">
+                                <b>暂无数据</b>
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="bill_paging">
+                        <span>共{{searchPaginator.object.page.totalResult}}条</span>
+                        <ul class="pagination">
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-click="searchPaginator.go(1)">首页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a>
+                            </li>
+                            <li ng-class="{true:'active'}[searchPaginator.page.currentPage==i]" ng-repeat="i in searchPaginator.pages">
+                                <a href="javascript:void(0)"  ng-click="searchPaginator.go(i)">{{i}}</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                                <a href="javascript:void(0)" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                                <a href="javascript:void(0)" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" ng-click="frameclose()" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" ng-click="frameclose3()" data-dismiss="modal">确认</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+</body>
+</html>

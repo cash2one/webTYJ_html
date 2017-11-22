@@ -1,0 +1,444 @@
+<!--
+    author:NM
+    pageName:个人客户管理新增客户
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <title>个人客户管理新增客户</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="bower_components/skins/zyupload-1.0.0.min.css " type="text/css">
+    <!--<script type="text/javascript" src="bower_components/zyupload-1.0.0.min.js"></script>-->
+
+</head>
+<body>
+<div id="content-first">
+
+    <div class="padding">
+        <div class="row search-padding-10">
+            <div class="col-lg-4">
+                <button type="button" class="btn btn-default btn-primary" ng-click="cancle()">
+                    <span class="glyphicon glyphicon-arrow-left btn_icon"></span>
+                    返回
+                </button>
+            </div>
+        </div>
+        <form id="css_form" name="mainForm" novalidate>
+            <div class="sel1">
+                <div class="row search-padding-10">
+                    <div class="col-lg-12">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            姓名：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <input type="text" ng-model="personCustNew.name" name="name" set-Focus="" required placeholder="请输入姓名"  class="form-control"/>
+                        </div>
+                        <div class="col-lg-1 col-md-3 col-sm-3 blankSpace">
+                            <span style="color: red">*</span>
+                        </div>
+                        <div class="col-lg-1 col-md-3 col-sm-3">
+                            <button type="button" class="btn btn-default btn-primary tab-btn" style="margin-left: -50px" ng-click="identification()">
+                                身份证阅读器
+                            </button>
+                        </div>
+                        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                            婚姻状况：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <select ng-model="personCustNew.marrieState" ng-options="a.slaveName as a.description for a in marriedList" name="marrieState" class="form-control">
+                                <option value="">--请选择--</option>
+                            </select>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            客户性别：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <select ng-model="personCustNew.sex" ng-options="a.slaveName as a.description for a in sexList" name="sex" class="form-control">
+                                <option value="">--请选择--</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                            <span style="color: red">*</span>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            紧急联系人：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <input type="text" class="form-control" ng-model="personCustNew.urgentContactPerson" name="urgentContactPerson" required placeholder="请输入紧急联系人" />
+                        </div>
+
+                        <div class="clear"></div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            民族：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <select ng-model="personCustNew.nation" ng-options="c.name as c.name for c in nationList.nations" name="nation" class="form-control">
+                                <option value="">--请选择--</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                            &nbsp;
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            紧急联系电话：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <input type="text" class="form-control" ng-model="personCustNew.urgentContactPhone" name="urgentContactPhone"  ng-pattern="/^1[3|4|5|7|8][0-9]\d{8}$/"  placeholder="请输入紧急联系人号码"  />
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            证件类型：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <select ng-model="personCustNew.cardType" id="cardType"  ng-options="a.slaveName as a.description for a in cardTypeList" name="cardType" class="form-control" ng-change="changeData()">
+                                <option value="">--请选择--</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                            <span style="color: red">*</span>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            微信号：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <input type="text" class="form-control" ng-model="personCustNew.weixinNum" name="weixinNum" required placeholder="请输入微信号" readonly/>
+                        </div>
+                        <div class="col-lg-1 col-md-3 col-sm-3 blankSpace">
+
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            证件号码：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4" ng-show="sf">
+                            <input type="text" class="form-control" ng-model="personCustNew.cardNum" name="cardNum"   placeholder="请输入身份证号码"/>
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4" ng-show="hz">
+                            <input type="text" class="form-control" ng-model="personCustNew.cardNum" name="cardNum1"   placeholder="请输入护照号码"/>
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                            <span style="color: red">*</span>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            家家号：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <input type="text"  class="form-control" ng-model="personCustNew.jiajiaNum" name="jiajiaNum"  placeholder="请输入家家号" readonly/>
+                        </div>
+                        <div class="col-lg-1 col-md-3 col-sm-3 blankSpace">
+
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            生日：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <input type="date" ng-model="personCustNew.birthday" name="birthday" class="form-control"/>
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                            &nbsp;
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            电子邮件：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <input type="email" class="form-control" ng-model="personCustNew.email" name="email"  placeholder="请输入电子邮件"/>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            注册电话：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <input type="text" class="form-control" ng-model="personCustNew.registerPhone"  name="registerPhone"   placeholder="请输入手机号码"/>
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                            <span style="color: red">*</span>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            工作单位：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <input type="text" class="form-control" ng-model="personCustNew.workUnits" name="workUnits" required placeholder="请输入工作单位"/>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            户口所在地：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <input type="text"  class="form-control" ng-model="personCustNew.census" name="census" required placeholder="请输入户口所在地"/>
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                            &nbsp;
+                        </div>
+
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            籍贯：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <span name="principal" required ng-model="personCustNew.nativePlace" required >{{personCustNew.nativePlace}}</span>
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                            <a ng-click="addCity()"><span class="glyphicon glyphicon-plus"></span></a>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            联系电话：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <input type="text" class="form-control" ng-model="personCustNew.phoneNum" name="phoneNum"  placeholder="请输入电话号码" ng-blur="checkPhone2(personCustNew.phoneNum)"/>
+                        </div>
+                        <div class="col-lg-1 col-md-3 col-sm-3 blankSpace">
+
+                        </div>
+                        <div class="col-lg-1 col-md-3 col-sm-3 blankSpace">
+                            <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="addItem()" style="margin-left: -50px">添加联系电话</button>
+                        </div>
+                        <div class="col-lg-1 col-md-2 col-sm-2 text-right" ng-show="show1">
+                            联系电话1：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4" ng-show="show2">
+                            <input type="text" class="form-control" ng-model="personCustNew.phoneNum1" name="phoneNum1" ng-blur="checkPhone2(personCustNew.phoneNum1)"  required placeholder="请输入电话号码"/>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right" ng-show="show3">
+                            联系电话2：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4" ng-show="show4">
+                            <input type="text" class="form-control" ng-model="personCustNew.phoneNum2" name="phoneNum2" ng-blur="checkPhone2(personCustNew.phoneNum2)" required placeholder="请输入电话号码"/>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            <button class="btn btn-default btn-primary "   ng-click="instrument()">
+                                精拍仪
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div id="zyupload" class="zyupload" ></div>
+    </div>
+
+
+    <div class="text-center search-padding-10">
+        <button type="button" class="btn btn-default tab-btn" ng-click="cancle()">
+            取消
+        </button>
+        <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="insertPerson();">
+            提交
+        </button>
+    </div>
+</div>
+
+
+<div class="modal fade" id="chooseCity" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    选择省市
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="sel1">
+                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                        所在省：
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2">
+                        <select required="" class="form-control" ng-model="personCustNew.province" ng-options="key as key for (key,value) in division"
+                                ng-change="personCustNew.city='';personCustNew.district='';">
+                            <option value="">省</option>
+                        </select>
+                    </div>
+
+                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                        所在市：
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2">
+                        <select class="form-control" ng-model="personCustNew.city" ng-options="key as key for (key,value) in division[personCustNew.province]"
+                                ng-change="personCustNew.district='';">
+                            <option value="">市</option>
+                        </select>
+                    </div>
+
+                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                        所在县/区：
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2">
+                        <select class="form-control" ng-model="personCustNew.district" ng-options="value as value for value in division[personCustNew.province][personCustNew.city]">
+                            <option value="">区</option>
+                        </select>
+                    </div>
+
+                    <div class="clear"></div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" ng-click="cancleCity()">取消</button>
+                <button class="btn btn-primary" ng-click="saveCity()">提交</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
+<div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" class="modal fade" bs-popup="" ng-model="test"
+     id="choosePerson" >
+    <div class="modal-dialog"  style="width:855px;">
+        <div class="modal-content">
+            <div class="modal-header alert-info">
+                <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
+                <h4 id="myModalLabel" class="modal-title">紧急联系人</h4>
+            </div>
+
+            <div class="modal-body" style="width: 850px;">
+                <div style="margin-top: 5px;margin-bottom: 5px;">
+                <div class="col-lg-3 col-md-4 col-sm-4 text-right">
+                    客户姓名 :
+                </div>
+                <div class="col-lg-3 col-md-2 col-sm-5">
+                    <input type="text" class="form-control" id="personName" ng-model="personCustNews.name" set-Focus="" required  placeholder="请输入客户姓名">
+                </div>
+
+                <div class="col-lg-2 col-md-2 col-sm-3 ">
+                    <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="searchPaginator._load()">
+                        <span class="glyphicon glyphicon-search btn_icon"></span>
+                        查询
+                    </button>
+
+                </div>
+                </div>
+                <table ng-show="showStatus==1">  <!-- 列表的显示与隐藏 songjia 2016-02-05 start -->
+                    <thead>
+                    <tr>
+                        <th width="50px"></th>
+                        <th>客户编号</th>
+                        <th>客户姓名</th>
+                        <th>性别</th>
+                        <th>证件类型</th>
+                        <th>证件号码</th>
+                        <th>注册电话</th>
+                        <th>紧急联系人</th>
+                        <th>紧急联系电话</th>
+                        <th>VIP客户</th>
+                        <th>重点客户</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr  id="bbb" style="cursor:pointer;" ng-repeat="items in  searchPaginator.object.personCustNew"  ng-show="items.custId!=null"  ng-dblclick="show(items)" ng-class="{'this_info':btnIndex==items.custId}">
+                        <td><input type="checkbox" name="aaa" value="{{items.custCode}},{{items.name}},{{items.registerPhone}}" onclick="check(this)" ng-click="getdata(items)"></td>
+                        <td>{{items.custCode}}</td>
+                        <td >{{items.name}}</td>
+                        <td>
+                            <span ng-switch on="items.sex">
+                                <span ng-switch-when="0">男</span>
+                                <span ng-switch-when="1">女</span>
+                            </span>
+                        <td>
+                        <span ng-switch on="items.cardType">
+                        <span ng-switch-when="0">身份证</span>
+                        <span ng-switch-when="1">护照</span>
+                        </span>
+                        </td>
+                        <td >{{items.cardNum| limitTo:18 }}</td>
+                        <td>{{items.registerPhone}}</td>
+                        <td>{{items.urgentContactPerson}}</td>
+                        <td>{{items.urgentContactPhone}}</td>
+                        <td >
+                        <span ng-show="items.applystype1!=null||items.applystype==null">
+                           <span>×</span>
+                        </span>
+                         <span ng-show="items.applystype!=null&&items.applystype1==null" ng-switch on ="items.reviewState">
+                            <span ng-switch-when="0">×</span>
+                            <span ng-switch-when="1">√</span>
+                            <span ng-switch-when="2">×</span>
+                        </span>
+                        </td>
+                        <td >
+                        <span ng-show="items.applystype1!=null && items.reviewState==1" ng-switch on ="items.applystatus">
+                           <span ng-switch-when="0">×</span>
+                            <span ng-switch-when="1">√</span>
+                            <span ng-switch-when="2">×</span>
+                        </span>
+                        <span ng-show="items.applystype1!=null&&items.applystype==null" ng-switch on ="items.applystatus">
+                            <span ng-switch-when="0">×</span>
+                            <span ng-switch-when="1">√</span>
+                            <span ng-switch-when="2">×</span>
+                        </span>
+                        <span ng-show="items.applystype1==null">
+                            <span >×</span>
+                        </span>
+                        </td>
+                    </tr>
+                    <tr ng-if="searchPaginator.object.personCustNew.length == null">
+                        <td colspan="12">,<a onclick="addPerson();">没有客户是否现在添加</a></td>
+                    </tr>
+                    </tbody>
+                </table>   <!-- 列表的显示与隐藏 songjia 2016-02-05 end -->
+                <div align="right">
+
+                        <ul class="pagination">
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-click="searchPaginator.go(1)">首页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a>
+                            </li>
+                            <li ng-class="{true:'active'}[searchPaginator.page.currentPage==i]" ng-repeat="i in searchPaginator.pages">
+                                <a href="javascript:void(0)"  ng-click="searchPaginator.go(i)">{{i}}</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                                <a href="javascript:void(0)" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                                <a href="javascript:void(0)" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a>
+                            </li>
+                            <li>
+                                <span>共{{searchPaginator.object.page.totalResult}}条</span>
+                            </li>
+                        </ul>
+                    <div  align="center" style="margin-bottom: 5px;">
+                        <button type="button" class="btn btn-default" ng-click="canclePerson()">取消</button>
+                        <button class="btn btn-primary" ng-click="selectPerson()">提交</button>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+
+</div>
+
+
+
+</body>
+</html>

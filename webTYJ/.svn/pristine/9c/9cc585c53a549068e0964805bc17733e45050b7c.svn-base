@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div class="sel_top">
+    <div class="row">
+        <div class="col-lg-9 col-md-9 col-sm-6">
+            <button type="button" class="btn btn-default btn-primary" >
+                <span class="glyphicon glyphicon-log-out btn_icon"></span>
+                导出
+            </button>
+        </div>
+        <div class="col-lg-2 col-md-2 col-sm-4"><input class="form-control"></div>
+        <div class="col-lg-1 col-md-1 col-sm-2">
+            <button type="button" class="btn btn-default btn-primary" >
+                <span class="glyphicon glyphicon-search btn_icon"></span>
+                查询
+            </button>
+        </div>
+    </div>
+
+</div>
+<div class="row padding">
+    <div class="col-lg-12">
+        <table>
+            <thead>
+            <th width="50px"></th>
+            <th>序号</th>
+            <th>水表编号</th>
+            <th>水表描述</th>
+            <th>{{month-1}}月份读数</th>
+            <th>{{month-1}}月份修正量</th>
+            <th>{{month}}月份读数</th>
+            <th>{{month}}月份修正量</th>
+            <th>{{month-1}}月与{{month}}月用量差</th>
+            <th>{{month}}月份同比</th>
+            <th>{{month}}月份环比</th>
+            <th>去年{{month}}月份读数</th>
+            <th>去年{{month}}月份用量</th>
+            </thead>
+            <tbody>
+            <tr>
+                <td><input type="checkbox"></td>
+                <td>{{}}</td>
+                <td>{{}}</td>
+                <td>{{}}</td>
+                <td>{{}}</td>
+                <td>{{}}</td>
+                <td>{{}}</td>
+                <td>{{}}</td>
+                <td>{{}}</td>
+                <td>{{}}</td>
+                <td>{{}}</td>
+                <td>{{}}</td>
+                <td>{{}}</td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="bill_paging">
+            <ul class="pagination">
+                <li><a style="cursor:pointer;" ng-click="waterChecks.go(1)">首页</a></li>
+                <li><a style="cursor:pointer;" ng-show="waterChecks.hasPrevious()" ng-click="waterChecks.previous()">上一页</a></li>
+                <li><a style="cursor:pointer;" ng-repeat="i in waterChecks.pages"  ng-click="waterChecks.go(i)">{{i}}</a></li>
+                <li><a style="cursor:pointer;" ng-show="waterChecks.hasNext()" ng-click="waterChecks.next()">下一页</a></li>
+                <li><a style="cursor:pointer;" ng-click="waterChecks.go(waterChecks.page.totalPage)">尾页</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+</body>
+</html>

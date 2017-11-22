@@ -1,0 +1,168 @@
+<!--author:王志刚-->
+<!--页面名称：物业服务装修现场核查流程-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>现场核查</title>
+</head>
+<body>
+<div class="row">
+<div class="complaint_user">
+<div class="complaint_user_list check_box"data-toggle="tab" href="#">
+
+       <div class="text_top">
+           <span>等待核查任务完成</span>
+          </div>
+
+</div>
+         <div class="complaint_user_list check_box" data-toggle="tab" href="#">
+         <div class="text_top">
+          <a data-target="#addProject"  data-toggle="modal" style="cursor:pointer">填写核查结果</a>
+          </div>
+    </div>
+</div>
+</div>
+<!--填写结果模态框-->
+<div class="modal fade" id="addProject" role="dialog" aria-label="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 700px">
+        <div class="modal-content">
+            <div class="modal-header" style="height: 50px">
+                填写结果
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-lg-12 col-md-12 col-sm-6">
+                        <div class="row form_list_three clear ">
+                            <ul>
+                                <li>
+                                    <span class="text_mid">工单号：29887654</span>
+                                    <div class="clear"></div>
+                                </li>
+                                <li>
+                                    <span>负责人：脑残</span>
+                                    <div class="clear"></div>
+                                </li>
+                                <li>
+                                    <span>预约时间：2015/5/5</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="table">
+                            <table width="100%">
+                                <tr class="table_nav">
+                                    <td>核查编号</td>
+                                    <td>核查事项</td>
+                                    <td>核查结果</td>
+                                </tr>
+                                <tr>
+                                    <td>001</td>
+                                    <td>
+                                        <div class="col-md-4">
+                                            <span>拆墙面积：</span>
+                                        </div>
+                                        <div class="col-md-8">
+                                        <input>
+                                        </div>
+                                    </td>
+                                    <td><input></td>
+                                </tr>
+                                <tr>
+                                    <td>002</td>
+                                    <td>
+                                        <div class="col-md-4">
+                                            <span>拆墙面积：</span>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <input>
+                                        </div>
+                                    </td>
+                                    <td><input></td>
+                                </tr>
+                            </table>
+                        </div>
+                            <button>上传修改图纸</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="save_concel_botton" style="float:right">
+                    <a href="" class="radius_all button_bule" data-target="#addProjectOne"  data-toggle="modal" style="cursor:pointer">确定</a>
+                    <a href="" class="radius_all button_bule">取消</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--填写结果模态框结束-->
+<!--填写结果确定模态框-->
+<div class="modal fade" id="addProjectOne" role="dialog" aria-label="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 700px">
+        <div class="modal-content">
+            <div class="modal-header" style="height: 50px">
+                结果
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-lg-12 col-md-12 col-sm-6">
+                        <div class="row form_list_three clear ">
+                            <ul>
+                                <li>
+                                    <span class="text_mid">工单号：29887654</span>
+                                    <div class="clear"></div>
+                                </li>
+                                <li>
+                                    <span>负责人：脑残</span>
+                                    <div class="clear"></div>
+                                </li>
+                                <li>
+                                    <span>预约时间：2015/5/5</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="table">
+                            <table width="100%">
+                                <tr class="table_nav">
+                                    <td>核查编号</td>
+                                    <td>核查事项</td>
+                                    <td>核查结果</td>
+                                </tr>
+                                <tr>
+                                    <td>001</td>
+                                    <td>
+                                     <span>拆墙面积：1m</span>
+                                    </td>
+                                    <td><span>正常</span></td>
+                                </tr>
+                                <tr>
+                                    <td>002</td>
+                                    <td>
+                                     <span>拆墙面积：5</span>
+                                    </td>
+                                    <td><span>正常</span></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <span>上传修改图纸</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="save_concel_botton" style="float:right">
+                    <a href="" class="radius_all button_bule">上一步</a>
+                    <a href="" class="radius_all button_bule">取消</a>
+                    <a href="" class="radius_all button_bule">下一步</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--填写结果确定模态框结束-->
+</body>
+</html>

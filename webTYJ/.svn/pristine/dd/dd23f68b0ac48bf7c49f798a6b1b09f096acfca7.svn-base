@@ -1,0 +1,166 @@
+<!--
+    创建人：彭婷婷
+    创建时间：2015-10-10
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>退款</title>
+    <script>
+        function check(obj) {
+            $(':checkbox').each(function () {
+                if (this != obj)
+                    $(this).attr("checked", false);
+                else {
+                    if ($(this).prop("checked")){
+                        $(this).attr("checked", true);
+                    }
+                    else
+                        $(this).attr("checked", false);
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+<div class="sel">
+    <div class="row search-padding-10">
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            支付编号
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-4">
+            <input type="text" class="form-control"  ng-model="searchBill.billId">
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            账单编号
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-4">
+            <input type="text" class="form-control" ng-model="searchBill.billNum">
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-6">
+            <button type="button" class="btn btn-default btn-primary tab-btn"  ng-click="currentMeter._load()">
+                <span class="glyphicon glyphicon-search btn_icon"></span>
+                搜索
+            </button>
+        </div>
+        <div class="col-lg-12">
+            <div class="search-padding-10" style="float: left" ng-show="showStatus==1">
+                <button type="button" class="btn btn-default btn-primary" ng-click="refundMoney()">退款</button>
+                <button type="button" class="btn btn-default btn-primary" ng-click="Impact()">冲正</button>
+            </div>
+            <div class="search-padding-10" style="float: right">
+                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="listview()">
+                    <span class="glyphicon glyphicon-th-list btn_icon"></span>
+                    列表
+                </button>
+                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="tabview()">
+                    <span class="glyphicon glyphicon-th-large btn_icon"></span>
+                    网格
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row padding">
+    <div class="col-lg-12">
+
+        <table  ng-show="showStatus==1">
+            <thead>
+            <tr>
+                <th></th>
+                <th>账单编号</th>
+                <th>收费项目</th>
+                <th>收费对象</th>
+                <th>金额</th>
+                <th>状态</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="items in currentMeter.object.bills" ng-show="items.billId!=null">
+                <td><input type="checkbox" name="aaa" ng-click="getdata(items)" onclick="check(this)"></td>
+                <td>{{items.billNum}}</td>
+                <td>{{items.chargeItemName}}</td>
+                <td>{{items.fullName}}</td>
+                <td>{{items.collectSum}}</td>
+                <td ng-switch on="items.billState">
+                    <span ng-switch-when="0">未抵消</span>
+                    <span ng-switch-when="1">已抵消</span>
+                    <span ng-switch-when="2">已取消</span>
+                </td>
+            </tr>
+
+            </tbody>
+        </table>
+        <!-- 网格的显示与隐藏 陈秋旭 2016-03-21 start -->
+        <div class="search-padding-10"  ng-show="showStatus==0">
+            <div class="col-lg-4 col-md-6 col-sm-6" ng-repeat="items in currentMeter.object.bills" ng-show="items.billId!=null">
+                <div id="pannel">
+                    <div class="title">
+                        <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                            <h3 class="text-left">账单编号</h3>
+                        </div>
+                        <div class="col-xs-5 col-lg-5 col-md-6 col-sm-5 text-right">
+                            {{items.billNum}}
+                        </div>
+                        <div class="downList">
+                            <div class="col-xs-12 col-lg-12 col-md-12 col-sm-12 text-right">
+                                <span class="glyphicon glyphicon-chevron-down" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                    <li><a style="cursor: pointer" ng-click="refundMoneyDiv(items);"> 退款</a></li>
+                                    <li><a style="cursor: pointer" ng-click="ImpactDiv(items);"> 冲正</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pannel_content">
+                        <div class="row"  ng-dblclick="show(items)">
+                            <div class="col-xs-12 col-lg-12 col-md-12">
+                                <div class="row search-padding">
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <div class="col-lg-6 col-md-6 col-sm-6 text-right">收费项目：</div>
+                                        <div class="col-lg-6 col-md-6 col-sm-6">{{items.chargeItemName}}</div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <div class="col-lg-6 col-md-6 col-sm-6 text-right">收费对象：</div>
+                                        <div class="col-lg-6 col-md-6 col-sm-6">
+                                            {{items.fullName}}
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <div class="col-lg-6 col-md-6 col-sm-6 text-right">金额：</div>
+                                        <div class="col-lg-6 col-md-6 col-sm-6 ">
+                                            {{items.collectSum}}
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <div class="col-lg-6 col-md-6 col-sm-6 text-right">状态：</div>
+                                        <div class="col-lg-6 col-md-6 col-sm-6 ">
+                                            <span ng-show="items.billState!=null" ng-switch on ="items.billState">
+                                                <span ng-switch-when="0">未抵消</span>
+                                                <span ng-switch-when="1">已抵消</span>
+                                                <span ng-switch-when="2">已取消</span>
+                                          </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="bill_paging">
+        <ul class="pagination">
+            <li ng-class="{true:'disabled'}[currentMeter.page.currentPage==1]"><a href="javascript:void(0)" ng-click="currentMeter.go(1)">首页</a></li>
+            <li ng-class="{true:'disabled'}[currentMeter.page.currentPage==1]"><a href="javascript:void(0)" ng-show="currentMeter.hasPrevious()" ng-click="currentMeter.previous()">上一页</a></li>
+            <li ng-class="{true:'active'}[currentMeter.page.currentPage==i]" ng-repeat="i in currentMeter.pages" ><a href="javascript:void(0)" on-show="currentMeter.go(i)"  ng-click="currentMeter.go(i)">{{i}}</a></li>
+            <li ng-class="{true:'disabled'}[currentMeter.page.currentPage==currentMeter.page.totalPage]"><a href="javascript:void(0)" ng-show="currentMeter.hasNext()" ng-click="currentMeter.next()">下一页</a></li>
+            <li ng-class="{true:'disabled'}[currentMeter.page.currentPage==currentMeter.page.totalPage]"><a href="javascript:void(0)" ng-click="currentMeter.go(currentMeter.page.totalPage)">尾页</a></li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>

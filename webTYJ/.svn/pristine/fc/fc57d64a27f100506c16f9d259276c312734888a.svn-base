@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>物业管理</title>
+   </head>
+<body>
+<div>
+    <div class="sel_top">
+        <div class="row">
+            <div class="col-lg-8 col-md-6 col-sm-6">
+                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="allChecked()">
+                    <span class="glyphicon glyphicon-check btn_icon"></span>
+                    全选
+                </button>
+                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="allClose()">
+                    <span class="glyphicon glyphicon-ban-circle btn_icon"></span>
+                    失效
+                </button>
+                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="allFinish()">
+                    <span class="glyphicon glyphicon-ok btn_icon"></span>
+                    完成
+                </button>
+                <button type="button" class="btn btn-default btn-primary tab-btn"  ng-click="addImportantEvent()">
+                    <span class="glyphicon glyphicon-plus btn_icon"></span>
+                    新建重大事项
+                </button>
+            </div>
+
+        </div>
+    </div>
+    <div class="row padding"  >
+        <div class="col-lg-12">
+            <div class="contract_panner"  ng-repeat="titles in importantEvent">
+                <div class="contract_detail_nav">
+                    <a>{{titles.eventTypeName}}</a>
+                    <div class="clear"></div>
+                </div>
+                <div class="row rightpadding" >
+                    <div class="col-lg-4 col-md-6 col-sm-6" ng-repeat="ser in currentServiceRequest.object.serviceRequests" ng-show="ser.serviceRequestId!=null" ng-if="ser.importantEventTypeId==titles.eventTypeId">
+                        <div id="pannel">
+                            <div class="title" ng-class="{'title1':btnIndex==ser.eventTypeId}">
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                    <h3>{{ser.serviceRequestName}}</h3>
+                                </div>
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                        <span class="glyphicon glyphicon-chevron-down" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                        </span>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1" ng-click="getService(ser)">
+                                        <li ng-show="ser.serviceRequestState=2"><a data-target="#serviceFinish1" data-toggle="modal">完成</a></li>
+                                        <li ng-show="ser.serviceRequestState=2"><a data-target="#serviceClosed1" data-toggle="modal">失效</a></li>
+                                    </ul>
+                                </div>
+
+                            </div>
+                            <div class="pannel_content" style="cursor: pointer" ng-click="selectTasks(ser)">
+                                <div class="dot">
+                                    <div class="clear"></div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <img style="width: 80px;height: 80px" src="images/img/img_02.png">
+                                </div>
+                                <div class="col-lg-8 col-md-8 col-sm-8">
+                                    <ul>
+                                        <li>事项名称：{{ser.serviceRequestName}}</li>
+                                        <li ng-switch on="ser.serviceRequestState">
+                                            类型：
+                                            <span ng-switch-when="0">园林</span>
+                                            <span ng-switch-when="1">维修</span>
+                                            <span ng-switch-when="2">护管</span>
+                                            <span ng-switch-when="9">赔偿给业主</span>
+                                            <span ng-switch-when="10">向业主索赔</span>
+                                            <span ng-switch-when="11">清洁</span>
+                                            <span ng-switch-when="12">回访</span>
+                                            <span ng-switch-when="13">投诉</span>
+                                            <span ng-switch-when="14">验房</span>
+                                            <span ng-switch-when="15">咨询</span>
+                                            <span ng-switch-when="16">抄水表</span>
+                                            <span ng-switch-when="17">抄电表</span>
+                                        </li>
+                                        <li ng-switch on="ser.serviceRequestState">
+                                            状态：
+                                            <span ng-switch-when="0">失效</span>
+                                            <span ng-switch-when="1">启用</span>
+                                            <span ng-switch-when="2">处理中</span>
+                                            <span ng-switch-when="3">完成</span>
+                                        </li>
+                                        <li>创建时间：{{ser.requestTime}}</li>
+                                        <li>备注：{{ser.remarks}}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="padding">
+                <div class="bill_paging" id="bill_paging">
+                    <span>共{{currentServiceRequest.object.page.totalResult}}条</span>
+                    <ul class="pagination">
+                        <li ng-class="{true:'disabled'}[currentServiceRequest.page.currentPage==1]">
+                            <a href="javascript:void(0)" ng-click="currentServiceRequest.go(1)">首页</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[currentServiceRequest.page.currentPage==1]">
+                            <a href="javascript:void(0)" ng-show="currentServiceRequest.hasPrevious()" ng-click="currentServiceRequest.previous()">上一页</a>
+                        </li>
+                        <li ng-class="{true:'active'}[currentServiceRequest.page.currentPage==i]" ng-repeat="i in currentServiceRequest.pages">
+                            <a href="javascript:void(0)"  ng-click="currentServiceRequest.go(i)">{{i}}</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[currentServiceRequest.page.currentPage==currentServiceRequest.page.totalPage]">
+                            <a href="javascript:void(0)" ng-show="currentServiceRequest.hasNext()" ng-click="currentServiceRequest.next()">下一页</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[currentServiceRequest.page.currentPage==currentServiceRequest.page.totalPage]">
+                            <a href="javascript:void(0)" ng-click="currentServiceRequest.go(currentServiceRequest.page.totalPage)">尾页</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+        <!--右侧正文内容 END-->
+        <!--失效模态框-->
+        <div class="modal fade" id="new1" role="dialog" aria-label="personDatil" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <span>失效</span>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div style="padding: 30px">
+                            <div class="row">
+                                <div class="col-lg-3 col-md-3 col-sm-3"></div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">
+                                    失效原因
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <textarea class="form-control" style="width:500px" cols="3" placeholder="请输入内容" ng-model="important.changeRemarks"></textarea>
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-sm-3"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal" >取消</button>
+                        <button type="button" class="btn bg-primary" data-dismiss="modal" ng-click="updateClosed()">保存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--失效模态框 END-->
+        <!--新建模态框-->
+        <div class="modal fade" id="new" role="dialog" aria-label="personDatil" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <span>新建</span>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="css_form" name="mainForm" novalidate>
+                            <div class="sel1">
+                            <div class="row search-padding-10">
+                                <div class="col-lg-3 col-md-3 col-sm-3 text-right">
+                                    重大事项类型：
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-sm-3">
+                                    <select class="form-control" ng-model="serviceRequest.importantEventTypeId" required name="importantEventTypeId" ng-options="a.eventTypeId as a.eventTypeName for a in importantEvent" >
+                                        <option value="" >请选择</option>
+                                    </select>
+                                    <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.importantEventTypeId.$dirty && mainForm.importantEventTypeId.$invalid">
+                                        <p class="alter" ng-show="mainForm.importantEventTypeId.$error.required">
+                                            不能为空
+                                        </p>
+                                        <p class="alter" ng-show="mainForm.importantEventTypeId.defined ">
+                                            正确
+                                        </p>
+                                    </span>
+                                </div>
+
+                                <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                                    <span style="color: red">*</span>
+                                </div>
+                            </div>
+                            <div class="row search-padding-10">
+                                <div class="col-lg-3 col-md-3 col-sm-3 text-right">
+                                    重大事项名称：
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-sm-3">
+                                    <input class="form-control" placeholder="重大事项名称" name="serviceRequestName" required ng-model="serviceRequest.serviceRequestName"/>
+                                    <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.serviceRequestName.$dirty && mainForm.serviceRequestName.$invalid">
+                                        <p class="alter" ng-show="mainForm.serviceRequestName.$error.required">
+                                            不能为空
+                                        </p>
+                                        <p class="alter" ng-show="mainForm.serviceRequestName.defined ">
+                                            正确
+                                        </p>
+                                    </span>
+                                </div>
+
+                                <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                                    <span style="color: red">*</span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-3 col-md-3 col-sm-3 text-right">
+                                    重大事项描述：
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-sm-3">
+                                    <textarea class="form-control" placeholder="请输入内容" rows="3" required name="remarks" ng-model="serviceRequest.remarks"></textarea>
+                                      <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.remarks.$dirty && mainForm.remarks.$invalid">
+                                    <p class="alter" ng-show="mainForm.remarks.$error.required">
+                                        不能为空
+                                    </p>
+                                    <p class="alter" ng-show="mainForm.remarks.defined ">
+                                        正确
+                                    </p>
+                                    </span>
+                                </div>
+                                <div class="col-lg-1 col-md-6 col-sm-6 ">
+                                    <span style="color: red">*</span>
+                                </div>
+                            </div>
+
+                        </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" ng-click="cancleImprotant()">取消</button>
+                        <button type="button" class="btn bg-primary" ng-click="saveImprotant()">保存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--查看模态框-->
+        <div class="modal fade" id="show" role="dialog" aria-label="personDatil" aria-hidden="true">
+             <div class="modal-dialog">
+             <div class="modal-content">
+            <div class="modal-header">
+                <span>新建</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div style="padding: 30px">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            重大事项类型
+                        </div>
+                        <div class="col-lg-9 col-md-9 col-sm-9">
+                            <li ng-switch on="datas.serviceRequestState">
+                               <span ng-switch-when="0">园林</span>
+                                <span ng-switch-when="1">维修</span>
+                                <span ng-switch-when="2">护管</span>
+                                <span ng-switch-when="9">赔偿给业主</span>
+                                <span ng-switch-when="10">向业主索赔</span>
+                                <span ng-switch-when="11">清洁</span>
+                                <span ng-switch-when="12">回访</span>
+                                <span ng-switch-when="13">投诉</span>
+                                <span ng-switch-when="14">验房</span>
+                                <span ng-switch-when="15">咨询</span>
+                                <span ng-switch-when="16">抄水表</span>
+                                <span ng-switch-when="17">抄电表</span>
+                            </li>
+                        </div>
+
+
+                        <li ng-switch on="ser.serviceRequestState">
+                            状态：
+                            <span ng-switch-when="0">失效</span>
+                            <span ng-switch-when="1">启用</span>
+                            <span ng-switch-when="2">处理中</span>
+                            <span ng-switch-when="3">完成</span>
+                        </li>
+
+
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            重大事项名称
+                        </div>
+                        <div class="col-lg-9 col-md-9 col-sm-9">
+                            {{datas.serviceRequestName}}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            创建时间
+                        </div>
+                        <div class="col-lg-9 col-md-9 col-sm-9">
+                            {{datas.requestTime}}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            重大事项描述
+                        </div>
+                        <div class="col-lg-9 col-md-9 col-sm-9">
+                           {{datas.remarks}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn bg-primary" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+        </div>
+
+
+</div>
+
+<!--服务请求关闭-->
+<div class="modal fade" id="serviceClosed1" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <span>
+                    服务请求失效
+                </span>
+            </div>
+            <div class="modal-body">
+                <div class="sel1">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-12 col-md-2 col-sm-2">
+                            失效原因：
+                        </div>
+                        <div class="col-lg-12 col-md-4 col-sm-4">
+                            <textarea class="text_min" placeholder="请输入内容" ng-model="journal.remarks"></textarea>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button class="btn bg-primary" data-dismiss="modal"   ng-click="serviceClosed()">提交</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!--服务请求完成-->
+<div class="modal fade" id="serviceFinish1" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    服务请求完成
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="sel1">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-12 col-md-2 col-sm-2">
+                            备注：
+                        </div>
+                        <div class="col-lg-12 col-md-4 col-sm-4">
+                            <textarea class="text_min"  placeholder="请输入内容" ng-model="journal.remarks"></textarea>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button class="btn bg-primary" data-dismiss="modal"  ng-click="serviceFinish()">提交</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
+</body>
+</html>

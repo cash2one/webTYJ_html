@@ -1,0 +1,332 @@
+/**
+ * Created by NM on 2016/1/22.
+ * 企业客户管理js
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../app');
+    app.directive('setFocus', function(){
+        return function(scope, element){
+            element[0].focus();
+        };
+    });
+    app.controller('enterpriseCustomerAddCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+        var companyId ;
+        var user = {employId : ''};                                             //设置默认用户信息为空
+        var userCook = JSON.parse(sessionStorage.getItem("USER_LOGIN"));   //从cook中获取用户信息
+        $scope.user = userCook?userCook:user;                      //三目运算获取用户信息
+        companyId= $scope.user.companyId;
+
+
+        var url = $rootScope.url;
+        $scope.addEnterpriseCustomer={annexs:[],personCustNew:{}};
+        $scope.addEnterpriseCustomer.companyId=companyId;
+        var fileUrl=$rootScope.fileUrl;    //上传的文件路径
+        var filePath='';          //上传文件的路径
+        $scope.doClick(1);
+        /**
+         * 经营类型
+         * @type {Array}
+         */
+        $scope.manageType=[
+            {businessTypeId:'1',businessTypeName:'餐饮类'},
+            {businessTypeId:'2',businessTypeName:'零售类'},
+            {businessTypeId:'3',businessTypeName:'服务类'},
+            {businessTypeId:'4',businessTypeName:'娱乐类'}
+        ];
+        /**
+         * 企业类型（企业属性）
+         * @type{Array}
+         */
+        $scope.enterpriseProperty=[
+            {enterprisePropertyId:'1',enterprisePropertyName:'个人独资'},
+            {enterprisePropertyId:'2',enterprisePropertyName:'合资企业'},
+            {enterprisePropertyId:'3',enterprisePropertyName:'公司'}
+        ];
+
+
+        /**
+         * 文件上传
+         * @type {Array}
+         */
+        $scope.addEnterpriseCustomer.annexs=[];    //上传
+        $scope.annex={
+            annexAddress:'',
+            annexName:''
+        };
+
+        //附件上传
+        $(function(){
+            // 初始化插件
+            $("#zyupload").zyUpload({
+                width            :   "900px",                 // 宽度
+                height           :   "auto",                 // 宽度
+                itemWidth        :   "140px",                 // 文件项的宽度
+                itemHeight       :   "115px",                 // 文件项的高度
+                url              :   fileUrl+"/FileService",  // 上传文件的路径
+                fileType         :   ["jpg","png","jpeg","gif","xls","docx","xlsx","pdf","txt","doc","ppt"],// 上传文件的类型
+                fileSize         :   51200000,                // 上传文件的大小
+                multiple         :   true,                    // 是否可以多个文件上传
+                dragDrop         :   true,                    // 是否可以拖动上传文件
+                tailor           :   true,                    // 是否可以裁剪图片
+                del              :   true,                    // 是否可以删除文件
+                finishDel        :   false,  				  // 是否在上传文件完成后删除预览
+                /* 外部获得的回调接口 */
+                onSelect: function(selectFiles, allFiles){    // 选择文件的回调方法  selectFile:当前选中的文件  allFiles:还没上传的全部文件
+
+                },
+                onDelete: function(file, files){
+                },
+                onSuccess: function(file, response){          // 文件上传成功的回调方法
+                    $scope.annex={
+                        annexAddress:'',
+                        annexName:''
+                    };
+                    filePath=response;
+                    $scope.annex.annexAddress=filePath;
+                    $scope.annex.annexName=file.name;
+                    $scope.addEnterpriseCustomer.annexs.push($scope.annex);
+                    layer.msg("上传成功",{icon : 1,time : 2000});
+                },
+                onFailure: function(file, response){          // 文件上传失败的回调方法
+                    layer.msg("上传失败",{icon : 3,time : 2000});
+                },
+                onComplete: function(response){           	  // 上传完成的回调方法
+                }
+            });
+        });
+
+
+        /**
+         *  添加企业客户信息
+         */
+        $scope.persontwo={};
+        $scope.getPersonBycustId=function(person){
+            $scope.btnIndex=person.custId;
+            $scope.persontwo=person;
+
+            //存储到session里面去
+            sessionStorage.setItem("persontwo_name",JSON.stringify($scope.persontwo));
+            //$scope.addEnterpriseCustomer.representative= $scope.persontwo.name;
+
+        };
+        $scope.personone={};
+        $scope.getPersonBycust=function(person){
+            $scope.btnIndex=person.custId;
+            $scope.personone=person;
+            //$scope.addEnterpriseCustomer.principal=$scope.personone.name;
+            //存储到session里面去
+            sessionStorage.setItem("personone_name",JSON.stringify($scope.personone.name));
+        };
+        /*
+        Bug754 陈浪 2016.3.8
+         */
+        $scope.personThree={};
+        $scope.getPersonBycustIdThree=function(person){
+            $scope.btnIndex=person.custId;
+            $scope.personThree=person;
+            //存储到session里面去
+            sessionStorage.setItem("personThree_name",JSON.stringify($scope.personThree.name));
+            sessionStorage.setItem("personThree_registerPhone",JSON.stringify($scope.personThree.registerPhone));
+        };
+        //查询所有的企业客户列表
+        $scope.enterpriseList={};
+        $http.get(url+'/EnterpriseCustNew/listAllEnterpriseCustNewRestful').success(function(data){
+
+            $scope.enterpriseList=data.EnterpriseCustNew;
+        });
+
+        /**
+         *
+         * 修复：BUG 557 修改人：叶圣强 2016/2/17
+         */
+        /**
+         Bug754 陈浪 2016.3.8
+         */
+        $scope.frameclose = function()
+        {
+            if(sessionStorage.getItem("persontwo_name"))
+            {
+                sessionStorage.removeItem("persontwo_name");
+            }else if(sessionStorage.getItem("personThree_name")){
+                sessionStorage.removeItem("personThree_name")
+                sessionStorage.removeItem("personThree_registerPhone")
+            }else
+            {
+                sessionStorage.removeItem("personone_name");
+            }
+
+        };
+
+        $scope.frameclose1 = function()
+        {
+            $scope.addEnterpriseCustomer.personCustNew.name = JSON.parse(sessionStorage.getItem("persontwo_name")).name;
+            $scope.addEnterpriseCustomer.representative = JSON.parse(sessionStorage.getItem("persontwo_name")).custId;
+        };
+
+        $scope.frameclose2 = function()
+        {
+            $scope.addEnterpriseCustomer.principal = JSON.parse(sessionStorage.getItem("personone_name"));
+            sessionStorage.removeItem("personone_name");
+            //console.log($scope.addEnterpriseCustomer.principal);
+        };
+
+        $scope.frameclose3 = function()
+        {
+            $scope.addEnterpriseCustomer.emergencyContact = JSON.parse(sessionStorage.getItem("personThree_name"));
+            $scope.addEnterpriseCustomer.emergencyContactPhone = JSON.parse(sessionStorage.getItem("personThree_registerPhone"));
+            sessionStorage.removeItem("personThree_name");
+        };
+
+        //新增
+        var flag=0;
+        $scope.checkValue=function(item){
+            flag=0;
+            if( item.enterpriseName ==null||item.enterpriseName==""){
+                layer.alert('企业名称不能为空！',{icon : 0});
+                flag=1;
+                //return;
+            }else if(item.manageType ==null||item.manageType =='' ){
+                layer.alert('经营类型不能为空！',{icon : 0});
+                flag=1;
+                //return;
+            }else if(item.address ==null||item.address==""){
+                layer.alert('注册地址不能为空！',{icon : 0});
+                flag=1;
+                //return;
+            }else  if(item.representative == null||item.representative == '' ){
+                layer.alert('法人代表不能为空！',{icon : 0});
+                flag=1;
+                //return;
+            }else if(item.officePhone ==null||item.officePhone==''){
+                layer.alert('企业办公电话不能为空！',{icon : 0});
+                flag=1;
+                //return;
+            }else if(item.officePhone!=null){
+                var pattern=/^((\d{3}-\d{8}|\d{4}-\d{7,8})|(((13[0-9])|(15[^4,\D])|(18[0,5-9]))\d{8}))$/;
+                if(pattern.test(item.officePhone)==false){
+                    layer.alert('企业办公电话格式不正确！',{icon : 0});
+                    flag=1;
+                    //return;
+                }
+            }else if(item.email!=null&&item.email!=''){
+                    var filter  = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+                    if (!filter.test(item.email)){
+                        layer.alert('邮箱格式不正确！',{icon : 0});
+                        flag=1;
+                        //return;
+                    }
+            }else{
+                //$scope.checkPhone(item.officePhone);
+                $scope.checkPhone2(item.emergencyContactPhone);//紧急联系人电话
+                if($scope.enterpriseList.length>0){
+                    for(var i=0;i<$scope.enterpriseList.length;i++){
+                        if(item.enterpriseName==$scope.enterpriseList[i].enterpriseName){
+                            layer.alert('企业名称已存在！',{icon : 0});
+                            flag=1;
+                            break;
+                        }
+                    }
+                }
+            }
+        };
+
+
+        $scope.checkPhone=function(phone){
+            //var pattern=/^((\+?86)|(\(\+86\)))?(13[012356789][0-9]{8}|15[012356789][0-9]{8}|18[02356789][0-9]{8}|147[0-9]{8}|1349[0-9]{7})$/;
+            var pattern=/^((\d{3}-\d{8}|\d{4}-\d{7,8})|(((13[0-9])|(15[^4,\D])|(18[0,5-9]))\d{8}))$/;
+            if(!pattern.test(phone)){
+                layer.alert('企业办公电话格式不正确！',{icon : 0});
+                flag=1;
+                return;
+            }
+        };
+
+        $scope.checkPhone2=function(phone){
+            //var pattern=/^((\+?86)|(\(\+86\)))?(13[012356789][0-9]{8}|15[012356789][0-9]{8}|18[02356789][0-9]{8}|147[0-9]{8}|1349[0-9]{7})$/;
+            var pattern=/^((\d{3}-\d{8}|\d{4}-\d{7,8})|(((13[0-9])|(15[^4,\D])|(18[0,5-9]))\d{8}))$/;
+            if(phone!=null && phone!=''){
+                if(!pattern.test(phone)){
+                    layer.alert('紧急联系人电话号码格式不正确！',{icon : 0});
+                    flag=1;
+                    //return;
+                }
+            }
+        };
+
+
+        $scope.insertEnterpriseCustomer=function(){
+            if( $scope.addEnterpriseCustomer.enterpriseName ==null||$scope.addEnterpriseCustomer.enterpriseName==""){
+                layer.alert('企业名称不能为空！',{icon : 0});
+                return;
+            }else if($scope.addEnterpriseCustomer.manageType ==null||$scope.addEnterpriseCustomer.manageType =='' ){
+                layer.alert('经营类型不能为空！',{icon : 0});
+                return;
+            }else if($scope.addEnterpriseCustomer.address ==null||$scope.addEnterpriseCustomer.address==""){
+                layer.alert('注册地址不能为空！',{icon : 0});
+                return;
+            }else  if($scope.addEnterpriseCustomer.representative == null||$scope.addEnterpriseCustomer.representative == '' ){
+                layer.alert('法人代表不能为空！',{icon : 0});
+                flag=1;
+                return;
+            }else if($scope.addEnterpriseCustomer.officePhone ==null||$scope.addEnterpriseCustomer.officePhone==''){
+                layer.alert('企业办公电话不能为空！',{icon : 0});
+                return;
+            }else {
+                var pattern=/^((\d{3}-\d{8}|\d{4}-\d{7,8})|(((13[0-9])|(15[^4,\D])|(18[0,5-9]))\d{8}))$/;
+                if(pattern.test($scope.addEnterpriseCustomer.officePhone)==false){
+                    layer.alert('企业办公电话格式不正确！',{icon : 0});
+                    return;
+                }
+                //$scope.checkPhone2();//紧急联系人电话
+                if($scope.enterpriseList.length>0){
+                    for(var i=0;i<$scope.enterpriseList.length;i++){
+                        if($scope.addEnterpriseCustomer.enterpriseName==$scope.enterpriseList[i].enterpriseName){
+                            layer.alert('企业名称已存在！',{icon : 0});
+                            return;
+                        }
+                    }
+                }
+            }
+
+            if($scope.addEnterpriseCustomer.email!=null&&$scope.addEnterpriseCustomer.email!=''){
+                var filter  = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+                if (!filter.test($scope.addEnterpriseCustomer.email)){
+                    layer.alert('邮箱格式不正确！',{icon : 0});
+                    return;
+                }
+            }
+            $http.post(url+'/EnterpriseCustNew/insertEnterpriseCustNew',{EnterpriseCustNew:$scope.addEnterpriseCustomer}).success(function(){
+                layer.msg("添加成功",{icon : 1,time : 2000});
+                $scope.addEnterpriseCustomer={};
+                $location.path("/index/baseManagement/project/enterpriseCustomerCheck");
+            }).error(function(data, status, headers, config){
+                layer.msg("新增失败",{icon : 3,time : 2000});
+            }) ;
+        }
+
+
+        $scope.personCustNews={page:{}};     //人员信息
+        $scope.load=function(){
+            var fetchFunction = function(page,callback) {
+                $scope.personCustNews.page=page;
+                $http.post(url + '/PersonCustNew/listPagePersonCustNewByAllSearch',{PersonCustNew:$scope.personCustNews}).success(callback);
+            };
+            $scope.searchPaginator=app.get('Paginator').list(fetchFunction,5);
+        }
+        $scope.load();
+
+        //初始化法人代表
+        $scope.personInit=function(){
+            $scope.personCustNews={page:{}};     //人员信息
+            $scope.load();
+        }
+        //新增取消
+        $scope.cancle=function(){
+            $location.path("/index/baseManagement/project/enterpriseCustomerCheck");
+
+        };
+    }]);
+});

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<!--计费记录-->
+<div class="sel">
+    <div class="row">
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right" >
+            <!--修改时间控件
+                徐文广
+                2016/5/18
+            -->
+            计费时间:
+        </div>
+        <div class="col-lg-2 col-md-4 col-sm-4">
+            <input type="text" onclick="WdatePicker({readOnly:true})"  class="Wdate form-control" ng-model="billing.billingStartTime" onchange=""  ng-blur="checkDates()" ng-change="getStall(stallss.id,false)"/>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2 text-center">
+            至
+        </div>
+        <div class="col-lg-2 col-md-4 col-sm-4">
+            <input type="text" onclick="WdatePicker({readOnly:true})"  class="Wdate form-control" ng-model="billing.billingEndTime" onchange=""  ng-blur="checkDates()" ng-change="getStall(stallss.id,false)"/>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            房屋地址:
+        </div>
+        <div class="col-lg-2 col-md-4 col-sm-4">
+            <input class="form-control" ng-model="billing.fullName"/>
+        </div>
+        <div class="col-lg-3 col-md-3 col-sm-3 text-center">
+            <button type="button" class="btn btn-default btn-primary tab-btn"  ng-click="searchPaginator._load()">
+                <span class="glyphicon glyphicon-search btn_icon"></span>
+                搜索
+            </button>
+        </div>
+    </div>
+</div>
+<div class="row padding">
+    <div class="col-lg-12">
+        <div class="search-padding-10">
+        <table>
+            <thead>
+            <tr>
+                <th>序号</th>
+                <th>计费时间</th>
+                <th>物业项目</th>
+                <th>房屋地址</th>
+                <th>收费项目</th>
+                <th>金额</th>
+                <th>状态</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="item in searchPaginator.object.billings"  ng-show="item.billingId!=null">
+                <td>{{$index}}</td>
+                <td>{{item.billingStartTime|date:'yyyy-MM-dd'}}</td>
+                <td>{{item.projectName}}</td>
+                <td>{{item.fullName}}</td>
+                <td>{{item.chargeItemName}}</td>
+                <td>{{item.billingBalance}}</td>
+                <td ng-switch on="item.billingState">
+                    <span ng-switch-when="0">已完成</span>
+                    <span ng-switch-when="1">未完成</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        </div>
+        <div class="padding">
+            <div class="bill_paging">
+                <span>共{{searchPaginator.object.page.totalResult}}条</span>
+                <ul class="pagination">
+                    <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-click="searchPaginator.go(1)">首页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a>
+                    </li>
+                    <li ng-class="{true:'active'}[searchPaginator.page.currentPage==i]" ng-repeat="i in searchPaginator.pages">
+                        <a href="javascript:void(0)"  ng-click="searchPaginator.go(i)">{{i}}</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                        <a href="javascript:void(0)" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                        <a href="javascript:void(0)" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<!--计费记录 end-->
+</body>
+</html>

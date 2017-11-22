@@ -1,0 +1,49 @@
+/**
+ * Created by NM on 2016/1/21.
+ *
+ */
+'use strict';
+
+define(function (require) {
+    var app = require('../../app');
+
+    app.controller('headCtrl', ['$scope','$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+        var fileUrl = $rootScope.fileUrl;           //获取请求路径
+
+        //获取user对象信息
+        $scope.USER_LOGIN = JSON.parse(sessionStorage.getItem('USER_LOGIN'));
+
+
+        /**
+         * 退出操作
+         */
+        $scope.loginOut = function(){
+            layer.confirm('退出后将重新登录，您确定要退出系统吗?', {icon: 3, title:'提示'}, function(index){
+                $http({
+                    method:"GET",
+                    url: fileUrl + "/login/loginOut.do",
+                    headers:{'x-user-session':$scope.USER_LOGIN.sessionId}
+                }).success(function(data){
+                    $location.path("/login")
+                });
+                layer.close(index);
+            });
+        };
+        $scope.loadDefault=function(){
+            var wWidth = $(window).width();
+            var wHeight = $(window).height();
+            $(".container-fluid .left").height(wHeight-70);
+            $(".container-fluid .content").height(wHeight-100);
+        };
+
+        $scope.personCenter = function(){
+            var user = {employId : ''};
+            var userCookie = JSON.parse(sessionStorage.getItem("USER_LOGIN"));
+            $scope.user = userCookie?userCookie:user;
+            //window.open('http://10.0.13.33:8080/SaaS/login?username='+$scope.user.loginName+'&password='+$scope.user.password);
+            //window.open('http://120.24.223.107:8080/SaaS/wy?loginName='+$scope.user.loginName);
+            window.open('http://10.0.13.33:8080/SaaS/wy?loginName='+$scope.user.loginName+'&password='+$scope.user.passwordToSaas);
+        };
+
+    }]);
+});

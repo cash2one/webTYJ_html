@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="css/ztree/demo.css" type="text/css">
+    <link rel="stylesheet" href="css/ztree/zTreeStyle.css" type="text/css">
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.core-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.excheck-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.exedit-3.5.js"></script>
+    <style>
+        input.checkb{
+            display:inline-block !important;
+            position: relative;
+            top:-4px;
+        }
+    </style>
+    <script>
+        function check(obj) {
+            $(':checkbox').each(function () {
+                if (this != obj)
+                    $(this).attr("checked", false);
+                else {
+                    if ($(this).prop("checked")){
+                        $(this).attr("checked", true);
+                    }
+                    else{
+                        $(this).attr("checked", false);
+                    }
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+<div class="padding">
+    <div class="row search-padding-10">
+        <div class="col-lg-1 col-md-2 col-sm-2">巡检名称:</div>
+        <div class="col-lg-2 col-md-4 col-sm-4"><input class="form-control" placeholder="请输入巡检名称" ng-model="serviceRequest.serviceRequestName"/></div>
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            <span style="color: red">*</span>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2">服务请求类型:</div>
+        <div class="col-lg-2 col-md-4 col-sm-4">
+            <!--<input class="form-control" placeholder="请输入服务请求类型" readonly value="巡检" id="9"/>
+            <select class="form-control" ng-model="ServiceRequest.tasks.taskType"
+                    ng-options="a.id as a.name for a in Datil.taskType">
+                <option value="">请选择任务类型</option>
+            </select>-->巡检
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2">
+
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2">负责人:</div>
+        <div class="col-lg-2 col-md-4 col-sm-4">
+            <input class="form-control" placeholder="请输入负责人" readonly="readonly" data-toggle="modal" data-target="#newPerson" ng-model="person.staff.staffName"/>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            <span style="color: red">*</span>
+        </div>
+
+    </div>
+
+
+    </div>
+   <!-- <div class="row search-padding-10">
+
+        <div class="col-lg-1 col-md-2 col-sm-2">负责人:</div>
+        <div class="col-lg-2 col-md-4 col-sm-4">
+            <input class="form-control" placeholder="请输入负责人" readonly="readonly" data-toggle="modal" data-target="#newPerson" ng-model="person.staff.staffName"/>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            <span style="color: red">*</span>
+        </div>
+       &lt;!&ndash; <div class="col-lg-1 col-md-2 col-sm-2  text-right">
+            客户姓名：
+        </div>
+        <div class="col-lg-2 col-md-4 col-sm-4">
+            <input class="form-control" placeholder="请输入客户姓名" readonly="readonly" name="name1" required  data-target="#myModalPerson" data-toggle="modal" ng-model="name">
+            <input class="form-control" style="display: none"  ng-model="ServiceRequest.customerId">
+                       <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.name1.$dirty && mainForm.name1.$invalid">
+                <p class="alter" ng-show="mainForm.name1.$error.required">
+                    不能为空
+                </p>
+                <p class="alter" ng-show="mainForm.name1.defined ">
+                    正确
+                </p>
+            </span>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            <span style="color: red">*</span>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2  text-right">
+            联系电话：
+        </div>
+        <div class="col-lg-2 col-md-4 col-sm-4">
+            <input class="form-control" placeholder="请输入联系电话" ng-model="serviceRequest.accessPhone" name="name" required />
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            <span style="color: red">*</span>
+        </div>&ndash;&gt;
+    </div>-->
+    <div class="row search-padding-10">
+        <!--<div class="col-lg-1 col-md-2 col-sm-2">描述</div>
+        <div class="col-lg-11 col-md-10 col-sm-10"><textarea style="padding:6px 12px;resize:none;" row="5" placeholder="请输入描述" class="form-control" ng-model="serviceRequest.remarks"></textarea></div>-->
+        <div class="search-padding-10">
+            描述：<span style="color: red">*</span>
+        </div>
+
+        <div class="search-padding-10">
+            <textarea class="form-control" style="height:100px;resize:none;"  placeholder="请输入内容" ng-model="serviceRequest.remarks"></textarea>
+        </div>
+    </div>
+    <div class="row search-padding-10">
+        <div class="col-lg-6 col-md-6 col-sm-6">
+            匹配巡检方案
+        </div>
+    </div>
+    <div class="search-padding-10">
+        <div class="bill_table">
+
+            <a style="margin-bottom:10px;" class="btn btn-primary pull-right" ng-click="addItem()">
+                <span class="glyphicon glyphicon-plus" ria-hidden="true"></span>
+                新增行
+                <!--<img src="images/propertyService/u459.png" style="width: 20px;height: 20px">--></a>
+            <table width="100%" border="0" cellpadding="0" cellspacing="0" class="radius_all">
+                <tr>
+                    <td width="20%" height="35px" align="center" valign="middle" >序号</td>
+                    <td width="20%" height="35px" align="center" valign="middle" >巡检目标</td>
+                    <td width="20%" height="35px" align="center" valign="middle">巡检方案</td>
+                    <td width="20%" height="35px" align="center" valign="middle">操作</td>
+                </tr>
+                <tr ng-repeat="item in serviceRequest.inspectionConfiguration">
+                    <td width="20%" height="30px" align="center">
+                        {{$index+1}}
+                    </td>
+                    <td width="20%" height="30px" align="center">
+                        {{item.inspectionPlanId}}
+                    </td>
+                    <td  width="20%" height="30px" align="center" valign="middle" >
+                        {{item.inspectionPropertyId}}
+                    </td>
+                    <td  width="20%" height="30px" align="center" valign="middle">
+                        <!--<input type="button"  class="modify_button"  ng-click="updateItem($index)" value="修改">
+                        <input type="button"  class="del_button"  ng-click="deleteItem($index)" value="删除">-->
+                        <input type="button"  class="btn btn-primary"  ng-click="updateItem($index)" value="修改">
+                        <input type="button"  class="btn btn-default"  ng-click="deleteItem($index)" value="删除">
+                    </td>
+                </tr>
+            </table>
+            <div class="building_edit_pannel" ng-show="editArea">
+                <table width="100%" >
+                    <tr>
+                        <td width="20%" height="35px" align="center" valign="middle" >序号</td>
+                        <td width="20%" height="35px" align="center" valign="middle" >巡检目标</td>
+                        <td width="20%" height="35px" align="center" valign="middle">巡检方案</td>
+                        <td width="20%" height="35px" align="center" valign="middle">操作</td>
+                    </tr>
+                    <tr>
+                        <td  height="42px" align="center" valign="middle">
+                            &nbsp;
+                        </td>
+                        <td  height="42px" align="center" valign="middle">
+                            <input type="text" class="form-control" placeholder="请选择目标"  readonly="readonly" ng-model="currentEditArea[0].inspectionPlanId" data-toggle="modal" data-target="#tree">
+                        </td>
+                        <td  height="42px" align="center" valign="middle">
+                            <!--<input type="text" class="form-control" placeholder="请输入内容"  ng-model="currentEditArea.inspectionPropertyId">-->
+
+                                <!--<input class="form-control" placeholder="请输入服务请求类型" readonly value="巡检" id="9"/>-->
+                                <select class="form-control" ng-model="currentEditArea.inspectionPropertyId"
+                                        ng-options="a.id as a.name for a in Datil1.taskType">
+                                    <option value="">请选择任务巡检方案</option>
+                                </select>
+
+                        </td>
+                        <td  height="42px" align="center" valign="middle">
+                            <button type="button" class="btn btn-primary" ng-click="addSave()">保存</button>
+                            <button type="button" class="btn btn-default" ng-click="addCancel()">取消</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+    </div>
+    <div class="row search-padding-10">
+        <div class="col-lg-1 col-md-2 col-sm-2">频率类型</div>
+        <div class="col-lg-3 col-md-3 col-sm-12">
+            <select class="form-control"  ng-model="serviceRequest.frequencyRecord.frequencyType" ng-options="c.id as c.name for c in demand.frequency"><option value="">请选择</option></select>
+        </div>
+    </div>
+    <div class=" search-padding-10">
+        执行频率
+    </div>
+    <div class="search-padding-10">
+        <div class="info_lista">
+            <table class="table_lists">
+                <tbody>
+                <tr>
+                    <td><span>周天</span><input class="form-control checkb" type="checkbox" name="checkb" value="mon"></td>
+                    <td><span>周一</span><input class="form-control checkb" type="checkbox" name="checkb" value="tue"></td>
+                    <td><span>周二</span><input class="form-control checkb" type="checkbox" name="checkb" value="wed"></td>
+                    <td><span>周三</span><input class="form-control checkb" type="checkbox" name="checkb" value="thu"></td>
+                    <td><span>周四</span><input class="form-control checkb" type="checkbox" name="checkb" value="fri"></td>
+                    <td><span>周五</span><input class="form-control checkb" type="checkbox" name="checkb" value="sat"></td>
+                    <td><span>周六</span><input class="form-control checkb" type="checkbox" name="checkb" value="sun"></td>
+                    <td><button type="button" class="btn btn-default btn-primary tab-btn" ng-click="selectAll('checkb')">
+                        全选
+                    </button>
+                    </td>
+                    <td><button type="button" class="btn btn-default btn-primary tab-btn" ng-click="clearAll('checkb')">
+                        取消
+                    </button>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span>1</span><input class="form-control checkb" type="checkbox" value="1"></td>
+                    <td><span>2</span><input class="form-control checkb" type="checkbox" value="2"></td>
+                    <td><span>3</span><input class="form-control checkb" type="checkbox" value="3"></td>
+                    <td><span>4</span><input class="form-control checkb" type="checkbox" value="4"></td>
+                    <td><span>5</span><input class="form-control checkb" type="checkbox" value="5"></td>
+                    <td><span>6</span><input class="form-control checkb" type="checkbox" value="6"></td>
+                    <td><span>7</span><input class="form-control checkb" type="checkbox" value="7"></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><span>8</span><input class="form-control checkb" type="checkbox" value="8"></td>
+                    <td><span>9</span><input class="form-control checkb" type="checkbox" value="9"></td>
+                    <td><span>10</span><input class="form-control checkb" type="checkbox" value="10"></td>
+                    <td><span>11</span><input class="form-control checkb" type="checkbox" value="11"></td>
+                    <td><span>12</span><input class="form-control checkb" type="checkbox" value="12"></td>
+                    <td><span>13</span><input class="form-control checkb" class="form-control checkb" type="checkbox" value="13"></td>
+                    <td><span>14</span><input class="form-control checkb" type="checkbox" value="14"></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><span>15</span><input class="form-control checkb" type="checkbox" value="15"></td>
+                    <td><span>16</span><input class="form-control checkb" type="checkbox" value="16"></td>
+                    <td><span>17</span><input class="form-control checkb" type="checkbox" value="17"></td>
+                    <td><span>18</span><input class="form-control checkb" type="checkbox" value="18"></td>
+                    <td><span>19</span><input class="form-control checkb" type="checkbox" value="19"></td>
+                    <td><span>20</span><input class="form-control checkb" type="checkbox" value="20"></td>
+                    <td><span>21</span><input class="form-control checkb" type="checkbox" value="21"></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><span>22</span><input class="form-control checkb" type="checkbox" value="22"></td>
+                    <td><span>23</span><input class="form-control checkb" type="checkbox" value="23"></td>
+                    <td><span>24</span><input class="form-control checkb" type="checkbox" value="24"></td>
+                    <td><span>25</span><input class="form-control checkb" type="checkbox" value="25"></td>
+                    <td><span>26</span><input class="form-control checkb" type="checkbox" value="26"></td>
+                    <td><span>27</span><input class="form-control checkb" type="checkbox" value="27"></td>
+                    <td><span>28</span><input class="form-control checkb" type="checkbox" value="28"></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><span>29</span><input class="form-control checkb" type="checkbox" value="29"></td>
+                    <td><span>30</span><input class="form-control checkb" type="checkbox" value="30"></td>
+                    <td><span>31</span><input class="form-control checkb" type="checkbox" value="31" ></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row search-padding-10">
+        <div class="col-lg-6 col-md-6 col-sm-6">当天执行次数与时间</div>
+        <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+            <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="add()">
+                <span class="glyphicon glyphicon-plus btn_icon"></span>
+                新建
+            </button>
+        </div>
+    </div>
+    <div class="search-padding-10">
+        <table id="artificial">
+            <thead>
+            <tr>
+                <th>次数</th>
+                <th>执行时间</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="item1 in itemRecord2" >
+                <td style="width:50%;">第{{$index+1}}次</td>
+                <td style="width:50%;"><input placeholder="请输入时间" style="width:150px;margin:0 auto;" onclick="WdatePicker({dateFmt:'HH:mm',readOnly:true})" class="form-control" type="text" /></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="text_center">
+        <button type="button" class="btn btn-default btn-primary" >
+            取消
+        </button>
+        <button type="button" class="btn btn-default btn-primary " ng-click="saveServiceRequest()">
+            提交
+        </button>
+    </div>
+</div>
+
+<!--负责人员-->
+<div class="modal fade" id="newPerson" role="dialog" aria-label="personDatil" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>人员</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                    <div class="sel1">
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                姓名:
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input placeholder="请输入姓名" class="form-control"  ng-model="Teamworkstaff.staffName"/>
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                电话:
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input placeholder="请输入电话号码" class="form-control" ng-model="Teamworkstaff.telphone" />
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                部门:
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <select class="form-control"  ng-model="Teamworkstaff.professionalLineId" ng-options="a.specialtyId as a.specialtyName for a in SpecialtyInfo" >
+                                    <option value="" >选择部门</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                <button type="button" class="btn btn-default btn-primary" ng-click="searchPaginator2._load()">
+                                    <span class="glyphicon glyphicon-search btn_icon"></span>搜索
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="search-padding-10">
+                        <table>
+                            <thead>
+                            <th></th>
+                            <th>姓名</th>
+                            <th>部门</th>
+                            <th>电话</th>
+                            <th>状态</th>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="item in searchPaginator2.object.teamworkStaffs" ng-click="getdata(item,'aaa',$event)" ng-show="item.id != null">
+                                <td><input type="checkbox"  name="aaa" id="{{item.id}}" ng-click="getdata(item,'aaa',$event)" onclick="check(this)"></td>
+                                <td>{{item.staff.staffName}}</td>
+                                <td>{{item.specialtyInfo.specialtyName}}</td>
+                                <td>{{item.staff.telphone}}</td>
+                                <td>{{}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="bill_paging" ng-show="searchPaginator2.object.page.totalResult!=0">
+                            <span>共{{searchPaginator2.object.page.totalResult}}条</span>
+                            <ul class="pagination">
+                                <li ng-class="{true:'disabled'}[searchPaginator2.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-click="searchPaginator2.go(1)">首页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchPaginator2.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-show="searchPaginator2.hasPrevious()" ng-click="searchPaginator2.previous()">上一页</a>
+                                </li>
+                                <li ng-class="{true:'active'}[searchPaginator2.page.currentPage==i]" ng-repeat="i in searchPaginator2.pages">
+                                    <a href="javascript:void(0)"  ng-click="searchPaginator2.go(i)">{{i}}</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchPaginator2.page.currentPage==searchPaginator2.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-show="searchPaginator2.hasNext()" ng-click="searchPaginator2.next()">下一页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchPaginator2.page.currentPage==searchPaginator2.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-click="searchPaginator2.go(searchPaginator2.page.totalPage)">尾页</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" >取消</button>
+                <button type="button" class="btn bg-primary" data-dismiss="modal" ng-click="addPerson()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--负责人员 END-->
+
+<!--巡检目标 杨升权 2016/7/19-->
+<div class="modal fade" id="tree" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <span >
+                    巡检目标
+                </span>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                    <div class="col-md-4">
+                        <ul id="treeDemo"  class="ztree"></ul>
+                    </div>
+
+                </div>
+                <div class="clear"></div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                    <button class="btn bg-primary" data-dismiss="modal"   ng-click="addWaterReading()">提交</button>
+
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
+<!--客户查询列表 杨升权 2016/7/21-->
+<div class="modal fade" id="myModalPerson" tabindex="-1"
+     role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" >
+        <div class="modal-content" style="width: 700px">
+            <div class="modal-header">
+                <span>人员信息</span>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+            </div>
+            <div class="modal-body">
+                <div class="sel">
+                    <div class="col-2 col-md-2 col-sm-2 text-right">
+                        姓名:
+                    </div>
+                    <div class="col-4 col-md-4 col-sm-4">
+                        <input placeholder="请输入姓名" type="text" class="form-control " ng-model="searchone.staffName">
+                    </div>
+                    <div class="col-2 col-md-2 col-sm-2 text-right">
+                        联系电话:
+                    </div>
+                    <div class="col-4 col-md-4 col-sm-4 ">
+                        <input type="text" placeholder="请输入联系电话" class="form-control " ng-model="searchone.phone">
+                    </div>
+                    <div class="col-2 col-md-2 col-sm-2 text-right">
+                        身份证号
+                    </div>
+                    <div class="col-4 col-md-4 col-sm-4">
+                        <input type="text" placeholder="请输入身份证号" class="form-control" ng-model="searchone.idNum">
+                    </div>
+
+                    <div class="col-6 col-md-6 col-sm-6 text-right">
+                        <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="currentPaginator._load();">
+                            <span class="glyphicon glyphicon-search btn_icon"></span>
+                            查询
+                        </button>
+                    </div>
+
+                    <div class="clear"></div>
+
+                </div>
+                <div class="padding">
+                    <table class="table_lists" ng-repeat="person in currentPaginator.object.personCustNew" ng-show="person.custId!=null" >
+                        <tbody ng-class="{'this_info ':btnIndex==person['custId']}"   ng-click="choicePerson1(person)" >
+                        <tr>
+                            <td width="50px" rowspan="2"><img src="images/propertyService/choiceHousing/u81.jpg" ng-click="choicePerson1(person)" width="50" height="50" ></td>
+                            <td>客户姓名：{{person.name}}</td>
+                            <td>性别：{{person.sex}}</td>
+                            <td>家家号：{{person.jiajiaNum}}</td>
+                            <td>身份证：{{person.cardNum}}</td>
+                        </tr>
+                        <tr>
+                            <td>客户编号：{{person.custCode}}</td>
+                            <td>年龄：{{person.age}}</td>
+                            <td>联系电话：{{person.phoneNum}}</td>
+                            <td>QQ号码：{{person.weixinNum}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="padding" ng-show="currentPaginator.object.page.totalResult!=0">
+                        <div class="bill_paging">
+                            <span>共{{currentPaginator.object.page.totalResult}}条</span>
+                            <ul class="pagination">
+                                <li ng-class="{true:'disabled'}[currentPaginator.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-click="currentPaginator.go(1)">首页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[currentPaginator.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-show="currentPaginator.hasPrevious()" ng-click="currentPaginator.previous()">上一页</a>
+                                </li>
+                                <li ng-class="{true:'active'}[currentPaginator.page.currentPage==i]" ng-repeat="i in currentPaginator.pages">
+                                    <a href="javascript:void(0)"  ng-click="currentPaginator.go(i)">{{i}}</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[currentPaginator.page.currentPage==currentPaginator.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-show="currentPaginator.hasNext()" ng-click="currentPaginator.next()">下一页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[currentPaginator.page.currentPage==currentPaginator.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-click="currentPaginator.go(currentPaginator.page.totalPage)">尾页</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn  btn-default" ng-click="subCancel()" data-dismiss="modal">
+                    取消
+                </button>
+                <button type="button" class="btn bg-primary" aria-label="Left Align" ng-click="subSave()" data-dismiss="modal">
+                    确定
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

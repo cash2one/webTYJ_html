@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>登录页面</title>
+    <link rel="stylesheet" href="css/login-info.css">
+</head>
+<body>
+<div class="row container-fluid">
+    <!--头部-->
+    <div class="row"  style="margin-left: -10px;">
+        <header>
+            <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
+                <div class="logo">
+                </div>
+            </div>
+        </header>
+    </div>
+    <!--头部结束-->
+    <!--正文-->
+    <div class="col-lg-11 col-md-11 col-sm-11 login">
+        <!--左侧-->
+        <div class="col-lg-8 col-md-8 col-sm-8"></div>
+        <!--左侧结束-->
+        <!--右侧-->
+            <div class="col-lg-3 col-md-3 col-sm-3 opacity">
+            <div class="row">
+            <div class="padding15">
+                <form id="css_form" name="mainForm" novalidate>
+                    <div class="row sel1">
+                        <label class="col-md-2">
+                            <span class="icon radius back_dark_black glyphicon glyphicon-user white"style="float:right;margin-top:6px"></span>
+                        </label>
+                        <div class="col-md-9">
+                            <input type="text" name="loginName" class="form-control"  placeholder="用户名" ng-model="user.loginName">
+                            <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.loginName.$dirty && mainForm.loginName.$invalid">
+                                <p class="alter" ng-show="mainForm.loginName.$error.required">
+                                    不能为空
+                                </p>
+                                <p class="alter" ng-show="mainForm.loginName.defined ">
+                                    正确
+                                </p>
+                            </span>
+                        </div>
+                        <div class="clear"></div>
+                        <label class="col-md-2">
+                            <span class="icon radius back_dark_black glyphicon glyphicon-lock white"style="float:right;margin-top:6px"></span>
+                        </label>
+                        <div class="col-md-9">
+                            <input type="password" name="password" class="form-control" placeholder="密码" ng-model="user.password" ng-keyup="keyUp($event)">
+                            <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.password.$dirty && mainForm.password.$invalid">
+                                <p class="alter" ng-show="mainForm.password.$error.required">
+                                    不能为空
+                                </p>
+                                <p class="alter" ng-show="mainForm.password.defined ">
+                                    正确
+                                </p>
+                            </span>
+                        </div>
+                        <div class="clear"></div>
+                        <div class="col-md-6 text-center">
+                            <input id="remenber" type="checkbox" class="checkboxa" style="position: relative;top:2px;left:20px;margin-right:8px;">
+                            <span>记住密码？</span>
+                        </div>
+                        <div class="col-md-5 text-right">
+                            <button type="button" class="btn btn-primary" ng-click="login()" id="loginButton" >登录</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            </div>
+        </div>
+        <!--正文结束-->
+    </div>
+</div>
+</body>
+</html>

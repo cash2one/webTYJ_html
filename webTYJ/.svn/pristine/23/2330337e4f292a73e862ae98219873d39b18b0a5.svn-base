@@ -1,0 +1,438 @@
+<!--前端负责人：倪明
+    页面名称：规章制度
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>规章制度</title>
+    <link rel="stylesheet" href="bower_components/skins/zyupload-1.0.0.min.css " type="text/css">
+</head>
+<body >
+<div id="message">
+    <!-- 公告标题 -->
+    <div class="row title">
+        <div class="col-md-6 col-xs-6">
+            <h3><strong>规章制度</strong></h3>
+        </div>
+        <!--<div class="col-md-6 col-xs-6 text-right">
+            <button type="button" class="btn btn-default btn-primary" data-toggle="modal" data-target="#myModale" ><span class="glyphicon glyphicon-plus btn_icon"></span>新增 </button>
+            <button type="button" class="btn btn-default btn-primary" data-toggle="modal" data-target="#myModales" ><span class="glyphicon glyphicon-list-alt btn_icon"></span>详情 </button>
+            <button type="button" class="btn btn-default btn-primary" ><span class="glyphicon glyphicon-trash btn_icon"></span>删除 </button>
+        </div>-->
+    </div>
+    <!-- 公告标题 结束 -->
+
+    <!-- 公告内容 -->
+    <!--<div class="row">
+        &lt;!&ndash; 公告标题列表 &ndash;&gt;
+        <div class="col-md-3">
+            <div class="list">
+                <ul class="list_ul">
+                    <li ng-repeat="rules in data2" ng-click="getRules(rules.id)">
+                        <span class="glyphicon glyphicon-user pull-left"></span>
+                        <h4><strong>{{rules.title}}</strong></h4>
+                        &lt;!&ndash;{{rules.briefContent}}&ndash;&gt;
+                    </li>
+                </ul>
+                &lt;!&ndash;分页开始&ndash;&gt;
+                <div class="bill_paging">
+                    <ul class="pagination">
+                        <li ng-class="{true:'disabled'}[index2==1]"><a href="javascript:void(0)"
+                                                                            ng-click="index2=1;go2(index2)">首页</a></li>
+                        <li ng-class="{true:'disabled'}[index2==1]"><a href="javascript:void(0);" ng-click="previous2()">上一页</a></li>
+                        <li ng-class="{true:'active'}[index2==page]"><a href="javascript:void(0);" ng-click="go2($index)">{{index2}}</a></li>
+                        <li ng-class="{true:'disabled'}[index2==totalPage2]"><a href="javascript:void(0);" ng-click="next2()">下一页</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[index2==totalPage2]"><a href="javascript:void(0)" ng-click="index2=totalPage2;go2(index2)">末页</a></li>
+                    </ul>
+                </div>
+                &lt;!&ndash;分页结束&ndash;&gt;
+            </div>
+        </div>
+        &lt;!&ndash; 公告标题列表 结束 &ndash;&gt;
+
+        &lt;!&ndash; 公告列表内容 &ndash;&gt;
+        <div class="col-md-9">
+            <div class="text">
+                <div class="text-title">
+                    <h3><strong>{{rulesA.title}}</strong></h3>
+                    <div class="row">
+                        <div class="col-md-5 col-xs-5">
+                            发布单位：深圳翔恒科技开发有限公司
+                        </div>
+                        <div class="col-md-3">
+                            发布者：{{rulesA.recordCreater}}
+                        </div>
+                        <div class="col-md-4 col-xs-4 text-right">
+                            {{rulesA.createTime|date:"yyyy-MM-dd mm:ss"}}
+                            &lt;!&ndash;<a href="#">更多信息</a>&ndash;&gt;
+                        </div>
+                    </div>
+                </div>
+                <div class="text-text">
+                    <p><strong>Dear All,</strong></p>
+                    <p>{{rulesA.briefContent}}</p>
+                    <p>{{rulesA.detailInfo}}</p>
+                </div>
+            </div>
+        </div>
+        &lt;!&ndash; 公告列表内容 结束&ndash;&gt;
+    </div>-->
+    <!-- 公告内容 -->
+
+    <!-- 操作按钮 -->
+    <!--<div class="button_group">
+        <button><span class="glyphicon glyphicon glyphicon-check"></span>待办任务</button>
+        <button><span class="glyphicon glyphicon glyphicon-check"></span>待办任务</button>
+        <button><span class="glyphicon glyphicon glyphicon-check"></span>待办任务</button>
+    </div>-->
+    <!-- 操作按钮 结束-->
+    <div class="row padding">
+        <div class="col-lg-12 col-md-12 col-sm-12">
+            <div class="row search-padding-10">
+                <div class="col-lg-12 col-md-12 col-sm-12 text-right">
+                    <button type="button" class="btn btn-default btn-primary" data-toggle="modal" data-target="#myModale" ng-click="clearRulesData()">
+                        <span class="glyphicon glyphicon-plus btn_icon"></span>
+                        新建
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary" ng-click="deleteRules()">
+                        <span class="glyphicon glyphicon-trash btn_icon"></span>
+                        删除
+                    </button>
+                </div>
+            </div>
+            <div class="search-padding-10">
+                <table>
+                    <thead>
+                    <tr>
+                        <th><input  type="checkbox" id="allchose" ng-click="allchose(searchPaginator.object.ruless)" style="vertical-align: -4px;"></th>
+                        <th>标题</th>
+                        <th>发布日期</th>
+                        <th>发布状态</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="item in searchPaginator.object.ruless" ng-show="item.id!=null" ng-click="getDataaa(item)">
+                        <!--<td ng-if="slaves.masterId == currentCheck[tmpIndex].masterId"><input type="checkbox" ng-disabled="dis" ></td>-->
+                        <!--<td ng-if="slaves.masterId != currentCheck[tmpIndex].masterId"><input type="checkbox" id="{{slaves.slaveId}}" ng-disabled="dis"  ng-click="addOrUpdateSlaveId(slaves)"></td>-->
+                        <td><input type="checkbox" id="{{item.id}}"></td>
+                        <td><a data-toggle="modal" data-target="#editRulesModal" ng-click="editRules(item)" style="color: #00a0e9;">{{item.title}}</a></td>
+                        <td>{{item.lastModtime | date:"yyyy-MM-dd"}}</td>
+                        <td>已发布</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="padding">
+                    <div class="bill_paging">
+                        <span>共{{searchPaginator.object.page.totalResult}}条</span>
+                        <ul class="pagination">
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-click="searchPaginator.go(1)">首页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a>
+                            </li>
+                            <li ng-class="{true:'active'}[searchPaginator.page.currentPage==i]" ng-repeat="i in searchPaginator.pages">
+                                <a href="javascript:void(0)"  ng-click="searchPaginator.go(i)">{{i}}</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                                <a href="javascript:void(0)" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                                <a href="javascript:void(0)" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--新建规章制度模态框-->
+<div class="modal fade" id="myModale" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <p>添加制度</p>
+            </div>
+            <div class="modal-body" >
+                <div class="sel1">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">标题：</div>
+                        <div class="col-lg-10 col-md-10 col-sm-10">
+                            <input type="text" class="form-control" ng-model="rul.title">
+                        </div>
+                        <!--<div class="col-lg-2 col-md-2 col-sm-2 text-right">摘要：</div>
+                        <div class="col-lg-10 col-md-10 col-sm-10">
+                            <textarea class="text_min" ng-model="rul.briefContent"></textarea>
+                        </div>-->
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">详细内容：</div>
+                        <div class="col-lg-10 col-md-10 col-sm-10">
+                            <textarea class="text_min" ng-model="rul.detailInfo"></textarea>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">创建人：</div>
+                        <!--<div class="col-lg-4 col-md-4 col-sm-4">
+                            <input type="text" class="form-control" ng-model="rul.recordCreater">
+                        </div>-->
+                        <div class="col-lg-4 col-md-4 col-sm-4" ng-click="listPerson()">
+                            <input class="form-control" name="closobjectname" type="text" ng-model="rul.recordCreater" required placeholder="请输入姓名"  data-toggle="modal" data-target="#myModalPerson" readonly="readonly"/>
+                        </div>
+
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">建立时间：</div>
+                        <!--<div class="col-lg-4 col-md-4 col-sm-4">
+                            <input type="text" class="form-control" ng-model="rul.createTime">
+                        </div>-->
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <!-- <input type="date"/>-->
+                            <input type="text" onclick="WdatePicker({readOnly:true})"  placeholder="创建时间"  class="Wdate form-control"   ng-model="rul.createTime" onchange=""  ng-blur="checkDates()" ng-change="getStall(stallss.id,false)">
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            附件列表：
+                        </div>
+                        <div class="col-lg-10 col-md-10 col-sm-10 text-right">
+                            <!--               <button type="button" class="btn btn-default btn-primary" >删除 </button>-->
+                            <button type="button" class="btn btn-default btn-primary" data-toggle="modal" data-target="#ddd" style="cursor:pointer" tabindex="-1"  ng-click="uploadFile()">上传 </button>
+                        </div>
+                        <div class="col-lg-10 col-md-10 col-sm-12 col-lg-offset-2 col-md-offset-2 text-left">
+                            <span ng-if="rul.annexs != null">
+                                <span class="" ng-repeat="item in rul.annexs" style="display:block;margin-right:10px;">
+                                    <span class="glyphicon glyphicon-paperclip" aria-hidden="true"></span>
+                                    <a href="{{fileUrl}}/{{item.annexAddress}}" target="_blank" style="color:#0066cc" title="{{item.annexName}}">{{item.annexName}}</a>
+                                    <!--<img src={{fileUrl}}/{{item.annexAddress}} style="display:block;margin-bottom:5px;width: 100px;height: 100px">-->
+                                    <button class="btn btn-default btn-primary tab-btn btn-sm" ng-click="removePic(item);"><span class="glyphicon glyphicon-remove btn_icon" aria-hidden="true"></span>移除</button>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-default" data-dismiss="modal" ng-click="clearRulesData()">
+                    <span aria-hidden="true">取消</span>
+                </button>
+                <button type="button" class="btn bg-primary " ng-click="ruleLists()" aria-label="Left Align" data-dismiss="modal" >
+                    <span aria-hidden="true">信息列表</span>
+                </button>
+                <button type="button" class="btn bg-primary" ng-click="addRule()" aria-label="Left Align" data-dismiss="modal" >
+                    <span aria-hidden="true">保存</span>
+                </button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--编辑规章制度模态框-->
+<div class="modal fade" id="editRulesModal" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <p>编辑制度</p>
+            </div>
+            <div class="modal-body" >
+                <div class="sel1">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">标题：</div>
+                        <div class="col-lg-10 col-md-10 col-sm-10">
+                            <input type="text" class="form-control" ng-model="rul.title">
+                        </div>
+                        <!--<div class="col-lg-2 col-md-2 col-sm-2 text-right">摘要：</div>
+                        <div class="col-lg-10 col-md-10 col-sm-10">
+                            <textarea class="text_min" ng-model="rul.briefContent"></textarea>
+                        </div>-->
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">详细内容：</div>
+                        <div class="col-lg-10 col-md-10 col-sm-10">
+                            <textarea class="text_min" ng-model="rul.detailInfo"></textarea>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">创建人：</div>
+                        <!--<div class="col-lg-4 col-md-4 col-sm-4">
+                            <input type="text" class="form-control" ng-model="rul.recordCreater">
+                        </div>-->
+                        <div class="col-lg-4 col-md-4 col-sm-4" ng-click="listPerson()">
+                            <input class="form-control" name="closobjectname" type="text" ng-model="rul.recordCreater" required placeholder="请输入姓名"  data-toggle="modal" data-target="#myModalPerson" readonly="readonly"/>
+                        </div>
+
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">建立时间：</div>
+                        <!--<div class="col-lg-4 col-md-4 col-sm-4">
+                            <input type="text" class="form-control" ng-model="rul.createTime">
+                        </div>-->
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <!-- <input type="date"/>-->
+                            <input type="text" onclick="WdatePicker({readOnly:true})"  placeholder="创建时间"  class="Wdate form-control"   ng-model="rul.lastModtime" onchange=""  ng-blur="checkDates()" ng-change="getStall(stallss.id,false)">
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            附件列表：
+                        </div>
+                        <div class="col-lg-10 col-md-10 col-sm-10 text-right">
+                            <!--               <button type="button" class="btn btn-default btn-primary" >删除 </button>-->
+                            <!--<button type="button" class="btn btn-default btn-primary" data-toggle="modal" data-target="#ddd" style="cursor:pointer" tabindex="-1"  ng-click="uploadFile()" >上传 </button>-->
+                        </div>
+                        <div class="col-lg-10 col-md-10 col-sm-12 col-lg-offset-2 col-md-offset-2 text-left">
+                            <span ng-if="rul.annexs != null">
+                                <span class="" ng-repeat="item in rul.annexs" style="display:block;margin-right:5px;">
+                                    <!--<img src={{fileUrl}}/{{item.annexAddress}} style="display:block;margin-bottom:5px;width: 100px;height: 100px">-->
+                                    <span class="glyphicon glyphicon-paperclip" aria-hidden="true"></span>
+                                    <a href="{{fileUrl}}/{{item.annexAddress}}" target="_blank" style="display:inline-block;color:#0066cc" title="{{item.annexName}}">{{item.annexName}}</a>
+                                    <!--<button class="btn btn-default btn-primary tab-btn" ng-click="removePic(item);">移除</button>-->
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-default" data-dismiss="modal" ng-click="clearRulesData()">
+                    <span aria-hidden="true">取消</span>
+                </button>
+                <button type="button" class="btn bg-primary " ng-click="ruleLists()" aria-label="Left Align" data-dismiss="modal" >
+                    <span aria-hidden="true">信息列表</span>
+                </button>
+                <button type="button" class="btn bg-primary" ng-click="submitEditRules()" aria-label="Left Align" data-dismiss="modal" >
+                    <span aria-hidden="true">保存</span>
+                </button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 上传附件模态框 -->
+<div class="modal fade" id="ddd" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    上传
+                </h4>
+            </div>
+            <div class="modal-body">
+                <!--<div class="padding">-->
+                    <div id="remove">
+                        <div id="zyupload" class="zyupload"></div>
+                    </div>
+                <!--</div>-->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="clearAnnexData()">取消</button>
+                <button class="btn bg-primary" data-dismiss="modal" ng-click="picSub()" >提交</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
+<!--人员模态框-->
+<div class="modal fade" id="myModalPerson" tabindex="-1"
+     role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" >
+        <div class="modal-content" style="width: 700px">
+            <div class="modal-header">
+                <span>人员信息</span>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+            </div>
+            <div class="modal-body">
+                <div class="sel">
+                    <div class="col-2 col-md-2 col-sm-2 text-right">
+                        姓名
+                    </div>
+                    <div class="col-4 col-md-4 col-sm-4">
+                        <input type="text" class="form-control " ng-model="searchone.staffName" placeholder="请输入姓名">
+                    </div>
+                    <div class="col-2 col-md-2 col-sm-2 text-right">
+                        联系电话
+                    </div>
+                    <div class="col-4 col-md-4 col-sm-4 ">
+                        <input type="text" class="form-control " ng-model="searchone.phone" placeholder="请输入联系电话">
+                    </div>
+                    <div class="col-2 col-md-2 col-sm-2 text-right">
+                        身份证号
+                    </div>
+                    <div class="col-4 col-md-4 col-sm-4">
+                        <input type="text" class="form-control " ng-model="searchone.idNum" placeholder="请输入身份证号">
+                    </div>
+
+                    <div class="col-6 col-md-6 col-sm-6 text-right">
+                        <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="currentPaginator._load();">
+                            <span class="glyphicon glyphicon-search btn_icon"></span>
+                            查询
+                        </button>
+                    </div>
+
+                    <div class="clear"></div>
+
+                </div>
+                <div class="padding">
+                    <table class="table_lists" ng-repeat="person in currentPaginator.object.personCustNew" ng-show="person.custId!=null" ng-click="choicePerson(person)" >
+                        <tbody>
+                        <tr ng-class="{'this_info':index==person.custId}">
+                            <td width="50px" rowspan="2"><img src="images/user/user_1.png"  width="50" height="50" ></td>
+                            <td>客户姓名：{{person.name}}</td>
+                            <td>性别：{{person.sex}}</td>
+                            <td>家家号：{{person.jiajiaNum}}</td>
+                            <td>身份证：{{person.cardNum}}</td>
+                        </tr>
+                        <tr ng-class="{'this_info':index==person.custId}">
+                            <td>客户编号：{{person.custCode}}</td>
+                            <td>年龄：{{person.age}}</td>
+                            <td>联系电话：{{person.phoneNum}}</td>
+                            <td>QQ号码：{{person.weixinNum}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="bill_paging">
+                        <ul class="pagination">
+                            <li ng-class="{true:'disabled'}[currentPaginator.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-click="currentPaginator.go(1)">首页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[currentPaginator.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-show="currentPaginator.hasPrevious()" ng-click="currentPaginator.previous()">上一页</a>
+                            </li>
+                            <li ng-class="{true:'active'}[currentPaginator.page.currentPage==i]" ng-repeat="i in currentPaginator.pages">
+                                <a href="javascript:void(0)"  ng-click="currentPaginator.go(i)">{{i}}</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[currentPaginator.page.currentPage==currentPaginator.page.totalPage]">
+                                <a href="javascript:void(0)" ng-show="currentPaginator.hasNext()" ng-click="currentPaginator.next()">下一页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[currentPaginator.page.currentPage==currentPaginator.page.totalPage]">
+                                <a href="javascript:void(0)" ng-click="currentPaginator.go(currentPaginator.page.totalPage)">尾页</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn  btn-default" data-dismiss="modal" ng-click="clearPersonData()">
+                    取消
+                </button>
+                <button type="button" class="btn bg-primary" aria-label="Left Align" data-dismiss="modal" ng-click="submitPerson()">
+                    确定
+                </button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>

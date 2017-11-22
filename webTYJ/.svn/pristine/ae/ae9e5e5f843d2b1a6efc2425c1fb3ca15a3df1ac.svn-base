@@ -1,0 +1,635 @@
+<!--
+    创建人：尹霞
+    名称：金融联银行托收
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="bower_components/skins/zyupload-1.0.0.min.css " type="text/css">
+    <!--实现单选效果-->
+    <script>
+        function check(obj) {
+            $(':checkbox').each(function () {
+                if (this != obj)
+                    $(this).attr("checked", false);
+                else {
+                    if ($(this).prop("checked")){
+                        $(this).attr("checked", true);
+                    }
+                    else
+                        $(this).attr("checked", false);
+                }
+            });
+        }
+    </script>
+<title>银行托收办理</title>
+</head>
+<body>
+<div class="padding_info">
+<div id="content-first">
+    <!--tab页切换开始-->
+    <div id="tab">
+        <a class="cursor_pointer"  ng-click="finance()" ng-class="{'this_action ':btnIndex==1}">办理银行托收</a>
+        <a class="cursor_pointer" ng-click="unionPay()" ng-class="{'this_action ':btnIndex==2}">银行托收列表</a>
+        <a class="cursor_pointer" ng-click="showBankNum()" lang="no" ng-class="{'this_action ':btnIndex==3}">银行行别列表</a>
+    </div>
+    <!--tab页切换结束-->
+    <!--视图加载-->
+    <!--tab页切换开始-->
+    <!--银行托收-->
+    <div ng-show="show1">
+        <form name="mainForm" role="form" novalidate>
+        <div class="padding">
+            <div class="col-lg-2 col-md-2 col-sm-2  text-right">
+                户主姓名：
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4 ">
+                <input type="text" class="form-control" ng-model="collectionManage.custName" name="custName" required>
+             </div>
+            <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                <span style="color: red">*</span>
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2  text-right">
+                银行卡号：
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4 ">
+                <input type="text" class="form-control" ng-model="collectionManage.bankAccount" name="bankAccount">
+            </div>
+            <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                <span style="color: red">*</span>
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2  text-right">
+                托收类型：
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4 ">
+                <select ng-model="collectionManage.collectionType" class="form-control"  ng-change="ctChange(collectionManage.collectionType)">
+                    <option value="2">请选择</option>
+                    <option value="0">银联托收</option>
+                    <option value="1">金融联托收</option>
+                </select>
+            </div>
+            <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                <span style="color: red">*</span>
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2  text-right">
+                存折号：
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4 ">
+                <input type="text" class="form-control" ng-model="collectionManage.bankAccount">
+            </div>
+            <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2  text-right">
+                开户银行：
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4 ">
+                <select class="form-control" ng-model="collectionManage.bankName" ng-click="bankSelect()"
+                        ng-options="option.bankNum as option.bankName for option in bank">
+                    <option value="">请选择</option>
+                </select>
+            </div>
+            <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                <span style="color: red">*</span>
+                <span style="color: red" class="cursor_pointer font_underline" ng-click="showBankNum()" >找不到开户行</span>
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2  text-right">
+                开户省：
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4 ">
+                <select class="form-control" ng-model="collectionManage.province" ng-options="key as key for (key,value) in division"
+                        ng-change="collectionManage.city='';collectionManage.district='';">
+                    <option value="">省</option>
+                </select>
+            </div>
+            <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                <span style="color: red">*</span>
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2  text-right">
+                <!--修改时间控件
+                 2016/5/18
+                 徐文广
+                 -->
+                启用时间：
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4 ">
+                <input type="text" onclick="WdatePicker({readOnly:true})"  class="Wdate form-control" ng-model="collectionManage.startTime" onchange=""  ng-blur="checkDates()" ng-change="getStall(stallss.id,false)">
+            </div>
+            <!--<div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+            </div>-->
+            <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                <span style="color: red">*</span>
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2  text-right">
+                开户市：
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4 ">
+                <select class="form-control" ng-model="collectionManage.city" ng-options="key as key for (key,value) in division[collectionManage.province]"
+                        ng-change="collectionManage.district='';">
+                    <option value="">市</option>
+                </select>
+            </div>
+            <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                <span style="color: red">*</span>
+            </div>
+            <!--<div class="col-lg-2 col-md-2 col-sm-2  text-right">
+                使用状态：
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4 ">
+                <select ng-model="collectionManage.collectionState" class="form-control"  ng-options="option.value as option.name for option in collectionState"  >
+                    <option value="">请选择</option>
+                </select>
+            </div>
+            <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                <span style="color: red">*</span>
+            </div>-->
+            <div class="col-lg-2 col-md-2 col-sm-2  text-right">
+                合同号：
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4 ">
+                <input class="form-control" ng-model="collectionManage.contractNumber">
+            </div>
+            <div class="col-lg-7 col-md-6 col-sm-6 blankSpace">
+                <span style="color: red">* 必须10位</span>
+            </div>
+
+            <div class="col-lg-2 col-md-2 col-sm-2  text-right">
+                关联资产：
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4 ">
+                <input class="form-control" ng-model="buildings_choice.fullName" disabled>
+            </div>
+            <div class="col-lg-1 col-md-1 col-sm-1 ">
+                <span style="color: red">*</span>
+            </div>
+
+            <div class="col-lg-1 col-md-2 col-sm-2 ">
+                <button type="submit" class="btn btn-primary" ng-click="getList()" style="margin-left: -50px">
+                    <span class="glyphicon glyphicon-link btn_icon" aria-hidden="true"></span>
+                    关联
+                </button>
+            </div>
+            <div class="clear"></div>
+            <div class="col-lg-2 col-md-2 col-sm-2  text-right">
+                上传：
+            </div>
+            <div class="col-lg-9 col-md-10 col-sm-10 " id="remove">
+                <div id="zyupload" class="zyupload"></div>
+            </div>
+            <div class="clear"></div>
+
+
+            <div class="text-center">
+                <button class="btn btn-primary" ng-click="saveAll()">保存</button>
+                <button class="btn btn-primary" type="reset" value="Reset" ng-click="clearWenjian()">重置</button>
+            </div>
+        </div>
+        </form>
+    </div>
+    <!--银行托收结束-->
+    <!--建筑模态框-->
+    <div class="modal fade" id="selectBuilding" role="dialog" aria-label="personDatil" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" >
+                <div class="modal-header">
+                    <span>信息</span>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="padding">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th><span>&nbsp;</span></th>
+                                <th>序号</th>
+                                <th>房屋地址</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="build in buildings" ng-show="build.id!=null" style="cursor: pointer" >
+                                <td><input type="checkbox" name="buildings" id="{{build.id}}" ng-click="choiceBuilding(build)"></td>
+                                <td>{{$index}}</td>
+                                <td>{{build.fullName}}</td>
+                            </tr>
+
+                            </tbody>
+                        </table>
+
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal"  ng-click="quxiaojianzhu()">取消</button>
+                    <button type="button" class="btn bg-primary" data-dismiss="modal" ng-click="baocunjianzhu()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--详情模态框-->
+    <div class="modal fade" id="datils" role="dialog" aria-label="personDatil" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" >
+                <div class="modal-header">
+                    <span>详情</span>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="sel1">
+                        <div class="row search-padding-10">
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                户主姓名：{{collections.custName}}
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                银行卡号：{{collections.bankAccount}}
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                开户银行：{{collections.bankName}}
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                存折号：{{collections.bankAccount}}
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                开户省：{{collections.province}}
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                开户市：{{collections.city}}
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                启用时间：{{collections.startTime | date:'yyyy-MM-dd'}}
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                截止时间：{{collections.endTime | date:'yyyy-MM-dd'}}
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                关联资产：{{collections.fullName}}
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                合同号：{{collections.contractNumber}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" >取消</button>
+                    <button type="button" class="btn bg-primary" data-dismiss="modal" >关闭</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!--详情-->
+    <div ng-show="show2">
+        <div class="row padding">
+            <div class="col-lg-12">
+             	<div class="search-padding-10">
+                    <button type="button" class="btn btn-default btn-primary" ng-click="finance()" ng-class="{'this_action ':btnIndex==1}">
+                        <span class="glyphicon glyphicon-plus btn_icon"></span>新增
+                    </button>
+                    <!-- 新增button按钮  hulili 2016-6-22 -->
+                    <button type="button" class="btn btn-default btn-primary"  ng-click="editBankEntrust()">
+                        <span class="glyphicon glyphicon-edit btn_icon"></span>编辑
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary"  ng-click="deleteBankEntrust()">
+                        <span class="glyphicon glyphicon-remove btn_icon"></span>删除
+                    </button>
+                </div>
+                <div class="search-padding-10">
+                <table >
+                    <thead>
+                    <tr>
+                        <td><span style="width: 15px">&nbsp;</span></td>
+                        <th>序号</th>
+                        <th>持卡人</th>
+                        <th>银行</th>
+                        <th>银行账号</th>
+                        <th>启用时间</th>
+                        <th>使用状态</th>
+                        <th>关联资产</th>
+                        <th>合同号</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!-- 修改为复选框  hulili 2016-6-22 -->
+                    <tr ng-repeat="datas in searchPaginator.object.collectionManages"
+                        ng-show="datas.collectionManageId!=null" ng-click="choiceRelation(datas)">
+                        <!--<td><input type="checkbox" name="aaa" value="datas" onclick="check(this)" ng-click="getdata(datas)"></td>-->
+                        <td><input value={{datas.collectionManageId}} id={{datas.collectionManageId}} type="checkbox"  ng-model="x" ng-checked="master" ng-click="choiceRelation(datas)" name="bankEntrust"></td>
+                        <td>{{$index}}</td>
+                        <td>{{datas.custName}}</td>
+                        <td>{{datas.financialBankNum.bankName}}</td>
+                        <td>{{datas.bankAccount}}</td>
+                        <td>{{datas.startTime | date:'yyyy-MM-dd'}}</td>
+                        <td ng-switch on="datas.collectionState">
+                            <span ng-switch-when="0">启用</span>
+                            <span ng-switch-when="1">停用</span>
+                            <span ng-switch-when="2">暂停</span>
+                        </td>
+                        <td>{{datas.buildingStructure.fullName}}</td>
+                        <td>{{datas.contractNumber}}</td>
+                    </tr>
+                    <tr ng-show="searchPaginator.object.page.totalResult==0">
+                        <td colspan="8">
+                            暂无数据！
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                 </div>
+                <div class="bill_paging" ng-show="searchPaginator.object.page.totalResult">
+                    <span>共{{searchPaginator.object.page.totalResult}}条</span>
+                    <ul class="pagination">
+                        <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                            <a href="javascript:void(0)" ng-click="searchPaginator.go(1)">首页</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                            <a href="javascript:void(0)" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a>
+                        </li>
+                        <li ng-class="{true:'active'}[searchPaginator.page.currentPage==i]" ng-repeat="i in searchPaginator.pages">
+                            <a href="javascript:void(0)"  ng-click="searchPaginator.go(i)">{{i}}</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                            <a href="javascript:void(0)" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                            <a href="javascript:void(0)" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!--详情结束-->
+
+    <div ng-show="show3">
+        <form>
+            <div class="padding">
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right search-padding-10">
+                    户主姓名：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4 search-padding-10">
+                    <input type="text" class="form-control" ng-model="collections.custName">
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right search-padding-10">
+                    银行卡号：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4 search-padding-10">
+                    <input type="text" class="form-control" ng-model="collections.bankAccount">
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right search-padding-10">
+                    开户银行：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4 search-padding-10">
+                    <select class="form-control" ng-model="collections.bankName" ng-options="option.bankNum as option.bankName for option in bank">
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right search-padding-10">
+                    存折号：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4 search-padding-10">
+                    <input type="text" class="form-control" ng-model="collections.bankAccount">
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right search-padding-10">
+                    开户省：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4 search-padding-10">
+                    <select required="" class="form-control" ng-model="collections.province" ng-options="key as key for (key,value) in division"
+                            ng-change="collections.city='';collections.district='';">
+                        <option value="">省</option>
+                    </select>
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right search-padding-10">
+                    开户市：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4 search-padding-10">
+                    <select class="form-control" ng-model="collections.city" ng-options="key as key for (key,value) in division[collections.province]"
+                            ng-change="collections.district='';">
+                        <option value="">市</option>
+                    </select>
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right search-padding-10">
+                    启用时间：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4 search-padding-10">
+                    <input class="form-control" type="date" ng-model="collections.startTime">
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right search-padding-10">
+                    使用状态：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4 search-padding-10">
+                    <select ng-model="collections.collectionState" class="form-control"  ng-options="option.value as option.name for option in collectionState"  >
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right search-padding-10">
+                    合同号：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4 search-padding-10">
+                    <input class="form-control" ng-model="collections.contractNumber">
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right search-padding-10">
+                    关联资产：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4 search-padding-10">
+                    <input class="form-control" ng-model="buildings_choice.fullName" disabled >
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right search-padding-10">
+                    <button type="submit" class="btn btn-primary" ng-click="getList()" data-toggle="modal" data-target="#selectBuilding" style="cursor:pointer" tabindex="-1" data-toggle="tab">
+                        <span class="glyphicon glyphicon-plus btn_icon" aria-hidden="true"></span>
+                        关联
+                    </button>
+                </div>
+                <div class="clear"></div>
+
+                <div class="text-center">
+                    <button class="btn btn-primary" ng-click="saveUpdate()">修改保存</button>
+                    <button class="btn btn-primary" ng-click="getdata(collections)">重置</button>
+                    <button class="btn btn-primary" ng-click="cancel()">取消</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <!--详情-->
+    <div ng-show="show4">
+        <div class="row padding">
+            <div class="col-lg-12">
+                <div class="search-padding-10">
+                    <button type="button" class="btn btn-default btn-primary" ng-click="addBankNum()" ng-class="{'this_action ':btnIndex==3}">
+                        <span class="glyphicon glyphicon-plus btn_icon"></span>
+                        新增
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary" ng-click="editBankNum()" ng-class="{'this_action ':btnIndex==3}">
+                        <span class="glyphicon glyphicon-edit btn_icon"></span>
+                        编辑
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary"  ng-click="deleteBankNum()">
+                        <span class="glyphicon glyphicon-remove btn_icon"></span>
+                        删除
+                    </button>
+                </div>
+                <div class="search-padding-10">
+                    <table >
+                        <thead>
+                        <tr>
+                            <td><span style="width: 15px">&nbsp;</span></td>
+                            <th>序号</th>
+                            <th>金融联行别</th>
+                            <th>银联银行行号</th>
+                            <th>银行名称</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <!-- 修改为复选框  hulili 2016-6-23 -->
+                        <tr ng-repeat="datas in searchPaginatorBankNum.object.financialBankNums"
+                            ng-show="datas.financialBankNumId != null" ng-click="choiceRel(datas)">
+                            <!--<td><input type="checkbox" name="addDatas"  onclick="check(this)" ng-click="getAllChecks(datas)" id="{{datas.financialBankNumId}}" /></td>-->
+                            <td><input value={{datas.financialBankNumId}} id={{datas.financialBankNumId}} type="checkbox"  ng-model="x" ng-checked="master" ng-click="choiceRel(datas)" name="financialBank"></td>
+                            <td>{{$index}}</td>
+                            <td>{{datas.bankNum}}</td>
+                            <td>{{datas.unionpayBankNum}}</td>
+                            <td>{{datas.bankName}}</td>
+                        </tr>
+                        <tr ng-show="searchPaginatorBankNum.object.page.totalResult==0">
+                            <td colspan="8">
+                                暂无数据！
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="bill_paging" ng-show="searchPaginatorBankNum.object.page.totalResult">
+                    <span>共{{searchPaginatorBankNum.object.page.totalResult}}条</span>
+                    <ul class="pagination">
+                        <li ng-class="{true:'disabled'}[searchPaginatorBankNum.page.currentPage==1]">
+                            <a href="javascript:void(0)" ng-click="searchPaginatorBankNum.go(1)">首页</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[searchPaginatorBankNum.page.currentPage==1]">
+                            <a href="javascript:void(0)" ng-show="searchPaginatorBankNum.hasPrevious()" ng-click="searchPaginatorBankNum.previous()">上一页</a>
+                        </li>
+                        <li ng-class="{true:'active'}[searchPaginatorBankNum.page.currentPage==i]" ng-repeat="i in searchPaginatorBankNum.pages">
+                            <a href="javascript:void(0)"  ng-click="searchPaginatorBankNum.go(i)">{{i}}</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[searchPaginatorBankNum.page.currentPage==searchPaginatorBankNum.page.totalPage]">
+                            <a href="javascript:void(0)" ng-show="searchPaginatorBankNum.hasNext()" ng-click="searchPaginatorBankNum.next()">下一页</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[searchPaginatorBankNum.page.currentPage==searchPaginatorBankNum.page.totalPage]">
+                            <a href="javascript:void(0)" ng-click="searchPaginatorBankNum.go(searchPaginatorBankNum.page.totalPage)">尾页</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!--详情结束-->
+
+    <div ng-show="show5">
+        <form>
+            <div class="padding">
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right search-padding-10">
+                    金融联行别：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4 search-padding-10">
+                    <input type="text" class="form-control" ng-model="financialBankNum.bankNum">
+                </div>
+                <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                    <span style="color: red"></span>
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right search-padding-10">
+                    银联银行行号：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4 search-padding-10">
+                    <input type="text" class="form-control" ng-model="financialBankNum.unionpayBankNum">
+                </div>
+                <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                    <span style="color: red"></span>
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right search-padding-10">
+                    简称序列：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4 search-padding-10">
+                    <input class="form-control" ng-model="financialBankNum.bankNameSeq">
+                </div>
+                <div class="col-lg-2 col-md-6 col-sm-6 blankSpace">
+                    <span style="color: red">*不少于3个字母</span>
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right search-padding-10">
+                    银行名称：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4 search-padding-10">
+                    <input type="text" class="form-control" ng-model="financialBankNum.bankName">
+                </div>
+                <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                    <span style="color: red">*</span>
+                </div>
+
+                <div class="text-center">
+                    <button class="btn btn-primary" ng-click="saveBankNumUpdate()">修改保存</button>
+                    <button class="btn btn-primary" ng-click="getBankNumdata(financialBankNum)">重置</button>
+                    <button class="btn btn-primary" ng-click="showBankNum()">取消</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!--银行行别新增-->
+    <div ng-show="show6">
+        <form name="mainForm" role="form" novalidate>
+            <div class="padding">
+                <div class="col-lg-2 col-md-2 col-sm-2  text-right">
+                    金融联行别：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4 ">
+                    <input type="text" class="form-control" ng-model="finanBankNum.bankNum" name="bankNum" required>
+                </div>
+                <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                    <span style="color: red"></span>
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2  text-right">
+                    银联银行行号：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4 ">
+                    <input type="text" class="form-control" ng-model="finanBankNum.unionpayBankNum" name="unionpayBankNum" required>
+                </div>
+                <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                    <span style="color: red"></span>
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2  text-right">
+                    简称序列：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4 ">
+                    <input class="form-control" ng-model="finanBankNum.bankNameSeq" name="bankNameSeq">
+                </div>
+                <div class="col-lg-2 col-md-6 col-sm-6 blankSpace">
+                    <span style="color: red">*不少于3个字母</span>
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2  text-right">
+                    银行名称：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4 ">
+                    <input type="text" class="form-control" ng-model="finanBankNum.bankName" name="bankName">
+                </div>
+                <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                    <span style="color: red">*</span>
+                </div>
+
+                <div class="text-center">
+                    <button class="btn btn-primary" ng-click="saveFinanBankNumAll()">保存</button>
+                    <button class="btn btn-primary" type="reset" value="Reset" ng-click="clearWenjian()">重置</button>
+                    <button class="btn btn-primary" ng-click="showBankNum()">取消</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <!--银行行别新增结束-->
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,274 @@
+treecontrol {
+    /* prevent user selection */
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    /* default */
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    font-size:13px;
+    color: #555;
+    text-decoration: none;
+}
+
+treecontrol ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border: none;
+    overflow: hidden;
+}
+
+treecontrol li {
+    position: relative;
+    padding: 0 0 0 20px;
+    line-height: 20px;
+}
+
+treecontrol li.tree-expanded i.tree-leaf-head, treecontrol li.tree-collapsed i.tree-leaf-head {display:none;}
+treecontrol li.tree-expanded i.tree-branch-head, treecontrol li.tree-collapsed i.tree-branch-head {display:inline;}
+treecontrol li.tree-leaf i.tree-branch-head {display:none;}
+treecontrol li.tree-leaf i.tree-leaf-head {display:inline;}
+
+treecontrol li i.tree-branch-head {
+    cursor: pointer;
+}
+
+treecontrol li .tree-label {
+    cursor: pointer;
+    display: inline;
+}
+
+
+treecontrol.tree-classic li.tree-expanded i.tree-branch-head {
+    padding: 1px 10px;
+    background: url("../images/angular-tree/folder.png") no-repeat;
+}
+
+treecontrol.tree-classic li.tree-collapsed i.tree-branch-head {
+    padding: 1px 10px;
+    background: url("../images/angular-tree/folder-closed.png") no-repeat;
+}
+
+treecontrol.tree-classic li.tree-leaf i.tree-leaf-head {
+    padding: 1px 10px;
+    background: url("../images/angular-tree/file.png") no-repeat;
+}
+
+treecontrol.tree-classic li .tree-selected {
+    background-color: #aaddff;
+    font-weight: bold;
+}
+
+
+treecontrol.tree-light li.tree-expanded i.tree-branch-head {
+    padding: 1px 10px;
+    background: url("../images/angular-tree/node-opened-2.png") no-repeat;
+}
+
+treecontrol.tree-light li.tree-collapsed i.tree-branch-head {
+    padding: 1px 10px;
+    background: url("../images/angular-tree/node-closed-2.png") no-repeat;
+}
+
+treecontrol.tree-light li.tree-leaf i.tree-leaf-head {
+    padding: 1px 10px;
+    width: 16px; height: 16px;
+    background: none no-repeat;
+}
+
+treecontrol.tree-light li .tree-selected {
+    font-weight: bold;
+}
+
+
+treecontrol.tree-dark li.tree-expanded i.tree-branch-head {
+    padding: 1px 10px;
+    background: url("../images/angular-tree/node-opened-light.png") no-repeat;
+}
+
+treecontrol.tree-dark li.tree-collapsed i.tree-branch-head {
+    padding: 1px 10px;
+    background: url("../images/angular-tree/node-closed-light.png") no-repeat;
+}
+
+treecontrol.tree-dark li.tree-leaf i.tree-leaf-head {
+    padding: 1px 10px;
+    width: 16px; height: 16px;
+    background: none no-repeat;
+}
+
+treecontrol.tree-dark li .tree-selected {
+    font-weight: bold;
+}
+
+treecontrol.tree-dark {
+    color: #ddd;
+}
+
+[treecontrol] {
+    /* prevent user selection */
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    /* default */
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    font-size:13px;
+    color: #555;
+    text-decoration: none;
+}
+
+[treecontrol] ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border: none;
+    overflow: hidden;
+}
+
+[treecontrol] li {
+    position: relative;
+    padding: 0 0 0 20px;
+    line-height: 20px;
+}
+
+[treecontrol] li.tree-expanded i.tree-leaf-head, [treecontrol] li.tree-collapsed i.tree-leaf-head {display:none;}
+[treecontrol] li.tree-expanded i.tree-branch-head, [treecontrol] li.tree-collapsed i.tree-branch-head {display:inline;}
+[treecontrol] li.tree-leaf i.tree-branch-head {display:none;}
+[treecontrol] li.tree-leaf i.tree-leaf-head {display:inline;}
+
+[treecontrol] li i {
+    cursor: pointer;
+}
+
+[treecontrol] li .tree-label {
+    cursor: pointer;
+    display: inline;
+}
+
+
+[treecontrol].tree-classic li.tree-expanded i.tree-branch-head {
+    padding: 1px 10px;
+    background: url("../images/angular-tree/folder.png") no-repeat;
+}
+
+[treecontrol].tree-classic li.tree-collapsed i.tree-branch-head {
+    padding: 1px 10px;
+    background: url("../images/angular-tree/folder-closed.png") no-repeat;
+}
+
+[treecontrol].tree-classic li.tree-leaf i.tree-leaf-head {
+    padding: 1px 10px;
+    background: url("../images/angular-tree/file.png") no-repeat;
+}
+
+[treecontrol].tree-classic li .tree-selected {
+    background-color: #aaddff;
+    font-weight: bold;
+}
+
+
+[treecontrol].tree-light li.tree-expanded i.tree-branch-head {
+    padding: 1px 10px;
+    background: url("../images/angular-tree/node-opened-2.png") no-repeat;
+}
+
+[treecontrol].tree-light li.tree-collapsed i.tree-branch-head {
+    padding: 1px 10px;
+    background: url("../images/angular-tree/node-closed-2.png") no-repeat;
+}
+
+[treecontrol].tree-light li.tree-leaf i.tree-leaf-head {
+    padding: 1px 10px;
+    width: 16px; height: 16px;
+    background: none no-repeat;
+}
+
+[treecontrol].tree-light li .tree-selected {
+    font-weight: bold;
+}
+
+
+[treecontrol].tree-dark li.tree-expanded i.tree-branch-head {
+    padding: 1px 10px;
+    background: url("../images/angular-tree/node-opened-light.png") no-repeat;
+}
+
+[treecontrol].tree-dark li.tree-collapsed i.tree-branch-head {
+    padding: 1px 10px;
+    background: url("../images/angular-tree/node-closed-light.png") no-repeat;
+}
+
+[treecontrol].tree-dark li.tree-leaf i.tree-leaf-head {
+    padding: 1px 10px;
+    width: 16px; height: 16px;
+    background: none no-repeat;
+}
+
+[treecontrol].tree-dark li .tree-selected {
+    font-weight: bold;
+}
+
+[treecontrol].tree-dark {
+    color: #ddd;
+}
+
+/* Pretty printing styles. Used with prettify.js. */
+/* Customization from the prettify.css default style*/
+
+/* SPAN elements with the classes below are added by prettyprint. */
+.pln { color: #000 }  /* plain text */
+
+@media screen {
+    .str { color: #d14 }  /* string content */
+    .kwd { color: #008;font-weight: bold; }  /* a keyword */
+    .com { color: #11880d }  /* a comment */
+    .typ { color: #900;font-weight: bold; }  /* a type name */
+    .lit { color: #099 }  /* a literal value */
+    /* punctuation, lisp open bracket, lisp close bracket */
+    .pun, .opn, .clo { color: #0086B3 }
+    .tag { color: #008 }  /* a markup tag name */
+    .atn { color: #008080 }  /* a markup attribute name */
+    .atv { color: #d14 }  /* a markup attribute value */
+    .dec, .var { color: #606 }  /* a declaration; a variable name */
+    .fun { color: red }  /* a function name */
+}
+
+/* Use higher contrast and text-weight for printable form. */
+@media print, projection {
+    .str { color: #060 }
+    .kwd { color: #006; font-weight: bold }
+    .com { color: #600; font-style: italic }
+    .typ { color: #404; font-weight: bold }
+    .lit { color: #044 }
+    .pun, .opn, .clo { color: #440 }
+    .tag { color: #006; font-weight: bold }
+    .atn { color: #404 }
+    .atv { color: #060 }
+}
+
+/* Put a border around prettyprinted code snippets. */
+pre.prettyprint { padding: 2px; border: 1px solid #888 }
+
+/* Specify class=linenums on a pre to get line numbering */
+ol.linenums { margin-top: 0; margin-bottom: 0 } /* IE indents via margin-left */
+li.L0,
+li.L1,
+li.L2,
+li.L3,
+li.L5,
+li.L6,
+li.L7,
+li.L8 { list-style-type: none }
+/* Alternate shading for lines */
+li.L1,
+li.L3,
+li.L5,
+li.L7,
+li.L9 { background: #eee }
+

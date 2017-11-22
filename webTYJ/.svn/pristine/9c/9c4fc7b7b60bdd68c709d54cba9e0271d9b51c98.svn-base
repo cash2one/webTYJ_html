@@ -1,0 +1,24 @@
+<!--
+    创建人：倪明  日期：2015/8/14
+    页面名称：收费项目
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>收费项目</title>
+</head>
+<body>
+<div id="content-first">
+    <!--tab页切换开始-->
+    <div id="tab">
+        <a href="#" ui-sref="index.accountManagement.payService.chargingItem">收费项目列表</a>
+        <a lang="no"  ui-sref="index.accountManagement.payService.chargingScheme">定义优先级</a>
+    </div>
+    <!--tab页切换结束-->
+    <!--视图加载-->
+    <div ui-view></div>
+    <!--视图加载开始-->
+</div>
+</body>
+</html>

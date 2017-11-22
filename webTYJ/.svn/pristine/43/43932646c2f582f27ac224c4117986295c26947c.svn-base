@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div class="sel_top">
+    <div class="row">
+        <div class="col-lg-9 col-md-9 col-sm-6">
+            <button type="button" class="btn btn-default btn-primary" ng-click="outWaterDataReportExcel()">
+                <span class="glyphicon glyphicon-log-out btn_icon"></span>
+                导出
+            </button>
+        </div>
+        <div class="col-lg-2 col-md-2 col-sm-4"><input class="form-control" ng-model="MeterReadingData.waterMeterNum" placeholder="请输入编号"></div>
+        <div class="col-lg-1 col-md-1 col-sm-2">
+            <button type="button" class="btn btn-default btn-primary" ng-click="waterChecks._load()">
+                <span class="glyphicon glyphicon-search btn_icon"></span>
+                查询
+            </button>
+        </div>
+    </div>
+
+</div>
+<div class="row padding">
+    <div class="col-lg-12">
+        <table>
+            <thead>
+            <th width="50px"><!--<input type="checkbox" id="selectAll" ng-click="selectAll()" />--></th>
+            <th>序号</th>
+            <th>计划名称</th>
+            <th>水表编号</th>
+            <th>水表描述</th>
+            <th>本月读数</th>
+            <th>本月修正量</th>
+            <th>本月用量</th>
+            <th>上月读数</th>
+            <th>上月用量</th>
+            <!--<th>上月修正量</th>-->
+            <th>同比</th>
+            <th>去年读数</th>
+            <th>去年用量</th>
+            <th>环比</th>
+            </thead>
+            <tbody id="selectInput">
+            <tr ng-class="{'this_info ':btnIndex==wd}" ng-click="check(wd)"
+                ng-repeat="wd in waterChecks.object.meterReadingData"
+                ng-if="wd['meterReadingDataId'] != null"
+                    >
+                <td><!--<input type="checkbox" id="{{wd.meterReadingDataId}}">--></td>
+                <td>{{$index}}</td>
+                <td>{{wd.projectName}}</td>
+                <td>{{wd.waterMeterNum}}</td>
+                <td>{{wd.waterMeterDescribed}}</td>
+                <td>{{wd.reading}}</td>
+                <td>{{wd.correction}}</td>
+                <td>{{wd.reading}}</td>
+                <td>{{wd.lastMonthReading}}</td>
+                <td>{{wd.lastMonthUse}}</td>
+               <!-- <td>{{wd.lastMonthCorrection}}</td>-->
+                <td>{{wd.comparedSame}}</td>
+                <td>{{wd.lastYearRead}}</td>
+                <td>{{wd.lastYearUse}}</td>
+                <td>{{wd.sequential}}</td>
+            </tr>
+            </tbody>
+        </table>
+       <!-- <div class="bill_paging">
+            <ul class="pagination">
+                <li><a style="cursor:pointer;" ng-click="waterChecks.go(1)">首页</a></li>
+                <li><a style="cursor:pointer;" ng-show="waterChecks.hasPrevious()" ng-click="waterChecks.previous()">上一页</a></li>
+                <li><a style="cursor:pointer;" ng-repeat="i in waterChecks.pages"  ng-click="waterChecks.go(i)">{{i}}</a></li>
+                <li><a style="cursor:pointer;" ng-show="waterChecks.hasNext()" ng-click="waterChecks.next()">下一页</a></li>
+                <li><a style="cursor:pointer;" ng-click="waterChecks.go(waterChecks.page.totalPage)">尾页</a></li>
+            </ul>
+        </div>-->
+        <div class="bill_paging">
+            <span>共{{waterChecks.object.page.totalResult}}条</span>
+            <ul class="pagination">
+                <li ng-class="{true:'disabled'}[waterChecks.page.currentPage==1]">
+                    <a href="javascript:void(0)" ng-click="waterChecks.go(1)">首页</a>
+                </li>
+                <li ng-class="{true:'disabled'}[waterChecks.page.currentPage==1]">
+                    <a href="javascript:void(0)" ng-show="waterChecks.hasPrevious()" ng-click="waterChecks.previous()">上一页</a>
+                </li>
+                <li ng-class="{true:'active'}[waterChecks.page.currentPage==i]" ng-repeat="i in waterChecks.pages">
+                    <a href="javascript:void(0)"  ng-click="waterChecks.go(i)">{{i}}</a>
+                </li>
+                <li ng-class="{true:'disabled'}[waterChecks.page.currentPage==waterChecks.page.totalPage]">
+                    <a href="javascript:void(0)" ng-show="waterChecks.hasNext()" ng-click="waterChecks.next()">下一页</a>
+                </li>
+                <li ng-class="{true:'disabled'}[waterChecks.page.currentPage==waterChecks.page.totalPage]">
+                    <a href="javascript:void(0)" ng-click="waterChecks.go(waterChecks.page.totalPage)">尾页</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+</body>
+</html>

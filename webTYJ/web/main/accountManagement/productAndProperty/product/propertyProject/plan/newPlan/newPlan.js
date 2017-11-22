@@ -1,0 +1,806 @@
+/**
+ * Created by maogaofei on 2016/07/07.
+ * 计费管理模块计费方案
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../../../../app');
+
+    app.controller('propertyNewPlansCtrl', ['$scope', '$http','$rootScope','$location','$compile', function ($scope,$http,$rootScope,$location,$compile) {
+
+        //url
+        var url = $rootScope.url;
+        //项目
+        var project = sessionStorage.getItem("_project");
+        $scope.project = JSON.parse(project);
+        //项目ID
+        var projectId =  $scope.project.projectId;
+        //新方案ID
+        var newSchemeId = app.get('tyjUtil').uuid();
+        //收费类型名称
+        $scope.chargeTypeName = "";
+        //收费类型ID
+        var chargeTypeId="";
+        //收费项目详情ID
+        var chargeItemDetailsId="";
+        //收费项目ID
+        var varChargeItemNewId="";
+        //公式名称
+        var log ="";
+        //设置标签选中
+        $scope.btnIndex=2;
+        $scope.newChargeItemDetails_show = false;
+        $scope.newScheme_show = true;
+        $scope.ChargeItemNewList={};
+        $scope.ConsoleAdd={};
+        $scope.AddCondition={};
+        $scope.constant = [];      //常量表
+
+        /**
+         * maogaofei 20160628
+         * 获取已启用的费用类型
+         */
+        $scope.getCharTypeList = function(){
+            $scope.charType = {};
+            $scope.charType.chargeTypeStatus="0"//0-已启用
+            $scope.charType.projectId=projectId;//项目ID
+            $http.post(url+'/ChargeType/listAllChargeType',{ChargeType:$scope.charType}).success(function(data){
+                $scope.chargeTypeList = data.ChargeType;
+            })
+        };
+
+        /**
+         * maogaofei 20160630
+         * 根据项目ID和计费方案ID查询可选建筑列表
+         */
+        $scope.getbuildingStructList = function(){
+            $http.get(url+'/ChargeItemNew/getBuildingListByProidAndSchemeid/'+projectId+'/'+newSchemeId).success(function(data){
+                $scope.zNodes =[{}];
+                //获取json数据
+                $scope.buildingStructureNews = data.BuildingStructureNew;
+                var tasks =  $scope.buildingStructureNews;
+                if(tasks!=null && $scope.buildingStructureNews.length != 0){
+                    for(var i=0;i<tasks.length;i++){
+                        $scope.zNode ={ id:tasks[i].id, pId:tasks[i].parentId, name:tasks[i].nodeName,fullname:tasks[i].fullName,checked:tasks[i].checked};
+                        $scope.zNodes.push($scope.zNode);
+                    }
+                    $.fn.zTree.init($("#treeDemo"), setting, $scope.zNodes);
+
+                    var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+                    var nodes = zTree.getNodes();
+                    nodes[0].name = "建筑信息";
+                    zTree.updateNode(nodes[0]);
+                }
+            }).error(function(data,status,headers,config){
+                layer.msg("建筑信息查询失败！",{icon:2,time:1000});
+            });
+        };
+        /**
+         * 建筑树形控制
+         */
+        var zTreeOnCheck=function(event, treeId, treeNode) {
+            var treeObj=$.fn.zTree.getZTreeObj("treeDemo");
+            var nodes=treeObj.getCheckedNodes(true);
+            $scope.treeResult={treeList:[]};
+            for(var i=0;i<nodes.length;i++){
+                if(nodes[i].isParent==false) {
+                    $scope.treeResult.treeList.push(nodes[i]);
+                }
+                if(nodes[i].check_Child_State == -1){
+                    $rootScope.addressIdT=nodes[i].id;
+                }
+            }
+        };
+        /**
+         * 建筑树形控制
+         */
+        var setting = {
+            check:{
+                enable:true
+            },
+            view: {
+                selectedMulti: false
+            },
+            edit: {
+                enable: false,
+                editNameSelectAll: false
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            },
+            callback: {
+                onCheck:zTreeOnCheck
+            }
+        };
+        /**
+         * maogaofei 20160630
+         * 显示选中的树状数据
+         */
+        $scope.addWaterReading = function(){
+            $scope.addWaterCheck = $scope.treeResult.treeList;
+        };
+        /**
+         * maogaofei 20160630
+         * 删除已选中的建筑
+         */
+        $scope.removeItem=function(index,item){
+            var treeObj=$.fn.zTree.getZTreeObj("treeDemo");
+            var node ={id:item.id, pId:item.pId, name:item.nodeName,fullName:item.fullName,checked:false};
+            var parentNode=treeObj.getNodeByParam("id",item.id,null);
+            treeObj.checkNode(parentNode, false, true);
+            $scope.addWaterCheck.splice(index,1);
+        };
+        /**
+         * 清空已勾选的建筑
+         */
+        $scope.remove_all = function() {
+            var treeObj=$.fn.zTree.getZTreeObj("treeDemo");
+            $scope.addWaterCheck = null;
+            treeObj.checkAllNodes(false);
+        };
+
+        /**
+         * maogaofei 20160629
+         * 切换标签
+         */
+        $scope.doClick = function(item){
+            $scope.btnIndex = item;
+        };
+
+        /**
+         * maogaofei 20160629
+         * 收费类型选择事件
+         * @param chargeTypeId
+         */
+        $scope.ctChange = function(cyId){
+            $http.get(url + '/ChargeType/getChargeTypeById/'+cyId).success(function(data){
+                $scope.cType=data.ChargeType;
+                $scope.chargeTypeName = $scope.cType.chargeTypeName;
+                chargeTypeId = cyId;
+            }).error(function(data, status, headers, config){
+                layer.msg("查询失败，请重新选择",{icon:2,time:1000});
+            });
+        }
+
+        /**
+         * maogaofei 20160630
+         * 新增收费项目
+         * @type {{}}
+         */
+        $scope.addChargeItem = function(){
+            $scope.alertName = '新增';
+            $scope.newChargeItem = {};
+            if(angular.isUndefined($scope.Scheme)||angular.isUndefined($scope.Scheme.chargeTypeId)||angular.equals($scope.Scheme.chargeTypeId,'')){
+                layer.msg('请选择收费类型！', {icon:0,time:1000});
+            }else{
+                $scope.addWaterCheck = null;
+                $("#treeDemo li").remove();
+                angular.element("#newChargeItem_show").modal("show");
+                //获取收费项目关联的建筑结构
+                $scope.getbuildingStructList();
+            }
+        }
+        /**
+         * maogaofei 20160630
+         * 保存收费项目
+         */
+        $scope.saveChargeItem = function(){
+            if($scope.newChargeItem == null ||$scope.newChargeItem.chargeItemNewUnit==undefined||
+                $scope.newChargeItem.chargeItemNewUnit==''||$scope.newChargeItem.chargeItemNewUnit==null) {
+                layer.msg('请选择单位！',{icon:0,time:1000});
+                return;
+            }
+            if($scope.addWaterCheck == null){
+                layer.msg('请选择使用范围！',{icon:0,time:1000});
+                return;
+            }
+            $scope.newChargeItem.schemeId=newSchemeId;
+            $scope.newChargeItem.chargeTypeId =chargeTypeId;
+            $scope.newChargeItem.buildingStructureNewList=$scope.addWaterCheck;
+            $scope.newChargeItem.projectId = projectId;
+            angular.element('#newChargeItem_show').modal('hide');
+            angular.element("#handleIng_show").modal("show");
+            $http.post(url + "/ChargeItemNew/insertChargeItemNew",{ChargeItemNew:$scope.newChargeItem}).success(function(data){
+                angular.element("#handleIng_show").modal("hide");
+                document.getElementById("chargeTypeSelect").setAttribute("disabled","disabled");
+                layer.msg("操作成功!",{icon:1,time:1000});
+                $scope.newSchemeInit();  //刷新数据
+            }).error(function(){
+                angular.element("#handleIng_show").modal("hide");
+                layer.msg("操作失败!",{icon:2,time:1000});
+            });
+        }
+        /**
+         * maogaofei 21060704
+         * 收费项目复选框点击事件
+         */
+        $scope.arr = [];
+        $scope.getChargeItemCheckBoxs = function(arg){
+            var index = $scope.arr.indexOf(arg)
+            if(index > -1){
+                $scope.arr.splice(index,1);
+            }else{
+                $scope.arr.push(arg);
+            }
+        }
+        /**
+         * maogaofei 21060704
+         * 删除收费项目
+         */
+        $scope.deleteChargeItem = function(){
+            var checkNum = $scope.arr.length;
+            if(parseInt(checkNum) < 1){
+                layer.msg("请选择一个收费项目!",{icon:0,time:1000});
+                return;
+            }
+
+            layer.confirm('确定要删除记录？', {
+                btn: ['确定','取消'] //按钮
+            }, function(){
+                $http.get(url + "/ChargeItemNew/deleteChargeItemNew/"+$scope.arr.join(",")).success(function(data){
+                    $scope.newSchemeInit();
+                    $scope.arr = [];
+                    layer.msg("操作成功!",{icon:1,time:1000});
+                }).error(function(){
+                    layer.msg("操作失败!",{icon:2,time:1000});
+                });
+            }, function(){
+
+            });
+        }
+        /**
+         * maogaoei 20160630
+         * 查询计费方案下收费项目
+         */
+        $scope.newSchemeInit = function(){
+            $scope.ChargeItemNewList={};
+            $scope.ChargeItemNewInit={};
+            $scope.ChargeItemNewInit.schemeId=newSchemeId;
+            $http.post(url + "/ChargeItemNew/listAllChargeItemNew",{ChargeItemNew:$scope.ChargeItemNewInit}).success(function(data){
+                $scope.ChargeItemNewList = data.ChargeItemNew;
+                if(data.ChargeItemNew == null || data.ChargeItemNew.length == 0){
+                    $("#chargeTypeSelect").removeAttr("disabled");
+                }
+            }).error(function(){
+                layer.msg("获取方案明细列表失败!",{icon:2,time:1000});
+            });
+        };
+        /**
+         * maogaofei 20160630
+         * 返回计费方案列表
+         */
+        $scope.backDetail = function() {
+            $location.path('/index/accountManagement/productAndProperty/product/propertyProject/plan/detailPlan/');
+        };
+
+        /**
+         * maogaofei 20160630
+         * 计费方案保存
+         */
+        $scope.addScheme = function(){
+            if($scope.Scheme == null ||$scope.Scheme.schemeName==undefined||$scope.Scheme.schemeName==''||$scope.Scheme.schemeName==null) {
+                layer.msg('请输入方案名称！',{icon:0,time:1000});
+                return;
+            }
+            if($scope.Scheme == null ||$scope.Scheme.startDate==undefined||$scope.Scheme.startDate==''||$scope.Scheme.startDate==null) {
+                layer.msg('请选择生效日期！',{icon:0,time:1000});
+                return;
+            }
+            if($scope.Scheme == null ||$scope.Scheme.chargeSet==undefined||$scope.Scheme.chargeSet==''||$scope.Scheme.chargeSet==null) {
+                layer.msg('请选择计费设置！',{icon:0,time:1000});
+                return;
+            }
+            if($scope.Scheme == null ||$scope.Scheme.chargeTypeId==undefined||$scope.Scheme.chargeTypeId==''||$scope.Scheme.chargeTypeId==null) {
+                layer.msg('请选择收费类型！',{icon:0,time:1000});
+                return;
+            }
+            if($scope.Scheme.chargeSet=='01') {
+                if($scope.Scheme.chargeFre==undefined||$scope.Scheme.chargeFre==''||$scope.Scheme.chargeFre==null) {
+                    layer.msg('请选择计费频率！',{icon:0,time:1000});
+                    return;
+                }
+                if($scope.Scheme.chargeTime==undefined||$scope.Scheme.chargeTime==''||$scope.Scheme.chargeTime==null) {
+                    layer.msg('请选择自动计费时间！',{icon:0,time:1000});
+                    return;
+                }
+            }
+
+            var rightTime = app.get('valueCheck').isrightTimeNew($scope.Scheme.startDate,$scope.Scheme.endDate)
+            if(!rightTime.state){
+                layer.msg(rightTime.info,{icon:0,time:1000});
+                return;
+            }
+            $scope.Scheme.schemeId=newSchemeId;
+            $scope.Scheme.projectId=projectId;
+            $http.post(url + "/Scheme/insertScheme",{Scheme:$scope.Scheme}).success(function(data){
+                if(angular.equals(data.code,'200')){
+                    layer.msg(data.information,{icon:1,time:1000});
+                    $scope.backDetail();
+                }else if(angular.equals(data.code,'3001')){
+                    layer.msg(data.information,{icon:0,time:1000});
+                }
+            }).error(function(){
+                layer.msg("保存失败!",{icon:2,time:1000});
+            });
+        };
+
+        /**
+         * maogaofei 20160630
+         * 显示收费项目详情列表
+         */
+        $scope.veiwChargeItemNewDatails = function(chargeItemNewId){
+            varChargeItemNewId = chargeItemNewId;
+            $scope.newScheme_show = false;
+            $scope.newChargeItemDetails_show = true;
+            $scope.NewChargeItemNewDetailsList={};
+            $scope.NewChargeItemNewDetails={};
+            $scope.NewChargeItemNewDetails.chargeItemNewId=chargeItemNewId;
+            $http.post(url+ "/ChargeItemNewDetails/listAllChargeItemNewDetails",{ChargeItemNewDetails:$scope.NewChargeItemNewDetails}).success(function(data){
+                $scope.NewChargeItemNewDetailsList = data.ChargeItemNewDetails;
+                if($scope.NewChargeItemNewDetailsList != null){
+                    $scope.viewFormulaList($scope.NewChargeItemNewDetailsList[0].chargeItemDetailsId);
+                }
+            }).error(function(){
+                layer.msg("获取收费项目详情列表失败!",{icon:2,time:1000});
+            })
+        }
+        /**
+         * maogaofei 20160701
+         * 显示公式列表
+         */
+        $scope.viewFormulaList = function(ciDetailsId){
+            chargeItemDetailsId = ciDetailsId;
+            $scope.ChargeItemDetailsIdIndex = ciDetailsId;
+            $scope.NewFormula={};
+            $scope.NewFormula.chargeItemDetailsId=ciDetailsId;
+            $http.post(url+ "/Formula/listAllFormula",{Formula:$scope.NewFormula}).success(function(data){
+                $scope.NewFormulaList = data.Formula;
+            }).error(function(){
+                layer.msg("获取公式列表失败!",{icon:2,time:1000});
+            })
+        }
+        /**
+         * maogaofei 20160701
+         * 收费项目详情列表返回收费项目列表
+         */
+        $scope.backList = function(){
+            $scope.newScheme_show = true;
+            $scope.newChargeItemDetails_show = false;
+        };
+        /**
+         * maogaofei 20160701
+         * 常量树形控制
+         */
+        var formulas = {names:'',values:''};
+        function zTreeOnClick(event, treeId, treeNode) {
+            if(treeNode.isParent==false) {
+                $scope.zTreeMark = false;
+                if (!log) log = $("#logDiv");
+                log.append("<span>"+treeNode.name+"</span>");
+                formulas.names += treeNode.name;
+                formulas.values += treeNode.value;
+            }
+        }
+
+        /**
+         * maogaofei 20160701
+         * 常量树形控制
+         */
+        var constantSetting = {
+            check:{
+                enable:false
+            },
+            view: {
+                selectedMulti: false
+            },
+            edit: {
+                enable: false,
+                editNameSelectAll: false
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            },
+            callback: {
+                onClick:zTreeOnClick
+            }
+        };
+        /**
+         * maogaofei 20160701
+         * 查询常用常量及符号
+         */
+        $scope.viewConstantList = function(){
+            $http.get(url+'/Constant/listAllConstant/'+chargeTypeId).success(function(data){
+                $scope.zNodes =[{}];
+                //获取json数据
+                var tasks =  data.Constant;
+                if(tasks!=null){
+                    for(var i=0;i<tasks.length;i++){
+                        if(tasks[i].parentsId == '1'){
+                            $scope.zNode ={ id:tasks[i].constantId, pId:tasks[i].parentsId, name:tasks[i].constantName+"_"+tasks[i].value, value:tasks[i].value};
+                        }else if(tasks[i].parentsId == '2'){
+                            $scope.zNode ={ id:tasks[i].constantId, pId:tasks[i].parentsId, name:"["+tasks[i].constantName+"]", value:tasks[i].commonValue};
+                        }else{
+                            $scope.zNode ={ id:tasks[i].constantId, pId:tasks[i].parentsId, name:tasks[i].constantName, value:tasks[i].commonValue};
+                        }
+                        $scope.zNodes.push($scope.zNode);
+                    }
+                    $.fn.zTree.init($("#treeConstant"), constantSetting, $scope.zNodes);
+                    var zTree = $.fn.zTree.getZTreeObj("treeConstant");
+                    var nodes = zTree.getNodes();
+                    nodes[0].name = "常量信息";
+                    zTree.updateNode(nodes[0])
+                }
+            }).error(function(data,status,headers,config){
+                layer.msg("常用常量及符号查询失败！",{icon:2,time:1000});
+            });
+        };
+
+        /**
+         * maogaofei 20160701
+         * 新建公式
+         */
+        $scope.newCurrentBuilding={
+            areaNew:[]                          //条件详情列表
+        };
+        $scope.addFormula = function(){
+            log ="";   //公式名称
+            $scope.msg = '新建公式';
+            angular.element('#newFormula').modal('show');
+            $('#logDiv').children().remove();
+            $scope.createCondition_show = true;
+            $scope.viewConstantList();
+            $scope.cleanCon_show = true;
+            $scope.cleanAllCon();
+            $scope.allOrAnyValue="";
+            formulas = {names:'',values:''};
+        };
+        /**
+         * maogaofei 20160705
+         * 计费公式列表点击事件
+         */
+        $scope.formulaIdArrs = [];
+        $scope.getFormulaCheckBoxs = function(formulaId){
+            $scope.FormulaIdIndex=formulaId;
+            var index = $scope.formulaIdArrs.indexOf(formulaId)
+            if(document.getElementById(formulaId).checked == true){
+                document.getElementById(formulaId).checked = false;
+                if(index > -1){
+                    $scope.formulaIdArrs.splice(index,1);
+                }
+            }else{
+                document.getElementById(formulaId).checked = true;
+                if(index <= -1){
+                    $scope.formulaIdArrs.push(formulaId);
+                }
+            }
+        }
+        /**
+         * maogaofei 20160705
+         * 确认收费项目详情及计费公式
+         */
+        $scope.confirmList = function(){
+            $http.get(url + "/ChargeItemNew/confirmList/"+varChargeItemNewId).success(function (data) {
+                if(angular.equals(data.code,'200')){
+                    $scope.backList();
+                }else if(angular.equals(data.code,'3001')){
+                    layer.msg(data.information,{icon:0,time:1000});
+                }
+            }).error(function(){
+                layer.msg("操作失败!",{icon:2,time:1000});
+            })
+        }
+        /**
+         * maogaofei 20160705
+         * 删除计费公式
+         */
+        $scope.delectFormula = function(){
+            var checkNum = $scope.formulaIdArrs.length;
+            if(parseInt(checkNum) < 1){
+                layer.msg("请选择计费公式!",{icon:0,time:1000});
+                return;
+            }
+
+            layer.confirm('确定要删除记录？', {
+                btn: ['确定','取消'] //按钮
+            }, function(){
+                $http.get(url + "/Formula/deleteFormula/"+$scope.formulaIdArrs.join(",")).success(function(data){
+                    $scope.viewFormulaList(chargeItemDetailsId);
+                    $scope.formulaIdArrs = [];
+                    layer.msg("操作成功!",{icon:1,time:1000});
+                }).error(function(){
+                    layer.msg("操作失败!",{icon:2,time:1000});
+                });
+            }, function(){
+
+            });
+        }
+        /**
+         * maogaofei 20160701
+         * 清除公式
+         */
+        $scope.clearAll = function() {
+            if (!log) log = $("#logDiv");
+            log.find('span').remove();
+            formulas = {names:'',values:''};
+            $scope.zTreeMark = true;
+        };
+        /**
+         * maogaofei 20160701
+         * 保存子条件
+         */
+        $scope.addSubConstant = function() {
+            var constantId = app.get('valueCheck').isNull($scope.AddCondition.constantId);
+            var symbolId = app.get('valueCheck').isNull($scope.AddCondition.symbolId);
+            var numValue = app.get('valueCheck').isNumberAndNotNull($scope.AddCondition.numValue);
+            if(!constantId.state){
+                layer.msg('请选择变量!',{icon:0,time:1000});
+                return
+            }else if(!symbolId.state){
+                layer.msg('请选择条件!',{icon:0,time:1000});
+                return
+            }else if(!numValue.state){
+                layer.msg('数值'+numValue.info+'!',{icon:0,time:1000});
+                return
+            }
+
+            for(var i=0;i<$scope.Variable.length;i++){
+                 if($scope.Variable[i].slaveName==$scope.AddCondition.constantId) {
+                     $scope.AddCondition.variableName = $scope.Variable[i].slaveName;
+                     $scope.AddCondition.variableDescription = $scope.Variable[i].description;
+                     break;
+                 }
+             }
+            for(var i=0;i<$scope.symbolList.length;i++) {
+                if($scope.symbolList[i].slaveName==$scope.AddCondition.symbolId){
+                    $scope.AddCondition.symbolName = $scope.symbolList[i].slaveName;
+                    $scope.AddCondition.symbolDescription = $scope.symbolList[i].description;
+                    break;
+                }
+            }
+            $scope.newCurrentBuilding.areaNew.push({
+                areaTypeId:app.get('tyjUtil').uuid(),
+                variableName:$scope.AddCondition.variableName,
+                variableDescription:$scope.AddCondition.variableDescription,
+                symbolName:$scope.AddCondition.symbolName,
+                symbolDescription:$scope.AddCondition.symbolDescription,
+                numValue:$scope.AddCondition.numValue
+            });
+            $scope.AddCondition={};
+            $scope.createCondition_show = true;
+        };
+        /**
+         * maogaofei 20160705
+         * 删除单个条件
+         */
+        $scope.cleanCon = function(id){
+            var index = -1;
+            angular.forEach($scope.newCurrentBuilding.areaNew,function(item,key){
+                if(item.areaTypeId == id){
+                    index = key;
+                }
+            });
+            if(index!=-1){
+                $scope.newCurrentBuilding.areaNew.splice(index,1);
+            }
+        };
+        /**
+         * maogaofei 20160705
+         * 删除已生成条件
+         */
+        $scope.cleanTotalCon = function(){
+            $scope.AddCondition.totalship='';
+            $scope.AddCondition.totalshipDescription = '';
+            $scope.createCondition_show=true;
+            $scope.cleanCon_show = true;
+        };
+        /**
+         * maogaofei 20160705
+         * 清除所有条件
+         */
+        $scope.cleanAllCon = function(){
+            $scope.AddCondition.totalship='';
+            $scope.AddCondition.totalshipDescription = '';
+            $scope.newCurrentBuilding.areaNew=[];
+            $scope.createCondition_show=true;
+            $scope.cleanCon_show = true;
+        };
+
+        /**
+         * maogaofei 20160704
+         * 插入条件
+         */
+        $scope.createCon = function() {
+            var allOrAny = '';
+            var allOrAnyValue = '';
+            if('01' == $scope.allOrAnyValue){
+                allOrAny = ' 并且 ';
+                allOrAnyValue = ' && ';
+            }else if('02' == $scope.allOrAnyValue){
+                allOrAny = ' 或者 ';
+                allOrAnyValue = ' || ';
+            }else{
+                layer.msg('请选择符合条件!',{icon:0,time:1000});
+                return;
+            }
+            $scope.AddCondition.totalshipDescription = '';
+            $scope.AddCondition.totalship = '';
+            var ship = $scope.newCurrentBuilding.areaNew;
+            if(ship.length == 0){
+                layer.msg('请先保存条件!',{icon:0,time:1000});
+                return;
+            }
+            for(var i=0;i<ship.length;i++) {
+                $scope.AddCondition.totalshipDescription += ship[i].variableName+' '+ship[i].symbolName+' '+ship[i].numValue;
+                $scope.AddCondition.totalship += '['+ship[i].variableDescription+']'+ship[i].symbolName+ship[i].numValue;
+                if(i+1<ship.length){
+                    $scope.AddCondition.totalshipDescription +=allOrAnyValue;
+                    $scope.AddCondition.totalship +=allOrAny;
+                }
+            }
+            $scope.createCondition_show = false;
+            $scope.cleanCon_show = false;
+        };
+
+        /**
+         * maogaofei 20160704
+         * 计费公式保存
+         */
+        $scope.saveFormula = function(){
+            $scope.NewFormula={};
+            if(formulas.names==null||formulas.names==""){
+                layer.msg('请输入公式！',{icon:0,time:1000});
+                return
+            }
+            $scope.NewFormula.formulaName=formulas.names;
+            $scope.NewFormula.formulaExpression=formulas.values;
+            $scope.NewFormula.conditionName=$scope.AddCondition.totalship;
+            $scope.NewFormula.conditionExpression=$scope.AddCondition.totalshipDescription;
+            $scope.NewFormula.chargeItemDetailsId=chargeItemDetailsId;
+            $scope.NewFormula.projectId=projectId;
+
+            $http.post(url+ "/Formula/insertFormula",{Formula:$scope.NewFormula}).success(function(data){
+                if(angular.equals(data.code,'200')){
+                    layer.msg(data.information,{icon:1,time:1000});
+                    angular.element('#newFormula').modal('hide');
+                    $scope.viewFormulaList(chargeItemDetailsId);
+                }else if(angular.equals(data.code,'3001')){
+                    layer.msg(data.information,{icon:0,time:1000});
+                }
+            }).error(function(){
+                layer.msg("保存失败!",{icon:2,time:1000});
+            })
+        };
+        /**
+         * maogaofei 20160704
+         * 使用范围树形控制
+         */
+        var rangeSetting = {
+            check:{
+                enable:false
+            },
+            view: {
+                selectedMulti: false
+            },
+            edit: {
+                enable: false,
+                editNameSelectAll: false
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            }
+        };
+
+        /**
+         * maogaofei 20160704
+         * 查看收费项目使用范围
+         * @param chargeItemNewId
+         */
+        $scope.viewRange = function(chargeItemNewId){
+            $http.get(url+'/ChargeItemNew/getBuildingListByChargeItemNewId/'+chargeItemNewId).success(function(data){
+                $scope.zNodes =[{}];
+                //获取json数据
+                $scope.buildingStructureNews = data.BuildingStructureNew;
+                var tasks =  $scope.buildingStructureNews;
+                if(tasks!=null){
+                    for(var i=0;i<tasks.length;i++){
+                        $scope.zNode ={ id:tasks[i].id, pId:tasks[i].parentId, name:tasks[i].nodeName,fullname:tasks[i].fullName};
+                        $scope.zNodes.push($scope.zNode);
+                    }
+                    $.fn.zTree.init($("#viewRangetree"), rangeSetting, $scope.zNodes);
+
+                    var zTree = $.fn.zTree.getZTreeObj("viewRangetree");
+                    var nodes = zTree.getNodes();
+                    nodes[0].name = "建筑信息";
+                    zTree.updateNode(nodes[0]);
+                }
+            }).error(function(data,status,headers,config){
+                layer.msg("建筑信息查询失败！",{icon:2,time:1000});
+            });
+        }
+
+        /**
+         * maogaofei 20160704
+         * 保存常量
+         */
+        $scope.saveConstant = function(){
+            var constantName = app.get('valueCheck').isNull($scope.ConsoleAdd.constantName);
+            var numValue = app.get('valueCheck').isNumberAndNotNull($scope.ConsoleAdd.value);
+            if(!constantName.state){
+                layer.msg('请输入常量名称!',{icon:0,time:1000});
+                return
+            }else if(!numValue.state){
+                layer.msg('常量值'+numValue.info+'!',{icon:0,time:1000});
+                return
+            }
+
+            $scope.ConsoleAdd.chargeTypeId=chargeTypeId;
+            $scope.ConsoleAdd.constantName = '['+$scope.ConsoleAdd.constantName+']';
+            $http.post(url+ "/Constant/insertConstant",{Constant:$scope.ConsoleAdd}).success(function(data){
+                if(angular.equals(data.code,'200')){
+                    layer.msg(data.information,{icon:1,time:1000});
+                    $scope.viewConstantList();
+                    $scope.ConsoleAdd={};
+                }else if(angular.equals(data.code,'3001')){
+                    layer.msg(data.information,{icon:0,time:1000});
+                }
+            }).error(function(){
+                layer.msg("保存失败!",{icon:2,time:1000});
+            })
+        }
+
+        /**
+         * maogaofei 21060722
+         * 新增常量定位
+         */
+        $scope.consoleLocation = function(){
+            $("#newFormulaScroll")[0].scrollTop = 400;
+        }
+
+
+        /**
+         * maogaofei 20160629
+         * 初始化页面
+         */
+        $scope.init = function(){
+            //获取已启用的收费类型
+            $scope.getCharTypeList();
+            //查询计费方案下收费项目
+            $scope.newSchemeInit();
+
+            //条件项
+            $http.get(url + '/DataDictionarySlaveService/getDataDictionarySlaveRes/symbol/' +$scope.project.projectId).success(function(data){
+                $scope.symbolList = data.DataDictionarySlave;
+            });
+            //计费频率
+            $http.get(url + '/DataDictionarySlaveService/getDataDictionarySlaveRes/chargeFre/' +$scope.project.projectId).success(function(data){
+                $scope.ChargeFre = data.DataDictionarySlave;
+            });
+            //自动计费时间
+            $http.get(url + '/DataDictionarySlaveService/getDataDictionarySlaveRes/chargeTime/' +$scope.project.projectId).success(function(data){
+                $scope.ChargeTime = data.DataDictionarySlave;
+            });
+            //单位
+            $http.get(url + '/DataDictionarySlaveService/getDataDictionarySlaveRes/unit/' +$scope.project.projectId).success(function(data){
+                $scope.ChargeItemUnit = data.DataDictionarySlave;
+            });
+            //计费模板公式条件
+            $http.get(url + '/DataDictionarySlaveService/getDataDictionarySlaveRes/conditionusetype/' +$scope.project.projectId).success(function(data){
+                $scope.AllOrAny = data.DataDictionarySlave;
+            });
+            //变量
+            $http.get(url + '/DataDictionarySlaveService/getDataDictionarySlaveRes/variable/' +$scope.project.projectId).success(function(data){
+                $scope.Variable = data.DataDictionarySlave;
+            });
+        };
+        $scope.init();
+
+    }]);
+});

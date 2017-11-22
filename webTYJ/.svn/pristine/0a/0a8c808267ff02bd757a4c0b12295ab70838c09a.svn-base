@@ -1,0 +1,643 @@
+<!--
+    作者：尹霞
+    名称：金融联银行托收
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>金融联银行托收</title>
+    <link rel="stylesheet" href="bower_components/skins/zyupload-1.0.0.min.css " type="text/css">
+    <script>
+        function check(obj) {
+            $(':checkbox').each(function () {
+                if (this != obj)
+                    $(this).attr("checked", false);
+                else {
+                    if ($(this).prop("checked")){
+                        $(this).attr("checked", true);
+                    }
+                    else
+                        $(this).attr("checked", false);
+                }
+            });
+        }
+    </script>
+    <script type="text/javascript">
+
+    </script>
+</head>
+<body>
+<div id="content-first">
+    <!--tab页切换开始-->
+    <div id="tab">
+        <a href="javascript:void(0)" ng-click="finance()" ng-class="{'this_action ':btnIndex0==1}" >金融联托收</a>
+        <a href="javascript:void(0)" lang="no"  ng-click="unionPay()" ng-class="{'this_action ':btnIndex0==2}">金融联回盘</a>
+    </div>
+            <!--tab页切换结束-->
+            <!--银行托收-->
+    <div ng-show="show1">
+    <div class="sel" ng-show="show6">
+        <div class="row search-padding-10">
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+        <!--修改时间控件
+       		徐文广
+        	2016/5/18
+        -->
+                时间：
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-4">
+                <input type="text" onclick="WdatePicker({readOnly:true})"  class="Wdate form-control" ng-model="financial.tobankDate" onchange=""  ng-change="getStall(stallss.id,false)">
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2 text-center">
+                至
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-4">
+                <input type="text" onclick="WdatePicker({readOnly:true})"  class="Wdate form-control" ng-model="financial.deductionsDate" onchange="" ng-change="getStall(stallss.id,false)">
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                <button type="button" class="btn btn-default btn-primary"ng-click="getTotals(0);">
+                    <span class="glyphicon glyphicon-search btn_icon"></span>
+                    查询
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="row padding" ng-show="show4">
+            <div class="col-lg-12">
+
+                <div class="row search-padding-10">
+                    <div class="col-lg-6 col-md-6 col-sm-6">
+                        总结文件
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+                        <!--增加按钮
+                            毛高飞
+                            2016/6/02
+                        -->
+                        <button type="button" class="btn btn-default btn-primary"ng-click="exportToNewTxt()">
+                            生成提出文件
+                        </button>
+                        <button type="button" class="btn btn-default btn-primary" ng-click="cancelCollection()">
+                            取消托收
+                        </button>
+                    </div>
+                </div>
+
+                <div class="search-padding-10">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>项目</th>
+                            <th>代办银行号</th>
+                            <th>收付单位代码</th>
+                            <th>币种</th>
+                            <th>收付标志</th>
+                            <th>收付代码</th>
+                            <th>交易文件名</th>
+                            <th>总户数</th>
+                            <th>总金额</th>
+                            <th>送银行日期</th>
+                            <th>应划款日期</th>
+                            <th>托收状态</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="item in financialGroupTotal"
+                            data-toggle="modal" ng-class="{'this_info':btnIndex2==item.financialGroupTotalId}"
+                            ng-show="item.financialGroupTotalId">
+                            <!--<td><input type="checkbox"></td>-->
+                            <td>{{item.projectName}}</td>
+                            <td>{{item.agencyBankNum}}</td>
+                            <td>{{item.paymentUnitCode}}</td>
+                            <td ng-switch on="item.coinType">
+                                <span ng-switch-when="0">人民币</span>
+                                <span ng-switch-when="1">港币</span>
+                            </td>
+                            <td ng-switch on="item.paymentState">
+                                <span ng-switch-when="0">已收</span>
+                                <span ng-switch-when="1">未收</span>
+                            </td>
+                            <td>{{item.collectionTotalNum}}</td>
+                            <td>{{item.collectionTotalName}}</td>
+                            <td>{{item.houseNumber}}</td>
+                            <td>{{item.sum}}</td>
+                            <td>{{item.tobankDate|date:'yyyy-MM-dd'}}</td>
+                            <td>{{item.prepareDeductionsDate|date:'yyyy-MM-dd'}}</td>
+                            <td ng-switch on="item.collectionState">
+                                <span ng-switch-when="0">未托收</span>
+                                <span ng-switch-when="1">已托收</span>
+                                <span ng-switch-when="2">已回盘</span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="search-padding-10">
+                    明细文件
+                </div>
+                <div class="search-padding-10">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>合同号</th>
+                            <th>行别</th>
+                            <th>开户行号</th>
+                            <th>账户</th>
+                            <th>金额</th>
+                            <th>扣款标记</th>
+                            <th>户主</th>
+                            <th>留言</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr  ng-repeat="item in searchPaginatorDetailNew.object.financialGroupDetails" ng-show="item.financialGroupDetailId!=null"   >
+                            <td>{{item.contractNumber}}</td>
+                            <td>{{item.bankType}}</td>
+                            <td>{{item.bankNum}}</td>
+                            <td>{{item.bankAccount}}</td>
+                            <td>{{item.sum}}</td>
+                            <td>{{item.deductionsTag}}</td>
+                            <td>{{item.custName}}</td>
+                            <td>{{item.message}}</td>
+                        </tr>
+                        <tr ng-if="searchPaginatorDetailNew.object.financialGroupDetails.length==null"><td colspan="8">暂无数据</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="padding">
+                        <div class="bill_paging">
+                            <span>共{{searchPaginatorDetailNew.object.page.totalResult}}条</span>
+                            <ul class="pagination">
+                                <li ng-class="{true:'disabled'}[searchPaginatorDetailNew.page.currentPage==1]"><a href="javascript:void(0)" ng-click="searchPaginatorDetailNew.go(1)">首页</a></li>
+                                <li ng-class="{true:'disabled'}[searchPaginatorDetailNew.page.currentPage==1]"><a href="javascript:void(0)" ng-show="searchPaginatorDetailNew.hasPrevious()" ng-click="searchPaginatorDetailNew.previous()">上一页</a></li>
+                                <li ng-class="{true:'active'}[searchPaginatorDetailNew.page.currentPage==i]" ng-repeat="i in searchPaginatorDetailNew.pages" ><a href="javascript:void(0)" on-show="searchPaginatorDetailNew.go(i)"  ng-click="searchPaginatorDetailNew.go(i)">{{i}}</a></li>
+                                <li ng-class="{true:'disabled'}[searchPaginatorDetailNew.page.currentPage==searchPaginatorDetailNew.page.totalPage]"><a href="javascript:void(0)" ng-show="searchPaginatorDetailNew.hasNext()" ng-click="searchPaginatorDetailNew.next()">下一页</a></li>
+                                <li ng-class="{true:'disabled'}[searchPaginatorDetailNew.page.currentPage==searchPaginatorDetailNew.page.totalPage]"><a href="javascript:void(0)" ng-click="searchPaginatorDetailNew.go(searchPaginatorDetailNew.page.totalPage)">尾页</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <div class="row padding" ng-show="show5">
+        <div class="col-lg-12">
+            <!--<div class="search-padding-10">
+
+            </div>-->
+            <div class="row search-padding-10">
+                <div class="col-lg-6 col-md-6 col-sm-6">
+                    总结文件
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+                    <!--增加新建托收按钮
+                        毛高飞
+                        2016/5/30
+                    -->
+                    <button type="button" class="btn btn-default btn-primary" ng-click="createCollection()">
+                        新建托收
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary"ng-click="exportToExcel()">
+                        生成提出文件
+                    </button>
+                </div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th width="50px"></th>
+                        <th>项目</th>
+                        <th>代办银行号</th>
+                        <th>收付单位代码</th>
+                        <th>币种</th>
+                        <th>收付标志</th>
+                        <th>收付代码</th>
+                        <th>交易文件名</th>
+                        <th>总户数</th>
+                        <th>总金额</th>
+                        <th>送银行日期</th>
+                        <th>应划款日期</th>
+                        <th>托收状态</th>
+                        <th>批次号</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="item in searchPaginator.object.financialGroupTotals " ng-show="item.financialGroupTotalId!=null"
+                        ng-click="getDatils(item.financialGroupTotalId)" ng-class="{this_info:btnIndex==item.financialGroupTotalId}">
+                        <td><input type="checkbox" name="addDatas"  onclick="check(this)" ng-click="getAllChecks(item)" id="{{item.financialGroupTotalId}}" /></td>
+                        <td style="cursor: pointer"  ng-click="getDatils(item.financialGroupTotalId)">{{item.projectName}}</td>
+                        <td>{{item.agencyBankNum}}</td>
+                        <td>{{item.paymentUnitCode}}</td>
+                        <td ng-switch on="item.coinType">
+                            <span ng-switch-when="0">人民币</span>
+                            <span ng-switch-when="1">港币</span>
+                        </td>
+                        <td ng-switch on="item.paymentState">
+                            <span ng-switch-when="0">已收</span>
+                            <span ng-switch-when="1">未收</span>
+                        </td>
+                        <td>{{item.collectionTotalNum}}</td>
+                        <td>{{item.collectionTotalName}}</td>
+                        <td>{{item.houseNumber}}</td>
+                        <td>{{item.sum}}</td>
+                        <td>{{item.tobankDate|date:'yyyy-MM-dd'}}</td>
+                        <td>{{item.prepareDeductionsDate|date:'yyyy-MM-dd'}}</td>
+                        <td ng-switch on="item.collectionState">
+                            <span ng-switch-when="0">未托收</span>
+                            <span ng-switch-when="1">已托收</span>
+                            <span ng-switch-when="2">已回盘</span>
+                        </td>
+                        <td>{{item.batchNumber}}</td>
+                    </tr>
+                    <tr ng-show="searchPaginator.object.financialGroupTotals.length==null" >
+                        <td colspan="16">暂无数据</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="padding">
+                <div class="bill_paging">
+                    <span>共{{searchPaginator.object.page.totalResult}}条</span>
+                    <ul class="pagination">
+                        <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]"><a href="javascript:void(0)" ng-click="searchPaginator.go(1)">首页</a></li>
+                        <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]"><a href="javascript:void(0)" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous(0)">上一页</a></li>
+                        <li ng-class="{true:'active'}[searchPaginator.page.currentPage==i]" ng-repeat="i in searchPaginator.pages" ><a href="javascript:void(0)" on-show="searchPaginator.go(i)"  ng-click="searchPaginator.go(i)">{{i}}</a></li>
+                        <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]"><a href="javascript:void(0)" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next(-1)">下一页</a></li>
+                        <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]"><a href="javascript:void(0)" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a></li>
+                    </ul>
+                    <div class="clear"></div>
+                </div>
+            </div>
+            <div class="search-padding-10">
+                明细文件
+            </div>
+            <div class="search-padding-10">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>合同号</th>
+                        <th>行别</th>
+                        <th>开户行号</th>
+                        <th>账户</th>
+                        <th>金额</th>
+                        <th>扣款标记</th>
+                        <th>户主</th>
+                        <th>留言</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr  ng-repeat="item in searchPaginatorDetail.object.financialGroupDetails" ng-show="item.financialGroupDetailId!=null"   >
+                        <td>{{item.contractNumber}}</td>
+                        <td>{{item.bankType}}</td>
+                        <td>{{item.bankNum}}</td>
+                        <td>{{item.bankAccount}}</td>
+                        <td>{{item.sum}}</td>
+                        <td>{{item.deductionsTag}}</td>
+                        <td>{{item.custName}}</td>
+                        <td>{{item.message}}</td>
+                    </tr>
+                    <tr ng-if="searchPaginatorDetail.object.financialGroupDetails.length==null"><td colspan="8">暂无数据</td></tr>
+                    </tbody>
+                </table>
+                <div class="padding">
+                    <div class="bill_paging">
+                        <span>共{{searchPaginatorDetail.object.page.totalResult}}条</span>
+                        <ul class="pagination">
+                            <li ng-class="{true:'disabled'}[searchPaginatorDetail.page.currentPage==1]"><a href="javascript:void(0)" ng-click="searchPaginatorDetail.go(1)">首页</a></li>
+                            <li ng-class="{true:'disabled'}[searchPaginatorDetail.page.currentPage==1]"><a href="javascript:void(0)" ng-show="searchPaginatorDetail.hasPrevious()" ng-click="searchPaginatorDetail.previous()">上一页</a></li>
+                            <li ng-class="{true:'active'}[searchPaginatorDetail.page.currentPage==i]" ng-repeat="i in searchPaginatorDetail.pages" ><a href="javascript:void(0)" on-show="searchPaginatorDetail.go(i)"  ng-click="searchPaginatorDetail.go(i)">{{i}}</a></li>
+                            <li ng-class="{true:'disabled'}[searchPaginatorDetail.page.currentPage==searchPaginatorDetail.page.totalPage]"><a href="javascript:void(0)" ng-show="searchPaginatorDetail.hasNext()" ng-click="searchPaginatorDetail.next()">下一页</a></li>
+                            <li ng-class="{true:'disabled'}[searchPaginatorDetail.page.currentPage==searchPaginatorDetail.page.totalPage]"><a href="javascript:void(0)" ng-click="searchPaginatorDetail.go(searchPaginatorDetail.page.totalPage)">尾页</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+            <!--银行托收结束-->
+            <!--金融联银行回盘-->
+    <div class="row padding" ng-show="show2">
+        <div class="col-lg-12">
+
+        <div class="row search-padding-10">
+            <div class="col-lg-4 col-md-4 col-sm-4">
+                回盘总结文件
+            </div>
+            <div class="col-lg-8 col-md-8 col-sm-8 text-right">
+                <button type="button" class="btn btn-default btn-primary" ng-click="leading()">
+                    确认导入
+                </button>
+                <button type="button" class="btn btn-default btn-primary" ng-click="cancel()">
+                    取消
+                </button>
+            </div>
+        </div>
+            
+        <div class="search-padding-10">
+            <table>
+                <thead>
+                <tr>
+                    <th> 代办银行号</th>
+                    <th>收付单位代码</th>
+                    <th>币种</th>
+                    <th>收付标志</th>
+                    <th>收付代码</th>
+                    <th>交易文件名</th>
+                    <th>总户数</th>
+                    <th>总金额</th>
+                    <th>已划款户数</th>
+                    <th>已划款金额</th>
+                    <th>送银行日期</th>
+                    <th>应划款日期</th>
+                    <th>划款日期</th>
+                    <th>批次号</th>
+                </tr>
+                </thead>
+
+                <tbody>
+
+                <tr ng-repeat="item in searchPaginatorOffer.object.financialCounterofferTotals " ng-show="item.financialCounterofferTotalId!=null"
+                    ng-click="getOfferDatils(item.financialCounterofferTotalId)" ng-class="{this_info:btnIndex==item.financialCounterofferTotalId}">
+                    <td>{{item.agencyBankNum}}</td>
+                    <td>{{item.paymentUnitCode}}</td>
+                    <td ng-switch on="item.coinType">
+                        <span ng-switch-when="0">人民币</span>
+                        <span ng-switch-when="1">港币</span>
+                    </td>
+                    <td ng-switch on="item.paymentState">
+                        <span ng-switch-when="0">已收</span>
+                        <span ng-switch-when="1">未收</span>
+                    </td>
+                    <td>{{item.collectionTotalNum}}</td>
+                    <td>{{item.collectionTotalName}}</td>
+                    <td>{{item.houseNumber}}</td>
+                    <td>{{item.sum}}</td>
+                    <td>{{item.deductionsHouseNumber}}</td>
+                    <td>{{item.deductionsSum}}</td>
+                    <td>{{item.tobankDate|date:'yyyy-MM-dd'}}</td>
+                    <td>{{item.prepareDeductionsDate|date:'yyyy-MM-dd'}}</td>
+                    <td>{{item.deductionsDate|date:'yyyy-MM-dd'}}</td>
+                    <td>{{item.batchNumber}}</td>
+                </tr>
+                <tr ng-show="searchPaginatorOffer.object.financialCounterofferTotals.length==null" >
+                    <td colspan="15">暂无数据</td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="padding">
+                <div class="bill_paging">
+                    <span>共{{searchPaginatorOffer.object.page.totalResult}}条</span>
+                    <ul class="pagination">
+                        <li ng-class="{true:'disabled'}[searchPaginatorOffer.page.currentPage==1]"><a href="javascript:void(0)" ng-click="searchPaginatorOffer.go(1)">首页</a></li>
+                        <li ng-class="{true:'disabled'}[searchPaginatorOffer.page.currentPage==1]"><a href="javascript:void(0)" ng-show="searchPaginatorOffer.hasPrevious()" ng-click="searchPaginatorOffer.previous(0)">上一页</a></li>
+                        <li ng-class="{true:'active'}[searchPaginatorOffer.page.currentPage==i]" ng-repeat="i in searchPaginatorOffer.pages" ><a href="javascript:void(0)" on-show="searchPaginatorOffer.go(i)"  ng-click="searchPaginatorOffer.go(i)">{{i}}</a></li>
+                        <li ng-class="{true:'disabled'}[searchPaginatorOffer.page.currentPage==searchPaginatorOffer.page.totalPage]"><a href="javascript:void(0)" ng-show="searchPaginatorOffer.hasNext()" ng-click="searchPaginatorOffer.next(-1)">下一页</a></li>
+                        <li ng-class="{true:'disabled'}[searchPaginatorOffer.page.currentPage==searchPaginatorOffer.page.totalPage]"><a href="javascript:void(0)" ng-click="searchPaginatorOffer.go(searchPaginatorOffer.page.totalPage)">尾页</a></li>
+                    </ul>
+                    <div class="clear"></div>
+                </div>
+            </div>
+        </div>
+        <div class="search-padding-10">
+            明细文件
+        </div>
+        <div class="search-padding-10">
+            <table>
+                <thead>
+                <tr>
+                    <th>合同号</th>
+                    <th>行别</th>
+                    <th>开户行号</th>
+                    <th>银行账号</th>
+                    <th>金额</th>
+                    <th>扣款标记</th>
+                    <th>户主</th>
+                    <th>留言</th>
+                    <th>批次号</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr  ng-repeat="item in searchPaginatorDetailOffer.object.financialCounterofferDetails" ng-show="item.financialCounterofferDetailId!=null"   >
+                    <td>{{item.contractNumber}}</td>
+                    <td>{{item.bankType}}</td>
+                    <td>{{item.bankNum}}</td>
+                    <td>{{item.bankAccount}}</td>
+                    <td>{{item.sum}}</td>
+                    <td>{{item.deductionsTag}}</td>
+                    <td>{{item.custName}}</td>
+                    <td>{{item.message}}</td>
+                    <td>{{item.batchNumber}}</td>
+                </tr>
+                <tr ng-if="searchPaginatorDetailOffer.object.financialCounterofferDetails.length==null"><td colspan="9">暂无数据</td></tr>
+                </tbody>
+            </table>
+            <div class="padding">
+                <div class="bill_paging">
+                    <span>共{{searchPaginatorDetailOffer.object.page.totalResult}}条</span>
+                    <ul class="pagination">
+                        <li ng-class="{true:'disabled'}[searchPaginatorDetailOffer.page.currentPage==1]"><a href="javascript:void(0)" ng-click="searchPaginatorDetailOffer.go(1)">首页</a></li>
+                        <li ng-class="{true:'disabled'}[searchPaginatorDetailOffer.page.currentPage==1]"><a href="javascript:void(0)" ng-show="searchPaginatorDetailOffer.hasPrevious()" ng-click="searchPaginatorDetailOffer.previous()">上一页</a></li>
+                        <li ng-class="{true:'active'}[searchPaginatorDetailOffer.page.currentPage==i]" ng-repeat="i in searchPaginatorDetailOffer.pages" ><a href="javascript:void(0)" on-show="searchPaginatorDetailOffer.go(i)"  ng-click="searchPaginatorDetailOffer.go(i)">{{i}}</a></li>
+                        <li ng-class="{true:'disabled'}[searchPaginatorDetailOffer.page.currentPage==searchPaginatorDetailOffer.page.totalPage]"><a href="javascript:void(0)" ng-show="searchPaginatorDetailOffer.hasNext()" ng-click="searchPaginatorDetailOffer.next()">下一页</a></li>
+                        <li ng-class="{true:'disabled'}[searchPaginatorDetailOffer.page.currentPage==searchPaginatorDetailOffer.page.totalPage]"><a href="javascript:void(0)" ng-click="searchPaginatorDetailOffer.go(searchPaginatorDetailOffer.page.totalPage)">尾页</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+            <!--银行回盘结束-->
+            <!--金融联银行导入-->
+    <div ng-show="show3">
+        <div class="sel">
+            <div class="row search-padding-10">
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    <!--修改时间控件
+                    徐文广
+                    2016/5/18
+                    -->
+                    时间：
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-4">
+                    <input type="text" onclick="WdatePicker({readOnly:true})"  class="Wdate form-control" ng-model="fcTotal.tobankDate" onchange=""  ng-blur="checkDates()" ng-change="getStall(stallss.id,false)">
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 text-center">
+                    至
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-4">
+                    <input type="text" onclick="WdatePicker({readOnly:true})"  class="Wdate form-control" ng-model="fcTotal.deductionsDate" onchange=""  ng-blur="checkDates()" ng-change="getStall(stallss.id,false)">
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    <button type="button" class="btn btn-default btn-primary"ng-click="getOfferFinancialTotals(0);">
+                        <span class="glyphicon glyphicon-search btn_icon"></span>
+                        查询
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row padding">
+            <div class="col-lg-12">
+                <div class="search-padding-10">
+                    <!--总结文件-->
+                    <div class="col-lg-4 col-md-4 col-sm-4">
+                        总结文件
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4">
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 text-right">
+                        <button type="button" class="btn btn-default btn-primary" ng-click="importTxt()"data-toggle="modal" data-target="#ddd" data-toggle="tab">
+                            导入回盘文件
+                        </button>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <div class="search-padding-10">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th> 代办银行号</th>
+                            <th>收付单位代码</th>
+                            <th>币种</th>
+                            <th>收付标志</th>
+                            <th>收付代码</th>
+                            <th>交易文件名</th>
+                            <th>总户数</th>
+                            <th>总金额</th>
+                            <th>已划款户数</th>
+                            <th>已划款金额</th>
+                            <th>送银行日期</th>
+                            <th>应划款日期</th>
+                            <th>划款日期</th>
+                            <th>批次号</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        <tr ng-repeat="item in searchOfferPaginator.object.financialCounterofferTotals" ng-show="item.financialCounterofferTotalId!=null"
+                            ng-click="getDatilsOffer(item.financialCounterofferTotalId)" ng-class="{'this_info':btnIndex==item.financialCounterofferTotalId}">
+                            <td>{{item.agencyBankNum}}</td>
+                            <td>{{item.paymentUnitCode}}</td>
+                            <td ng-switch on="item.coinType">
+                                <span ng-switch-when="0">人民币</span>
+                                <span ng-switch-when="1">港币</span>
+                            </td>
+                            <td ng-switch on="item.paymentState">
+                                <span ng-switch-when="0">已收</span>
+                                <span ng-switch-when="1">未收</span>
+                            </td>
+                            <td>{{item.collectionTotalNum}}</td>
+                            <td>{{item.collectionTotalName}}</td>
+                            <td>{{item.houseNumber}}</td>
+                            <td>{{item.sum}}</td>
+                            <td>{{item.deductionsHouseNumber}}</td>
+                            <td>{{item.deductionsSum}}</td>
+                            <td>{{item.tobankDate|date:'yyyy-MM-dd'}}</td>
+                            <td>{{item.prepareDeductionsDate|date:'yyyy-MM-dd'}}</td>
+                            <td>{{item.deductionsDate|date:'yyyy-MM-dd'}}</td>
+                            <td>{{item.batchNumber}}</td>
+                        </tr>
+                        <tr ng-show="searchOfferPaginator.object.financialCounterofferTotals.length==null" >
+                            <td colspan="15">暂无数据</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row search-padding-10">
+                    <div class="bill_paging">
+                        <div class="bill_paging">
+                            <span>共{{searchOfferPaginator.object.page.totalResult}}条</span>
+                            <ul class="pagination">
+                                <li ng-class="{true:'disabled'}[searchOfferPaginator.page.currentPage==1]"><a href="javascript:void(0)" ng-click="searchOfferPaginator.go(1)">首页</a></li>
+                                <li ng-class="{true:'disabled'}[searchOfferPaginator.page.currentPage==1]"><a href="javascript:void(0)" ng-show="searchOfferPaginator.hasPrevious()" ng-click="searchOfferPaginator.previous()">上一页</a></li>
+                                <li ng-class="{true:'active'}[searchOfferPaginator.page.currentPage==i]" ng-repeat="i in searchOfferPaginator.pages" ><a href="javascript:void(0)" on-show="searchOfferPaginator.go(i)"  ng-click="searchOfferPaginator.go(i)">{{i}}</a></li>
+                                <li ng-class="{true:'disabled'}[searchOfferPaginator.page.currentPage==searchOfferPaginator.page.totalPage]"><a href="javascript:void(0)" ng-show="searchOfferPaginator.hasNext()" ng-click="searchOfferPaginator.next()">下一页</a></li>
+                                <li ng-class="{true:'disabled'}[searchOfferPaginator.page.currentPage==searchOfferPaginator.page.totalPage]"><a href="javascript:void(0)" ng-click="searchOfferPaginator.go(searchOfferPaginator.page.totalPage)">尾页</a></li>
+                            </ul>
+                            <div class="clear"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="search-padding-10">
+                    明细文件
+                </div>
+                <div class="search-padding-10">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>合同号</th>
+                            <th>行别</th>
+                            <th>开户行号</th>
+                            <th>银行账号</th>
+                            <th>金额</th>
+                            <th>扣款标记</th>
+                            <th>户主</th>
+                            <th>留言</th>
+                            <th>批次号</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr  ng-repeat="item in searchOfferPaginatorDetail.object.financialCounterofferDetails"
+                             ng-show="item.financialCounterofferDetailId!=null"   >
+                            <td>{{item.contractNumber}}</td>
+                            <td>{{item.bankType}}</td>
+                            <td>{{item.bankNum}}</td>
+                            <td>{{item.bankAccount}}</td>
+                            <td>{{item.sum}}</td>
+                            <td>{{item.deductionsTag}}</td>
+                            <td>{{item.custName}}</td>
+                            <td>{{item.message}}</td>
+                            <td>{{item.batchNumber}}</td>
+                        </tr>
+                        <tr ng-if="searchOfferPaginatorDetail.object.financialCounterofferDetails.length==null"><td colspan="9">暂无数据</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="padding">
+                        <div class="bill_paging">
+                            <span>共{{searchOfferPaginatorDetail.object.page.totalResult}}条</span>
+                            <ul class="pagination">
+                                <li ng-class="{true:'disabled'}[searchOfferPaginatorDetail.page.currentPage==1]"><a href="javascript:void(0)" ng-click="searchOfferPaginatorDetail.go(1)">首页</a></li>
+                                <li ng-class="{true:'disabled'}[searchOfferPaginatorDetail.page.currentPage==1]"><a href="javascript:void(0)" ng-show="searchOfferPaginatorDetail.hasPrevious()" ng-click="searchOfferPaginatorDetail.previous()">上一页</a></li>
+                                <li ng-class="{true:'active'}[searchOfferPaginatorDetail.page.currentPage==i]" ng-repeat="i in searchOfferPaginatorDetail.pages" ><a href="javascript:void(0)" on-show="searchOfferPaginatorDetail.go(i)"  ng-click="searchOfferPaginatorDetail.go(i)">{{i}}</a></li>
+                                <li ng-class="{true:'disabled'}[searchOfferPaginatorDetail.page.currentPage==searchOfferPaginatorDetail.page.totalPage]"><a href="javascript:void(0)" ng-show="searchOfferPaginatorDetail.hasNext()" ng-click="searchOfferPaginatorDetail.next()">下一页</a></li>
+                                <li ng-class="{true:'disabled'}[searchOfferPaginatorDetail.page.currentPage==searchOfferPaginatorDetail.page.totalPage]"><a href="javascript:void(0)" ng-click="searchOfferPaginatorDetail.go(searchOfferPaginatorDetail.page.totalPage)">尾页</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--模态框开始-->
+<div class="modal fade" id="ddd" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    导入金融联回盘文件
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                <div id="remove">
+                    <div id="excelupload" class="zyupload"></div>
+                </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal"  ng-click="confirmImport()">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--模态框开始-->
+</body>
+</html>

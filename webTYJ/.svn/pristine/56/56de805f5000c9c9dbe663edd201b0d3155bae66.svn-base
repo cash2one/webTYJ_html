@@ -1,0 +1,68 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 收款台js
+ */
+'use strict';
+
+define(function (require) {
+    var app = require('../../../app');
+
+    app.controller('cashiersCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        $scope.btnIndex = 2;
+        $scope.power=[];
+        var url = $rootScope.url;
+        $scope.doClick = function(index){
+            //获取登录用户的权限
+            var user = {employId : ''};
+            var userCookie = JSON.parse(sessionStorage.getItem("USER_LOGIN"));
+            $scope.user = userCookie?userCookie:user;
+            $scope.show=[];
+            $scope.postName=[];
+            $scope.postName=$scope.user.staff.post
+            $scope.shoukuanyuan='';
+            $scope.shoukuanzhuzhang='';
+            $scope.chuna='';
+            $scope.kuaiji=''
+            $scope.total=0;
+
+           for(var i=0;i<$scope.postName.length;i++){
+               if($scope.postName[i].nameOfCustom=='收银员'){
+                   $scope.shoukuanyuan='收银员';
+                   $scope.total++;
+                   $scope.power.push(2);
+                  $location.path("/index/cashier/cashier/accountFor/accountFors");
+               }
+                if($scope.postName[i].nameOfCustom=='收银组长'){
+                   $scope.shoukuanzhuzhang='收银组长';
+                    $scope.total++;
+                    if($scope.power.length==0) {
+                        $scope.power.push(3);
+                        $location.path("/index/cashier/cashier/accountFor/cashierLeader");
+                    }
+               }
+                 if($scope.postName[i].nameOfCustom=='出纳'){
+                   $scope.chuna='出纳';
+                     $scope.total++;
+                     if($scope.power.length==0) {
+                         $scope.power.push(4);
+                         $location.path("/index/cashier/cashier/accountFor/cashierPay");
+                     }
+               }
+                 if($scope.postName[i].nameOfCustom=='会计'){
+                   $scope.kuaiji='会计';
+                     $scope.total++;
+                     if($scope.power.length==0) {
+                         $scope.power.push(5);
+                         $location.path("/index/cashier/cashier/accountFor/accounting");
+                     }
+               }
+           }
+               $scope.btnIndex = $scope.power[0];
+        };
+        $scope.doClickForAccount($scope.power[0]);
+        $scope.doClickForAccountFor=function(){
+            $scope.doClick( $scope.power[0]);
+        }
+    }]);
+});

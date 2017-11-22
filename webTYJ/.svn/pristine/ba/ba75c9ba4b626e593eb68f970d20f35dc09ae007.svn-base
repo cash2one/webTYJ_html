@@ -1,0 +1,11 @@
+/*门禁卡页面*/
+.u4530_img {
+    width: 60px;
+    height:60px;
+}
+.panel_info ul{width:180px;}
+
+.car_Img{
+    width: 120px;
+    height: 100px;
+}

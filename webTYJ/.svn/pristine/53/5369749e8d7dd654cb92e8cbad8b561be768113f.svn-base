@@ -1,0 +1,318 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 放行条js
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../../app');
+
+    app.controller('addReleasePassCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        $scope.items=[{}];
+        var url=$rootScope.url;
+        /*$scope.PersonCust={};//搜索人员对象*/
+        $scope.addrelease={};
+        $scope.banli=$scope.user;
+
+
+        //【物品动态添加行】
+
+        $scope.Contain_y = [];              //包含物品数组
+        $scope.Contain_n = [];              //不包含物品数组
+
+        $scope.button = true;
+        $scope.addContain_y = function(){   //点击包含物品按钮
+            $scope.button = true;
+            if($scope.currentBuilding.areaNew.length>0){
+                $scope.Contain_n = $scope.currentBuilding.areaNew;
+                $scope.currentBuilding.areaNew = [];
+            }
+            if($scope.Contain_y.length>0){
+                $scope.currentBuilding.areaNew = $scope.Contain_y;
+            }
+
+        }
+
+        $scope.addContain_n = function(){   //点击不包含物品按钮
+            $scope.button = false;
+            if($scope.currentBuilding.areaNew.length>0){
+                $scope.Contain_y = $scope.currentBuilding.areaNew;
+                $scope.currentBuilding.areaNew = [];
+            }
+            if($scope.Contain_n.length>0){
+                $scope.currentBuilding.areaNew = $scope.Contain_n;
+            }
+        }
+
+        $scope.currentEditIndex = null;
+        $scope.currentBuilding={areaNew:[]};
+        $scope.editArea=false;
+        $scope.currentEditArea={};
+
+        /**
+         * 新增按钮事件
+         */
+        $scope.addRow=function(){
+            $scope.editArea=true;
+            $scope.currentEditIndex=null;
+        };
+
+        /**
+         * 下一行保存操作
+         */
+        $scope.addSave=function(){
+            if($scope.currentEditIndex!=null){
+                if($scope.button){
+                    $scope.currentBuilding.areaNew[$scope.currentEditIndex]={
+                        itemName:$scope.currentEditArea.itemName,
+                        amount:$scope.currentEditArea.amount,
+                        note:$scope.currentEditArea.note,
+                        contaitState:1,
+                        houseId:$scope.houseone1.buildingStructureId
+                    };
+                }else{
+                    $scope.currentBuilding.areaNew[$scope.currentEditIndex]={
+                        itemName:$scope.currentEditArea.itemName,
+                        amount:$scope.currentEditArea.amount,
+                        note:$scope.currentEditArea.note,
+                        contaitState:0,
+                        houseId:$scope.houseone1.buildingStructureId
+                    };
+                }
+            }
+            else{
+                if($scope.button){
+                    $scope.currentBuilding.areaNew.push({
+                        itemName:$scope.currentEditArea.itemName,
+                        amount:$scope.currentEditArea.amount,
+                        note:$scope.currentEditArea.note,
+                        contaitState:1,
+                        houseId:$scope.houseone1.buildingStructureId
+                    });
+                }else{
+                    $scope.currentBuilding.areaNew.push({
+                        itemName:$scope.currentEditArea.itemName,
+                        amount:$scope.currentEditArea.amount,
+                        note:$scope.currentEditArea.note,
+                        contaitState:0,
+                        houseId:$scope.houseone1.buildingStructureId
+                    });
+                }
+            }
+            $scope.currentEditArea={};
+            $scope.editArea=false;
+            console.log($scope.currentBuilding.areaNew);
+        };
+
+        /**
+         *  修改按钮点击事件
+         * @param index  行下标
+         */
+        $scope.updateItem=function(index){
+            $scope.editArea=true;
+            $scope.currentEditIndex=index;
+            var current=$scope.currentBuilding.areaNew[index];
+            $scope.currentEditArea={
+                itemName:current.itemName,
+                amount:current.amount,
+                note:current.note
+            };
+        };
+
+        /**
+         * 修改保存
+         * @param index 行下标
+         */
+        $scope.updateSave=function(index){
+            $scope.tenementPact[index].editing=false;
+        };
+
+
+        /**
+         * 取消
+         * @param index 行下标
+         */
+        $scope.updateCancel=function(index){
+            //$scope.tenementPact[index]=$scope.cloneItem;
+            $scope.tenementPact[index].editing=false;
+        };
+
+        /**
+         * 新增取消
+         */
+        $scope.addCancel=function(){
+            $scope.editArea=false;
+            $scope.currentEditArea={};
+        };
+
+        /**
+         * 删除数据
+         * @param index 行下标
+         */
+        var del_arr = [];
+        $scope.deleteItem=function(index){
+            $scope._deleteContain = $scope.currentBuilding.areaNew.splice(index,1);
+            //console.log($scope._deleteContain);
+        };
+
+        //加载房屋信息
+        $scope.search.custId=$rootScope.user.custId;
+        $http.post(url+'/HouseNew/listAllHouseNewBySearch',{Search:$scope.search}).success(function(data)
+        {
+            $scope.houses=data.HouseNew;
+            console.log($scope.houses);
+        }).error(function(error){
+            console.log("搜索失败，自己填充数据")
+
+        });
+
+
+        //人员模态框通过人员条件搜索人员信息
+        $scope.searchone={};
+        $scope.selectPersonBycustId=function(){
+            $http.post(url+'/PersonCustNew/listAllPersonBySearch',{Search:$scope.searchone}).success(function(data)
+            {
+                console.log("搜索成功");
+                $scope.persons=data.PersonCustNew;
+                console.log($scope.persons);
+            }).error(function(){
+                console.log("搜索失败");
+            });
+        };
+
+
+        //点击图片将人员信息绑定到前面页面
+        $scope.persontwo={};
+        $scope.getPersonBycustId=function(person){
+            $scope.persontwo=person;
+            console.log($scope.persontwo);
+        };
+
+        //选择房屋
+        $scope.houseone={};
+        $scope.choicHouse=function(house){
+            console.log(house);
+            $scope.houseone=house;
+        }
+
+        $scope.addArticleRelease=function(){
+
+            if($scope.button){
+                if($scope.currentBuilding.areaNew.length>0){
+                    $scope.Contain_y = $scope.currentBuilding.areaNew;
+                }
+            }else{
+                if($scope.currentBuilding.areaNew.length>0){
+                    $scope.Contain_n = $scope.currentBuilding.areaNew;
+                }
+            }
+            var arr1 = $scope.Contain_y;
+            var arr2 = $scope.Contain_n;
+
+            console.log($scope.Contain_y);
+            console.log($scope.Contain_n);
+
+            $scope.addrelease.item = arr1.concat(arr2);
+            console.log($scope.addrelease.item);
+            $scope.addrelease.houseName = $scope.houseone1.fullName;
+            $scope.addrelease.custId = $rootScope.user.custId;//办理人
+            $scope.addrelease.personId = $scope.persontwo.custId;//运送人
+            $scope.addrelease.customerType = 1;//客户类型
+
+            if($scope.addrelease.releaseTime == null ||
+                $scope.houseone1.houseAddress == null ||
+                $scope.addrelease.houseName == null ||
+                $scope.addrelease.releaseTimeEnd == null ||
+                $scope.addrelease.applyTime == null ||
+                $scope.addrelease.item == null){
+                layer.msg("请将数据补充完整!",{icon:3,time:1000});
+                return;
+            }else{
+                $http.post(url + '/ArticleRelease/insertArticleRelease', {ArticleRelease: $scope.addrelease}).success(function () {
+                    layer.msg("添加放行条成功!",{icon:1,time:1000});
+                    $location.path("index/propertyService/staffHome/releasePass/historicRecords");
+                }).error(function (data, status, headers, config) {
+                    layer.msg("添加放行条失败!",{icon:2,time:1000});
+                });
+            }
+        }
+
+        //点击人员搜索清空数据
+        $scope.clear=function(){
+            $scope.persontwo={};
+            $scope.houseone={};
+            $scope.addrelease={};
+        }
+
+        //查询人员关联的建筑
+        $scope.PersonBuildingNew = {};
+        $scope.PersonBuildingNew.custId = $rootScope.user.custId;
+        $scope.PersonBuildingNew.projectType='693697f3-147b-4e67-9c4f-d98e032efecb';
+        $scope.selectHouse = function(){
+            $http.post(url + '/PersonBuildingNew/selectPersonBuildingNewByCustId',{PersonBuildingNew : $scope.PersonBuildingNew}).success(function(data){
+                $scope.house1 = data.PersonBuildingNew;
+                console.log($scope.house1);
+                $('#myModale').modal({backdrop: 'static', keyboard: false});
+            }).error(function(data){
+                layer.alert('没有关联的建筑',{icon : 0,time:1000});
+            });
+        };
+
+        //$scope.house1=[{}];
+        //$scope.selectHouse=function(){
+        //    //加载房屋信息
+        //    $scope.search.custId=$rootScope.user.custId;
+        //    $http.post(url+'/HouseNew/listAllHouseNewBySearch',{Search:$scope.search}).success(function(data)
+        //    {
+        //        //console.log("搜索成功");
+        //        console.log(data);
+        //        $scope.house1=data.HouseNew;
+        //        //console.log($scope.house1);
+        //    }).error(function(error){
+        //        console.log("搜索失败，自己填充数据")
+        //
+        //    });
+        //};
+
+        $scope.houseone1={};
+        $scope.choiceHouse=function(house){
+            //console.log($scope.house);
+            $scope.btnIndex = house;
+            $scope.houseone1=house;
+            console.log($scope.houseone1);
+            $scope.houseone1.houseAddress =  $scope.houseone1.fullName;
+        };
+
+        //获取系统当前时间
+        $scope.now=new Date();
+        $scope.nowtime=$scope.now.toLocaleString();
+
+        //打印
+        $scope.printClick = function(){
+            if($scope.button){
+                if($scope.currentBuilding.areaNew.length>0){
+                    $scope.Contain_y = $scope.currentBuilding.areaNew;
+                }
+            }else{
+                if($scope.currentBuilding.areaNew.length>0){
+                    $scope.Contain_n = $scope.currentBuilding.areaNew;
+                }
+            }
+            $("#myModal").modal("show");
+        }
+
+        /**
+         * 添加放行条取消操作
+         */
+        $scope.cancel = function(){
+            $scope.addrelease = {};
+            $scope.houseone1={};
+            $scope.currentBuilding.areaNew=[];
+            $scope.Contain_y = [];
+            $scope.Contain_n = [];
+        }
+
+    }]);
+});

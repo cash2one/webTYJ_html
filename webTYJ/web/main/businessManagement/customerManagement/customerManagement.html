@@ -1,0 +1,1350 @@
+<!--
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>售后管理</title>
+<body>
+<div id="content-first">
+    &lt;!&ndash;tab页切换开始&ndash;&gt;
+    <div id="tab">
+        <a  lang="no"  ng-class="{'this_action ':btnIndex==1}">售后管理</a>
+    </div>
+    &lt;!&ndash;视图加载开始&ndash;&gt;
+
+<div class="sel">
+    <div class="row search-padding-10">
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">项目：</div>
+        <div class="col-lg-3 col-md-4 col-sm-4">
+            <select name="select4" ng-model="deplist"  class="form-control" id="select4">
+                <option ng-true-value="''" value="''" selected>&#45;&#45;请选择&#45;&#45;</option>
+                <option  ng-repeat="dep in Project" value="{{dep.projectId}}" ng-click="showlist()">{{dep.projectName}}</option>
+            </select>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">资产名称：</div>
+        <div class="col-lg-3 col-md-4 col-sm-4">
+            <form><input name="input" type="text" class="form-control" placeholder="请输入搜索条件" ng-model="pptname" style="margin-right: 10px;"></form>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-4 text-left">
+            <button type="button" class="btn btn-default btn-primary" ng-click="Psearchaginator._load()">
+                <span class="glyphicon glyphicon-search btn_icon"></span>
+                查询
+            </button>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">来源：</div>
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            <label class="checkbox inline">
+                <input name="" type="checkbox" ng-true-value="'验房'" ng-false-value="''" ng-model="AfterSaleQuery.source" ng-click="show()">
+                <span>验房</span>
+            </label>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            <label class="checkbox inline">
+                <input name="" type="checkbox" ng-true-value="'入伙'" ng-false-value="''" ng-model="AfterSaleQuery.source" ng-click="show()">
+                <span>入伙</span>
+            </label>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            <label class="checkbox inline">
+                <input name="" type="checkbox" ng-true-value="'维修'" ng-false-value="''" ng-model="AfterSaleQuery.source">
+                <span>维修</span>
+            </label>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">进度：</div>
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            <label class="checkbox inline">
+                <input name="" type="checkbox" ng-true-value="'处理完'" ng-false-value="''" ng-model="AfterSaleQuery.process" ng-click="show()">
+                <span>处理完</span>
+            </label>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            <label class="checkbox inline">
+                <input name="" type="checkbox" ng-true-value="'已受理'" ng-false-value="''" ng-model="AfterSaleQuery.process" ng-click="show()">
+                <span>已受理</span>
+            </label>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            <label class="checkbox inline">
+                <input name="" type="checkbox" ng-true-value="'处理中'" ng-false-value="''" ng-model="AfterSaleQuery.process">
+                <span>维修</span>
+            </label>
+        </div>
+    </div>
+    <div class="row search-padding-10" style="margin-top:-10px">
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">专业：</div>
+        <div class="col-lg-2 col-md-2 col-sm-2 text-left"ng-repeat="pro in PropertyType">
+            &lt;!&ndash;<div class="col-lg-1 col-md-2 col-sm-2 text-right" ng-show="$index!=0 && ($index%5) == 0"></div>&ndash;&gt;
+            <label class="checkbox inline">
+                <input  name="propertypename" type="checkbox" id="{{pro.propertyTypeName}}">
+                <span>{{pro.propertyTypeName}}</span>
+            </label>
+        </div>
+    </div>
+</div>
+<div class="row padding">
+    <div class="col-lg-12">
+        <div class="search-padding-10">
+            <button type="button" class="btn btn-default btn-primary" >
+                通知函
+            </button>
+            <button type="button" class="btn btn-default btn-primary">
+                保修通知函
+            </button>
+        </div>
+        <table>
+            <thead>
+            <tr>
+                <th>序号</th>
+                <th>地址</th>
+                <th>专业</th>
+                <th>区域</th>
+                <th>资产编号</th>
+                <th>资产名称</th>
+                <th>业主</th>
+                <th>业主电话</th>
+                <th>处理状态</th>
+                <th>来源</th>
+                <th>问题描述</th>
+                <th>保修单位</th>
+                <th>维修验收</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="item in Psearchaginator.object.afterSales" ng-show="item.id != null">
+                <td>{{$index}}</td>
+                <td>{{item.homeAddress}}</td>
+                <td>{{item.propertyTypeName}}</td>
+                <td>{{item.area}}</td>
+                <td>{{item.propertyNumber}}</td>
+                <td>{{item.propertyName}}</td>
+                <td>{{item.homeAddress}}</td>
+                <td>{{item.clientPhone}}</td>
+                <td>{{item.process}}</td>
+                <td>{{item.source}}</td>
+                <td>{{item.describe}}</td>
+                <td>
+                    <div ng-switch="item.guarantee">
+                        <span ng-switch-when="0">已接受保修</span>
+                        <span ng-switch-when="1">不保修，发送请求</span>
+                        <span ng-switch-when="2">已发送请求</span>
+                        <span ng-switch-default>接受保修&nbsp;/&nbsp;<a href="#" ng-click="sendnotice(item);">发送请求</a></span>
+                    </div>
+                </td>
+                <td></td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="bill_paging">
+            <div class="pagination">
+                <ul class="pagination">
+                    <li ng-class="{true:'disabled'}[Psearchaginator.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-click="Psearchaginator.go(1)">首页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[Psearchaginator.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-show="Psearchaginator.hasPrevious()" ng-click="Psearchaginator.previous()">上一页</a>
+                    </li>
+                    <li ng-class="{true:'active'}[Psearchaginator.page.currentPage==i]" ng-repeat="i in Psearchaginator.pages">
+                        <a href="javascript:void(0)"  ng-click="Psearchaginator.go(i)">{{i}}</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[Psearchaginator.page.currentPage==searchFaq.page.totalPage]">
+                        <a href="javascript:void(0)" ng-show="Psearchaginator.hasNext()" ng-click="Psearchaginator.next()">下一页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[Psearchaginator.page.currentPage==Psearchaginator.page.totalPage]">
+                        <a href="javascript:void(0)" ng-click="Psearchaginator.go(Psearchaginator.page.totalPage)">尾页</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+</head>
+</html>-->
+
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>售后管理</title>
+</head>
+<body>
+<div id="content-first" ng-show="mainPage==0">
+    <!--tab页切换开始-->
+    <div id="tab">
+        <a  ng-click="toPage(1,3)"  ng-class="{'this_action ':btnIndex==1}">售后管理</a>
+        <a  lang="no" ng-click="toPage(2,0)" ng-class="{'this_action ':btnIndex==2}">业主函件管理</a>
+    </div>
+
+    <!--视图加载开始-->
+
+    <div class="sel" id="show_after_sale_project" ng-show="btnIndex==1">
+        <div class="row search-padding-10 text-left">
+            <!--<div class="col-lg-2 col-md-1 col-sm-2 ">售后时间设置：</div>
+            <div class="col-lg-1 col-md-4 col-sm-4">
+                <select  ng-model="setting.days"  class="form-control">
+                    <option ng-true-value="''" value="''" selected>请选择</option>
+                    <option  ng-repeat="index in days " value="{{index}}">{{index}}天</option>
+                </select>
+            </div>-->
+        </div>
+        <div class="row">
+            <div class="col-lg-12" ng-show="btnIndex==1">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>项目名称</th>
+                        <th>项目售后开始日期</th>
+                        <th>项目售后结束日期</th>
+                        <th>所属公司</th>
+                        <th>项目经理</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="dep in loadProjectPaginator.object['project'] " ng-show="dep.projectId != null">
+                        <td>{{$index}}</td>
+                        <td ng-click="clickProjectName(dep)" style="color:blue;">{{dep.projectName}}</td>
+                        <!--<td>{{dep.afterSaleInfo.afterStartTime|date:'yyyy-MM-dd'}}</td>-->
+                        <!--<td>{{dep.afterSaleInfo.afterEndTime|date:'yyyy-MM-dd'}}</td>-->
+                        <td>2016-08-02</td>
+                        <td>2016-09-12</td>
+                        <td>{{dep.companyDetail.companyName}}</td>
+                        <td>{{dep.staff.staffName}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="bill_paging">
+                    <div class="pagination">
+                        <ul class="pagination">
+                            <li ng-class="{true:'disabled'}[loadProjectPaginator.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-click="loadProjectPaginator.go(1)">首页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[loadProjectPaginator.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-show="loadProjectPaginator.hasPrevious()" ng-click="loadProjectPaginator.previous()">上一页</a>
+                            </li>
+                            <li ng-class="{true:'active'}[loadProjectPaginator.page.currentPage==i]" ng-repeat="i in loadProjectPaginator.pages">
+                                <a href="javascript:void(0)"  ng-click="loadProjectPaginator.go(i)">{{i}}</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[loadProjectPaginator.page.currentPage==loadProjectPaginator.page.totalPage]">
+                                <a href="javascript:void(0)" ng-show="loadProjectPaginator.hasNext()" ng-click="loadProjectPaginator.next()">下一页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[loadProjectPaginator.page.currentPage==loadProjectPaginator.page.totalPage]">
+                                <a href="javascript:void(0)" ng-click="loadProjectPaginator.go(loadProjectPaginator.page.totalPage)">尾页</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="sel" id="show_after_sale_letters" ng-show="btnIndex==2&&show_after_sale_letters==1">
+        <div class="row">
+            <div class="col-lg-12" ng-show="btnIndex==2">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>项目名称</th>
+                        <th>项目售后开始日期</th>
+                        <th>项目售后结束日期</th>
+                        <th>所属公司</th>
+                        <th>项目经理</th>
+                        <th>状态</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="dep in loadProjectPaginator.object['project'] " ng-show="dep.projectId != null">
+                        <td>{{$index}}</td>
+                        <td>{{dep.projectName}}</td>
+                        <!--<td>{{dep.afterSaleInfo.afterStartTime|date:'yyyy-MM-dd'}}</td>-->
+                        <!--<td>{{dep.afterSaleInfo.afterEndTime|date:'yyyy-MM-dd'}}</td>-->
+                        <td>2016-08-02</td>
+                        <td>2016-09-12</td>
+                        <td>{{dep.companyDetail.companyName}}</td>
+                        <td>{{dep.staff.staffName}}</td>
+                        <td ng-click="clickState()">{{dep.afterSaleInfo.process}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="bill_paging">
+                    <div class="pagination">
+                        <ul class="pagination">
+                            <li ng-class="{true:'disabled'}[loadProjectPaginator.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-click="loadProjectPaginator.go(1)">首页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[loadProjectPaginator.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-show="loadProjectPaginator.hasPrevious()" ng-click="loadProjectPaginator.previous()">上一页</a>
+                            </li>
+                            <li ng-class="{true:'active'}[loadProjectPaginator.page.currentPage==i]" ng-repeat="i in loadProjectPaginator.pages">
+                                <a href="javascript:void(0)"  ng-click="loadProjectPaginator.go(i)">{{i}}</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[loadProjectPaginator.page.currentPage==loadProjectPaginator.page.totalPage]">
+                                <a href="javascript:void(0)" ng-show="loadProjectPaginator.hasNext()" ng-click="loadProjectPaginator.next()">下一页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[loadProjectPaginator.page.currentPage==loadProjectPaginator.page.totalPage]">
+                                <a href="javascript:void(0)" ng-click="loadProjectPaginator.go(loadProjectPaginator.page.totalPage)">尾页</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="sel" id="" ng-show="btnIndex==2&&show_after_sale_letters==2">
+        <div class="row">
+            <div class="col-lg-12" ng-show="btnIndex==2">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>指定发函日期</th>
+                        <th>业主函件</th>
+                        <th>录快递单号</th>
+                        <th>状态</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="dep in loadProjectPaginator.object['project'] " ng-show="dep.projectId != null">
+                        <td>{{$index}}</td>
+                        <td>2014-1-3</td>
+                        <td>打印</td>
+                        <td ng-click="loadOne()">录入</td>
+                        <td>未发函</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="bill_paging">
+                    <div class="pagination">
+                        <ul class="pagination">
+                            <li ng-class="{true:'disabled'}[Psearchaginator.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-click="Psearchaginator.go(1)">首页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[Psearchaginator.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-show="Psearchaginator.hasPrevious()" ng-click="Psearchaginator.previous()">上一页</a>
+                            </li>
+                            <li ng-class="{true:'active'}[Psearchaginator.page.currentPage==i]" ng-repeat="i in Psearchaginator.pages">
+                                <a href="javascript:void(0)"  ng-click="Psearchaginator.go(i)">{{i}}</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[Psearchaginator.page.currentPage==searchFaq.page.totalPage]">
+                                <a href="javascript:void(0)" ng-show="Psearchaginator.hasNext()" ng-click="Psearchaginator.next()">下一页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[Psearchaginator.page.currentPage==Psearchaginator.page.totalPage]">
+                                <a href="javascript:void(0)" ng-click="Psearchaginator.go(Psearchaginator.page.totalPage)">尾页</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row text-center">
+            <button type="button" class="btn btn-primary" ng-click="backToHome2()">
+                <span class="glyphicon glyphicon-backward"></span>
+                返回
+            </button>
+        </div>
+    </div>
+
+    <div class="sel" id="after_sale_in_project" ng-show="btnIndex==3">
+        <div class="row search-padding-10">
+            <!--<div class="col-lg-1 col-md-2 col-sm-2 text-right">项目：</div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                <select name="select4" ng-model="deplist"  class="form-control" id="select4">
+                    <option ng-true-value="''" value="''" selected>&#45;&#45;请选择&#45;&#45;</option>
+                    <option  ng-repeat="dep in Project" value="{{dep.projectId}}" ng-click="showlist()">{{dep.projectName}}</option>
+                </select>
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">资产名称：</div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                <form><input name="input" type="text" class="form-control" placeholder="请输入搜索条件" ng-model="pptname" style="margin-right: 10px;"></form>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-4 text-left">
+                <button type="button" class="btn btn-default btn-primary" ng-click="searchInfo()">
+                    <span class="glyphicon glyphicon-search btn_icon"></span>
+                    查询
+                </button>
+            </div>-->
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">来源：</div>
+            <div class="col-lg-1 col-md-2 col-sm-2">
+                <label class="checkbox inline">
+                    <input name="" type="checkbox" ng-true-value="'验房'" ng-false-value="''" ng-model="AfterSaleQuery.source" ng-click="show()">
+                    <span>验房</span>
+                </label>
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2">
+                <label class="checkbox inline">
+                    <input name="" type="checkbox" ng-true-value="'入伙'" ng-false-value="''" ng-model="AfterSaleQuery.source" ng-click="show()">
+                    <span>入伙</span>
+                </label>
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2">
+                <label class="checkbox inline">
+                    <input name="" type="checkbox" ng-true-value="'维修'" ng-false-value="''" ng-model="AfterSaleQuery.source">
+                    <span>维修</span>
+                </label>
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">进度：</div>
+            <!--<div class="col-lg-1 col-md-2 col-sm-2">
+                <label class="checkbox inline">
+                    <input name="" type="checkbox" ng-true-value="'处理完'" ng-false-value="''" ng-model="AfterSaleQuery.process" ng-click="">
+                    <span>处理完</span>
+                </label>
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2">
+                <label class="checkbox inline">
+                    <input name="" type="checkbox" ng-true-value="'已受理'" ng-false-value="''" ng-model="AfterSaleQuery.process" ng-click="">
+                    <span>已受理</span>
+                </label>
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2">
+                <label class="checkbox inline">
+                    <input name="" type="checkbox" ng-true-value="'处理中'" ng-false-value="''" ng-model="AfterSaleQuery.process">
+                    <span>处理中</span>
+                </label>
+            </div>-->
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                <select name="processing_state" ng-model="AfterSaleQuery.process" class="form-control" id="select">
+                    <option value="">--请选择--</option>
+                    <option value="0">待处理</option>
+                    <option value="1">已发送维修通知函</option>
+                    <option value="2">已发送确认不来函</option>
+                    <option value="3">已完成</option>
+                </select>
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">专业：</div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                <select name="propertyType" ng-model="AfterSaleQuery.propertyTypeName" class="form-control" id="select2">
+                    <option value="">--请选择--</option>
+                    <option ng-repeat="pro in PropertyType" value="{{pro.propertyTypeName}}">{{pro.propertyTypeName}}</option>
+                </select>
+            </div>
+        </div>
+        <!--<div class="row search-padding-10" style="margin-top:-10px">
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">专业：</div>
+            <div class="col-lg-1 col-md-2 col-sm-2 text-left"ng-repeat="pro in PropertyType">
+                &lt;!&ndash;<div class="col-lg-1 col-md-2 col-sm-2 text-right" ng-show="$index!=0 && ($index%5) == 0"></div>&ndash;&gt;
+                <label class="checkbox inline">
+                    <input  name="propertypename" type="checkbox" id="{{pro.propertyTypeName}}">
+                    <span>{{pro.propertyTypeName}}</span>
+                </label>
+            </div>
+        </div>-->
+        <div class="row search-padding" style="margin-top:-10px">
+            <div class="row">
+                <div class="col-lg-1 col-md-2 col-sm-2  text-right">
+                    资产名称：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <input type="text" class="form-control" placeholder="请输入搜索条件" ng-model="AfterSaleQuery.propertyName" ng-keyup="inputSearch()">
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2  text-right">
+                    保修单位：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <input type="text" class="form-control" placeholder="请输入搜索条件" ng-model="AfterSaleQuery.guarantee" ng-keyup="inputSearch()">
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2  text-right">
+                    地址：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4  text-right">
+                    <input type="text" class="form-control" placeholder="请输入搜索条件"  ng-model="AfterSaleQuery.homeAddress" ng-keyup="inputSearch()">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-1 col-md-2 col-sm-2  text-right">
+                    合同号：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <input type="text" class="form-control" placeholder="请输入搜索条件" ng-model="AfterSaleQuery.contractNum" ng-keyup="inputSearch()">
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2  text-right">
+                    业主姓名：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <input type="text" class="form-control" placeholder="请输入搜索条件" ng-model="AfterSaleQuery.clientName" ng-keyup="inputSearch()">
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4 text-right">
+                    <button type="button" class="btn btn-default btn-primary" ng-click="searchInfo()" ><span class="glyphicon glyphicon-search btn_icon"></span>查询 </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row padding">
+        <div class="col-lg-12" id="show_after_sale_list" ng-show="btnIndex==3 && show_search_after_sale==0">
+            <div class="row text-right">
+                <button type="button" class="btn btn-default btn-primary" ng-click="clickAfterSaleCompany()">
+                    发函售后责任单位
+                </button>
+                <button type="button" class="btn btn-default btn-primary" ng-click="clickRepairCompany()">
+                    发函维修委托单位
+                </button>
+            </div>
+            <div class="sel" ng-show="btnIndex==3 && btn_after_sale==0">
+                <div class="row">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th width="50px"/>
+                            <th>序号</th>
+                            <th>地址</th>
+                            <th>报修日期</th>
+                            <th>区域</th>
+                            <th>资产编号</th>
+                            <th>合同号</th>
+                            <th>资产名称</th>
+                            <th>业主</th>
+                            <th>业主电话</th>
+                            <th>处理状态</th>
+                            <th>来源</th>
+                            <th>问题描述</th>
+                            <th>保修单位</th>
+                            <th>保修单位电话</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="item in Psearchaginator.object.afterSales" ng-show="item.id != null" ng-dblclick="clickAfterSaleList()" ng-click="chooseAfterSaleList(item)">
+                            <td><input type="checkbox" id="{{item.id}}" name="item.name"  ng-click="chooseAfterSaleList(item)"></td>
+                            <td>{{$index}}</td>
+                            <td>{{item.homeAddress}}</td>
+                            <td>{{}}</td>
+                            <td>{{item.area}}</td>
+                            <td>{{item.propertyNumber}}</td>
+                            <td>{{item.contractNum}}</td>
+                            <td>{{item.propertyName}}</td>
+                            <td>{{item.clientName}}</td>
+                            <td>{{item.clientPhone}}</td>
+                            <td ng-switch="item.process">
+                                <span ng-switch-when="0">待处理</span>
+                                <span ng-switch-when="1">已发送维修通知函</span>
+                                <span ng-switch-when="2">已发送确认不来函</span>
+                                <span ng-switch-when="3">已完成</span>
+                                <!--<span ng-switch-when="4">已处理</span>-->
+                            </td>
+                            <td>{{item.source}}</td>
+                            <td>{{item.describe}}</td>
+                            <td>
+                                <!--<div ng-switch="item.guarantee">
+                                    <span ng-switch-when="0">已接受保修</span>
+                                    <span ng-switch-when="1">不保修，发送请求</span>
+                                    <span ng-switch-when="2">已发送请求</span>
+                                    <span ng-switch-default>接受保修&nbsp;/&nbsp;<a href="#" ng-click="sendnotice(item);">发送请求</a></span>
+                                </div>-->
+                                {{item.guarantee}}
+                            </td>
+                            <td>{{}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="bill_paging">
+                        <div class="pagination">
+                            <ul class="pagination">
+                                <li ng-class="{true:'disabled'}[Psearchaginator.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-click="Psearchaginator.go(1)">首页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[Psearchaginator.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-show="Psearchaginator.hasPrevious()" ng-click="Psearchaginator.previous()">上一页</a>
+                                </li>
+                                <li ng-class="{true:'active'}[Psearchaginator.page.currentPage==i]" ng-repeat="i in Psearchaginator.pages">
+                                    <a href="javascript:void(0)"  ng-click="Psearchaginator.go(i)">{{i}}</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[Psearchaginator.page.currentPage==Psearchaginator.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-show="Psearchaginator.hasNext()" ng-click="Psearchaginator.next()">下一页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[Psearchaginator.page.currentPage==Psearchaginator.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-click="Psearchaginator.go(Psearchaginator.page.totalPage)">尾页</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12" id="after_sale_information" ng-show="btnIndex==3 && show_search_after_sale==1">
+            <div class="information_box">
+                <div class="row">
+                    <!--售后处理详情开始-->
+                    <!--
+                    <div class="col-lg-1 col-md-1 col-sm-1">
+                        <button type="button" class="btn btn-default btn-primary" ng-click="">
+                            <span class="glyphicon glyphicon-search btn_icon"></span>
+                            返回
+                        </button>
+                    </div>
+                    -->
+                    <div class="col-lg-3 col-md-3 col-sm-3">
+                        <div  class="col-lg-6 col-md-6 col-sm-6 text-right">地址：</div>
+                        <div  class="col-lg-6 col-md-6 col-sm-6 text-left">13333333333</div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-3 ">
+                        <div  class="col-lg-6 col-md-6 col-sm-6 text-right">区域：</div>
+                        <div  class="col-lg-6 col-md-6 col-sm-6 text-left">13333333333</div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-3 col-sm-3 ">
+                        <div  class="col-lg-6 col-md-6 col-sm-6 text-right">专业：</div>
+                        <div  class="col-lg-6 col-md-6 col-sm-6 text-left">13333333333</div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-3 col-sm-3 ">
+                        <div  class="col-lg-6 col-md-6 col-sm-6 text-right">资产：</div>
+                        <div  class="col-lg-6 col-md-6 col-sm-6 text-left">13333333333</div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-3 ">
+                        <div  class="col-lg-6 col-md-6 col-sm-6 text-right">来源：</div>
+                        <div  class="col-lg-6 col-md-6 col-sm-6 text-left">13333333333</div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-3 col-sm-3 ">
+                        <div  class="col-lg-6 col-md-6 col-sm-6 text-right">保修单位：</div>
+                        <div  class="col-lg-6 col-md-6 col-sm-6 text-left">13333333333</div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-3 ">
+                        <div  class="col-lg-6 col-md-6 col-sm-6 text-right">报修日期：</div>
+                        <div  class="col-lg-6 col-md-6 col-sm-6 text-left">13333333333</div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-3 ">
+                        <div  class="col-lg-6 col-md-6 col-sm-6 text-right">业主：</div>
+                        <div  class="col-lg-6 col-md-6 col-sm-6 text-left">13333333333</div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-3 ">
+                        <div  class="col-lg-6 col-md-6 col-sm-6 text-right">业主电话：</div>
+                        <div  class="col-lg-6 col-md-6 col-sm-6 text-left">13333333333</div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-3 ">
+                        <div  class="col-lg-6 col-md-6 col-sm-6 text-right">售后处理人：</div>
+                        <div  class="col-lg-6 col-md-6 col-sm-6 text-left">13333333333</div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-3 ">
+                        <div  class="col-lg-6 col-md-6 col-sm-6 text-right">保修单位电话：</div>
+                        <div  class="col-lg-6 col-md-6 col-sm-6 text-left">13333333333</div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-3 ">
+                        <div  class="col-lg-6 col-md-6 col-sm-6 text-right">问题描述：</div>
+                        <div  class="col-lg-6 col-md-6 col-sm-6 text-left">13333333333</div>
+                    </div>
+                </div>
+                <!--售后处理详情结束-->
+            </div>
+
+            <!--任务列表-->
+            <form class="row">
+                <div class="row">
+                    <div class="col-lg-1 col-md-1 col-sm-1">
+                    <span ng-show="houses.length > 3 && currentPageHouse > 1">
+                         <a ng-click="prevHouse()"><span class="btn btn-sm glyphicon glyphicon-menu-left switch" aria-hidden="true"></span></a>
+                    </span>
+                    </div>
+                    <div class="col-lg-10 col-md-10 col-sm-10">
+                     <span class="form-group">
+                        <div class="col-lg-4 col-md-4 col-sm-6">
+                            <div id="pannel">
+                                <div class="title">
+                                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                        任务信息
+                                    </div>
+                                </div>
+                                <div class="pannel_content_form">
+                                    <div class="row">
+                                        <div class="col-xs-12 col-lg-9 col-md-9">
+                                            <ul>
+                                                <div class="col-lg-4 col-md-6 col-sm-6 text-right">任务编号：</div><div class="col-lg-4 col-md-6 col-sm-6"><li><nobr>&nbsp;TASK99000111</nobr></li></div>
+                                                <div class="col-lg-4 col-md-6 col-sm-6 text-right">预计完成时间：</div><div class="col-lg-4 col-md-6 col-sm-6"><li><nobr>&nbsp;TASK99000111</nobr></li></div>
+                                                <div class="col-lg-4 col-md-6 col-sm-6 text-right">任务状态：</div><div class="col-lg-4 col-md-6 col-sm-6"><li><nobr>&nbsp;TASK99000111</nobr></li></div>
+                                                <div class="col-lg-4 col-md-6 col-sm-6 text-right">实际完成时间：</div><div class="col-lg-4 col-md-6 col-sm-6"><li><nobr>&nbsp;TASK99000111</nobr></li></div>
+                                                <div class="col-lg-4 col-md-6 col-sm-6 text-right">任务地址：</div><div class="col-lg-4 col-md-6 col-sm-6"><li><nobr>&nbsp;TASK99000111</nobr></li></div>
+                                                <div class="col-lg-4 col-md-6 col-sm-6 text-right">任务负责人：</div><div class="col-lg-4 col-md-6 col-sm-6"><li><nobr>&nbsp;TASK99000111</nobr></li></div>
+                                                <div class="col-lg-4 col-md-6 col-sm-6 text-right">任务类型：</div><div class="col-lg-4 col-md-6 col-sm-6"><li><nobr>&nbsp;TASK99000111</nobr></li></div>
+                                                <div class="col-lg-4 col-md-6 col-sm-6 text-right">创建时间：</div><div class="col-lg-4 col-md-6 col-sm-6"><li><nobr>&nbsp;TASK99000111</nobr></li></div>
+                                                <div class="col-lg-4 col-md-6 col-sm-6 text-right">任务描述：</div><div class="col-lg-4 col-md-6 col-sm-6"><li><nobr>&nbsp;TASK99000111</nobr></li></div>
+                                                <div class="col-lg-12 col-md-6 col-sm-6 text-left">点击查看详情</div>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </span>
+                    </div>
+                    <div class="col-lg-1 col-md-1 col-sm-1">
+                    <span ng-show="houses.length > 3 && currentPageHouse < totalPageHouse">
+                         <a><span class="btn btn-sm glyphicon glyphicon-menu-right switch" aria-hidden="true" ng-click="nextHouse()"></span></a>
+                    </span>
+                    </div>
+                </div>
+            </form>
+            <!--任务列表 结束-->
+
+            <!--工单列表-->
+            <form class="">
+                <div class="row">
+                    <div class="col-lg-1 col-md-1 col-sm-1">
+                    <span ng-show="houses.length > 3 && currentPageHouse > 1">
+                         <a ng-click="prevHouse()"><span class="btn btn-sm glyphicon glyphicon-menu-left switch" aria-hidden="true"></span></a>
+                    </span>
+                    </div>
+                    <div class="col-lg-10 col-md-10 col-sm-10">
+                     <span class="form-group">
+                        <div class="col-lg-4 col-md-4 col-sm-6">
+                            <div id="pannel">
+                                <div class="title">
+                                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                        任务信息
+                                    </div>
+                                </div>
+                                <div class="pannel_content_form">
+                                    <div class="row">
+                                        <div class="col-xs-12 col-lg-9 col-md-9">
+                                            <ul>
+                                                <div class="col-lg-4 col-md-6 col-sm-6 text-right">任务编号：</div><div class="col-lg-4 col-md-6 col-sm-6"><li><nobr>&nbsp;TASK99000111</nobr></li></div>
+                                                <div class="col-lg-4 col-md-6 col-sm-6 text-right">预计完成时间：</div><div class="col-lg-4 col-md-6 col-sm-6"><li><nobr>&nbsp;TASK99000111</nobr></li></div>
+                                                <div class="col-lg-4 col-md-6 col-sm-6 text-right">任务状态：</div><div class="col-lg-4 col-md-6 col-sm-6"><li><nobr>&nbsp;TASK99000111</nobr></li></div>
+                                                <div class="col-lg-4 col-md-6 col-sm-6 text-right">实际完成时间：</div><div class="col-lg-4 col-md-6 col-sm-6"><li><nobr>&nbsp;TASK99000111</nobr></li></div>
+                                                <div class="col-lg-4 col-md-6 col-sm-6 text-right">任务地址：</div><div class="col-lg-4 col-md-6 col-sm-6"><li><nobr>&nbsp;TASK99000111</nobr></li></div>
+                                                <div class="col-lg-4 col-md-6 col-sm-6 text-right">任务负责人：</div><div class="col-lg-4 col-md-6 col-sm-6"><li><nobr>&nbsp;TASK99000111</nobr></li></div>
+                                                <div class="col-lg-4 col-md-6 col-sm-6 text-right">任务类型：</div><div class="col-lg-4 col-md-6 col-sm-6"><li><nobr>&nbsp;TASK99000111</nobr></li></div>
+                                                <div class="col-lg-4 col-md-6 col-sm-6 text-right">创建时间：</div><div class="col-lg-4 col-md-6 col-sm-6"><li><nobr>&nbsp;TASK99000111</nobr></li></div>
+                                                <div class="col-lg-4 col-md-6 col-sm-6 text-right">任务描述：</div><div class="col-lg-4 col-md-6 col-sm-6"><li><nobr>&nbsp;TASK99000111</nobr></li></div>
+                                                <div class="col-lg-12 col-md-6 col-sm-6 text-left">点击查看详情</div>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </span>
+                    </div>
+                    <div class="col-lg-1 col-md-1 col-sm-1">
+                    <span ng-show="houses.length > 3 && currentPageHouse < totalPageHouse">
+                         <a><span class="btn btn-sm glyphicon glyphicon-menu-right switch" aria-hidden="true" ng-click="nextHouse()"></span></a>
+                    </span>
+                    </div>
+                </div>
+            </form>
+            <!--工单列表 结束-->
+
+
+        </div>
+    </div>
+    <!--发函售后责任单位-->
+    <div class="sel" ng-show="btnIndex==4 &&show_search_after_sale==2">
+        <!--<div id="tab">
+            <a ng-class="{'this_action ':btnIndex==3 && btn_after_sale==1}">通知维修单</a>
+            <a ng-class="{'this_action ':btnIndex==3 && btn_after_sale==1}">通知维修单2</a>
+            <a lang="no" ng-class="{'this_action ':btnIndex==3 && btn_after_sale==1}">通知维修单3</a>
+        </div>-->
+        <div class="sel" style="border-top:1px solid #d1d1d2">
+            <div class="row" style="margin-bottom: 5px">
+                <button type="button" class="btn btn-primary" ng-click="backToList()">返回</button>
+                <button type="button" class="btn btn-primary" ng-click="clickRepairLetter()">发送维修通知函</button>
+                <button type="button" class="btn btn-primary" ng-click="clickConfirmNoLetter()">发送确认不来函</button>
+                <button type="button" class="btn btn-primary" ng-click="clickChargeLetter()">发送扣款函</button>
+                <button type="button" class="btn btn-primary">打印</button>
+            </div>
+            <div class="row">
+                <table>
+                    <thead>
+                    <tr>
+                        <th width="50px"/>
+                        <th>序号</th>
+                        <th>指定发函日期</th>
+                        <th>保修单位</th>
+                        <th>状态</th>
+                        <th>查看</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!--<tr ng-repeat="item in Psearchaginator.object.afterSales" ng-show="item.id != null">
+                        <td>{{$index}}</td>
+                        <td>{{item.homeAddress}}</td>
+                        <td>{{item.propertyTypeName}}</td>
+                        <td>{{item.area}}</td>
+                        <td>{{item.propertyNumber}}</td>
+                        <td>{{item.propertyName}}</td>
+                        <td>{{item.homeAddress}}</td>
+                        <td>{{item.clientPhone}}</td>
+                        <td>{{item.process}}</td>
+                        <td>{{item.source}}</td>
+                        <td>{{item.describe}}</td>
+                        <td>
+                            <div ng-switch="item.guarantee">
+                                <span ng-switch-when="0">已接受保修</span>
+                                <span ng-switch-when="1">不保修，发送请求</span>
+                                <span ng-switch-when="2">已发送请求</span>
+                                <span ng-switch-default>接受保修&nbsp;/&nbsp;<a href="#" ng-click="sendnotice(item);">发送请求</a></span>
+                            </div>
+                        </td>
+                        <td></td>
+                    </tr>-->
+                    <tr ng-repeat="item in loadProcessPaginator.object.afterSaleProcess" ng-show="item.id!=null"
+                        ng-class="{'this_info':listIndex==item.id}"
+                        ng-click="clickProcessListToListPage(item)"
+                        ng-init=""
+                    >
+                        <td><input type="checkbox" id="{{item.id}}" ng-click="clickProcessListToListPage(item)"></td>
+                        <td>{{$index}}</td>
+                        <td>{{item.letterDate|date:'yyyy-MM-dd'}}</td>
+                        <td>{{item.guarantee}}</td>
+                        <td ng-switch="item.state">
+                            <span ng-switch-when="0">未发函</span>
+                            <span ng-switch-when="1">已发送维修通知函</span>
+                            <span ng-switch-when="2">已发送确认不来函</span>
+                            <span ng-switch-when="3">已发送扣款函</span>
+                        </td>
+                        <td style="color:blue" data-target="#expressModal" data-toggle="modal" ng-click="clickExpressNum(item)">快递单号</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="bill_paging">
+                    <div class="pagination">
+                        <ul class="pagination">
+                            <li ng-class="{true:'disabled'}[loadProcessPaginator.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-click="loadProcessPaginator.go(1)">首页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[loadProcessPaginator.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-show="loadProcessPaginator.hasPrevious()" ng-click="loadProcessPaginator.previous()">上一页</a>
+                            </li>
+                            <li ng-class="{true:'active'}[loadProcessPaginator.page.currentPage==i]" ng-repeat="i in loadProcessPaginator.pages">
+                                <a href="javascript:void(0)"  ng-click="loadProcessPaginator.go(i)">{{i}}</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[loadProcessPaginator.page.currentPage==loadProcessPaginator.page.totalPage]">
+                                <a href="javascript:void(0)" ng-show="loadProcessPaginator.hasNext()" ng-click="loadProcessPaginator.next()">下一页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[loadProcessPaginator.page.currentPage==loadProcessPaginator.page.totalPage]">
+                                <a href="javascript:void(0)" ng-click="loadProcessPaginator.go(loadProcessPaginator.page.totalPage)">尾页</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>地址</th>
+                        <th>区域</th>
+                        <th>资产</th>
+                        <th>报修日期</th>
+                        <th>问题描述</th>
+                        <th>回复结果</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="item in loadPageAfterSalePaginator.object.afterSales" ng-show="item.id!=null">
+                        <td>{{$index}}</td>
+                        <td>{{item.homeAddress}}</td>
+                        <td>{{item.area}}</td>
+                        <td>{{item.propertyName}}</td>
+                        <td>{{}}</td>
+                        <td>{{item.describe}}</td>
+                        <td ><b>√</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>×</b></td>
+                    </tr>
+                    <tr ng-if="loadPageAfterSalePaginator.object.afterSales.length==0||loadPageAfterSalePaginator.object.afterSales.length==null">
+                        <td colspan="7">暂无数据！</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="bill_paging">
+                    <div class="pagination">
+                        <ul class="pagination">
+                            <li ng-class="{true:'disabled'}[loadPageAfterSalePaginator.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-click="loadPageAfterSalePaginator.go(1)">首页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[loadPageAfterSalePaginator.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-show="loadPageAfterSalePaginator.hasPrevious()" ng-click="loadPageAfterSalePaginator.previous()">上一页</a>
+                            </li>
+                            <li ng-class="{true:'active'}[loadPageAfterSalePaginator.page.currentPage==i]" ng-repeat="i in loadPageAfterSalePaginator.pages">
+                                <a href="javascript:void(0)"  ng-click="loadPageAfterSalePaginator.go(i)">{{i}}</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[loadPageAfterSalePaginator.page.currentPage==loadPageAfterSalePaginator.page.totalPage]">
+                                <a href="javascript:void(0)" ng-show="loadPageAfterSalePaginator.hasNext()" ng-click="loadPageAfterSalePaginator.next()">下一页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[loadPageAfterSalePaginator.page.currentPage==loadPageAfterSalePaginator.page.totalPage]">
+                                <a href="javascript:void(0)" ng-click="loadPageAfterSalePaginator.go(loadPageAfterSalePaginator.page.totalPage)">尾页</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--发函维修委托单位-->
+    <div class="sel" ng-show="btnIndex==4 &&show_search_after_sale==3">
+        <!--<div id="tab">
+            <a ng-class="{'this_action ':btnIndex==3 && btn_after_sale==2}">维修委托函</a>
+        </div>-->
+        <div class="sel row">
+            <table>
+                <thead>
+                <tr>
+                    <th>序号</th>
+                    <th>指定发函日期</th>
+                    <th>维修通知函件</th>
+                    <th>录快递单号</th>
+                    <th>状态</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!--<tr ng-repeat="item in Psearchaginator.object.afterSales" ng-show="item.id != null">
+                    <td>{{$index}}</td>
+                    <td>{{item.homeAddress}}</td>
+                    <td>{{item.propertyTypeName}}</td>
+                    <td>{{item.area}}</td>
+                    <td>{{item.propertyNumber}}</td>
+                    <td>{{item.propertyName}}</td>
+                    <td>{{item.homeAddress}}</td>
+                    <td>{{item.clientPhone}}</td>
+                    <td>{{item.process}}</td>
+                    <td>{{item.source}}</td>
+                    <td>{{item.describe}}</td>
+                    <td>
+                        <div ng-switch="item.guarantee">
+                            <span ng-switch-when="0">已接受保修</span>
+                            <span ng-switch-when="1">不保修，发送请求</span>
+                            <span ng-switch-when="2">已发送请求</span>
+                            <span ng-switch-default>接受保修&nbsp;/&nbsp;<a href="#" ng-click="sendnotice(item);">发送请求</a></span>
+                        </div>
+                    </td>
+                    <td></td>
+                </tr>-->
+                <tr>
+                    <td>1</td>
+                    <td>2015-10-16</td>
+                    <td>打印</td>
+                    <td ng-click="loadThree()">录入</td>
+                    <td>未发函</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>2015-10-11</td>
+                    <td>打印</td>
+                    <td>录入</td>
+                    <td>完成</td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="bill_paging">
+                <div class="pagination">
+                    <ul class="pagination">
+                        <li ng-class="{true:'disabled'}[Psearchaginator.page.currentPage==1]">
+                            <a href="javascript:void(0)" ng-click="Psearchaginator.go(1)">首页</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[Psearchaginator.page.currentPage==1]">
+                            <a href="javascript:void(0)" ng-show="Psearchaginator.hasPrevious()" ng-click="Psearchaginator.previous()">上一页</a>
+                        </li>
+                        <li ng-class="{true:'active'}[Psearchaginator.page.currentPage==i]" ng-repeat="i in Psearchaginator.pages">
+                            <a href="javascript:void(0)"  ng-click="Psearchaginator.go(i)">{{i}}</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[Psearchaginator.page.currentPage==searchFaq.page.totalPage]">
+                            <a href="javascript:void(0)" ng-show="Psearchaginator.hasNext()" ng-click="Psearchaginator.next()">下一页</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[Psearchaginator.page.currentPage==Psearchaginator.page.totalPage]">
+                            <a href="javascript:void(0)" ng-click="Psearchaginator.go(Psearchaginator.page.totalPage)">尾页</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--发送维修通知函-->
+<div class="modal fade" id="repairLetter" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h5 class="modal-title">
+                    发送维修通知函
+                </h5>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="row" style="margin-bottom: 10px;margin-top: 10px">
+                        <div class="col-md-3 col-sm-3 col-lg-3 text-right">项目：</div>
+                        <div class="col-md-3 col-sm-3 col-lg-3">{{repairLetter.responsibleProject}}</div>
+                        <div class="col-md-3 col-sm-3 col-lg-3 text-right">发函时间：</div>
+                        <div class="col-md-3 col-sm-3 col-lg-3">{{repairLetter.exactLetterDate1|date:'yyyy-MM-dd'}}</div>
+                    </div>
+                    <div class="row" style="margin-bottom: 10px">
+                        <div class="col-sm-3 col-md-3 col-lg-3 text-right">快递公司：</div>
+                        <div class="col-sm-8 col-md-8 col-lg-8"><input type="text" class="form-control" ng-model="repairLetter.expressCompany1"></div>
+                    </div>
+                    <div class="row" style="margin-bottom: 10px">
+                        <div class="col-sm-3 col-md-3 col-lg-3 text-right">快递单号：</div>
+                        <div class="col-sm-8 col-md-8 col-lg-8"><input type="text" class="form-control" ng-model="repairLetter.expressNum1"></div>
+                    </div>
+                    <div class="row" style="margin-bottom: 10px">
+                        <div class="col-sm-3 col-md-3 col-lg-3 text-right">快递公司发件人：</div>
+                        <div class="col-sm-8 col-md-8 col-lg-8"><input type="text" class="form-control" ng-model="repairLetter.expressMan1"></div>
+                    </div>
+                    <div class="row" style="margin-bottom: 10px">
+                        <div class="col-sm-3 col-md-3 col-lg-3 text-right">发件人联系电话：</div>
+                        <div class="col-sm-8 col-md-8 col-lg-8"><input type="text" class="form-control" ng-model="repairLetter.expressManPhone1"></div>
+                    </div>
+                    <div class="row" style="margin-bottom: 10px">
+                        <div class="col-sm-3 col-md-3 col-lg-3 text-right">操作人：</div>
+                        <div class="col-sm-9 col-md-9 col-lg-9"><span>{{repairLetter.operater1}}</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="submitRepairLetter()">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--发送确认不来函-->
+<div class="modal fade" id="confirmNoLetter" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h5 class="modal-title">
+                    发送确认不来函
+                </h5>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="row" style="margin-bottom: 10px;margin-top: 10px">
+                        <div class="col-md-3 col-sm-3 col-lg-3 text-right">项目：</div>
+                        <div class="col-md-3 col-sm-3 col-lg-3">{{confirmNoLetter.responsibleProject}}</div>
+                        <div class="col-md-3 col-sm-3 col-lg-3 text-right">发函时间：</div>
+                        <div class="col-md-3 col-sm-3 col-lg-3">{{confirmNoLetter.exactLetterDate2|date:'yyyy-MM-dd'}}</div>
+                    </div>
+                    <div class="row" style="margin-bottom: 10px">
+                        <div class="col-sm-3 col-md-3 col-lg-3 text-right">快递公司：</div>
+                        <div class="col-sm-8 col-md-8 col-lg-8"><input type="text" class="form-control" ng-model="confirmNoLetter.expressCompany2"></div>
+                    </div>
+                    <div class="row" style="margin-bottom: 10px">
+                        <div class="col-sm-3 col-md-3 col-lg-3 text-right">快递单号：</div>
+                        <div class="col-sm-8 col-md-8 col-lg-8"><input type="text" class="form-control" ng-model="confirmNoLetter.expressNum2"></div>
+                    </div>
+                    <div class="row" style="margin-bottom: 10px">
+                        <div class="col-sm-3 col-md-3 col-lg-3 text-right">快递公司发件人：</div>
+                        <div class="col-sm-8 col-md-8 col-lg-8"><input type="text" class="form-control" ng-model="confirmNoLetter.expressMan2"></div>
+                    </div>
+                    <div class="row" style="margin-bottom: 10px">
+                        <div class="col-sm-3 col-md-3 col-lg-3 text-right">发件人联系电话：</div>
+                        <div class="col-sm-8 col-md-8 col-lg-8"><input type="text" class="form-control" ng-model="confirmNoLetter.expressManPhone2"></div>
+                    </div>
+                    <div class="row" style="margin-bottom: 10px">
+                        <div class="col-sm-3 col-md-3 col-lg-3 text-right">操作人：</div>
+                        <div class="col-sm-9 col-md-9 col-lg-9">{{confirmNoLetter.operater2}}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="submitConfirmLetter()">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--发送扣款函-->
+<div class="modal fade" id="chargeLetter" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h5 class="modal-title">
+                    发送扣款函
+                </h5>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="row" style="margin-bottom: 10px;margin-top: 10px">
+                        <div class="col-md-3 col-sm-3 col-lg-3 text-right">项目：</div>
+                        <div class="col-md-3 col-sm-3 col-lg-3">{{chargeLetter.responsibleProject}}</div>
+                        <div class="col-md-3 col-sm-3 col-lg-3 text-right">发函时间：</div>
+                        <div class="col-md-3 col-sm-3 col-lg-3">{{chargeLetter.exactLetterDate3|date:'yyyy-MM-dd'}}</div>
+                    </div>
+                    <div class="row" style="margin-bottom: 10px">
+                        <div class="col-sm-3 col-md-3 col-lg-3 text-right">快递公司：</div>
+                        <div class="col-sm-8 col-md-8 col-lg-8"><input type="text" class="form-control" ng-model="chargeLetter.expressCompany3"></div>
+                    </div>
+                    <div class="row" style="margin-bottom: 10px">
+                        <div class="col-sm-3 col-md-3 col-lg-3 text-right">快递单号：</div>
+                        <div class="col-sm-8 col-md-8 col-lg-8"><input type="text" class="form-control" ng-model="chargeLetter.expressNum3"></div>
+                    </div>
+                    <div class="row" style="margin-bottom: 10px">
+                        <div class="col-sm-3 col-md-3 col-lg-3 text-right">快递公司发件人：</div>
+                        <div class="col-sm-8 col-md-8 col-lg-8"><input type="text" class="form-control" ng-model="chargeLetter.expressMan3"></div>
+                    </div>
+                    <div class="row" style="margin-bottom: 10px">
+                        <div class="col-sm-3 col-md-3 col-lg-3 text-right">发件人联系电话：</div>
+                        <div class="col-sm-8 col-md-8 col-lg-8"><input type="text" class="form-control" ng-model="chargeLetter.expressManPhone3"></div>
+                    </div>
+                    <div class="row" style="margin-bottom: 10px">
+                        <div class="col-sm-3 col-md-3 col-lg-3 text-right">操作人：</div>
+                        <div class="col-sm-9 col-md-9 col-lg-9">{{chargeLetter.operater3}}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="submitChargeLetter()">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--点击快递单号-->
+<div class="modal fade" id="expressModal" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h5 class="modal-title">
+                    快递单号
+                </h5>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>项目</th>
+                            <th>发函时间</th>
+                            <th>快递公司</th>
+                            <th>快递公司发件人</th>
+                            <th>发件人联系电话</th>
+                            <th>操作人</th>
+                            <th>发函类型</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <!--维修通知函信息-->
+                        <tr>
+                            <td>{{expressInfo.responsibleProject}}</td>
+                            <td>{{expressInfo.exactLetterDate1|date:'yyyy-MM-dd'}}</td>
+                            <td>{{expressInfo.expressCompany1}}</td>
+                            <td>{{expressInfo.expressMan1}}</td>
+                            <td>{{expressInfo.expressManPhone1}}</td>
+                            <td>{{expressInfo.operater1}}</td>
+                            <td>{{expressInfo.letterType1}}</td>
+                        </tr>
+                        <!--通知不来函信息-->
+                        <tr>
+                            <td>{{expressInfo.responsibleProject}}</td>
+                            <td>{{expressInfo.exactLetterDate2|date:'yyyy-MM-dd'}}</td>
+                            <td>{{expressInfo.expressCompany2}}</td>
+                            <td>{{expressInfo.expressMan2}}</td>
+                            <td>{{expressInfo.expressManPhone2}}</td>
+                            <td>{{expressInfo.operater2}}</td>
+                            <td>{{expressInfo.letterType2}}</td>
+                        </tr>
+                        <!--扣款函信息-->
+                        <tr>
+                            <td>{{expressInfo.responsibleProject}}</td>
+                            <td>{{expressInfo.exactLetterDate3|date:'yyyy-MM-dd'}}</td>
+                            <td>{{expressInfo.expressCompany3}}</td>
+                            <td>{{expressInfo.expressMan3}}</td>
+                            <td>{{expressInfo.expressManPhone3}}</td>
+                            <td>{{expressInfo.operater3}}</td>
+                            <td>{{expressInfo.letterType3}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer text-center">
+                <button type="button" class="btn bg-primary" data-dismiss="modal">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--录入业主函件快递单号-->
+<!--<div id="content-first" class="" ng-show="mainPage==1">
+    <div class="sel">
+        <div class="row search-padding-10">
+            <div class="row">
+                <div class="col-md-2">项目：深圳桃源居</div>
+                <div class="col-md-4">发函时间：2015-10-10</div>
+                <div class="col-md-2 text-right">发快递公司：</div>
+                <div class="col-md-4"><input type="text" class="form-control" placeholder="请输入快递公司名" width="60px"></div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">单号范围：</div>
+                <div class="col-md-10"><input type="text" class="form-control" placeholder="请输入单号范围"></div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">快递公司发件人：</div>
+                <div class="col-md-4"><input type="text" class="form-control" placeholder="请输入快递公司发件人姓名"></div>
+                <div class="col-md-2 text-right">快递公司发件人电话：</div>
+                <div class="col-md-4"><input type="text" class="form-control" placeholder="请输入快递公司发件人电话"></div>
+            </div>
+            <div class="row">
+                操作员：xx
+            </div>
+        </div>
+        <div class="row search-padding-10">
+            <div class="col-md-12">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>快递地址</th>
+                        <th>快递单号</th>
+                        <th>收件人</th>
+                        <th>联系电话</th>
+                        <th>生成日期</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td></td>
+                        <td>xx</td>
+                        <td>xx</td>
+                        <td>xx</td>
+                        <td>xx</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row text-center">
+            <button type="button" class="btn btn-primary" ng-click="backToHome()">
+                <span class="glyphicon glyphicon-backward btn_icon" aria-hidden="true"></span>返回
+            </button>
+        </div>
+    </div>
+</div>-->
+<!--录入售后责任单位函件单号-->
+<!--<div id="content-first" class="" ng-show="mainPage==2">
+    <div class="sel">
+        <div class="row search-padding-10">
+            <div class="row">
+                <div class="col-md-2">项目：深圳桃源居</div>
+                <div class="col-md-4">发函时间：2015-10-10</div>
+                <div class="col-md-2 text-right">发快递公司：</div>
+                <div class="col-md-4"><input type="text" class="form-control" placeholder="请输入快递公司名" width="60px"></div>
+            </div>
+            &lt;!&ndash;<div class="row">
+                <div class="col-md-2">单号范围：</div>
+                <div class="col-md-10"><input type="text" class="form-control" placeholder="请输入单号范围"></div>
+            </div>&ndash;&gt;
+            <div class="row">
+                <div class="col-md-2">快递公司发件人：</div>
+                <div class="col-md-4"><input type="text" class="form-control" placeholder="请输入快递公司发件人姓名"></div>
+                <div class="col-md-2 text-right">快递公司发件人电话：</div>
+                <div class="col-md-4"><input type="text" class="form-control" placeholder="请输入快递公司发件人电话"></div>
+            </div>
+            <div class="row">
+                操作员：xx
+            </div>
+        </div>
+        <div class="row search-padding-10">
+            <div class="col-md-12">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>快递地址</th>
+                        <th>快递单号</th>
+                        <th>收件人</th>
+                        <th>联系电话</th>
+                        <th>生成日期</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td></td>
+                        <td>xx</td>
+                        <td>xx</td>
+                        <td>xx</td>
+                        <td>xx</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row text-center">
+            <button type="button" class="btn btn-primary" ng-click="backToHome()">
+                <span class="glyphicon glyphicon-backward btn_icon" aria-hidden="true"></span>返回
+            </button>
+        </div>
+    </div>
+</div>-->
+<!--录入委托单位快递单号-->
+<!--<div id="content-first" class="" ng-show="mainPage==3">
+    <div class="sel">
+        <div class="row search-padding-10">
+            <div class="row">
+                <div class="col-md-2">项目：深圳桃源居</div>
+                <div class="col-md-4">发函时间：2015-10-10</div>
+                <div class="col-md-2 text-right">发快递公司：</div>
+                <div class="col-md-4"><input type="text" class="form-control" placeholder="请输入快递公司名" width="60px"></div>
+            </div>
+            &lt;!&ndash;<div class="row">
+                <div class="col-md-2">单号范围：</div>
+                <div class="col-md-10"><input type="text" class="form-control" placeholder="请输入单号范围"></div>
+            </div>&ndash;&gt;
+            <div class="row">
+                <div class="col-md-2">快递公司发件人：</div>
+                <div class="col-md-4"><input type="text" class="form-control" placeholder="请输入快递公司发件人姓名"></div>
+                <div class="col-md-2 text-right">快递公司发件人电话：</div>
+                <div class="col-md-4"><input type="text" class="form-control" placeholder="请输入快递公司发件人电话"></div>
+            </div>
+            <div class="row">
+                操作员：xx
+            </div>
+        </div>
+        <div class="row search-padding-10">
+            <div class="col-md-12">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>快递地址</th>
+                        <th>快递单号</th>
+                        <th>收件人</th>
+                        <th>联系电话</th>
+                        <th>生成日期</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td></td>
+                        <td>xx</td>
+                        <td>xx</td>
+                        <td>xx</td>
+                        <td>xx</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row text-center">
+            <button type="button" class="btn btn-primary" ng-click="backToHome()">
+                <span class="glyphicon glyphicon-backward btn_icon" aria-hidden="true"></span>返回
+            </button>
+        </div>
+    </div>
+</div>-->
+</body>
+</html>
+

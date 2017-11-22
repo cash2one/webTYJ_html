@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="bower_components/skins/zyupload-1.0.0.min.css " type="text/css">
+    <link rel="stylesheet" href="css/ztree/demo.css" type="text/css">
+    <link rel="stylesheet" href="css/ztree/zTreeStyle.css" type="text/css">
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.core-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.excheck-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.exedit-3.5.js"></script>
+    <script type="text/javascript">
+        function exportExcelWater(){
+            var url = document.getElementById("fileurl").value;
+            window.location.href=url +"/info/exportElectricityMeterFileExcel.do?"
+        }
+        /*        function kp(){
+
+         if (event.keyCode == 8) return true
+         if(event.keyCode==16){  event.returnValue=false}
+         if (event.keyCode >= 96 &&event. keyCode <= 105) return true
+         if(event.keyCode<=47 || event.keyCode>=65) {
+         event.returnValue=false;
+
+         }
+         }*/
+        function kpd() {
+            if (event.keyCode == 8) return true  //backspace按钮允许
+            if (event.keyCode >= 96 && event.keyCode <= 105) return true //数字小键盘
+            if (event.keyCode==16||event.keyCode <= 47 || (event.keyCode >= 65 && event.keyCode != 190)) {
+                event.returnValue = false;
+            }
+        }
+
+    </script>
+</head>
+<body>
+<div class="sel_top" ng-show="show8">
+    <div class="row">
+        <div class="col-lg-9 col-md-9 col-sm-6">
+            <button type="button" class="btn btn-default btn-primary"  data-target="#outPut" data-toggle="modal" ng-click="inportExcel()">
+                <span class="glyphicon glyphicon-log-in btn_icon"></span>
+                导入
+            </button>
+            <button type="button" class="btn btn-default btn-primary" data-target="#new" data-toggle="modal">
+                <span class="glyphicon glyphicon-plus btn_icon"></span>
+                新建
+            </button>
+            <button type="button" class="btn btn-default btn-primary" ng-click="updateElectricity(item2)" >
+                <span class="glyphicon glyphicon-edit btn_icon"></span>
+                编辑
+            </button>
+            <button type="button" class="btn btn-default btn-primary" ng-click="showLink(item2)">
+                <span class="glyphicon glyphicon-link btn_icon"></span>
+                关联
+            </button>
+            <button type="button" class="btn btn-default btn-primary"  ng-click="disableElectricity(item2)"  >
+                <span class="glyphicon glyphicon-ban-circle btn_icon"></span>
+                停用
+            </button>
+        </div>
+        <div class="col-lg-2 col-md-2 col-sm-4"><input class="form-control" ng-model="searchMeter.electricityMeterNum"></div>
+        <div class="col-lg-1 col-md-1 col-sm-2">
+            <button type="button" class="btn btn-default btn-primary"  ng-click="currentElectricity._load()">
+                <span class="glyphicon glyphicon-search btn_icon"></span>
+                查询
+            </button>
+        </div>
+    </div>
+</div>
+<!--搜素结束-->
+<div class="row padding" ng-show="show9">
+    <div class="col-lg-12">
+        <table>
+            <thead>
+            <!--<th width="50px"></th>-->
+            <th>序号</th>
+            <th>资产编号</th>
+            <th>电表编号</th>
+            <th>电表状态</th>
+            <th>区域</th>
+            </thead>
+            <tbody>
+            <tr ng-dblclick="showList(item)"   ng-repeat="item in currentElectricity.object['electricityMeter']"
+                ng-show="item['electricityMeterId'] != null" ng-class="{'this_info':btnIndex==item}"
+                ng-click="checkCurrentElectricity(item)">
+                <!--<td><input type="checkbox"></td>-->
+                <td>{{$index}}</td>
+                <td>{{item.propertyNumber}}</td>
+                <td>{{item.electricityMeterNum}}</td>
+                <td>        <div ng-switch on="{{item['state']}}">
+                    <div class="animate-switch" ng-switch-when="1">新建</div>
+                    <div class="animate-switch" ng-switch-when="4">未使用</div>
+                    <div class="animate-switch" ng-switch-when="2">使用中</div>
+                    <div class="animate-switch" ng-switch-when="3">停用</div>
+                </div></td>
+                <td>{{item.fullName}}</td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="bill_paging">
+            <div class="bill_paging">
+                <span>共{{currentElectricity.object.page.totalResult}}条</span>
+                <ul class="pagination">
+                    <li ng-class="{true:'disabled'}[currentElectricity.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-click="currentElectricity.go(1)">首页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[currentElectricity.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-show="currentElectricity.hasPrevious()" ng-click="currentElectricity.previous()">上一页</a>
+                    </li>
+                    <li ng-class="{true:'active'}[currentElectricity.page.currentPage==i]" ng-repeat="i in currentElectricity.pages">
+                        <a href="javascript:void(0)"  ng-click="currentElectricity.go(i)">{{i}}</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[currentElectricity.page.currentPage==currentElectricity.page.totalPage]">
+                        <a href="javascript:void(0)" ng-show="currentElectricity.hasNext()" ng-click="currentElectricity.next()">下一页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[currentElectricity.page.currentPage==currentElectricity.page.totalPage]">
+                        <a href="javascript:void(0)" ng-click="currentElectricity.go(currentElectricity.page.totalPage)">尾页</a>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!--新建-->
+<div class="modal fade" id="new" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <span class="modal-title">新建</span>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                    <div class="row sel1">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">资产名称：</div>
+                        <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control" ng-model="electricty.property.propertyName"
+                                                                       name="propertyName" required  placeholder="请输入资产名称">
+                        </div>
+                        <div class="col-lg-1 col-md-2 col-sm-2 "></div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">资产编号：</div>
+                        <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control" ng-model="electricty.property.propertyNumber"
+                                                                       onkeyup="this.value=this.value.replace(/\D/g,'')"
+                                                                       onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[\W]/g,''))"  maxlength="36"
+                                                                       name="propertyNumber" required  placeholder="请输入数字">
+                        </div>
+                        <div class="col-lg-1 col-md-2 col-sm-2 "><span style="color: red">*</span></div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">保质期：</div>
+                        <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control" ng-model="electricty.property.expirationDate"
+                                                                       onkeydown="kpd()" maxlength="5" name="expirationDate"
+                                                                       required  placeholder="请输入保质期">
+                        </div>
+                        <div class="col-lg-1 col-md-2 col-sm-2 ">月</div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">产地：</div>
+                        <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control" ng-model="electricty.property.producingArea"
+                                                                       name="producingArea" required
+                                                                       placeholder="请输入产地">
+                        </div>
+                        <div class="col-lg-1 col-md-2 col-sm-2 "></div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">厂商：</div>
+                        <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control" ng-model="electricty.property.manufacturer"
+                                                                       name="manufacturer" required
+                                                                       placeholder="请输入厂商">
+                        </div>
+                        <div class="col-lg-1 col-md-2 col-sm-2 "></div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">厂商电话：</div>
+                        <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control" ng-model="electricty.property.manufacturerPhone"
+                                                                       name="manufacturerPhone"  onkeydown="kpd()" maxlength="15"
+                                                                       required  placeholder="请输入厂商电话">
+                        </div>
+                        <div class="col-lg-1 col-md-2 col-sm-2 "></div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">分类ID：</div>
+                        <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"  ng-model="electricty.property.propertyTypeId"
+                                                                       name="propertyTypeId" ng-pattern="/^[0-9]*$/"
+                                                                       required  placeholder="请输入分类Id">
+                        </div>
+                        <div class="col-lg-1 col-md-2 col-sm-2 "></div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">表编号：</div>
+                        <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control" ng-model="electricty.electricityMeterNum"
+                                                                       onkeyup="this.value=this.value.replace(/\D/g,'')"
+                                                                       onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[\W]/g,''))"  maxlength="36" name="electricityMeterNum" required  placeholder="请输入表编号">
+                        </div>
+                        <div class="col-lg-1 col-md-2 col-sm-2 "><span style="color: red">*</span></div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">规格：</div>
+                        <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control" ng-model="electricty.property.propertySpecification"
+                                                                       name="propertySpecification" required  placeholder="请输入规格">
+                        </div>
+                        <div class="col-lg-1 col-md-2 col-sm-2 "></div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">品牌：</div>
+                        <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control" ng-model="electricty.property.brand"
+                                                                       name="brand" required  placeholder="请输入品牌">
+                        </div>
+                        <div class="col-lg-1 col-md-2 col-sm-2 "></div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">倍率：</div>
+                        <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control" ng-model="electricty.ratio"  onkeydown="kpd()"
+                                                                       onkeyup="this.value=this.value.replace(/\D/g,'')"
+                                                                       name="ratio" required ng-init="electricty.ratio='1'">
+                        </div>
+                        <div class="col-lg-1 col-md-2 col-sm-2 "><span style="color: red">*</span></div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">最小数值：</div>
+                        <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control" ng-model="electricty.min"  onkeydown="kpd()"
+                                                                       onkeyup="this.value=this.value.replace(/\D/g,'')"
+                                                                       name="min" required  placeholder="请输入最小数值"
+                                                                        ng-init="electricty.min='0'">
+
+                        </div>
+                        <div class="col-lg-1 col-md-2 col-sm-2 "><span style="color: red">*</span></div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">最大数值：</div>
+                        <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"  ng-model="electricty.max" onkeydown="kpd()"
+                                                                       onkeyup="this.value=this.value.replace(/\D/g,'')"
+                                                                       name="max" required  placeholder="请输入最大数值"
+                                                                        ng-init="electricty.max='0'">
+                        </div>
+                        <div class="col-lg-1 col-md-2 col-sm-2 "><span style="color: red">*</span></div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">循环使用：</div>
+                        <div class="col-lg-1 col-md-2 col-sm-2">
+                            <label class="radio inline">
+                                <input type="radio" value="0" ng-model="electricty.whetherRepeatedUse"
+                                       ng-init="electricty.whetherRepeatedUse=0">
+                                <span>是</span>
+                            </label>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            <label class="radio inline">
+                                <input type="radio" value="1" ng-model="electricty.whetherRepeatedUse">
+                                <span>否</span>
+                            </label>
+                        </div>
+                        <div class="col-lg-1 col-md-2 col-sm-2 "><span style="color: red">*</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancelElectricity()">关闭</button>
+                <button type="button" class="btn btn-primary"  ng-click="addElectrictyMeter()">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--新建 结束-->
+<!--编辑-->
+<div class="modal fade" id="new1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <span class="modal-title" id="myModalLabel">编辑</span>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                    <div class="row sel1">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">资产名称：</div>
+                        <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control" ng-model="currentUpdateElectricity.property.propertyName" name="propertyName" required  placeholder="请输入资产名称">
+                                       <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.projectName.$dirty && mainForm.projectName.$invalid">
+                                                         <p class="alter" ng-show="mainForm.projectName.$error.required">
+                                                             不能为空
+                                                         </p>
+                                                        <p class="alter" ng-show="mainForm.projectName.defined ">
+                                                            正确
+                                                        </p>
+                                                  </span>
+                        </div>  <div class="col-lg-1 col-md-2 col-sm-2 "></div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">资产编号：</div>
+                        <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control" ng-model="currentUpdateElectricity.property.propertyNumber" onkeyup="this.value=this.value.replace(/\D/g,'')" name="propertyNumber" required  placeholder="请输入数字">
+                                   <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.projectName.$dirty && mainForm.projectName.$invalid">
+                                                         <p class="alter" ng-show="mainForm.projectName.$error.required">
+                                                             不能为空
+                                                         </p>
+                                                        <p class="alter" ng-show="mainForm.projectName.defined ">
+                                                            正确
+                                                        </p>
+                                                  </span>
+                        </div><div class="col-lg-1 col-md-2 col-sm-2 "><span style="color: red">*</span></div>
+                       <!-- <div class="col-lg-2 col-md-2 col-sm-2 text-right">操作人：</div>
+                        <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"  ng-model="currentUpdateWater.operator" name="operator" required  placeholder="请输入操作人">
+                                   <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.projectName.$dirty && mainForm.projectName.$invalid">
+                                                         <p class="alter" ng-show="mainForm.projectName.$error.required">
+                                                             不能为空
+                                                         </p>
+                                                        <p class="alter" ng-show="mainForm.projectName.defined ">
+                                                            正确
+                                                        </p>
+                                                  </span>
+                        </div><div class="col-lg-1 col-md-2 col-sm-2 "><span style="color: red">*</span></div>-->
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">保质期：</div>
+                        <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control" ng-model="currentUpdateElectricity.property.expirationDate" name="expirationDate" required  placeholder="请输入保质期">
+                                   <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.projectName.$dirty && mainForm.projectName.$invalid">
+                                                         <p class="alter" ng-show="mainForm.projectName.$error.required">
+                                                             不能为空
+                                                         </p>
+                                                        <p class="alter" ng-show="mainForm.projectName.defined ">
+                                                            正确
+                                                        </p>
+                                                  </span>
+                        </div><div class="col-lg-1 col-md-2 col-sm-2 "></div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">产地：</div>
+                        <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control" ng-model="currentUpdateElectricity.property.producingArea" name="producingArea" required  placeholder="请输入产地">
+                           <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.projectName.$dirty && mainForm.projectName.$invalid">
+                                                         <p class="alter" ng-show="mainForm.projectName.$error.required">
+                                                             不能为空
+                                                         </p>
+                                                        <p class="alter" ng-show="mainForm.projectName.defined ">
+                                                            正确
+                                                        </p>
+                                                  </span>
+                        </div><div class="col-lg-1 col-md-2 col-sm-2 "></div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">厂商：</div>
+                        <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control" ng-model="currentUpdateElectricity.property.manufacturer" name="manufacturer" required  placeholder="请输入厂商">
+                                   <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.projectName.$dirty && mainForm.projectName.$invalid">
+                                                         <p class="alter" ng-show="mainForm.projectName.$error.required">
+                                                             不能为空
+                                                         </p>
+                                                        <p class="alter" ng-show="mainForm.projectName.defined ">
+                                                            正确
+                                                        </p>
+                                                  </span>
+                        </div><div class="col-lg-1 col-md-2 col-sm-2 "></div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">厂商电话：</div>
+                        <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control" ng-model="currentUpdateElectricity.property.manufacturerPhone" name="manufacturerPhone" ng-pattern="/^[0-9]*$/" required  placeholder="请输入厂商电话">
+                                   <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.projectName.$dirty && mainForm.projectName.$invalid">
+                                                         <p class="alter" ng-show="mainForm.projectName.$error.required">
+                                                             不能为空
+                                                         </p>
+                                                        <p class="alter" ng-show="mainForm.projectName.defined ">
+                                                            正确
+                                                        </p>
+                                                  </span>
+                        </div><div class="col-lg-1 col-md-2 col-sm-2 "></div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">分类ID：</div>
+                        <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"  ng-model="currentUpdateElectricity.property.propertyTypeId" name="propertyTypeId" ng-pattern="/^[0-9]*$/" required  placeholder="请输入分类Id">
+                                   <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.projectName.$dirty && mainForm.projectName.$invalid">
+                                                         <p class="alter" ng-show="mainForm.projectName.$error.required">
+                                                             不能为空
+                                                         </p>
+                                                        <p class="alter" ng-show="mainForm.projectName.defined ">
+                                                            正确
+                                                        </p>
+                                                  </span>
+                        </div><div class="col-lg-1 col-md-2 col-sm-2 "></div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">表编号：</div>
+                        <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control" ng-model="currentUpdateElectricity.electricityMeterNum" onkeyup="this.value=this.value.replace(/\D/g,'')"
+                                                                       name="electricityMeterNum" required  placeholder="请输入表编号">
+                                   <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.projectName.$dirty && mainForm.projectName.$invalid">
+                                                         <p class="alter" ng-show="mainForm.projectName.$error.required">
+                                                             不能为空
+                                                         </p>
+                                                        <p class="alter" ng-show="mainForm.projectName.defined ">
+                                                            正确
+                                                        </p>
+                                                  </span>
+                        </div><div class="col-lg-1 col-md-2 col-sm-2 "><span style="color: red">*</span></div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">规格：</div>
+                        <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control" ng-model="currentUpdateElectricity.property.propertySpecification" name="propertySpecification" required  placeholder="请输入规格">
+                                   <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.projectName.$dirty && mainForm.projectName.$invalid">
+                                                         <p class="alter" ng-show="mainForm.projectName.$error.required">
+                                                             不能为空
+                                                         </p>
+                                                        <p class="alter" ng-show="mainForm.projectName.defined ">
+                                                            正确
+                                                        </p>
+                                                  </span>
+                        </div><div class="col-lg-1 col-md-2 col-sm-2 "></div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">品牌：</div>
+                        <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control" ng-model="currentUpdateElectricity.property.brand" name="brand" required  placeholder="请输入品牌">
+                                   <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.projectName.$dirty && mainForm.projectName.$invalid">
+                                                         <p class="alter" ng-show="mainForm.projectName.$error.required">
+                                                             不能为空
+                                                         </p>
+                                                        <p class="alter" ng-show="mainForm.projectName.defined ">
+                                                            正确
+                                                        </p>
+                                                  </span>
+                        </div><div class="col-lg-1 col-md-2 col-sm-2 "></div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">倍率：</div>
+                        <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control" ng-model="currentUpdateElectricity.ratio" onkeyup="this.value=this.value.replace(/\D/g,'')"
+                                                                       name="ratio" ng-init="currentUpdateElectricity.ratio='1'" required  placeholder="请输入倍率">
+                                   <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.projectName.$dirty && mainForm.projectName.$invalid">
+                                                         <p class="alter" ng-show="mainForm.projectName.$error.required">
+                                                             不能为空
+                                                         </p>
+                                                        <p class="alter" ng-show="mainForm.projectName.defined ">
+                                                            正确
+                                                        </p>
+                                                  </span>
+                        </div><div class="col-lg-1 col-md-2 col-sm-2 "><span style="color: red">*</span></div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">最小数值：</div>
+                        <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control" ng-model="currentUpdateElectricity.min" onkeyup="this.value=this.value.replace(/\D/g,'')"
+                                                                       name="min" ng-init="currentUpdateElectricity.min='0'" required  placeholder="请输入最小数值">
+                                   <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.projectName.$dirty && mainForm.projectName.$invalid">
+                                                         <p class="alter" ng-show="mainForm.projectName.$error.required">
+                                                             不能为空
+                                                         </p>
+                                                        <p class="alter" ng-show="mainForm.projectName.defined ">
+                                                            正确
+                                                        </p>
+                                                  </span>
+                        </div><div class="col-lg-1 col-md-2 col-sm-2 "><span style="color: red">*</span></div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">最大数值：</div>
+                        <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control"  ng-model="currentUpdateElectricity.max"onkeyup="this.value=this.value.replace(/\D/g,'')"
+                                                                       name="max" ng-init="currentUpdateElectricity.max='0'" required  placeholder="请输入最大数值"></div><div class="col-lg-1 col-md-2 col-sm-2 "><span style="color: red">*</span></div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">循环使用：</div>
+                        <div class="col-lg-1 col-md-2 col-sm-2">
+                            <label class="radio inline">
+                                <input type="radio"  value="0" ng-model="currentUpdateElectricity.whetherRepeatedUse" ng-true-value="0"  ng-true-false="1">
+                                <span>是</span>
+                            </label>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            <label class="radio inline">
+                                <input type="radio"  value="1" ng-model="currentUpdateElectricity.whetherRepeatedUse" ng-true-value="1"  ng-true-false="0">
+                                <span>否</span>
+                            </label>
+                        </div>
+                        <div class="col-lg-1 col-md-2 col-sm-2 "><span style="color: red">*</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" >关闭</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="saveUpdateElectricity()">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--编辑 结束-->
+<!--关联-->
+<div class="row padding" ng-show="show1">
+    <div class="col-lg-4 col-md-4 col-sm-4">
+        <div class="row sel1">
+            <div class="padding component_select">
+                <div class="col-lg-4 col-md-6 col-sm-6 text-right">资产编号：</div>
+                <div class="col-lg-8 col-md-6 col-sm-6"><input class="form-control"
+                                                               ng-model="currentLinkElectricity.property.propertyNumber"
+                                                               disabled="disabled"></div>
+                <div class="col-lg-4 col-md-6 col-sm-6 text-right">表编号：</div>
+                <div class="col-lg-8 col-md-6 col-sm-6"><input class="form-control"
+                                                               ng-model="currentLinkElectricity.electricityMeterNum"
+                                                               disabled="disabled"></div>
+                <div class="col-lg-4 col-md-6 col-sm-6 text-right">品牌：</div>
+                <div class="col-lg-8 col-md-6 col-sm-6"><input class="form-control"
+                                                               ng-model="currentLinkElectricity.property.brand"
+                                                               disabled="disabled"></div>
+                <div class="col-lg-4 col-md-6 col-sm-6 text-right">规格：</div>
+                <div class="col-lg-8 col-md-6 col-sm-6"><input class="form-control"
+                                                               ng-model="currentLinkElectricity.property.propertySpecification"
+                                                               disabled="disabled"></div>
+                <div class="col-lg-4 col-md-6 col-sm-6 text-right">倍率：</div>
+                <div class="col-lg-8 col-md-6 col-sm-6"><input class="form-control"
+                                                               ng-model="currentLinkElectricity.ratio"
+                                                               disabled="disabled"></div>
+                <div class="col-lg-4 col-md-6 col-sm-6 text-right">最小数值：</div>
+                <div class="col-lg-8 col-md-6 col-sm-6"><input class="form-control" ng-model="currentLinkElectricity.min"
+                                                               disabled="disabled"></div>
+                <div class="col-lg-4 col-md-6 col-sm-6 text-right">最大数值：</div>
+                <div class="col-lg-8 col-md-6 col-sm-6"><input class="form-control" ng-model="currentLinkElectricity.max"
+                                                               disabled="disabled"></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-4 col-sm-4">
+        <div class="row sel1">
+            <div class="padding component_select">
+                <div id="treeDemo1" class="ztree"></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-4 col-sm-4">
+        <div class="row sel1">
+            <div class="padding component_select">
+                <div class="col-lg-4 col-md-5 col-sm-5 text-right">表位置描述：</div>
+                <div class="col-lg-7 col-md-6 col-sm-6"><input class="form-control" id="classifyName"
+                                                               ng-model="bsList" type="text" disabled="disabled">
+                    <input value="asList" id="buildingStructureId" ng-model="electricityMeterRecords.buildingStructureId"
+                           type="hidden"></div>
+                <div class="col-lg-1 col-md-1 col-sm-1"></div>
+                <div class="col-lg-4 col-md-5 col-sm-5 text-right">表状态：</div>
+                <div class="col-lg-7 col-md-6 col-sm-6"><select class="form-control"
+                                                                ng-model="electricityMeterRecords.state">
+                    <option value="">请选择</option>
+                    <option value="2">使用中</option>
+                    <option value="3">停用</option>
+                </select>
+                </div>
+                <div class="col-lg-1 col-md-1 col-sm-1"><span style="color: red">*</span></div>
+                <div class="col-lg-4 col-md-5 col-sm-5 text-right">抄表方式：</div>
+                <div class="col-lg-7 col-md-6 col-sm-6"><select class="form-control"
+                                                                ng-model="electricityMeterRecords.readingWay">
+                    <option value="">请选择</option>
+                    <option value="1">户内</option>
+                    <option value="2">户外</option>
+                    <option value="3">远程抄表</option>
+                </select></div>
+                <div class="col-lg-1 col-md-1 col-sm-1"></div>
+                <div class="col-lg-4 col-md-5 col-sm-5 text-right">父表编号：</div>
+                <div class="col-lg-7 col-md-6 col-sm-6"><input class="form-control"
+                                                               onkeyup="this.value=this.value.replace(/\D/g,'')"
+                                                               ng-model="electricityMeterRecords.parentNum"></div>
+                <div class="col-lg-1 col-md-1 col-sm-1"></div>
+                <div class="col-lg-4 col-md-5 col-sm-5 text-right">主表编号：</div>
+                <div class="col-lg-7 col-md-6 col-sm-6"><input class="form-control"
+                                                               onkeyup="this.value=this.value.replace(/\D/g,'')"
+                                                               ng-model="electricityMeterRecords.mainNum"></div>
+                <div class="col-lg-1 col-md-1 col-sm-1"></div>
+                <div class="col-lg-4 col-md-5 col-sm-5 text-right">使用性质：</div>
+                <div class="col-lg-7 col-md-6 col-sm-6"><select class="form-control"
+                                                                ng-model="electricityMeterRecords.usingNature">
+                    <option value="">请选择</option>
+                    <option value="0">商业</option>
+                    <option value="1">居民</option>
+                    <option value="2">管理处</option>
+                </select></div>
+                <div class="col-lg-1 col-md-1 col-sm-1"></div>
+                <div class="col-lg-4 col-md-5 col-sm-5 text-right">公共用电表：</div>
+                <div class="col-lg-7 col-md-6 col-sm-6"><select id="publicElectricity" class="form-control"
+                                                                ng-model="electricityMeterRecords.publicElectricity">
+                    <option value="">请选择</option>
+                    <option value="0">否</option>
+                    <option value="1">是</option>
+                </select></div>
+                <div class="col-lg-1 col-md-1 col-sm-1"></div>
+                <div class="col-lg-4 col-md-5 col-sm-5 text-right">是否计费表：</div>
+                <div class="col-lg-7 col-md-6 col-sm-6"><select class="form-control"
+                                                                ng-model="electricityMeterRecords.isBilling">
+                    <option value="">请选择</option>
+                    <option value="0">否</option>
+                    <option value="1">是</option>
+                </select></div>
+                <div class="col-lg-1 col-md-1 col-sm-1"></div>
+                <div class="col-lg-4 col-md-5 col-sm-5 text-right">安装人：</div>
+                <div class="col-lg-7 col-md-6 col-sm-6"><input class="form-control"
+                                                               ng-model="electricityMeterRecords.install"></div>
+                <div class="col-lg-1 col-md-1 col-sm-1"></div>
+                <div class="col-lg-4 col-md-5 col-sm-5 text-right">安装日期：</div>
+                <div class="col-lg-7 col-md-6 col-sm-6"><!--<input class="form-control" type="date"
+                                                                   ng-model="electricityMeterRecords.installationTime">-->
+                    <input type="text" onclick="WdatePicker({readOnly:true})"  placeholder="请选择安装日期"  class="Wdate form-control"   ng-model="electricityMeterRecords.installationTime" onchange=""  ng-blur="checkDates()" ng-change="getStall(stallss.id,false)">
+                </div>
+                <div class="col-lg-1 col-md-1 col-sm-1"></div>
+                <div class="col-lg-4 col-md-5 col-sm-5 text-right">初始读数：</div>
+                <div class="col-lg-7 col-md-6 col-sm-6"><input class="form-control"
+                                                               onkeyup="this.value=this.value.replace(/\D/g,'')"
+                                                               ng-model="electricityMeterRecords.initialReading"
+                                                               ng-init="electricityMeterRecords.initialReading=0"></div>
+                <div class="col-lg-1 col-md-1 col-sm-1"><span style="color: red">*</span></div>
+
+                <div class="col-lg-12 col-md-12 col-sm-12 text-center">
+                    <button type="button" class="btn btn-primary" ng-click="cancelLink()">取消</button>
+                    <button type="button" class="btn btn-primary" ng-click="saveLinkMeter()">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <!--关联结束-->
+
+<!--    停用-->
+<div class="modal fade" id="disable" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                停用
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="sel1">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            电表编号:
+                        </div>
+                        <div class="col-lg-4 col-md-2 col-sm-2 ">
+                            {{item2.electricityMeterNum}}
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            抄表人:
+                        </div>
+                        <div class="col-lg-3 col-md-2 col-sm-2 ">
+                            <input class="form-control" ng-model="electricityMeterReadingData.meterReadingPeople">
+                        </div>
+                        <div class="col-lg-1 col-md-2 col-sm-2 " style="color: red">
+                            *
+                        </div>
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            本月读数:
+                        </div>
+                        <div class="col-lg-4 col-md-2 col-sm-2 ">
+                            <!--{{reading}}-->
+                            {{disableMeter[0].reading}}
+                            <!--<option ng-repeat="item in disableMeter" value="{{item.meterReadingDataId}}">{{item.reading}}</option>-->
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            抄表年月:
+                        </div>
+                        <div class="col-lg-3 col-md-2 col-sm-2 ">
+                            <input class="form-control" type="date" ng-model="electricityMeterReadingData.meterReadingDate">
+                        </div>
+                        <div class="col-lg-1 col-md-2 col-sm-2 " style="color: red">
+                            *
+                        </div>
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            表区域:
+                        </div>
+                        <div class="col-lg-4 col-md-2 col-sm-2 ">
+                            {{item2.fullName}}
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            停用读数:
+                        </div>
+                        <div class="col-lg-3 col-md-2 col-sm-2 ">
+                            <input class="form-control" ng-model="electricityMeterReadingData.reading" onkeyup="this.value=this.value.replace(/\D/g,'')" >
+                        </div>
+                        <div class="col-lg-1 col-md-2 col-sm-2 " style="color: red">
+                            *
+                        </div>
+                    </div>
+                    <div class="row search-padding-10">
+                        <!--<div class="col-lg-2 col-md-2 col-sm-2 text-right">-->
+                        <!--&lt;!&ndash;栋:&ndash;&gt;-->
+                        <!--</div>-->
+                        <!--<div class="col-lg-4 col-md-2 col-sm-2 ">-->
+                        <!--{{}}-->
+                        <!--</div>-->
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            停用原因:
+                        </div>
+                        <div class="col-lg-9 col-md-2 col-sm-2 ">
+                            <textarea class="text_min" ng-model="electricityMeterReadingData.note"></textarea>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button class="btn btn-default btn-primary"  ng-click="saveDisbleElectricityMeterDate()">
+                    确认
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--电表列表-->
+
+<div class="row pannel-padding" ng-show="show2">
+    <div class="col-lg-12">
+        <div id="content-first">
+            <!--tab页切换开始-->
+            <div id="tab">
+                <!--<a ng-click="returnList()">返回</a>-->
+                <div class="col-sm-6">
+                    <a ng-class="{'this_action':btnIndex==1}" ng-click="doClick(1)">表数据</a>
+                    <a ng-class="{'this_action':btnIndex==2}" ng-click="doClick(2)">抄表历史</a>
+                    <a ng-class="{'this_action':btnIndex==3}" ng-click="doClick(3)">修正数据</a>
+                    <a ng-class="{'this_action':btnIndex==4}" ng-click="doClick(4)">换表数据</a>
+                    <a lang="no" ng-class="{'this_action':btnIndex==5}" ng-click="doClick(5)">历史用表</a>
+                </div>
+            </div>
+            <!--tab页切换结束-->
+            <!--表数据-->
+            <div class="row padding" ng-show="show3">
+                <div class="col-md-12 text-right">
+                    <button type="button" class="btn btn-default btn-primary" ng-click="returnList()">
+                        <span class="glyphicon glyphicon-arrow-left btn_icon"></span>
+                        返回
+                    </button>
+                </div>
+                <div class="col-lg-8 col-md-8 col-sm-8">
+                    <div class="row sel1">
+                        <div class="padding component_select">
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">资产名称：</div>
+                            <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" readonly="readonly"
+                                                                           ng-model="electricityMeterList.property.propertyName">
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">资产编号：</div>
+                            <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" readonly="readonly"
+                                                                           ng-model="electricityMeterList.property.propertyNumber">
+                            </div>
+                            <!-- <div class="col-lg-2 col-md-2 col-sm-2 text-right">操作人：</div>
+                             <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" readonly="readonly"
+                                                                            ng-model="electricityMeterList.operator"></div>-->
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">保质期：</div>
+                            <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" readonly="readonly"
+                                                                           ng-model="electricityMeterList.property.expirationDate">
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">产地：</div>
+                            <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" readonly="readonly"
+                                                                           ng-model="electricityMeterList.property.producingArea">
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">厂商：</div>
+                            <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" readonly="readonly"
+                                                                           ng-model="electricityMeterList.property.manufacturer">
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">厂商电话：</div>
+                            <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" readonly="readonly"
+                                                                           ng-model="electricityMeterList.property.manufacturerPhone">
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">分类ID：</div>
+                            <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" readonly="readonly"
+                                                                           ng-model="electricityMeterList.property.propertyTypeId">
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">表编号：</div>
+                            <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" readonly="readonly"
+                                                                           ng-model="electricityMeterList.electricityMeterNum">
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">规格：</div>
+                            <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" readonly="readonly"
+                                                                           ng-model="electricityMeterList.property.propertySpecification">
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">品牌：</div>
+                            <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" readonly="readonly"
+                                                                           ng-model="electricityMeterList.property.brand">
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">倍率：</div>
+                            <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" readonly="readonly"
+                                                                           ng-model="electricityMeterList.ratio"
+                                                                           ng-init="electricityMeterList.ratio=1"></div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">最小数值：</div>
+                            <div class="col-lg-4 col-md-4 col-sm-4"><input class="form-control" readonly="readonly"
+                                                                           ng-model="electricityMeterList.min"
+                                                                           ng-init="electricityMeterList.min=0"></div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">循环使用：</div>
+                            <div class="col-lg-1 col-md-2 col-sm-2">
+                                <label class="checkbox inline">
+                                    <input type="checkbox" ng-true-value="0" ng-true-false="1" disabled="disabled"
+                                           ng-model="electricityMeterList.whetherRepeatedUse">
+                                    <span>是</span>
+                                </label>
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                <label class="checkbox inline">
+                                    <input type="checkbox" ng-true-value="1" ng-true-false="0" disabled="disabled"
+                                           ng-model="electricityMeterList.whetherRepeatedUse">
+                                    <span>否</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4">
+                    <div class="row sel1">
+                        <div class="padding component_select">
+                            <div class="col-lg-4 col-md-6 col-sm-6 text-right">表位置表示：</div>
+                            <div class="col-lg-8 col-md-6 col-sm-6"><input class="form-control" readonly="readonly"
+                                                                           ng-model="electricityMeterList.fullName"></div>
+                            <div class="col-lg-4 col-md-6 col-sm-6 text-right">表状态：</div>
+                            <div class="col-lg-8 col-md-6 col-sm-6">
+                                <select class="form-control"
+                                        ng-model="electricityMeterList.electricityMeterRecords.state">
+                                    <option>请选择</option>
+                                    <option value="2">使用中</option>
+                                    <option value="3">停用</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-6 text-right">抄表方式：</div>
+                            <div class="col-lg-8 col-md-6 col-sm-6"><select class="form-control"
+                                                                            ng-model="electricityMeterList.electricityMeterRecords.readingWay">
+                                <option>请选择</option>
+                                <option value="1">户内</option>
+                                <option value="2">户外</option>
+                                <option value="3">远程抄表</option>
+                            </select></div>
+                            <div class="col-lg-4 col-md-6 col-sm-6 text-right">父表编号：</div>
+                            <div class="col-lg-8 col-md-6 col-sm-6"><input class="form-control"
+                                                                           ng-model="electricityMeterList.electricityMeterRecords.parentNum">
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-6 text-right">主表编号：</div>
+                            <div class="col-lg-8 col-md-6 col-sm-6"><input class="form-control"
+                                                                           ng-model="electricityMeterList.electricityMeterRecords.mainNum">
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-6 text-right">使用性质：</div>
+                            <div class="col-lg-8 col-md-6 col-sm-6"><select class="form-control"
+                                                                            ng-model="electricityMeterList.electricityMeterRecords.usingNature">
+                                <option>请选择</option>
+                                <option value="0">商业</option>
+                                <option value="1">居民</option>
+                                <option value="2">管理处</option>
+                            </select></div>
+                            <div class="col-lg-4 col-md-6 col-sm-6 text-right">公共用电表：</div>
+                            <div class="col-lg-8 col-md-6 col-sm-6"><select class="form-control"
+                                                                            ng-model="electricityMeterList.electricityMeterRecords.publicElectricity">
+                                <option>请选择</option>
+                                <option value="0">是</option>
+                                <option value="1">否</option>
+                            </select></div>
+                            <div class="col-lg-4 col-md-6 col-sm-6 text-right">是否计费表：</div>
+                            <div class="col-lg-8 col-md-6 col-sm-6"><select class="form-control"
+                                                                            ng-model="electricityMeterList.electricityMeterRecords.isBilling">
+                                <option>请选择</option>
+                                <option value="0">是</option>
+                                <option value="1">否</option>
+                            </select></div>
+                            <div class="col-lg-4 col-md-6 col-sm-6 text-right">安装人：</div>
+                            <div class="col-lg-8 col-md-6 col-sm-6"><input class="form-control"
+                                                                           ng-model="electricityMeterList.electricityMeterRecords.install">
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-6 text-right">安装日期：</div>
+                            <div class="col-lg-8 col-md-6 col-sm-6"><input class="form-control"
+                                                                           type="date"
+                                                                           ng-model="electricityMeterList.electricityMeterRecords.installationTime">
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-6 text-right">初始读数：</div>
+                            <div class="col-lg-8 col-md-6 col-sm-6"><input class="form-control"
+                                                                           ng-model="electricityMeterList.electricityMeterRecords.initialReading" ng-init="electricityMeterList.electricityMeterRecords.initialReading=0">
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 text-right">是否保存所编辑内容：</div>
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                <button type="button" class="btn btn-primary" ng-click="cenceLink1()">取消</button>
+                                <button type="button" class="btn btn-primary" ng-click="saveLinkMeter1()">确定</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--<div class="col-lg-12 col-md-12 col-sm-12 text-center">-->
+                <!--<button type="button" class="btn btn-default btn-primary" >-->
+                <!--<span class="glyphicon glyphicon-edit btn_icon"></span>-->
+                <!--编辑-->
+                <!--</button>-->
+                <!--</div>-->
+            </div>
+            <!--表数据结束-->
+            <!--抄表历史-->
+            <div class="padding" ng-show="show4">
+                <div class="text-center">
+                    <ul class="pagination">
+                        <li><a style="cursor:pointer;" ng-click="left(year)">《</a></li>
+                        <li><a>{{year}}</a></li>
+                        <li><a style="cursor:pointer;" ng-click="right(year)">》</a></li>
+                    </ul>
+                </div>
+                <table>
+                    <thead>
+                    <th>月份</th>
+                    <th>电表编号</th>
+                    <th>用量</th>
+                    <th>上月读数</th>
+                    <th>本月读数</th>
+                    <th>修正值</th>
+                    <th>修正量</th>
+                    <th>余用量</th>
+                    <th>抄表人</th>
+                    <th>抄表时间</th>
+                    <th>状态</th>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="item in listElectricityMeterRecords" ng-show="item['electricityMeterId'] != null">
+                        <td>{{item.meterReadingDate|date:"MM"}}月</td>
+                        <td>{{item.electricityMeter.electricityMeterNum}}</td>
+                        <td>{{item.reading-item.lastMonthReading}}</td>
+                        <td>{{item.lastMonthReading}}</td>
+                        <td>{{item.reading}}</td>
+                        <td>{{item.correction}}</td>
+                        <td>{{item.correction}}</td>
+                        <td>{{item.surplus}}</td>
+                        <td>{{item.meterReadingPeople}}</td>
+                        <td>{{item.specifiedDate|date:"yyyy-MM-dd"}}</td>
+                        <td ng-switch on="item.abnormalState">
+                            <span ng-switch-when="1">异常</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!--抄表历史 结束-->
+            <!--修正数据-->
+            <div class="row padding" ng-show="show5">
+                <div class="col-lg-8 col-md-8 col-sm-8">
+                    <div class="row sel1">
+                        <div class="padding component_select">
+                            <div class="text-center">
+                                <ul class="pagination">
+                                    <li><a style="cursor:pointer;" ng-click="left(year)">《</a></li>
+                                    <li><a>{{year}}</a></li>
+                                    <li><a style="cursor:pointer;" ng-click="right(year)">》</a></li>
+                                </ul>
+                            </div>
+                            <table>
+                                <thead>
+                                <tr>
+                                    <th>月份</th>
+                                    <th>电表编号</th>
+                                    <th>用量</th>
+                                    <th>上月读数</th>
+                                    <th>本月读数</th>
+                                    <th>修正值</th>
+                                    <th>错误修正量</th>
+                                    <th>循环修正量</th>
+                                    <th>电损</th>
+                                    <th>公摊</th>
+                                    <th>余用量</th>
+                                    <th>抄表人</th>
+                                    <th>抄表时间</th>
+                                    <th>状态</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                <tr ng-repeat="item in listElectricityMeterRecords" ng-show="item['electricityMeterId'] != null"
+                                    ng-class="{'this_info':btnIndex==item}" ng-click="checkMeter(item)">
+                                    <td>{{item.meterReadingDate|date:"MM"}}月</td>
+                                    <td>{{item.electricityMeter.electricityMeterNum}}</td>
+                                    <td>{{item.reading-item.lastMonthReading}}</td>
+                                    <td>{{item.lastMonthReading}}</td>
+                                    <td>{{item.reading}}</td>
+                                    <td>{{item.correctionValue}}</td>
+                                    <td></td>
+                                    <td>{{item.correction}}</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>{{item.surplus}}</td>
+                                    <td>{{item.meterReadingPeople}}</td>
+                                    <td>{{item.specifiedDate|date:"yyyy-MM-dd"}}</td>
+                                    <td ng-switch on="item.abnormalState">
+                                        <span ng-switch-when="1">异常</span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4">
+                    <div class="row sel1">
+                        <div class="padding component_select">
+                            <div class="col-lg-3 col-md-4 col-sm-4 text-right">电表编号：</div>
+                            <div class="col-lg-9 col-md-8 col-sm-8"><input class="form-control" disabled
+                                                                           ng-model="numB"></div>
+                            <div class="col-lg-3 col-md-4 col-sm-4 text-right">区域：</div>
+                            <div class="col-lg-9 col-md-8 col-sm-8"><input class="form-control" disabled
+                                                                           ng-model="fullNAme"></div>
+                            <div class="col-lg-3 col-md-4 col-sm-4 text-right">修正值：</div>
+                            <div class="col-lg-9 col-md-8 col-sm-8"><input class="form-control"
+                                                                           ng-model="correctedReading.correctionValue">
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-sm-4 text-right">修正量：</div>
+                            <div class="col-lg-9 col-md-8 col-sm-8"><input class="form-control"
+                                                                           ng-model="correctedReading.correction">
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-sm-4 text-right">退费：</div>
+                            <div class="col-lg-9 col-md-8 col-sm-8">
+                                <div class="col-md-1"><input id="zh" class="form-control" type="checkbox"></div>
+                                <div class="col-md-3"><label for="zh">账户</label></div>
+                                <div class="col-md-1"><input id="xj" class="form-control" type="checkbox"></div>
+                                <div class="col-md-3"><label for="xj">现金</label></div>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-sm-4 text-right">上传附件：</div>
+                            <div class="col-lg-6 col-md-6 col-sm-6"><input class="form-control"></div>
+                            <div class="col-lg-3 col-md-2 col-sm-2">
+                                <button type="button" class="btn btn-default btn-primary" data-target="#out"
+                                        data-toggle="modal" ng-click="upCorrected()">上传
+                                </button>
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-sm-4 text-right">原因备注：</div>
+                            <div class="col-lg-9 col-md-8 col-sm-8"><textarea class="text_min"
+                                                                              ng-model="correctedReading.reason"></textarea>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 text-center">
+                                <button type="button" class="btn btn-default btn-primary">
+                                    取消
+                                </button>
+                                <button type="button" class="btn btn-default btn-primary"
+                                        ng-click="inestCorrected()">
+                                    确定
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--修正数据 结束-->
+            <!--换表数据-->
+            <div class="padding" ng-show="show6">
+                <table>
+                    <thead>
+                    <th>序号</th>
+                    <th>资产编号</th>
+                    <th>电表编号</th>
+                    <th>电表状态</th>
+                    <th>开始使用时间</th>
+                    <th>结束时间</th>
+                    <th>初始读数</th>
+                    <th>终止读数</th>
+                    <th>备注</th>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="item in electricityMeterReading" ng-show="item['electricityMeterId'] != null">
+                        <td>{{$index+1}}</td>
+                        <td>{{item.property.propertyNumber}}</td>
+                        <td>{{item.electricityMeter.electricityMeterNum}}</td>
+                        <td>
+                            <div ng-switch on="{{item['state']}}">
+                                <div class="animate-switch" ng-switch-when="1">新建</div>
+                                <div class="animate-switch" ng-switch-when="4">未使用</div>
+                                <div class="animate-switch" ng-switch-when="2">使用中</div>
+                                <div class="animate-switch" ng-switch-when="3">停用</div>
+                            </div>
+                        </td>
+                        <td>{{item.installationTime|date:"yyyy-MM-dd"}}</td>
+                        <td>{{item.outageTime|date:"yyyy-MM-dd"}}</td>
+                        <td>{{item.initialReading}}</td>
+                        <td>{{item.stopReading}}</td>
+                        <td>{{item.electricity_meter_described}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!--换标数据结束-->
+            <!--历史用表-->
+            <div class="padding" ng-show="show7">
+                <table>
+                    <thead>
+                    <th>序号</th>
+                    <th>资产编号</th>
+                    <th>电表编号</th>
+                    <th>电表状态</th>
+                    <th>区域</th>
+                    <th>开始使用时间</th>
+                    <th>结束时间</th>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="item in electricityMeterState" ng-show="item['electricityMeterId'] != null">
+                        <td>{{$index+1}}</td>
+                        <td>{{item.property.propertyNumber}}</td>
+                        <td>{{item.electricityMeter.electricityMeterNum}}</td>
+                        <td>
+                            <div ng-switch on="{{item['state']}}">
+                                <div class="animate-switch" ng-switch-when="1">新建</div>
+                                <div class="animate-switch" ng-switch-when="4">未使用</div>
+                                <div class="animate-switch" ng-switch-when="2">使用中</div>
+                                <div class="animate-switch" ng-switch-when="3">停用</div>
+                            </div>
+                        </td>
+                        <td>{{item.fullName}}</td>
+                        <td>{{item.installationTime|date:"yyyy-MM-dd"}}</td>
+                        <td>{{item.outageTime|date:"yyyy-MM-dd"}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!--历史用表结束-->
+        </div>
+    </div>
+</div>
+<!--电表列表附件上传-->
+<div class="modal fade" id="out" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                导入Excel表
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                    <div id="remove1">
+                        <div id="excelupload1" class="zyupload"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button class="btn btn-default btn-primary" data-dismiss="modal">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--电表列表结束-->
+
+<!--附件上传-->
+<div class="modal fade" id="outPut" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" >
+        <div class="modal-content">
+            <div class="modal-header">
+                导入Excel表
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="padding"  >
+                    <div class="row search-padding-10">
+                        <div class="col-lg-12 col-md-2 col-sm-2 ">
+                            <input type="hidden" id="fileurl" value="{{fileUrl}}">
+                        </div>
+                        <div class="col-lg-12 col-md-2 col-sm-2 text-right">
+                            <button class="btn-primary btn" onClick="exportExcelWater()">
+                                导入模版下载
+                            </button>
+                        </div>
+                    </div>
+                    <div id="remove">
+                        <div id="excelupload" class="zyupload"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消 </button>
+                <button class="btn btn-default btn-primary" data-dismiss="modal"  >确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,479 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 收款台js
+ */
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../../app');
+
+    app.controller('accountManagementsCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+        $scope.doClickForAccount(8);
+
+        var url = $rootScope.url;             //IP地址
+        var fileUrl=$rootScope.fileUrl;    //上传的文件路径
+        var filePath='';          //上传文件的路径
+        $scope.annex={
+            annexAddress:'',
+            annexName:'',
+            relationId:''
+        };
+
+        $scope.searchAssetAccount = {page: {}};      //分页
+        $scope.show1=false;
+        $scope.generalBalance = '';//查看详情时显示通用余额  王洲   2015.12.31
+        $scope.chargeId = '';//选择收费项目id  王洲  2015.12.31
+        $scope.setcharge = '';//判断是否可以抵扣收费项目  王洲  2015.12.31
+        $scope.advancePaymentsDetails = {page:{}};//进行查询的资产账户明细表
+        $scope.assetAccountType=[
+            {value:0, name:'住宅'}, {value:1, name:'押金'},{value:2, name:'车位'}
+        ]
+
+        /**
+         * 分页显示
+         * 修改查询条件，只有当选择了客户后才能查询出数据，页面载入时不执行 王洲  2015.12.29
+         */
+        $scope.searchData = function(){
+            if($scope.searchAssetAccount.name == null || $scope.searchAssetAccount.name == ''){
+                layer.msg('请输入要查询的客户姓名！',{icon : 0,time : 1000});
+                return;
+            }
+            if($scope.searchAssetAccount.cardNum == null || $scope.searchAssetAccount.cardNum == ''){
+                layer.msg('请输入要查询的客户的证件号！',{icon : 0,time : 1000});
+                return;
+            }
+            var checkAssetAccount= function (page, callback) {
+                $scope.searchAssetAccount.page=page;
+                $scope.show1=false;
+                $http.post(url + '/AssetAccount/listPageAssetAccount', {Search: $scope.searchAssetAccount}).success(callback);
+            };
+            $scope.currentMeter = app.get('Paginator').list(checkAssetAccount, 6);
+        };
+
+        /**
+         * 修改查看详情时的方法，如果后台传值被转成对象，重新转成数组
+         * 王洲
+         * 2015.12.29
+         * @param assetAccountId
+         */
+        $scope.searchAsset=function(item){
+            $scope.generalBalance = item.generalBalance;
+            $http.get(url + "/AssetAccountDetail/getAssetAccountDetailById/"+item.assetAccountId).success(function(data){
+                $scope.AssetAccountDetail = [];
+                if(angular.isDefined(data.AssetAccountDetail)){
+                    if(angular.isArray(data.AssetAccountDetail)){
+                        $scope.AssetAccountDetail = data.AssetAccountDetail;
+                    }else{
+                        $scope.AssetAccountDetail.push(data.AssetAccountDetail);
+                    }
+                }
+            }).error(function(data,status,headers,config){
+                layer.alert('失败！',{icon : 2});
+            });
+        };
+
+        /**
+         * 根据项目id查询项目下的所有一级收费项目
+         * 王洲
+         * 2015.12.29
+         * @param projectId
+         */
+        $scope.listAllChargeItem = function(projectId){
+            $http.get(url + "/ChargeItemNew/listFChargeItemNewByProjectId/" + projectId).success(function(data){
+                $scope.ChargeItemNewList = data.ChargeItemNew;
+            }).error(function(data){
+                layer.msg('收费项目查询出错！',{icon : 2,time : 1000});
+            });
+        };
+
+        $scope.addMoney=function(){
+            console.log($scope.assetForSearch);
+            if($scope.assetForSearch == null){
+                layer.msg('请先选择要充值的账户！',{icon : 0,time : 1000});
+                return;
+            }
+            if($scope.assetForSearch.assetAccountId != ''){
+                $scope.listAllChargeItem($scope.assetForSearch.projectId);
+                $("#bbb").modal("show");
+            }else{
+                layer.msg('请先选择要充值的账户！',{icon : 0,time : 1000});
+            }
+        };
+
+        $scope.chargeitem = {};
+        $scope.topUPDemo = function () {
+            var addP = document.getElementById("addPrice").value;
+            if(addP == ''){
+                layer.msg('请输入充值金额！',{icon : 0,time : 1000});
+                return;
+            }
+            if(isNaN(addP)){
+                layer.msg('充值金额必须为数字！',{icon : 0,time : 1000});
+                return;
+            }
+            var addPrice = app.get('valueCheck').isNumberAndNotNull(addP);
+            if(addPrice.state == false){
+                layer.msg(addPrice.info,{icon : 0,time : 1000});
+                return;
+            }
+            if($scope.setcharge == 1){
+                if($scope.chargeId == ''){
+                    layer.msg('请选择收费项目！',{icon : 0,time : 1000});
+                    return;
+                }
+                $scope.chargeitem.ciId = $scope.chargeId;
+                $scope.assetForSearch.chargeItem = $scope.chargeitem;
+            }
+            $scope.assetForSearch.addPrice = addP;
+            $scope.assetForSearch.ifCharge = $scope.setcharge;
+  //          layer.confirm('是否确认充值？',{btn : ['是','否']},function(){
+                /*$http.put(url + '/AssetAccount/topUP',{AssetAccount : $scope.assetForSearch}).success(function(data){
+                    layer.msg('充值成功，请等待刷新！',{icon : 1,time : 1000});
+                    $scope.assetForSearch = {assetAccountId : ''};
+                    $scope.clear();
+                    $scope.searchData();
+                }).error(function(data){layer.msg('充值失败，请重试！',{icon : 2,time : 1000});})*/
+
+                   $scope.assetForSearch.transactionNum =(new Date()).valueOf();
+                //添加到购物车 zhuqi 2016.04.05
+                    //将值传递到收款台页面
+                    if($scope.assetForSearch.assetNum==null || $scope.assetForSearch.assetNum==''){
+                        $scope.assetForSearch.depositNum = (new Date()).valueOf();
+                    }
+                    var assetAccount=JSON.stringify($scope.assetForSearch);
+                    sessionStorage.setItem("AssetAccount",assetAccount);
+                    //$location.path("/index/cashier/cashier/cashierUI/cashiers/").search();
+            //更改了路由
+                    $location.path("/index/cashier/cashier/cashiers").search();
+      //      },function(){});
+        };
+
+        //判断checkbx是否选中
+        //判断时将对应的参数放入查询用的对象 王洲 2015.12.29
+        /*$scope.assetForSearch = {assetAccountId : ''};
+        $scope.getdata=function(item){
+            var chk = document.getElementsByName("aaa");
+            if(document.getElementById(item.assetAccountId).checked == true){
+                $scope.assetForSearch = item;
+                for(var i = 0,len = chk.length; i < len; i++){
+                    if(chk[i].id != ''){
+                        if(chk[i].id != item.assetAccountId){
+                            document.getElementById(chk[i].id).checked = false;
+
+                        }
+                    }
+                }
+            }else{
+                document.getElementById(item.assetAccountId).checked = false;
+                $scope.assetForSearch = {assetAccountId : ''};
+            }
+        };*/
+
+        //判断checkbx是否选中
+        //判断时将对应的参数放入查询用的对象
+        $scope.getdata=function(item){
+            //$scope.show1 = false;
+            var chk = document.getElementsByName("aaa");
+            var tr = document.getElementById(item.assetAccountId);
+            if($(tr).children().children()[0].checked==true){
+                $scope.assetForSearch = {assetAccountId : ''};
+                for(var i=0;i<$('input[name=aaa]').length;i++){
+                    $('input[name=aaa]')[i].checked=false;
+                }
+                $(tr).children().children()[0].checked= false
+                $(tr).css('background','#fff');
+            }else{
+                for(var i=0;i<$('input[name=aaa]').length;i++){
+                    $('input[name=aaa]')[i].checked=false;
+                }
+                $('#currentMeterTr tr').css('background','#fff')
+                $(tr).children().children()[0].checked = true;
+                $(tr).css('background','#f6f8fa');
+                $scope.assetForSearch = item;
+                console.log($scope.assetForSearch);
+            }
+        }
+
+        $scope.refunndItem = {annexs:[]};
+        $scope.refundData=function(item){
+            /*var chk = document.getElementById(item.advancePaymentsDetailsId);
+            if(chk.checked == true){
+                $scope.refunndItem = item;
+                for(var i=0; i<$scope.currentAdvance.advancePaymentsDetails.length(); i++){
+                    if($scope.currentAdvance.advancePaymentsDetails[i].advancePaymentsDetailsId != item.advancePaymentsDetailsId){
+                        document.getElementById($scope.currentAdvance.advancePaymentsDetails[i].advancePaymentsDetailsId).checked = false;
+                    }
+                }
+            }else{
+                $scope.refunndItem = [];
+            }*/
+            var chk = document.getElementsByName("advancePaymentsDetails");
+            var tr = document.getElementById(item.advancePaymentsDetailsId);
+            if($(tr).children().children()[0].checked==true){
+                $scope.refunndItem = {annexs:[],advancePaymentsDetailsId : ''};
+                for(var i=0;i<$('input[name=advancePaymentsDetails]').length;i++){
+                    $('input[name=advancePaymentsDetails]')[i].checked=false;
+                }
+                $(tr).children().children()[0].checked= false
+                $scope.refunndItem = {annexs:[],advancePaymentsDetailsId : ''};
+                $(tr).css('background','#fff');
+            }else{
+                for(var i=0;i<$('input[name=advancePaymentsDetails]').length;i++){
+                    $('input[name=advancePaymentsDetails]')[i].checked=false;
+                }
+                $(tr).children().children()[0].checked = true;
+                $(tr).css('background','#f6f8fa');
+                $scope.refunndItem = item;
+            }
+        }
+
+        /**
+         * 根据资产账户id查询交易明细
+         * 王洲
+         * 2015.12.31
+         */
+        $scope.woyebuzhidao=[];
+        $scope.showList = function(){
+            if($scope.assetForSearch == null){
+                layer.msg('请先选择要查询的账户！',{icon : 0,time : 1000});
+                return;
+            }
+            if($scope.assetForSearch.assetAccountId != ''){
+                $scope.advancePaymentsDetails = {};
+                var checkAdvanceAccount= function (page, callback) {
+                    $scope.advancePaymentsDetails.page=page;
+                    $scope.advancePaymentsDetails.assetAccountId = $scope.assetForSearch.assetAccountId;
+                    $http.post(url + '/AdvancePaymentsDetails/listPageAdvancePaymentDetailByAssetAccountId', {AdvancePaymentsDetails: $scope.advancePaymentsDetails}).success(callback);
+                };
+                $scope.currentAdvance = app.get('Paginator').list(checkAdvanceAccount, 6);
+                $scope.show1 = true;
+            }else{
+                layer.msg('请先选择要查询的账户！',{icon : 0,time : 1000});
+            }
+        };
+
+        $scope.predefault=function($event){
+            $event.stopPropagation();
+        }
+
+        //退款金额
+        $scope.refundSum = null;
+        //退款
+        $scope.deposit=function(){
+            if($scope.refunndItem == null){
+                layer.msg('请先选择要退款的收支信息！',{icon : 0,time : 1000});
+                return;
+            }
+/*            var rms = document.getElementById("refundMoneySum").value;
+            var refundMoneySum = app.get('valueCheck').isNumberAndNotNull(rms);
+            if(refundMoneySum.state == false){
+                layer.msg(refundMoneySum.info,{icon : 0,time : 2000});
+                return;
+            }*/
+
+            if($scope.assetForSearch.assetAccountType == 1 && $scope.depositNumber==0){
+                var depositNum = document.getElementById("depositSum").value;
+                var depositNumTmp = app.get("valueCheck").isNumberAndNotNull(depositNum);
+                if(depositNumTmp.state == false){
+                    layer.msg('押金单号'+depositNumTmp.info,{icon : 0,time : 1000});
+                    return;
+                }
+            }
+            if($scope.depositNumber==1 && ($scope.refunndItem.annexs==null || $scope.refunndItem.annexs.length==0)){
+                layer.msg('请上传相关证件图片！',{icon : 0,time : 1000});
+                return;
+            }
+            //var refundMoneySum = document.getElementById("refundMoneySum").value;
+            var refundMoneySum = app.get("valueCheck").isNumberAndNotNull($scope.refundSum);
+            if(refundMoneySum.state == false){
+                layer.msg('余额'+refundMoneySum.info,{icon : 0,time : 1000});
+                return;
+            }
+            //var rms = document.getElementById("refundMoneySum").value;
+            if($scope.refundSum > $scope.refunndItem.refundableDepositAmount){
+                layer.msg('可退金额不足！',{icon : 0,time : 1000});
+                return;
+            }
+            if($scope.assetForSearch.assetAccountType == 1 && $scope.depositNumber==0){
+                if(depositNum != $scope.refunndItem.depositNum){
+                    layer.msg('押金单号不正确！',{icon : 0,time : 1000});
+                    return;
+                }
+            }
+            $scope.refunndItem.refundMoneySum = $scope.refundSum;
+            $scope.refunndItem.assetAccountId = $scope.assetForSearch.assetAccountId;
+            $http.post(url + "/AdvancePaymentsDetails/refundMoney", {AdvancePaymentsDetails:$scope.refunndItem}).success(function(data){
+               if(data == 2){
+                   layer.msg('押金单号不正确！',{icon : 0,time : 1000});
+               }
+                if(data == 1){
+                    layer.msg('退款成功！',{icon : 1,time : 1000});
+                    $('#refundMoney').modal('hide');
+                    $scope.showList();
+                }
+            }).error(function(data){
+                layer.msg('收费项目查询出错！',{icon : 2,time : 1000});
+            });
+
+        }
+
+        /**
+         * 根据Id退款
+         * 陈浪
+         * 2016.4.11
+         */
+        $scope.refundMoney=function(){
+            $scope.refunndItem.annexs = [];
+            if($scope.assetForSearch == null){
+                layer.msg('请先选择要退款的收支信息！',{icon : 0,time : 1000});
+                return;
+            }
+            /*if($scope.refunndItem.annexs instanceof Array&&$scope.refunndItem.annexs.length==0){
+
+            }*/
+            $scope.refundSum = '';
+            $('#refundMoney').modal({backdrop:'static',keyboard:true});
+            var src ='';
+            $('#uploadImg').html('');
+            $(function(){
+                $("#remove").html('');
+                $("#remove").append('<div id="excelupload" class="zyupload"></div>');
+                // 初始化插件
+                $("#excelupload").zyUpload({
+                    width            :   "550px",                 // 宽度
+                    height           :   "auto",                 // 宽度
+                    itemWidth        :   "140px",                 // 文件项的宽度
+                    itemHeight       :   "115px",                 // 文件项的高度
+                    url              :   fileUrl+"/FileService",  // 上传文件的路径
+                    fileType         :   ["jpg","png","jpeg","gif","xls","docx","xlsx","pdf","txt","doc","ppt"],// 上传文件的类型
+                    fileSize         :   51200000,                // 上传文件的大小
+                    multiple         :   true,                    // 是否可以多个文件上传
+                    dragDrop         :   true,                    // 是否可以拖动上传文件
+                    tailor           :   true,                    // 是否可以裁剪图片
+                    del              :   true,                    // 是否可以删除文件
+                    finishDel        :   false,  				  // 是否在上传文件完成后删除预览
+                    /* 外部获得的回调接口 */
+                    onSelect: function(selectFiles, allFiles){    // 选择文件的回调方法  selectFile:当前选中的文件  allFiles:还没上传的全部文件
+
+                    },
+                    onDelete: function(file, files){
+                    },
+                    onSuccess: function(file, response){          // 文件上传成功的回调方法
+                        $scope.annex = {annexAddress:'',annexName:''};
+                        filePath=response;
+                        $scope.annex.annexName = file.name;
+                        $scope.annex.annexAddress = filePath;
+                        if($scope.refunndItem.annexs == null){
+                            $scope.refunndItem.annexs = [];
+                        }
+                        $scope.refunndItem.annexs.push($scope.annex);
+                        layer.msg("上传成功",{icon : 1,time : 2000});
+
+                        /*var img='<img class="col-md-3" src='+src+' '+'height="80px" style="margin-bottom:5px"/>';
+                         $('#uploadImg').append(img);*/
+                    },
+                    onFailure: function(file, response){          // 文件上传失败的回调方法
+                        alert("此文件上传失败：");
+                    },
+                    onComplete: function(response){           	  // 上传完成的回调方法
+                    }
+                });
+
+            });
+        };
+        $scope.depositNumber=0;
+        $scope.depositChange=function(){
+            //押金单号
+            if($scope.depositNumber==0){
+                $scope.refunndItem.annexs = [];
+            }
+            //无押金单号
+            if($scope.depositNumber==1){
+                $scope.refundMoney();
+            }
+        }
+
+        /**
+         * 设置是否可以抵扣收费项目
+         * @param id
+         */
+        $scope.setCharge = function(id){
+
+            if(document.getElementById(id).checked == true){
+                $scope.setcharge = id;
+                //var setchargelist = document.getElementById("addPrice");
+                var setchargelist = document.getElementsByName("isCharge");
+                for(var i = 0,len = setchargelist.length; i < len; i++){
+                    if(setchargelist[i].id != id){
+                        document.getElementById(setchargelist[i].id).checked = false;
+                    }
+                }
+                    var chargeIdlist = document.getElementsByName("cilist");
+                    for (var i = 0, len = chargeIdlist.length; i < len; i++) {
+                        document.getElementById(chargeIdlist[i].id).checked = false;
+                        if(id == 2) {
+                            document.getElementById(chargeIdlist[i].id).disabled = true;
+                        }else{
+                            document.getElementById(chargeIdlist[i].id).disabled = false;
+                        }
+                }
+                if(id == 2) {
+                    $('#assetCharge').hide();
+                }else{
+                    $('#assetCharge').show();
+                }
+            }else{
+                $('#assetCharge').hide();
+                $scope.setcharge = '';
+            }
+        };
+
+        /**
+         * 选择收费项目并实现单选效果
+         * 王洲
+         * 2015.12.31
+         * @param items
+         */
+        $scope.chooseCharge = function(items){
+            //判断是否选择了可抵扣收费项目，是的时候才进行选择
+            if($scope.setcharge != 1){
+                layer.msg('并未设置可抵扣收费项目！',{icon : 0,time : 1000});
+                document.getElementById(items.ciId).checked = false;
+            }else{
+                if(document.getElementById(items.ciId).checked == true){
+                    $scope.chargeitem = items;
+                    $scope.chargeId = items.ciId;
+                    var chargeIdlist = document.getElementsByName("cilist");
+                    for(var i = 0,len = chargeIdlist.length; i < len; i++){
+                        if(chargeIdlist[i].id != items.ciId){
+                            document.getElementById(chargeIdlist[i].id).checked = false;
+                        }
+                    }
+                }else{
+                    $scope.chargeitem = {};
+                    $scope.chargeId = '';
+                }
+            }
+        };
+
+        /**
+         * 点击取消时清空填入数据
+         * 王洲
+         * 2015.12.31
+         */
+        $scope.clear = function(){
+            document.getElementById("addPrice").value = '';
+            if($scope.setcharge != ''){
+                document.getElementById($scope.setcharge).checked = false;
+                $scope.setcharge = '';
+            }
+            if($scope.chargeId != ''){
+                document.getElementById($scope.chargeId).checked = false;
+                $scope.chargeitem = {};
+                $scope.chargeId = '';
+            }
+            $("#bbb").modal("hide");
+        };
+
+    }]);
+});

@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>入伙</title>
+</head>
+<body>
+<!--入伙管理start-->
+<div class="padding_info">
+    <div id="content-first">
+        <div id="tab">
+            <div class="contract_detail_nav_selected"><a style="cursor: pointer" ng-class="{'this_action':btnIndex==1}" ng-click="nextShow(1)">选择房屋</a></div>
+            <a style="cursor: pointer" ng-class="{'this_action':btnIndex==2}" ng-click="nextShow(2)">收管理费</a>
+            <a style="cursor: pointer" ng-class="{'this_action':btnIndex==3}" ng-click="nextShow(3)">物品领取</a>
+            <a lang="no" style="cursor: pointer" ng-class="{'this_action':btnIndex==4}" ng-click="nextShow(4)">业主收房</a>
+            <div class="clear"></div>
+        </div>
+        <div class="padding">
+            <!--选择房屋start-->
+            <div ng-show="show1">
+                 <div style="cursor:pointer;"  class="rh checkShow"  ng-repeat="items in houseNewIntake.object.houseNews" ng-show="items.id!=null" id="{{items.id}}" ng-Click="checkShow(items)" >
+                     <div class="col-xs-1 col-lg-1 col-md-1">
+                         <a href="#createModal" data-toggle="modal" ng-click="modalShow(items)">
+                             <img src="images/project/bud/b_01.png" width="100%">
+                         </a>
+                     </div>
+                     <div class="col-xs-11 col-lg-11 col-md-11" ng-click="check($index)">
+                         <div class="col-xs-4 col-lg-4 col-md-4">
+                             房屋编码：{{items.houseNum}}
+                         </div>
+                         <div class="col-xs-4 col-lg-4 col-md-4">
+                             房屋地址：{{items.fullName}}
+                         </div>
+                         <div class="col-xs-1 col-lg-1 col-md-1"></div>
+                         <div class="col-xs-3 col-lg-3 col-md-3">
+                             入伙状态：
+                             <span ng-switch on ="items.joinState">
+                                 <span ng-switch-when="1">已入伙</span>
+                                 <span ng-switch-when="0">未入伙</span>
+                            </span>
+                         </div>
+                         <div class="clear"></div>
+                         <div class="col-xs-4 col-lg-4 col-md-4">
+                             销售状态：
+                             <span ng-switch on ="items.marketState">
+                               <span ng-switch-when="0">已销售</span>
+                                 <span ng-switch-when="1">未销售</span>
+                              </span>
+                         </div>
+                         <div class="col-xs-4 col-lg-4 col-md-4">
+                             竣工面积：{{items.completionArea}}
+                         </div>
+                         <div class="col-xs-1 col-lg-1 col-md-1"></div>
+                         <div class="col-xs-3 col-lg-3 col-md-3">
+                             资产关系：{{items.custType}}
+                         </div>
+                         <div class="clear"></div>
+                     </div>
+                     <div class="clear"></div>
+                 </div>
+                <div class="col-xs-12">
+                    <div class="bill_paging">
+                        <span style="float:right;margin:0;">共{{houseNewIntake.object.page.totalResult}}条</span>
+                        <ul class="pagination">
+                            <li ng-class="{true:'disabled'}[houseNewIntake.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-click="houseNewIntake.go(1)">首页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[houseNewIntake.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-show="houseNewIntake.hasPrevious()" ng-click="houseNewIntake.previous()">上一页</a>
+                            </li>
+                            <li ng-class="{true:'active'}[houseNewIntake.page.currentPage==i]" ng-repeat="i in houseNewIntake.pages">
+                                <a href="javascript:void(0)"  ng-click="houseNewIntake.go(i)">{{i}}</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[houseNewIntake.page.currentPage==houseNewIntake.page.totalPage]">
+                                <a href="javascript:void(0)" ng-show="houseNewIntake.hasNext()" ng-click="houseNewIntake.next()">下一页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[houseNewIntake.page.currentPage==houseNewIntake.page.totalPage]">
+                                <a href="javascript:void(0)" ng-click="houseNewIntake.go(houseNewIntake.page.totalPage)">尾页</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <!--选择房屋end-->
+            <!--收管理费start-->
+            <div ng-show="show2">
+                <div class="red text-right">
+                    缴费金额总计：{{countIntakeAmount}}元
+                </div>
+                <div  class="rh"  ng-repeat="house in housesone">
+
+                    <div class="col-xs-2 col-lg-2 col-md-2">
+                        <img src="images/project/bud/b_01.png" width="100" height="100">
+                    </div>
+
+                    <div class="col-xs-10 col-lg-10 col-md-10">
+                        <div class="col-xs-6 col-lg-6 col-md-6">
+                            房屋地址：{{house.fullName}}
+                        </div>
+                        <div class="col-xs-6 col-lg-6 col-md-6">
+                            房屋编号：{{house.houseNum}}
+                        </div>
+                        <div class="clear"></div>
+                        <div class="col-xs-6 col-lg-6 col-md-6">
+                            房产证号：
+                        </div>
+                        <div class="col-xs-3 col-lg-3 col-md-3">
+                            资产类型：
+                            <span ng-switch on ="house.capitalType">
+                               <span ng-switch-when="1">住宅</span>
+                               <span ng-switch-when="2">商铺</span>
+                               <span ng-switch-when="3">车位</span>
+                             </span>
+                        </div>
+                        <div class="col-xs-3 col-lg-3 col-md-3">
+                            管理费单价：{{house.managementUnitPrice}}元/平方
+                        </div>
+                        <div class="clear"></div>
+                        <div class="col-xs-6 col-lg-6 col-md-6">
+                            竣工面积：{{house.completionArea}}平方
+                        </div>
+                        <div class="col-xs-3 col-lg-3 col-md-3">
+                            缴费月数：
+                            <select ng-model="date[$index]" ng-options="o for o in selects" ng-change="watchDate($index)">
+                            </select>
+                        </div>
+                        <div class="col-xs-3 col-lg-3 col-md-3">
+                            应缴管理费：{{intakes[$index].intakeAmount}}元
+                        </div>
+                        <div class="clear"></div>
+                        <div class="col-xs-6 col-lg-6 col-md-6">
+                            截止日期：{{intakes[$index].endDate | date:"yyyy-MM-dd"}}
+                        </div>
+                        <div class="col-xs-3 col-lg-3 col-md-3">
+                            收费状态：
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <div class="text-center">
+                    <button href="#showManagement" data-toggle="modal" type="button" class="btn btn-default btn-primary">
+                        提交
+                    </button>
+                </div>
+            </div>
+            <!--收管理费end-->
+            <!--物品领取start-->
+            <div ng-show="show3">
+                <div  class="rh" ng-repeat="house in housesone" >
+                        <div class="col-xs-3 col-lg-3 col-md-3 text-right">
+                            房屋地址:
+                        </div>
+                        <div class="col-xs-3 col-lg-3 col-md-3" >
+                            {{house.fullName}}
+                        </div>
+                        <div class="col-xs-3 col-lg-3 col-md-3 text-right">
+                            房屋编码：
+                        </div>
+                        <div class="col-xs-3 col-lg-3 col-md-3">
+                            {{house.houseNum}}
+                        </div>
+                        <div class="clear"></div>
+                        <div class="row">
+                            <div class="col-xs-4 col-lg-4 col-md-4" ng-repeat="giftArticle in house.gift.giftArticles" style="height: 30px">
+                                <div class="row">
+                                    <div class="col-xs-4 col-lg-4 col-md-4 text-right">
+                                        {{giftArticle.houseArticle.articleName}}：
+                                    </div>
+                                    <div class="col-xs-6 col-lg-6 col-md-6">
+                                        <label class="checkbox inline">
+                                            <input type="checkbox" ng-model="giftArticle.state" ng-true-value="1" ng-false-value="0">
+                                            <span>已领取</span>
+                                            <span> 数量：{{giftArticle.quantity}}个</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                    <div class="clear"></div>
+                </div>
+                <div class="text-center">
+                    <button type="button" class="btn btn-default btn-primary" ng-click="save()">
+                        保存
+                    </button>
+                </div>
+            </div>
+            <!--物品领取end-->
+            <!--业主收房start-->
+            <div ng-show="show4">
+                <div class="row">
+                    <div class="pull-right">
+                        <button type="button" class="btn btn-default btn-primary" ng-click="homeInspectionServiceRequest()">
+                            验房服务请求
+                        </button>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+                <div  class="rh" ng-repeat="house in housesone">
+                    <div>
+                        <div class="col-xs-3 col-lg-3 col-md-3 text-right">
+                            房屋地址：
+                        </div>
+                        <div class="col-xs-3 col-lg-3 col-md-3" >
+                            {{house.fullName}}
+                        </div>
+                        <div class="col-xs-3 col-lg-3 col-md-3 text-right">
+                            房屋编码：
+                        </div>
+                        <div class="col-xs-3 col-lg-3 col-md-3" >
+                            {{house.houseNum}}
+                        </div>
+                        <div class="clear"></div>
+                        <div class="col-xs-2 col-lg-2 col-md-2 text-right">
+                            电表读数：
+                        </div>
+                        <div class="col-xs-1 col-lg-1 col-md-1 ">
+
+                        </div>
+                        <div class="col-xs-2 col-lg-2 col-md-2 text-right">
+                            抄表时间：
+                        </div>
+                        <div class="col-xs-4 col-lg-4 col-md-4 ">
+
+                        </div>
+                        <div class="col-xs-2 col-lg-2 col-md-2 text-right">
+                            水表读数：
+                        </div>
+                        <div class="col-xs-1 col-lg-1 col-md-1">
+
+                        </div>
+                         <div class="clear"></div>
+
+                        <div class="col-xs-2 col-lg-2 col-md-2 text-right">
+                            验收工单：
+                        </div>
+                        <div class="col-xs-1 col-lg-1 col-md-1 ">
+                             <span ng-switch on ="orderCheck.inspectorNormal">
+                               <span ng-switch-when="0">正常</span>
+                               <span ng-switch-when="1">不正常</span>
+                             </span>
+                        </div>
+                        <div class="col-xs-2 col-lg-2 col-md-2 text-right">
+                            质保到期时间：
+                        </div>
+                        <div class="col-xs-4 col-lg-4 col-md-4 ">
+
+                        </div>
+                        <div class="col-xs-2 col-lg-2 col-md-2 text-right">
+                            验房工单状态：
+                        </div>
+                        <div class="col-xs-1 col-lg-1 col-md-1 ">
+                            <span ng-switch on ="orderCheck.orderState">
+                               <span ng-switch-when="0">已完成</span>
+                               <span ng-switch-when="1">未完成</span>
+                             </span>
+                        </div>
+                        <div class="clear"></div>
+                        <div class="col-xs-2 col-lg-2 col-md-2 text-right">
+                            维修工单：
+                        </div>
+                        <div class="col-xs-1 col-lg-1 col-md-1 ">
+
+                        </div>
+                        <div class="col-xs-2 col-lg-2 col-md-2 text-right">
+                            维修工单状态：
+                        </div>
+                        <div class="col-xs-4 col-lg-4 col-md-4 ">
+
+                        </div>
+                        <div class="col-xs-2 col-lg-2 col-md-2 text-right">
+                            收房状态：
+                        </div>
+                        <div class="col-xs-1 col-lg-1 col-md-1 ">
+
+                        </div>
+                        <div class="col-xs-2 col-lg-2 col-md-2 text-right">
+                            房屋质保：
+                        </div>
+                        <div class="col-xs-1 col-lg-1 col-md-1 ">
+                            {{items.completionArea}}
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="text-center">
+                        <button href="#show" data-toggle="modal" class="btn btn-default btn-primary"  ng-click="modalShow(house)">点击查看验房表</button>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <button type="button" class="btn btn-default btn-primary" ng-click="homeInspection()">
+                        入伙完成
+                    </button>
+                </div>
+            </div>
+            <!--收管理费end-->
+        </div>
+    </div>
+</div>
+<!--入伙管理end-->
+<!--查看验房表start-->
+<div class="modal fade" id="show" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" >
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" id="ImpClient">
+                    验房信息
+                </h4>
+            </div>
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                    <div class=" ">
+                        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td height="45" colspan="2" align="center" valign="middle" class="fontBold font16">入伙验房结果表</td>
+                            </tr>
+                            <tr>
+                                <td height="30" align="left" valign="middle">项目名称：深圳宝安桃源居                                </td>
+                                <td height="30" align="left" valign="middle">房屋地址：{{houseItem.fullName}}</td>
+                            </tr>
+                            <tr>
+                                <td height="30" colspan="2" align="left" valign="middle">房屋业主：{{personItem.name}}</td>
+                            </tr>
+                            <tr>
+                                <td height="30" colspan="2" align="center" valign="middle" class="fontBold font14">验房问题列表</td>
+                            </tr>
+                            <tr>
+                                <td height="30" align="center" valign="middle">项目名称</td>
+                                <td height="30" align="center" valign="middle">问题描述</td>
+                            </tr>
+                            <tr>
+                                <td height="30" align="center" valign="middle">&nbsp;</td>
+                                <td height="30" align="center" valign="middle">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td height="30" align="center" valign="middle">&nbsp;</td>
+                                <td height="30" align="center" valign="middle">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td height="30" align="center" valign="middle">&nbsp;</td>
+                                <td height="30" align="center" valign="middle">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td height="30" align="center" valign="middle">&nbsp;</td>
+                                <td height="30" align="center" valign="middle">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td height="30" align="center" valign="middle">&nbsp;</td>
+                                <td height="30" align="center" valign="middle">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td height="30" align="center" valign="middle">&nbsp;</td>
+                                <td height="30" align="center" valign="middle">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td height="30" align="center" valign="middle">验房负责人</td>
+                                <td height="30" align="center" valign="middle">罗锐</td>
+                            </tr>
+                        </table>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary">打印</button>
+                            <button type="button" class="btn btn-default"  data-dismiss="modal">取消</button>
+                        </div>
+                        <div class="clear"></div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--查看验房表end-->
+<!--房屋信息明细start-->
+<div class="modal fade" id="createModal" role="dialog" aria-label="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 700px">
+        <div class="modal-content">
+            <div class="modal-header" style="height: 50px">
+                房屋详情
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div style="padding: 20px" >
+                <span>房屋资料：</span><br>
+                <div class="row">
+                    <div class="col-lg-4 col-md-4 col-sm-4">
+                        <ul>
+                            <li>
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+                                    项目编号：
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">
+                                    {{cuttentHouseProject.projectNumber}}
+                                </div>
+                                <div class="clear"></div>
+                            </li>
+                            <li>
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+                                    项目名称：
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">
+                                    {{cuttentHouseProject.projectName}}
+                                </div>
+                                <div class="clear"></div>
+                            </li>
+                            <li>
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+                                    管理费单价：
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">
+                                    {{houseItem.managementUnitPrice}}
+                                </div>
+                                <div class="clear"></div>
+                            </li>
+                            <li>
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+                                    专项资金：
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">
+                                    {{houseItem.specialFund}}
+                                </div>
+                                <div class="clear"></div>
+                            </li>
+                            <li>
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+                                    房屋编号：
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">
+                                    {{houseItem.houseNum}}
+                                </div>
+                                <div class="clear"></div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4">
+                        <ul>
+                            <li>
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+                                    房屋类型：
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">
+                                    {{houseItem.houseType}}
+                                </div>
+                                <div class="clear"></div>
+                            </li>
+                            <li>
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+                                    入伙日期：
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">
+                                    {{houseItem.joinDate | date:'yyyy-MM-dd'}}
+                                </div>
+                                <div class="clear"></div>
+                            </li>
+                            <li>
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+                                    建筑面积：
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">
+                                    {{houseItem.buildingArea}}
+                                </div>
+                                <div class="clear"></div>
+                            </li>
+                            <li>
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+                                    套内面积：
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">
+                                    {{houseItem.insideArea}}
+                                </div>
+                                <div class="clear"></div>
+                            </li>
+                            <li>
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+                                    公摊面积：
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">
+                                    {{houseItem.commonalityArea}}
+                                </div>
+                                <div class="clear"></div>
+
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4">
+                        <ul>
+                            <li>
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+                                    竣工面积：
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">
+                                    {{houseItem.completionArea}}
+                                </div>
+                                <div class="clear"></div>
+                            </li>
+                            <li>
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+                                    房屋户型：
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">
+
+                                </div>
+                                <div class="clear"></div>
+                            </li>
+                            <li>
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+                                    销售状态：
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">
+                                    <span ng-switch on ="houseItem.marketState">
+                                        <span ng-switch-when="0">已销售</span>
+                                        <span ng-switch-when="1">未销售</span>
+                                    </span>
+                                </div>
+                                <div class="clear"></div>
+                            </li>
+                            <li>
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+                                    入伙状态：
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">
+                                    <span ng-switch on ="houseItem.joinState">
+                                        <span ng-switch-when="0">已入伙</span>
+                                        <span ng-switch-when="1">未入伙</span>
+                                    </span>
+                                </div>
+                                <div class="clear"></div>
+                            </li>
+                            <li>
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+                                    房屋邮编：
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">
+                                    {{houseItem.housePostcode}}
+                                </div>
+                                <div class="clear"></div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                        房屋地址：
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4">
+                        {{houseItem.fullName}}
+                    </div>
+                </div><hr>
+                <div class="full_name_info">
+                    <span>业主资料：</span><br>
+                    <div class="row" ng-show="personItem.length == 0">
+                        <span style="padding: 50px">无业主信息</span>
+                    </div>
+                    <div class="row" ng-repeat="items in personItem" ng-show="items.custId != null">
+                        <div class="col-lg-3 col-md-3 col-sm-3 text-right">
+                            客户编号：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            {{items.custCode}}
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 text-right">
+                            证件号码：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            {{items.cardNum}}
+                        </div>
+                        <div class="clear"></div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 text-right">
+                            姓名：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            {{items.name}}
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 text-right">
+                            注册电话：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            {{items.registerPhone}}
+                        </div>
+                        <div class="clear"></div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 text-right">
+                            性别：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3" ng-if="items.sex==0">
+                            男
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3" ng-if="items.sex==1">
+                            女
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3" ng-if="items.sex==null"> </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 text-right">
+                            电子邮箱：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            {{items.email}}
+                        </div>
+                        <div class="clear"></div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 text-right">
+                            户口所在地：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            {{items.census}}
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 text-right">
+                            QQ号码：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+
+                        </div>
+                        <div class="clear"></div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 text-right">
+                            出生日期：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            {{items.birthday | date:'yyyy-MM-dd'}}
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 text-right">
+                            家家号：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            {{items.jiajiaNum}}
+                        </div>
+                        <div class="clear"></div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 text-right">
+                            证件类型：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                             <span ng-switch on ="items.cardType">
+                                 <span ng-switch-when="1">身份证</span>
+                                 <span ng-switch-when="2">护照</span>
+                             </span>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 text-right">
+                            微信帐号：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            {{items.weixinNum}}
+                        </div><hr>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="save_concel_botton icon_float">
+                    <button type="button" class="btn btn-default btn-primary tab-btn" data-dismiss="modal" aria-label="Close">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--房屋信息明细end-->
+<!--查看验房表start-->
+<div class="modal fade" id="showManagement" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" >
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    提示
+                </h4>
+            </div>
+            <div class="row" style="padding: 20px">
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                    <div>
+                        <div class="text-center" style="height: 30px">
+                            <span >已添加到收款台，是否进行结算！</span>
+                        </div>
+                        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td style="color: red">
+                                    点击立即结算跳转到收款台。结算当已经交费了再点，提交则提示，已经缴费过了
+                                </td>
+                            </tr>
+
+                        </table>
+                        <div class="text-center">
+                            <button type="button" class="btn btn-primary" ng-click="saveManagement()">立即结算</button>
+                            <button type="button" class="btn btn-default"  data-dismiss="modal">稍后</button>
+                        </div>
+                        <div class="clear"></div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--查看验房表end-->
+</body>
+</html>

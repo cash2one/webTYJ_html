@@ -1,0 +1,197 @@
+<!--
+    创建人：尹霞
+    名称：金融联银行托收
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="bower_components/skins/zyupload-1.0.0.min.css " type="text/css">
+    <title>银行托收办理</title>
+</head>
+<body>
+<div class="padding_info">
+    <div id="content-first">
+        <div id="tab" class="row search-padding-10">
+            <div class="col-lg-6 col-md-6 col-sm-6">
+             <a class="cursor_pointer"  lang="no" ng-class="{'this_action ':btnIndex==3}">银行行别列表</a>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-6 text-right"  ng-show="projectName != ''">
+                <button type="button" class="btn btn-default btn-primary" align="right" ui-sref="index.accountManagement">
+                    {{projectName}}
+                </button>
+            </div>
+        </div>
+        <div ng-show="show4">
+            <div class="row padding">
+                <div class="col-lg-12">
+                    <div class="search-padding-10">
+                        <button type="button" class="btn btn-default btn-primary" ng-click="addBankNum()" ng-class="{'this_action ':btnIndex==3}">
+                            <span class="glyphicon glyphicon-plus btn_icon"></span>新建
+                        </button>
+                        <button type="button" class="btn btn-default btn-primary" ng-click="editBankNum()" ng-class="{'this_action ':btnIndex==3}">
+                            <span class="glyphicon glyphicon-edit btn_icon"></span>编辑
+                        </button>
+                        <button type="button" class="btn btn-default btn-primary"  ng-click="deleteBankNum()">
+                            <span class="glyphicon glyphicon-remove btn_icon"></span>删除
+                        </button>
+                    </div>
+                    <div class="search-padding-10">
+                        <table >
+                            <thead>
+                            <tr>
+                                <td><span style="width: 15px">&nbsp;</span></td>
+                                <th>序号</th>
+                                <th>金融联行别</th>
+                                <th>银联银行行号</th>
+                                <th>银行名称</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <!-- 修改为复选框  hulili 2016-6-23 -->
+                            <tr ng-repeat="datas in searchPaginatorBankNum.object.financialBankNums"
+                                ng-show="datas.financialBankNumId != null" ng-click="choiceRel(datas)">
+                                <!--<td><input type="checkbox" name="addDatas"  onclick="check(this)" ng-click="getAllChecks(datas)" id="{{datas.financialBankNumId}}" /></td>-->
+                                <td><input value={{datas.financialBankNumId}} id={{datas.financialBankNumId}} type="checkbox"  ng-model="x" ng-checked="master" ng-click="choiceRel(datas)" name="financialBank"></td>
+                                <td>{{$index}}</td>
+                                <td>{{datas.bankNum}}</td>
+                                <td>{{datas.unionpayBankNum}}</td>
+                                <td>{{datas.bankName}}</td>
+                            </tr>
+                            <tr ng-show="searchPaginatorBankNum.object.page.totalResult==0">
+                                <td colspan="8">
+                                    暂无数据！
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="bill_paging" ng-show="searchPaginatorBankNum.object.page.totalResult">
+                        <span>共{{searchPaginatorBankNum.object.page.totalResult}}条</span>
+                        <ul class="pagination">
+                            <li ng-class="{true:'disabled'}[searchPaginatorBankNum.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-click="searchPaginatorBankNum.go(1)">首页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[searchPaginatorBankNum.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-show="searchPaginatorBankNum.hasPrevious()" ng-click="searchPaginatorBankNum.previous()">上一页</a>
+                            </li>
+                            <li ng-class="{true:'active'}[searchPaginatorBankNum.page.currentPage==i]" ng-repeat="i in searchPaginatorBankNum.pages">
+                                <a href="javascript:void(0)"  ng-click="searchPaginatorBankNum.go(i)">{{i}}</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[searchPaginatorBankNum.page.currentPage==searchPaginatorBankNum.page.totalPage]">
+                                <a href="javascript:void(0)" ng-show="searchPaginatorBankNum.hasNext()" ng-click="searchPaginatorBankNum.next()">下一页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[searchPaginatorBankNum.page.currentPage==searchPaginatorBankNum.page.totalPage]">
+                                <a href="javascript:void(0)" ng-click="searchPaginatorBankNum.go(searchPaginatorBankNum.page.totalPage)">尾页</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!--详情结束-->
+        <div ng-show="show5">
+            <form>
+                <div class="padding">
+                    <div class="col-lg-2 col-md-2 col-sm-2 text-right search-padding-10">
+                        金融联行别：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4 search-padding-10">
+                        <input type="text" class="form-control" ng-model="financialBankNum.bankNum">
+                    </div>
+                    <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                        <span style="color: red"></span>
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 text-right search-padding-10" >
+                        银联银行行号：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4 search-padding-10">
+                        <input type="text" class="form-control" ng-model="financialBankNum.unionpayBankNum" >
+                    </div>
+                    <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                        <span style="color: red"></span>
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 text-right search-padding-10">
+                        简称序列：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4 search-padding-10">
+                        <input class="form-control" ng-model="financialBankNum.bankNameSeq">
+                    </div>
+                    <div class="col-lg-2 col-md-6 col-sm-6 blankSpace">
+                        <span style="color: red">*不少于3个字母</span>
+                    </div>
+                    <div class="col-lg-1 col-md-2 col-sm-2 text-right search-padding-10">
+                        银行名称：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4 search-padding-10">
+                        <input type="text" class="form-control" ng-model="financialBankNum.bankName">
+                    </div>
+                    <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                        <span style="color: red">*</span>
+                    </div>
+
+                    <div class="text-center">
+                        <button class="btn btn-default" ng-click="showBankNum()">返回</button>
+                        <button class="btn btn-primary" ng-click="saveBankNumUpdate()">提交</button>
+                        <!-- <button class="btn btn-primary" ng-click="getBankNumdata(financialBankNum)">重置</button> -->
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!--银行行别新增-->
+        <div ng-show="show6">
+            <form name="mainForm" role="form" novalidate>
+                <div class="padding">
+                    <div class="col-lg-2 col-md-2 col-sm-2  text-right">
+                        金融联行别：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4 ">
+                        <input type="text" class="form-control" placeholder="请输入2位金融联行别" ng-model="finanBankNum.bankNum" name="bankNum" required>
+                    </div>
+                    <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                        <span style="color: red"></span>
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2  text-right">
+                        银联银行行号：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4 ">
+                        <input type="text" class="form-control" placeholder="请输入4位银联银行行号"  ng-model="finanBankNum.unionpayBankNum" name="unionpayBankNum" required>
+                    </div>
+                    <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                        <span style="color: red"></span>
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2  text-right">
+                        简称序列：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4 ">
+                        <input class="form-control" ng-model="finanBankNum.bankNameSeq" name="bankNameSeq">
+                    </div>
+                    <div class="col-lg-2 col-md-6 col-sm-6 blankSpace">
+                        <span style="color: red">*不少于3个字母</span>
+                    </div>
+                    <div class="col-lg-1 col-md-2 col-sm-2  text-right">
+                        银行名称：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4 ">
+                        <input type="text" class="form-control" ng-model="finanBankNum.bankName" name="bankName">
+                    </div>
+                    <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                        <span style="color: red">*</span>
+                    </div>
+
+                    <div class="text-center">
+                        <button class="btn btn-default" ng-click="showBankNum()">返回</button>
+                        <button class="btn btn-primary" ng-click="saveFinanBankNumAll()">提交</button>
+                        <!-- <button class="btn btn-primary" type="reset" value="Reset" ng-click="clearWenjian()">重置</button> -->
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!--银行行别新增结束-->
+
+    </div>
+</div>
+</body>
+</html>

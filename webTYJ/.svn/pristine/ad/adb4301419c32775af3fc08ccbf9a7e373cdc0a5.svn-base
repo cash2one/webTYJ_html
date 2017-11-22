@@ -1,0 +1,216 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 巡检管理
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../../app');
+
+    app.controller('isGoingServiceRequestCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        var url = $rootScope.url;
+        $scope.serviceRequests={serviceRequestType:'',page:{}};
+        $scope.load=function(){
+            $scope.serviceRequests.serviceRequestType=9;
+            var fetchFunction = function (page, callback) {
+                $scope.serviceRequests.page = page;
+                $http.post(url + '/ServiceRequest/listPageServiceRequestbyStateAndType', {ServiceRequest: $scope.serviceRequests}).success(callback);
+            };
+            $scope.searchPaginator = app.get('Paginator').list(fetchFunction, 6);
+        };
+        $scope.load();
+        //得到操作的对象
+        $scope.object1={};
+        //完成
+        $scope.open=function(data){
+            $scope.object1=data;
+            if($scope.object1.serviceRequestState == 3){
+                alert("服务请求已经是完成状态!");
+                return;
+            }
+            //完成
+            $scope.journal.serviceRequestId = $scope.object1.serviceRequestId;
+            $scope.journal.changeState = 3;
+            $scope.journal.operatorId = "d96ef6e0-548a-11e5-9e04-74d4359b657c"  //操作人id
+            $http.put(url + "/ServiceRequest/changeServiceState",{
+                ServiceRequestJournal : $scope.journal
+            }).success(function(data){
+                $scope.journal.remarks = "";
+                $scope.load();
+            }).error(function(){
+                alert("完成操作失败，请稍后重试!")
+                $scope.journal.remarks = "";
+            });
+        };
+        //查看
+        $scope.show=function(data){
+            $scope.object1=data;
+            $("#detail").modal("show");
+        };
+        //失效
+        $scope.close=function(data){
+            $scope.object1=data;
+            if($scope.object1.serviceRequestState==0){
+                alert("该方案已是失效状态");
+            }else{
+                $("#novail").modal("show");
+            }
+        };
+
+        //关闭
+        $scope.saveUpdate = function(){
+            $scope.journal.serviceRequestId = $scope.object1.serviceRequestId;
+            $scope.journal.changeState = 0;
+            $scope.journal.operatorId = "d96ef6e0-548a-11e5-9e04-74d4359b657c"  //操作人id
+            $http.put(url + "/ServiceRequest/changeServiceState",{
+                ServiceRequestJournal : $scope.journal
+            }).success(function(data){
+                $scope.journal.remarks = "";
+                alert(data.Info.info.$);
+                $scope.load();
+            }).error(function(){
+                alert("关闭操作失败，请稍后重试!")
+                $scope.journal.remarks = "";
+            });
+        }
+
+        //查看任务
+        $scope.selectTasks=function(item){
+            if(item!=null){
+                //将值传递到任务页面
+                $scope.id=item.serviceRequestId;//服务请求id
+                /* var dataa=JSON.stringify($scope.id);*/
+                sessionStorage.setItem("data1",$scope.id);
+                $location.path("/index/serviceRequest/patrolManagement/serviceTasks/isGoingTasks");
+
+            }else{
+                alert("无效的服务ID！");
+            }
+        }
+
+
+
+        /****按钮操作开始************************/
+            //全选
+        $scope.isAllChecked=false;//判断是否全选,默认否
+        $scope.allIds = {serviceRequestIds:[]};
+        $scope.allChecked = function(){
+            $scope.allIds.serviceRequestIds=[];
+            $scope.isAllChecked = true;
+            var items = $scope.searchPaginator.object.serviceRequests;
+            if(items!=null && items.length>0){
+                for(var i=0;i<items.length;i++){
+                    if(items[i].serviceRequestId != null){
+                        $scope.allIds.serviceRequestIds.push(items[i].serviceRequestId);
+                    }
+                }
+            }
+            console.log($scope.allIds.serviceRequestIds);
+        }
+
+        $scope.sr = {};
+        $scope.getService = function(data){
+            $scope.sr = data;
+        }
+
+        /**
+         * 使选择的服务请求失效
+         */
+        $scope.journal = {};//单个服务请求使用
+        $scope.allClose=function(){
+            if($scope.isAllChecked){
+                $("#serviceClosed1").modal("show");
+            }else{
+                alert("请先全选！！！");
+            }
+        };
+        $scope.serviceClosed = function(){
+            $scope.journal.changeState = 0;
+            $scope.journal.operatorId = "d96ef6e0-548a-11e5-9e04-74d4359b657c";  //操作人id
+            if($scope.isAllChecked){//全选
+                $scope.allIds.serviceRequestState = 0;
+                $scope.allIds.serviceRequestJournal=$scope.journal;
+                $http.post(url+'/ServiceRequest/changeServiceRequestStateByIds',{ServiceRequest:$scope.allIds})
+                    .success(function(data){
+                        console.log(data);
+                        alert(data.Info.info.$);
+                        $scope.journal.remarks = "";
+                    })
+                    .error(function(){
+                        alert("失效操作失败，请稍后重试!");
+                    });
+                $scope.isAllChecked=false;//全选失效
+            }else{//单选
+                var item = $scope.sr;
+                if(item.serviceRequestState == 0){
+                    alert("服务请求已经是失效状态!");
+                    return;
+                }
+                $scope.journal.serviceRequestId = item.serviceRequestId;
+                $http.put(url + "/ServiceRequest/changeServiceState",{
+                    ServiceRequestJournal : $scope.journal
+                }).success(function(data){
+                    $scope.journal.remarks = "";
+                    alert(data.Info.info.$);
+                    $scope.load();
+                }).error(function(){
+                    alert("关闭操作失败，请稍后重试!")
+                    $scope.journal.remarks = "";
+                });
+            }
+
+        }
+        /**
+         * 使选择的服务请求完成
+         */
+        $scope.allFinish=function(){
+            if($scope.isAllChecked){
+                $("#serviceFinish1").modal("show");
+            }else{
+                alert("请先全选！！！");
+            }
+        };
+        $scope.serviceFinish = function(){
+            $scope.journal.changeState = 3;
+            $scope.journal.operatorId = "d96ef6e0-548a-11e5-9e04-74d4359b657c"  //操作人id
+            if($scope.isAllChecked){//全选
+                $scope.allIds.serviceRequestState = 3;
+                $scope.allIds.serviceRequestJournal=$scope.journal;
+                $http.post(url+'/ServiceRequest/changeServiceRequestStateByIds',{ServiceRequest:$scope.allIds})
+                    .success(function(data){
+                        console.log(data);
+                        alert(data.Info.info.$);
+                        $scope.journal.remarks = "";
+                    })
+                    .error(function(){
+                        alert("完成操作失败，请稍后重试!");
+                    });
+                $scope.isAllChecked=false;//全选失效
+            }else{//单选
+                var item = $scope.sr;
+                if(item.serviceRequestState == 3){
+                    alert("服务请求已经是完成状态!");
+                    return;
+                }
+                $scope.journal.serviceRequestId = item.serviceRequestId;
+                $http.put(url + "/ServiceRequest/changeServiceState",{
+                    ServiceRequestJournal : $scope.journal
+                }).success(function(data){
+                    $scope.journal.remarks = "";
+                    alert(data.Info.info.$);
+                    $scope.load();
+                }).error(function(){
+                    alert("完成操作失败，请稍后重试!")
+                    $scope.journal.remarks = "";
+                });
+            }
+            $scope.load();//刷新页面
+        }
+
+
+        /****按钮操作结束************************/
+
+    }]);
+});

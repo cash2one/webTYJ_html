@@ -1,0 +1,16 @@
+/*验房管理的css*/
+/*单个房屋信息里的ul和a*/
+#houseMsg ul{list-style-type: none; float:left; font-size: 12px;}
+#addHouse a:hover{text-decoration: none;}
+
+/*点击图片*/
+.img-responsive{float:left;width:110px;
+    height: 100px;}
+
+/*验房状态*/
+.liHover:hover{color:red;}
+
+/*填写领取单*/
+.form-horizontal{border-bottom: 1px solid;padding: 5px;}
+
+#row1{margin-top:20px;margin-left: 20px;}

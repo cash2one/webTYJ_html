@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>产品初始化--门禁卡</title>
+</head>
+<!--<link rel="stylesheet" href="css/externalProfession/waterMeterInfo.css" type="text/css">-->
+<!--<link rel="stylesheet" href="js/skins/zyupload-1.0.0.min.css " type="text/css">-->
+<!--<script type="text/javascript" src="js/zyupload-1.0.0.min.js"></script>-->
+<!--<style>-->
+    <!--.user_dgItem{border-color: #777777}-->
+    <!--.user_dgItem:hover{-->
+        <!--background-color: #7EC4CC;-->
+    <!--}-->
+    <!--.bgcorlor{ background-color: #ffeedd}-->
+<!--</style>-->
+<body>
+<!--<div class="sel_top">
+    <div class="row">
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            产品类型
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-4">
+            <select class="form-control">
+                <option>租赁</option>
+                <option>停车月卡</option>
+                <option>门禁卡</option>
+                <option>装修服务</option>
+                <option>固定车位</option>
+            </select>
+        </div>
+    </div>
+</div>-->
+<div class="row padding">
+    <form id="css_form" name="mainForm" novalidate>
+    <div class="col-lg-12">
+        <div class="row search-padding-10">
+            <div class="col-lg-4"></div>
+            <div class="col-lg-1 col-md-2 col-sm-2">
+                产品名称：
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                <input  class="form-control"  ng-model="Product.productName" name="productName"  required>
+                 <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.productName.$dirty && mainForm.productName.$invalid">
+                                <p class="alter" ng-show="mainForm.productName.$error.required">
+                                    不能为空
+                                </p>
+                                <p class="alter" ng-show="mainForm.productName.defined ">
+                                    正确
+                                </p>
+                              </span>
+            </div>
+            <div class="red">*</div>
+            <div class="col-lg-4"></div>
+        </div>
+        <div class="row search-padding-10">
+            <div class="col-lg-4"></div>
+            <div class="col-lg-1 col-md-2 col-sm-2">
+                产品编号：
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                <input class="form-control"   ng-model="Product.productNum" name="productNum"  required>
+                <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.productNum.$dirty && mainForm.productNum.$invalid">
+                                <p class="alter" ng-show="mainForm.productNum.$error.required">
+                                    不能为空
+                                </p>
+                                <p class="alter" ng-show="mainForm.productNum.defined ">
+                                    正确
+                                </p>
+                              </span>
+            </div>
+            <div class="red">*</div>
+            <div class="col-lg-4"></div>
+        </div>
+        <div class="row search-padding-10">
+            <div class="col-lg-4"></div>
+            <div class="col-lg-1 col-md-2 col-sm-2">
+                生效日期：
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                <input type="date" class="form-control"   ng-model="Product.effectDate" name="effectDate"  required>
+                 <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.effectDate.$dirty && mainForm.effectDate.$invalid">
+                                <p class="alter" ng-show="mainForm.effectDate.$error.required">
+                                    不能为空
+                                </p>
+                                <p class="alter" ng-show="mainForm.effectDate.defined ">
+                                    正确
+                                </p>
+                              </span>
+            </div>
+            <div class="red">*</div>
+            <div class="col-lg-4"></div>
+        </div>
+        <div class="row search-padding-10">
+            <div class="col-lg-4"></div>
+            <div class="col-lg-1 col-md-2 col-sm-2">
+                金额：
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                <input class="form-control"  ng-model="Product.price" name="price" ng-blur="formatRent()" >
+
+            </div> <span class="red">*</span>元
+            <div class="col-lg-4"></div>
+        </div>
+        <div class="padding text-center">
+            <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="cancle()">
+                取消
+            </button>
+            <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="addProduct()">
+                提交
+            </button>
+
+        </div>
+    </div>
+    </form>
+</div>
+</body>
+</html>

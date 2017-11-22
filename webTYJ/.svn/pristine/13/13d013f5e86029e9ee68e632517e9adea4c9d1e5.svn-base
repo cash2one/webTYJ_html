@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>产品初始化--停车月卡</title>
+    <link rel="stylesheet" href="css/ztree/ztreedf.css" type="text/css">
+    <link rel="stylesheet" href="css/ztree/zTreeStyle.css" type="text/css">
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.core-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.excheck-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.exedit-3.5.js"></script>
+</head>
+<body>
+<div class="row padding">
+    <div class="col-lg-12">
+        <div class="row search-padding-10">
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                产品名称：
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                <input type="text" ng-model="Product.productName" name="productName" class="form-control" ng-blur="checkName()">
+            </div>
+            <div class="col-lg-1"><span class="red">*</span></div>
+            <div class="col-lg-1 text-right">使用时间：</div>
+            <div class="col-lg-3"><input type="number" ng-model="Product.month" name="month" min="0" class="form-control"></div>
+            <div class="col-lg-1">个月<span class="red">*</span></div>
+        </div>
+        <div class="row search-padding-10">
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                使用时间：
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                <input type="text" ng-model="Product.month" name="month" class="form-control" ng-blur="checkName()">
+            </div>
+            <div class="col-lg-1 col-md-1 col-sm-1">个月<span class="red">*</span></div>
+            <div class="col-lg-4"></div>
+        </div>
+        <div class="row search-padding-10">
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                生效日期：
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                <input type="text" id="d4311" onclick="WdatePicker({readOnly:true})" onchange="" onfocus="WdatePicker({minDate:'%y-%M-#{%d}',maxDate:'#F{$dp.$D(\'d4312\',{d:1})}'})" ng-model="Product.effectDate"   name="effectDate" class="Wdate form-control">
+            </div>
+            <div class="red">*</div>
+            <div class="col-lg-4"></div>
+            <div class="col-lg-4"></div>
+        </div>
+        <div class="row search-padding-10">
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                失效日期：
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                <input type="text" id="d4312" onclick="WdatePicker({readOnly:true})" onchange="" onfocus="WdatePicker({minDate:'#F{$dp.$D(\'d4311\',{d:1})}'})" ng-model="Product.expiryDate"  name="expiryDate" class="Wdate form-control">
+            </div>
+            <!--<div class="red">*</div>-->
+            <div class="col-lg-4"></div>
+            <div class="col-lg-4"></div>
+        </div>
+        <div class="row search-padding-10">
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                总金额：
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                <input type="number" ng-model="Product.price" class="form-control" name="price" min="0">
+            </div>
+            <div class="col-lg-1 col-md-1 col-sm-1">元<span class="red">*</span></div>
+            <div class="col-lg-4"></div>
+            <div class="col-lg-4"></div>
+        </div>
+        <div class="row search-padding-10">
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                绑定车库：
+            </div>
+                <div class="col-lg-4 col-md-4 col-sm-4">
+                    <h5>未选车库</h5>
+                    <ul id="treeDemo2"  class="ztree"></ul>
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2">
+                    <div style="margin-top: 180px;margin-left: 15px;">
+                        <button class="glyphicon glyphicon-menu-right btn btn-sm btn-info" aria-hidden="true" ng-click="addWaterReading()"></button>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <h5 style="position: relative">已选车库<span ng-show="addWaterCheck.length!=0" style="position: absolute;right:5px;top:0;color:red;cursor: pointer;" ng-click="remove_all()">清空</span></h5>
+                    <ul class="ztree" >
+                        <li >
+                            <table >
+                                <tr ng-repeat="items11 in addWaterCheck" ng-if="addWaterCheck!=null">
+                                    <td>{{items11.fullName}}<span style="color: #ff0000;float: right;" ng-click="removeItem($index,items11)">×</span></td>
+                                </tr>
+                            </table>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-1 text-left">
+                <span style="color:red">*</span>
+            </div>
+        </div>
+        <!--<div class="row search-padding-10">
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                查询车库：
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                <input type="text" ng-model="fullname" class="form-control">
+            </div>
+            <div class="col-lg-1">
+                &lt;!&ndash;<button type="button" class="btn btn-default btn-primary tab-btn" ng-click="getGarage();">
+                    <span class="glyphicon glyphicon-search btn_icon"></span>
+                    查询
+                </button>&ndash;&gt;
+                <button type="button" class="btn btn-primary" ng-click="openBuilding()">关联车库</button>
+            </div>
+        </div>-->
+        <!--<div class="row search-padding-10">
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">车库名称：</div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                <div class="rh ">
+                    <ul ng-repeat="item in BuildingStructureNewLists">
+                        <li>
+                            <span>{{item.fullName}}</span>
+                        </li>
+                        <ul style="margin-left: 15px" ng-repeat="itn in item.children">
+                            <li>
+                                <input type="checkbox" class="checkboxa" id="{{itn.id}}" name="tcyk" ng-click="chargeItem(itn);">
+                                <span>{{itn.fullName}}</span>
+                            </li>
+                        </ul>
+
+                    </ul>
+                </div>
+            </div>
+        </div>-->
+    </div>
+    <div class="text-center">
+        <button type="button" class="btn btn-default tab-btn" ng-click="backToProduct();">
+            取消
+        </button>
+        <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="addOrUpdateProduct();">
+            提交
+        </button>
+    </div>
+</div>
+
+<!-- 选择建筑模态框 陈浪 2016-04-29-->
+<div class="modal fade" id="chooseBuild" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                选择车库
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="row search-padding-10">
+                    <div class="col-lg-5 col-md-4 col-sm-4">
+                        <h5>未选车库</h5>
+                        <ul id="treeDemo"  class="ztree"></ul>
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2">
+                        <div style="margin-top: 180px;margin-left: 15px;">
+                            <button class="glyphicon glyphicon-menu-right btn btn-sm btn-info" aria-hidden="true" ng-click="addWaterReading()"></button>
+                        </div>
+                    </div>
+                    <div class="col-lg-5 col-md-4 col-sm-4">
+                        <h5 style="position: relative">已选车库<span ng-show="addWaterCheck.length!=0" style="position: absolute;right:5px;top:0;color:red;cursor: pointer;" ng-click="remove_all()">清空</span></h5>
+                        <ul class="ztree" >
+                            <li >
+                                <table >
+                                    <tr ng-repeat="items11 in addWaterCheck" ng-if="addWaterCheck!=null">
+                                        <td>{{items11.fullName}}<span style="color: #ff0000;float: right;" ng-click="removeItem($index,items11)">×</span></td>
+                                    </tr>
+                                </table>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="addBuildingToProduct()">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>计费管理</title>
+</head>
+<body>
+<div class="card">
+    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <!--<a ui-sref="index.accountManagement.product">
+                        <img src="images/icon/accountingManagement/chanpinchushihua.png">
+                    </a>-->
+                    <a ui-sref="index.accountManagement.productAndProperty.product">
+                        <img src="images/icon/accountingManagement/chanpinchushihua.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>产品初始化</strong></h4>
+                    产品初始化
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a ui-sref="index.accountManagement.financeCollection">
+                        <img src="images/icon/accountingManagement/jinronglianyinhangtuoshou.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>金融联银行托收</strong></h4>
+                    查询所有工单信息
+                    务时可以查询FAQ解答
+                    客户问题。
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a ui-sref="index.accountManagement.unionPayCollection">
+                        <img src="images/icon/accountingManagement/yinhangyinliantuoshou.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>银联银行托收</strong></h4>
+                    查询所有工单信息
+                    务时可以查询FAQ解答
+                    客户问题。
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--<div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">-->
+        <!--<div id="pannel">-->
+            <!--<div class="row" style="padding: 10px">-->
+                <!--<div class="col-md-4 col-xs-4 icon_img">-->
+                    <!--<a ui-sref="index.accountManagement.propertyProject">-->
+                        <!--<img src="images/icon/accountingManagement/wuyexiangmujifei.png">-->
+                    <!--</a>-->
+                <!--</div>-->
+                <!--<div class="col-md-8 col-xs-8">-->
+                    <!--<h4><strong>物业项目计费模块</strong></h4>-->
+                    <!--物业项目计费模块-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a ui-sref="index.accountManagement.chargingProgram.record">
+                        <img src="images/icon/accountingManagement/zhangdan.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>账单</strong></h4>
+                    账单
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a ui-sref="index.accountManagement.payService.chargingItem">
+                        <img src="images/icon/anbao.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>收费项目初始化</strong></h4>
+                    查询所有工单信息
+                    务时可以查询FAQ解答
+                    客户问题。
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <!--<a ui-sref="index.cashier.cashier.cashierUI.billInquiry">-->
+                    <a ui-sref="index.cashier.cashier.billInquiry">
+                        <img src="images/icon/theCashier/shoukuantai.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>收款台</strong></h4>
+                    查询所有工单信息
+                    务时可以查询FAQ解答
+                    客户问题。
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a ui-sref="index.cashier.systemReport">
+                        <img src="images/icon/theCashier/xitongbaobiao.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>系统报表</strong></h4>
+                    查询所有工单信息
+                    务时可以查询FAQ解答
+                    客户问题。
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

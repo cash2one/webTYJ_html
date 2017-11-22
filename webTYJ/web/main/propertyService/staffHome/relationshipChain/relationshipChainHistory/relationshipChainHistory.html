@@ -1,0 +1,109 @@
+<!--
+    创建人：NM
+    页面名称：亲属关系绑定
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>历史记录</title>
+</head>
+<body>
+<div class="row padding">
+<div class="col-lg-12">
+    <div class="search-padding-10">
+        <div class="row">
+            <div class="col-lg-6 col-md-6 col-sm-6">
+                <button type="button" class="btn btn-default btn-primary" ui-sref="index.propertyService.staffHome.relationshipChain.relationshipChainAdd" ng-click="creat()">
+                    <span class="glyphicon glyphicon-plus btn_icon"></span>新建
+                </button>
+                <button type="button" class="btn btn-default btn-primary"  ng-click="editRelation()">
+                    <span class="glyphicon glyphicon-edit btn_icon"></span>编辑
+                </button>
+                <button type="button" class="btn btn-default btn-primary"  ng-click="deleteRelation()">
+                    <span class="glyphicon glyphicon-remove btn_icon"></span>删除
+                </button>
+            </div>
+            <div class="col-lg-5 col-md-5 col-sm-5 text-right">
+                <label class="radio inline">
+                    <input type="radio" name="xzgxtype" ng-click="checkRelations()" ng-checked="showGuanxi">
+                    <span>个人关系</span>
+                </label>
+                </div>
+                <div class="col-lg-1 col-md-1 col-sm-1 text-right">
+                <label class="radio inline">
+                    <input type="radio" name="xzgxtype" ng-click="checkallEnterprise()" ng-checked="showYonggong">
+                    <span>企业关系</span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+
+
+    <table ng-show="showGuanxi">
+        <thead>
+        <tr >
+            <th></th>
+            <th>被关系人姓名</th>
+            <th>关系类型</th>
+            <th>建筑名称</th>
+            <th>关联时间</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="item in showHistory |filter:{custType:''}" ng-show="item.personBuildingId!=null" ng-click="choiceRelation(item)">
+            <!--<td><input name="things" type="checkbox" ng-click="choiceRelation(item)"/></td>-->
+            <td><input id={{item.personBuildingId}} type="checkbox"  ng-model="x" ng-checked="master" ng-click="choiceRelation(item)" name="personNameOne"></td>
+            <td>{{item.name}}</td>
+            <td>{{item.custType}}</td>
+            <td>{{item.fullName}}</td>
+            <td>{{item.relationDate|date:"yyyy-MM-dd"}}</td>
+        </tr>
+        <tr ng-show="showHistory.length==0">
+            <td colspan="5">
+                暂无数据！
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table ng-show="showYonggong">
+        <thead>
+        <tr >
+            <th></th>
+            <th>员工姓名</th>
+            <th>关系类型</th>
+            <th>建筑名称</th>
+            <th>关联时间</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="item in showHistory |filter:{custType:'员工'}" ng-show="item.personBuildingId!=null">
+            <td><input id={{item.personBuildingId+'a'}} type="checkbox"  ng-model="x" ng-checked="master" ng-click="choiceRelation(item,x)" name="personNameOne"></td>
+            <td>{{item.name}}</td>
+            <td>{{item.custType}}</td>
+            <td>{{item.fullName}}</td>
+            <td>{{item.relationDate|date:"yyyy-MM-dd"}}</td>
+        </tr>
+        <tr ng-show="showHistory.length==0">
+            <td colspan="5">
+                暂无数据！
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+
+    <div class="bill_paging">
+        <ul class="pagination" ng-show="totalPage>=1">
+            <li><a style="cursor:pointer;" ng-click="currentPage=1;loadPage(currentPage)">首页</a></li>
+            <li><a style="cursor:pointer;" ng-click="prev()">上一页</a></li>
+            <li><!-- ngRepeat: page in pages --><a style="cursor:pointer;" ng-repeat="page in pages" ng-click="loadPage(page)" class="ng-binding ng-scope">1</a><!-- end ngRepeat: page in pages --></li>
+            <li><a style="cursor:pointer;" ng-click="next()">下一页</a></li>
+            <li><a style="cursor:pointer;" ng-click="currentPage=totalPage;loadPage(currentPage)">尾页</a></li>
+        </ul>
+    </div>
+</div>
+</div>
+</body>
+</html>

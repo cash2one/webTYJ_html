@@ -1,0 +1,353 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 新增停车卡js
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../../app');
+
+    app.controller('newCardCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        $scope.doClick(2);
+        $scope.caraccesscards={idcardNum:'',carNum:'',startDate:'',endDate:'',stallCoding:'',stallNum:'',stallState:'',custCode:$rootScope.user.custId};
+        //停车卡集合初始化
+        /*$scope.caraccesscards.carId =1;*/
+        //车辆卡id初始化
+        /*$scope.carInfos={};*/
+        //车辆信息初始化
+        /*$scope.stalls={};*/
+        //车位信息初始化
+        $scope.stallss=[{id:1,stallType:'私人车位'},{id:2,stallType:'固定车位'},{id:3,stallType:'流动车位'},{id:0,stallType:'请选择车位类型'}];
+        $scope.stallss.id=0;
+        var url = $rootScope.url;
+        //新增停车卡信息
+        $scope.name=$rootScope.user.name;//产权人姓名
+        $scope.caraccesscards.custCode = $rootScope.user.custId;
+        $scope.Carac=[];
+        $http.get(url + '/Caraccesscard/listAllCaraccesscard' ).success(function(data){
+            $scope.Carac = data.Caraccesscard;
+        }).error(function(data){
+            layer.alert('查询失败',{icon : 2});
+        });
+        $scope.checkDates =  function(){
+            var date1 =$scope.caraccesscards.startDate;
+            var date2 =$scope.caraccesscards.endDate;
+            if(date1 != null && date1 != ''&& date2 != null && date2 != ''){
+                if(date2 < date1){
+                    layer.alert('缴费到期日不得早于生效日期！',{icon : 0});
+                    $scope.caraccesscards.endDate = '';
+                }
+            }
+        };
+
+        $scope.AddCaraccesscard=function(){
+            /**
+             * BUG  318  323  338 陶勇超 2016年1月13日 10:13:59
+             */
+            if(  $scope.caraccesscards.idcardNum==undefined ||  $scope.caraccesscards.idcardNum=="" ||  $scope.caraccesscards.idcardNum == null){
+                layer.alert('停车卡号不能为空！',{icon : 0});
+                return;
+            }
+            if(   $scope.Carac.length>0){
+                for(var i=0;i<$scope.Carac.length;i++){
+                    if($scope.caraccesscards.idcardNum==$scope.Carac[i].idcardNum){
+                        layer.alert('停车卡号已存在！',{icon : 0});
+                        return;
+                    }
+                }
+            }
+            if(   $scope.carInfoone.carNum==undefined ||  $scope.carInfoone.carNum=="" ||   $scope.carInfoone.carNum == null){
+                layer.alert('车牌号不能为空！',{icon : 0});
+                return;
+            }else  if(  $scope.caraccesscards.startDate==undefined ||  $scope.caraccesscards.startDate=="" ||  $scope.caraccesscards.startDate == null){
+                layer.alert('生效日期不能为空！',{icon : 0});
+                return;
+            }else  if(  $scope.caraccesscards.endDate==undefined ||  $scope.caraccesscards.endDate=="" ||  $scope.caraccesscards.endDate == null){
+                layer.alert('缴费到期日不能为空！',{icon : 0});
+                return;
+            }else if( $scope.stallss.id==undefined || $scope.stallss.id=="" ||  $scope.stallss.id == null){
+                layer.alert('车位类型不能为空！',{icon : 0});
+                return;
+            }
+            /**
+             * BUG 361 陶勇超2016年1月13日 13:47:46
+             * @type {Date}
+             */
+            var d1 = new Date($scope.caraccesscards.startDate);
+            var d2 = new Date( $scope.caraccesscards.endDate);
+
+            if($scope.caraccesscards.startDate!=""&& $scope.caraccesscards.endDate!=""&&d1 >=d2)
+            {
+                layer.alert("开始时间不能大于结束时间！",{icon:0});
+                return;
+            }
+            $scope.caraccesscards.custCode = $rootScope.user.custId;
+
+
+            if ($scope.caraccesscards.idcardNum && $scope.caraccesscards.startDate && $scope.caraccesscards.endDate) {
+                $http.post(url + '/Caraccesscard/insertCaraccesscard', {Caraccesscard: $scope.caraccesscards}).success(function (data) {
+                    layer.msg('提交成功',{icon : 1,time : 2000});
+                    $location.path("/index/propertyService/staffHome/parkingCard/historyRecord")
+
+                }).error(function (data, status, headers, config) {
+                    layer.msg("提交失败",{icon : 2,time : 2000});
+                });
+            }
+            else {
+                layer.alert("您有带星号的信息未填写！",{icon : 0});
+            }
+
+        };
+        //查询户主车辆信息
+        $scope.getCarInfo=function(){
+            $http.get(url + '/CarInfo/getCarInfo/'+$rootScope.user.custId).success(function(data) {
+                 console.log(data.CarInfo);
+                $scope.carInfos=data.CarInfo;
+            }).error(function(err){
+                layer.msg("查询户主车辆信息失败");
+            });
+        };
+
+
+        // 录入户主车辆信息
+        $scope.carInfoone={};
+        $scope.inCarInfo=function(items){
+            $scope.btnIndex = items;
+            $scope.carInfoone.carNum=items.carNum;
+            $scope.caraccesscards.carId=items.carId;
+        };
+        $scope.quxiao=function(){
+            $scope.carInfoone.carNum=null
+            $scope.caraccesscards.carId=null
+        };
+
+        //查询户主车位信息
+        $scope.feiyong1=false;
+        $scope.feiyong2=false;
+        $scope.personCusts={};
+        $scope.month='';
+        $scope.sata=[];
+        /**
+         * 查询所有流动车位
+         * BUG 151
+         * 修改人 陶勇超
+         * 2016年1月12日 16:49:50
+         */
+        $http.get(url + '/StallNew/listStallByStallType/' +'流动').success(function(data){
+            $scope.sata = data.StallNew;
+        }).error(function(data){
+            layer.alert('查询不到有效的停车卡初始化信息',{icon : 2});
+        });
+        $scope.getStall=function(stallsId,bool){
+            if($scope.caraccesscards.startDate!=''&& $scope.caraccesscards.startDate!=null
+            &&$scope.caraccesscards.endDate!=null && $scope.caraccesscards.endDate!=''){
+                Date.prototype.Format = function (fmt) { //author: meizz
+                    var o = {
+                        "M+": this.getMonth() + 1, //月份
+                        "d+": this.getDate(), //日
+                        "h+": this.getHours(), //小时
+                        "m+": this.getMinutes(), //分
+                        "s+": this.getSeconds(), //秒
+                        "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+                        "S": this.getMilliseconds() //毫秒
+                    };
+                    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+                    for (var k in o)
+                        if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+                    return fmt;
+                }
+                //两个日期
+                var date1=new Date( $scope.caraccesscards.startDate).Format("yyyy-MM-dd");
+                var date2=new Date($scope.caraccesscards.endDate).Format("yyyy-MM-dd");
+                // 拆分年月日
+                date1 =  date1.split('-');
+                // 得到月数
+                $scope.datt=date1
+                $scope.datt=parseInt(date1[2]);
+                date1 = parseInt(date1[0]) * 12 + parseInt(date1[1]);
+                // 拆分年月日
+                date2 =  date2.split('-');
+                $scope.dadd=date2
+
+                $scope.dadd=parseInt(date2[2]);
+                date2 = parseInt( date2[0]) * 12 + parseInt( date2[1]);
+                $scope.date5=parseInt(   $scope.dadd -  $scope.datt);
+                if(  $scope.date5>0){
+                    $scope.month= Math.abs(date2 -  date1+1);
+                }else{
+                    $scope.month= Math.abs(date2 -  date1);
+                }
+            }
+            if(stallsId==1){
+                if(bool){
+                    $scope.showStall1=true;
+                    $scope.showStall2=false;
+                    $scope.feiyong=true;
+                    $scope.feiyong1=false;
+                    $scope.feiyong2=false;
+                    $scope.personCusts.custId=$rootScope.user.custId;
+                    $scope.personCusts.stallType='私人';
+                    $http.post(url+'/StallNew/listSearchStall',{Search:$scope.personCusts}).success(function(data)
+                    {
+                        $scope.stalls=data.StallNew;
+                        $("#myModal").modal("show");
+                    }).error(function(error){
+                        layer.alert("搜索失败，请手动填充数据",{icon:2});
+                    });
+                }
+                $scope.caraccesscards.paymentAmount=$scope.ProductFiv.price;
+            }
+            if(stallsId==2)
+            {
+                if(bool){
+                    $scope.showStall1=false;
+                    $scope.showStall2=true;
+                    $scope.feiyong=false;
+                    $scope.feiyong1=false;
+                    $scope.feiyong2=true;
+                    $scope.personCusts.custId=$rootScope.user.custId;
+                    $scope.personCusts.custType='固定';
+                    $scope.personCusts={page:{}};
+
+                    var fetchFunction = function (page, callback) {
+                        $scope.personCusts.page = page;
+                        $http.post(url + '/StallNew/listPageStallNewByType', {StallNew:$scope.personCusts}).success(callback)
+                    };
+                    $("#myModal1").modal("show");
+                    $scope.searchPaginator = app.get('Paginator').list(fetchFunction,5);
+                }
+
+                if($scope.month!=''&& $scope.month != null){
+                    $scope.caraccesscards.paymentAmount=$scope.ProductFour.price * $scope.month + $scope.ProductFiv.price;
+                }
+            }
+            if(stallsId==3)
+            {
+                if(bool){
+                    $scope.showStall2=false;
+                    $scope.showStall1=false;
+                    $scope.feiyong=false;
+                    $scope.feiyong1=true;
+                    $scope.feiyong2=false;
+                    $scope.personCusts.custId=$rootScope.user.custId;
+                    $scope.personCusts.custType='流动';
+                    if($scope.sata!=null){
+                        $scope.caraccesscards.parkId=$scope.sata[0].stallId
+                    }
+                }
+
+                if($scope.month!=''&& $scope.month != null) {
+                    $scope.caraccesscards.paymentAmount = $scope.Product.price * $scope.month + $scope.ProductFiv.price;
+                }
+            }
+            /*else
+            {
+                $scope.showStall2=false;
+                $scope.showStall1=true;
+            }*/
+            /*$scope.personCusts={};
+             $scope.personCusts.custId=$rootScope.user.custId;
+             $http.post(url+'/StallNew/listSearchStall',{Search:$scope.personCusts}).success(function(data)
+             {
+             console.log("搜索成功");
+             $scope.stalls=data.StallNew;
+             console.log($scope.stalls);
+
+             }).error(function(error){
+             alert("搜索失败，自己填充数据")
+
+             });*/
+        };
+        //录入户主车位信息
+        $scope.stallone={};
+        $scope.inStall=function(item){
+            //$scope.caraccesscards.stallCoding=item.stallCoding;
+            $scope.btnIndex = item;
+            $scope.caraccesscards.parkId=item.stallId;
+            $scope.stallone=item;
+            if($scope.stallone.id!=''){
+                Date.prototype.Format = function (fmt) { //author: meizz
+                    var o = {
+                        "M+": this.getMonth() + 1, //月份
+                        "d+": this.getDate(), //日
+                        "h+": this.getHours(), //小时
+                        "m+": this.getMinutes(), //分
+                        "s+": this.getSeconds(), //秒
+                        "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+                        "S": this.getMilliseconds() //毫秒
+                    };
+                    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+                    for (var k in o)
+                        if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+                    return fmt;
+                }
+                //两个日期
+                var date1=new Date( $scope.caraccesscards.startDate).Format("yyyy-MM-dd");
+                var date2=new Date($scope.caraccesscards.endDate).Format("yyyy-MM-dd");
+                // 拆分年月日
+                date1 =  date1.split('-');
+                // 得到月数
+                date1 = parseInt(date1[0]) * 12 + parseInt(date1[1]);
+                // 拆分年月日
+                date2 =  date2.split('-');
+                // 得到月数
+                var  date3=parseInt(date1[2])
+                var date4=parseInt(date2[2])
+                date2 = parseInt( date2[0]) * 12 + parseInt( date2[1]);
+                $scope.date5=Math.abs(date4 -  date3);
+                $scope.month= Math.abs(date2 -  date1+1);
+            }
+        };
+
+        $scope.quxiao1=function(){
+            $scope.caraccesscards.parkId=null
+            $scope.stallone=null
+        };
+        $scope.cencle=function(){
+            /**
+             * BUG  317 陶勇超 2016年1月13日 11:19:12
+             * @type {null}
+             */
+            $scope.caraccesscards.idcardNum=null ;
+            $scope.caraccesscards.startDate=null ;
+            $scope.caraccesscards.endDate=null ;
+            $scope.carInfoone.carNum =null;
+            $scope.stallss.id=null;
+            $scope.stallss.id='';
+            $scope.caraccesscards.parkId=null;
+            $scope.stallone=null;
+            $scope.carInfoone.carNum=null;
+            $scope.caraccesscards.carId=null;
+            $scope.showStall1=false;
+            $scope.showStall2=false;
+            $scope.feiyong=false;
+            $scope.feiyong1=false;
+            $scope.feiyong2=false;
+            $scope.doClick(1);
+        }
+
+        //查询产品初始化停车月卡，获取办理金额
+        $http.get(url + '/Product/getProductByType/' + '1').success(function(data){
+            $scope.Product = data.Product;
+        }).error(function(data){
+            layer.alert('查询不到有效的停车卡初始化信息',{icon : 2});
+        });
+
+        //查询产品初始化固定车位，获取办理金额
+        $http.get(url + '/Product/getProductByType/' + '4').success(function(data){
+            $scope.ProductFour = data.Product;
+        }).error(function(data){
+            layer.alert('查询不到有效的停车卡初始化信息',{icon : 2});
+        });
+
+        //查询产品初始化工本费，获取工本费
+        $http.get(url + '/Product/getProductByType/' + '2').success(function(data){
+            $scope.ProductFiv = data.Product;
+        }).error(function(data){
+            layer.alert('查询不到有效的停车卡初始化信息',{icon : 2});
+        });
+
+    }]);
+});

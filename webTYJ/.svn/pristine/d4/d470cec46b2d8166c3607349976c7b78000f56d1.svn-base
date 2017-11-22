@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>服务请求</title>
+</head>
+<body>
+<div class="card">
+    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a ui-sref="index.serviceRequest.FAQ.commonFaq">
+                        <img src="images/icon/serviceRequest/FAQ.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4>FAQ</h4>
+                    前台和CC进行咨询服
+                    务时可以查询FAQ解答
+                    客户问题。
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a ui-sref="index.serviceRequest.electricMeterReadingServiceRequestManage">
+                        <img src="images/icon/serviceRequest/dianbiaochaobiao.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>电表抄表服务请求管理</strong></h4>
+                    电表抄表服务请求
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a ui-sref="index.serviceRequest.meterReadingServiceRequestManage">
+                        <img src="images/icon/serviceRequest/shuibiaochaobiao.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>水表抄表服务请求管理</strong></h4>
+                    水表抄表服务请求
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a ui-sref="index.serviceRequest.claimsToOwnersServiceRequestManage">
+                        <img src="images/icon/serviceRequest/xiangyezhusuopei.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>向业主索赔服务请求管理</strong></h4>
+                    向业主索赔服务请求管理
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a ui-sref="index.serviceRequest.patrolManagement.serviceRequests.isGoingServiceRequest">
+                        <img src="images/icon/serviceRequest/xunjianguanli.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>巡检管理</strong></h4>
+                    巡检管理
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a ui-sref="index.serviceRequest.homeInspectionServiceRequestManage">
+                        <img src="images/icon/serviceRequest/yanfangfuwuqingqiu.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>验房服务请求管理</strong></h4>
+                    验房服务请求管理
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a ui-sref="index.serviceRequest.majorIssuesManagement.majorIssuesList">
+                        <img src="images/icon/serviceRequest/zhongdashixiangguanli.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>重大事项管理</strong></h4>
+                    重大事项管理
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a ui-sref="index.serviceRequest.newDecorateManagement.newDecorateServiceRequestManagement">
+                        <img src="images/icon/serviceRequest/zhuangxiufuwuqingqiuguanli.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>装修管理</strong></h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a ui-sref="index.serviceRequest.departmentOfQualityManagement.allDepartmentsInspectionServiceRequests">
+                        <img src="images/icon/serviceRequest/bumenzhijian.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>质检管理</strong></h4>
+                    前台和CC进行咨询服
+                    务时可以查询FAQ解答
+                    客户问题。
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

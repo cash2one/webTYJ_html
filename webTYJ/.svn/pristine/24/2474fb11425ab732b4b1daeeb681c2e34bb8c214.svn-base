@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>产品初始化--普通服务</title>
+    <link rel="stylesheet" href="bower_components/skins/zyupload-1.0.0.min.css " type="text/css">
+    <link rel="stylesheet" href="css/ztree/ztreedf.css" type="text/css">
+    <link rel="stylesheet" href="css/ztree/zTreeStyle.css" type="text/css">
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.core-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.excheck-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.exedit-3.5.js"></script>
+</head>
+<body>
+
+<!--条件搜索 END-->
+<form id="css_form" name="mainForm" novalidate>
+    <div class="sel_height">
+        <div class="sel">
+            <div class="row search-padding-10">
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    产品名称：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <input ng-model="ProductCommonservice.commonserviceName" class="form-control" placeholder="请输入产品名称" name="commonserviceName" ng-blur="checkName()">
+                </div>
+                <div class="col-lg-1 col-md-1 col-sm-1"><span style="color: red">*</span></div>
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    服务类别：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <select ng-model="ProductCommonservice.productServicetype"  class="form-control" name="productServicetype"><!-- 修改产品属性值 王洲 2015.12.25 -->
+                        <option value="">-请选择-</option>
+                        <option value="1">人工服务</option>
+                        <option value="2">物资服务</option>
+                    </select>
+                </div>
+                <div class="col-lg-1 col-md-1 col-sm-1"><span style="color: red">*</span></div>
+            </div>
+
+            <div class="row search-padding-10">
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    单价：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <input type="text" ng-model="ProductCommonservice.productPrice" class="form-control" placeholder="请输入单价" name="productPrice" ng-blur="checkName()">
+                </div>
+                <div class="col-lg-1 col-md-1 col-sm-1"><span style="color: red">*</span></div>
+
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    单位：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <select ng-options="a.slaveId as a.description for a in unit"  class="form-control" ng-model="ProductCommonservice.productUnit" name="productUnit">
+                        <option value="">--请选择--</option>
+                    </select>
+                </div>
+                <div class="col-lg-1 col-md-1 col-sm-1"><span style="color: red">*</span></div>
+            </div>
+
+            <div class="row search-padding-10">
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    启用时间：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <input type="text" onclick="WdatePicker({readOnly:true})" name="productBeginDate"  class="Wdate form-control" ng-model="ProductCommonservice.productBeginDate" onchange=""  ng-change="getStall(stallss.id,false)">
+                </div>
+                <div class="col-lg-1 col-md-1 col-sm-1"><span style="color: red">*</span></div>
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    失效时间：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <input type="text" onclick="WdatePicker({readOnly:true})" name="productEndDate"  class="Wdate form-control" ng-model="ProductCommonservice.productEndDate" onchange=""  ng-change="getStall(stallss.id,false)">
+                </div>
+            </div>
+
+            <div  style="margin-left: 35%;">
+                <button type="button" class="btn btn-default tab-btn" ng-click="btnCancle()">
+                    取消
+                </button>
+                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="btnSubmit()">
+                    提交
+                </button>
+            </div>
+        </div>
+
+    </div>
+    </form>
+</body>
+</html>

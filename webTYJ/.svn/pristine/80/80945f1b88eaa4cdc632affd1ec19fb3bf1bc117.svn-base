@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="css/ztree/ztreedf.css" type="text/css">
+    <link rel="stylesheet" href="css/ztree/zTreeStyle.css" type="text/css">
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.core-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.excheck-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.exedit-3.5.js"></script>
+    <SCRIPT type="text/javascript">
+        var setting = {
+            check:{
+                enable:true
+            },
+            view: {
+                selectedMulti: false
+            },
+            edit: {
+                enable: false,
+                editNameSelectAll: false
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            }
+        };
+    </SCRIPT>
+</head>
+<body>
+<div id="content-first">
+<div id="tab">
+    <a ng-class="{'this_action ':btnIndex==1}" ng-click="doClick(1)" ui-sref="index.accountManagement.productAndProperty.product">产品初始化</a>
+    <a ng-class="{'this_action ':btnIndex==2}" ng-click="doClick(2)" ui-sref="index.accountManagement.productAndProperty.product.propertyProject.plan.detailPlan" lang="no">计费模版初始化</a>
+</div>
+<!--新建方案-->
+<div ng-show="show4">
+    <div class="sel">
+        <div class="row search-padding-10">
+
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                物业项目:
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                {{project.projectName}}
+            </div>
+            <div class="col-lg-1 col-md-1 col-sm-1">
+                &nbsp;
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                方案名称:
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                <input class="form-control" ng-model="Scheme.schemeName"/>
+            </div>
+            <div class="col-lg-1 col-md-1 col-sm-1">
+                <span style="color:red;">*</span>
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2 text-center">
+                使用范围:
+            </div>
+            <div class="col-lg-1 col-md-4 col-sm-4">
+                <button type="button" class="btn btn-default btn-primary tab-btn" data-toggle="modal" data-target="#detail" style="vertical-align: 2px">
+                    选择
+                </button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                <!--修改时间控件
+                    徐文广
+                    2016/5/18
+                -->
+                生效日期:
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                <input type="text" onclick="WdatePicker({readOnly:true})" class="Wdate form-control"  ng-model="Scheme.startDate" onchange=""  ng-blur="checkDates()" ng-change="getStall(stallss.id,false)"/>
+            </div>
+            <div class="col-lg-1 col-md-1 col-sm-1">
+                <span style="color:red;">*</span>
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                失效日期
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                <input type="text" onclick="WdatePicker({readOnly:true})" class="Wdate form-control" ng-model="Scheme.endDate" onchange=""  ng-blur="checkDates()" ng-change="getStall(stallss.id,false)"/>
+            </div>
+            <div class="col-lg-1 col-md-1 col-sm-1">
+                <span style="color:red;">*</span>
+            </div>
+        </div>
+    </div>
+    <div class="row padding">
+        <div class="col-lg-12">
+            <div class="search-padding-10">
+                <button type="button" class="btn btn-default btn-primary" >
+                    <span class="glyphicon glyphicon-floppy-disk btn_icon"></span>另存为模板
+                </button>
+                <button type="button" class="btn btn-default btn-primary" >
+                    <span class="glyphicon glyphicon-edit btn_icon"></span>录入模板
+                </button>
+                <button type="button" class="btn btn-default btn-primary" data-target="#new" data-toggle="modal" ng-click="addModal()">
+                    <span class="glyphicon glyphicon-plus btn_icon"></span>新增
+                </button>
+                <button type="button" class="btn btn-default btn-primary" ng-click="editChargeItem()">
+                    <span class="glyphicon glyphicon-edit btn_icon"></span>编辑
+                </button>
+                <button type="button" class="btn btn-default btn-primary" ng-click="deleteChargeItem()">
+                    <span class="glyphicon glyphicon-remove btn_icon"></span>删除
+                </button>
+            </div>
+            <div class="search-padding-10">
+                <table>
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>收费项目</th>
+                        <th>编号</th>
+                        <th>生效日期</th>
+                        <th>失效日期</th>
+                        <th>账户类型</th>
+                        <th>优先级</th>
+                        <th>计费设置</th>
+                        <th>自动计费时间</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="item in ChargeItemNew">
+                            <input type="hidden" ng-model="item.chargeItemNew.ciId"/>
+                            <td><input type="checkbox" ng-click="getCheckBoxs(item.chargeItemNew.ciId)"/></td>
+                            <td ng-click="plan(item.chargeItemNew)">{{item.chargeItemNew.ciName}}</td>
+                            <td>{{item.chargeItemNew.ciNum}}</td>
+                            <td>{{item.chargeItemNew.startDate | date:'yyyy-MM-dd'}}</td>
+                            <td>{{item.chargeItemNew.endDate | date:'yyyy-MM-dd'}}</td>
+                            <td ng-switch on="item.chargeItemNew.accountType">
+                                <span ng-switch-when="0">资金账户</span>
+                                <span ng-switch-when="1">押金账户</span>
+                            </td>
+                            <td>{{item.chargeItemNew.priority}}</td>
+                            <td ng-switch on="item.chargeItemNew.billingType">
+                                <span ng-switch-when="1">自动</span>
+                                <span ng-switch-when="2">手动</span>
+                            </td>
+                            <td>{{item.chargeItemNew.billingDate | date:'yyyy-MM-dd'}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="padding text-center">
+        <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="backDetail()">
+            取消
+        </button>
+        <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="addScheme()">
+            保存
+        </button>
+    </div>
+</div>
+<!--新建方案 END-->
+<!--详细信息-->
+<div ng-show="show5">
+    <div class="sel">
+        <div class="row search-padding-10">
+            <div class="col-lg-1 col-md-2 col-sm-2">
+                项目
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                {{project.projectName}}
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2">
+                方案
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                {{Scheme.schemeName}}
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2">
+                收费项目
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                {{temp.ciName}}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-1 col-md-2 col-sm-2">
+                计费频率
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+               {{temp.billingDate | date:'yyyy-MM-dd'}}
+            </div>
+        </div>
+    </div>
+    <div class="row padding">
+        <div class="col-lg-6">
+            <table>
+                <thead>
+                <tr>
+                    <th>收费项目名称</th>
+                    <th>收费项目编号</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-class="{'this_info ':itemIndex==item}" ng-repeat="item in addChargeItemNew_two">
+                    <td ng-click="newPlan(item)">{{item.ciName}}</td>
+                    <td>{{item.ciNum}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div ng-show="show6">
+            <div class="col-lg-6">
+                <div class="search-padding-10">
+                    <button type="button" class="btn btn-default btn-primary" ng-click="addNew()" class="cursor_pointer">
+                        <span class="glyphicon glyphicon-plus btn_icon"></span>新增
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary" ng-click="editItem(Formula)">
+                        <span class="glyphicon glyphicon-edit btn_icon"></span>编辑
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary" ng-click="delectItem(Formula)">
+                        删除
+                    </button>
+                </div>
+                <table>
+                    <thead>
+                    <tr>
+                        <th><!--<input ng-show="Formula.length!=0" type="checkbox" id="allchose" ng-true-value="1" ng-false-value="0" ng-click="allchose(Formula)" style="vertical-align: -4px;">--></th>
+                        <th>条件</th>
+                        <th>公式</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="item in Formula" ng-click='getDate(item)'>
+                            <td><input type="checkbox" id="{{item.id}}" name="scId" ng-click='getDate(item)'/></td>
+                            <td>
+                                <span ng-repeat="items in item.conditionList">
+                                    {{items.conditionName}}<br/>
+                                </span>
+                            </td>
+                            <td>{{item.formulaName}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="padding text-right">
+        <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="backList()">
+            取消
+        </button>
+        <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="saveList()">
+            保存
+        </button>
+    </div>
+</div>
+<!--详细信息 END-->
+<!--方案详情--查看-->
+<div class="modal fade" id="detail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                使用范围
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="row search-padding-10">
+                    <div class="col-lg-5 col-md-4 col-sm-4">
+                        <h5>未选区域</h5>
+                        <ul id="treeDemo"  class="ztree"></ul>
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2">
+                        <div style="margin-top: 180px;margin-left: 15px;">
+                            <button class="glyphicon glyphicon-menu-right btn btn-sm btn-info" aria-hidden="true" ng-click="addWaterReading()"></button>
+                        </div>
+                    </div>
+                    <div class="col-lg-5 col-md-4 col-sm-4">
+                        <h5>已选区域</h5>
+                        <ul class="ztree" >
+                            <li >
+                                <table >
+                                    <tr ng-repeat="items11 in addWaterCheck">
+                                        <td>{{items11.fullname}}</td>
+                                    </tr>
+                                </table>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" ng-click="addBuildingIdListToDetails()">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--方案详情--查看 END-->
+
+<!--新增收费项目-->
+<div class="modal fade" id="new" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                {{alertName}}收费项目
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            项目名称：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <input class="form-control" ng-model="f_ChargeItem.ciName" placeholder="请输入项目名称"/>
+                        </div>
+                        <div class="col-lg-1 col-md-1 col-sm-1" style="color:red;">*</div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            编号：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <input class="form-control" ng-model="f_ChargeItem.ciNum" placeholder="请输入编号"/>
+                        </div>
+                        <div class="col-lg-1 col-md-1 col-sm-1" style="color:red;">*</div>
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            启用状态：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <select ng-options="a.slaveName as a.description for a in startTypeList"  class="form-control" ng-model="f_ChargeItem.startType">
+                                <option value="">--请选择--</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-1 col-md-1 col-sm-1" style="color:red;">*</div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            账户类型：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <select ng-options="a.slaveName as a.description for a in accountTypeList"  class="form-control" ng-model="f_ChargeItem.accountType">
+                                <option value="">--请选择--</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-1 col-md-1 col-sm-1" style="color:red;">*</div>
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            生效日期：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <input type="text" onclick="WdatePicker({readOnly:true})" placeholder="请输入日期"  class="Wdate form-control" onchange="" ng-model="f_ChargeItem.startDate" ng-blur="checkDates()" ng-change="getStall(stallss.id,false)">
+                        </div>
+                        <div class="col-lg-1 col-md-1 col-sm-1" style="color:red;">*</div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            失效日期：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <input type="text" onclick="WdatePicker({readOnly:true})"  placeholder="请输入日期" class="Wdate form-control" ng-model="f_ChargeItem.endDate" onchange="" ng-blur="checkDates()" ng-change="getStall(stallss.id,false)"/>
+                        </div>
+                        <div class="col-lg-1 col-md-1 col-sm-1" style="color:red;">*</div>
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            优先级：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <select ng-options="a.description as a.description for a in priorityList"  class="form-control" ng-model="f_ChargeItem.priority">
+                                <option value="">--请选择--</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-1 col-md-1 col-sm-1" style="color:red;">*</div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            计费设置：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <label><input type="radio" style="vertical-align: -3px;margin-right:4px;" value="1" ng-model="f_ChargeItem.billingType">自动</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <label><input type="radio" style="vertical-align: -3px;margin-right:4px;" value="2" ng-model="f_ChargeItem.billingType">手动</label>
+                        </div>
+                        <div class="col-lg-1 col-md-1 col-sm-1" style="color:red;">*</div>
+                    </div>
+                    <div class="row search-padding-10" ng-show="f_ChargeItem.billingType!=2 ">
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            自动计费时间：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <input type="text" onclick="WdatePicker({readOnly:true})" onChange="" placeholder="请输入日期" class="form-control" ng-model="f_ChargeItem.billingDate"/>
+                        </div>
+                        <div class="col-lg-1 col-md-1 col-sm-1" style="color:red;">*</div>
+                    </div>
+                    <div class="search-padding-10">
+                        <button id="_addBtn" type="button" class="btn btn-default btn-primary" ng-click="addItem()">
+                            <span class="glyphicon glyphicon-plus btn_icon"></span>新增
+                        </button>
+                    </div>
+                    <table id="parjectCss" class="text-center">
+                        <thead>
+                        <tr>
+                            <th>收费详情</th>
+                            <th>编号</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tr ng-repeat="item in currentBuilding.areaNew">
+                            <td>{{item.ciName}}</td>
+                            <td>{{item.ciNum}}</td>
+                            <td>
+                                <button type="button" class="btn btn-primary" ng-click="updateItem($index)">修改</button>
+                                <button type="button" class="btn btn-default" ng-click="deleteItem($index)">删除</button>
+                            </td>
+                        </tr>
+                        <tr ng-show="editArea">
+                            <td><input style="width: 150px;margin:0 auto;" class="form-control" ng-model="currentEditArea.ciName"><span style="color:red;">*</span></td>
+                            <td><input style="width: 150px;margin:0 auto;" class="form-control" ng-model="currentEditArea.ciNum"><span style="color:red;">*<span></td>
+                            <td>
+                                <button type="button" class="btn btn-primary" ng-click="addSave()">保存</button>
+                                <button type="button" class="btn btn-default" ng-click="addCancel()">取消</button>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"  ng-click="clean()">取消</button>
+                <button type="button" class="btn btn-primary" ng-click="addChargeItem()">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--新增收费项目 END-->
+<!--国标水费-->
+<div class="modal fade" id="detail1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                使用范围
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                    <div class="col-lg-6">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>收费项目名称</th>
+                                <th>收费编号</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>1</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="search-padding10">
+                            <table>
+                                <thead>
+                                <tr>
+                                    <th>条件</th>
+                                    <th>公式</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>1</td>
+                                </tr>
+                                <tr>
+                                    <td>1</td>
+                                    <td>1</td>
+                                </tr>
+                                <tr>
+                                    <td>1</td>
+                                    <td>1</td>
+                                </tr>
+                                <tr>
+                                    <td>1</td>
+                                    <td>1</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="search-padding10">水费单价1 = 1.7元</div>
+                        <div class="search-padding10">水费单价2 = 2.7元</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--国标水费 END-->
+<!--新增公式模态框-->
+<div class="modal fade" id="new1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                {{msg}}
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                    <div class="row search-padding-10">
+                        <!--<div class="col-lg-2 col-md-2 col-sm-2">
+                            符合
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <select ng-options="a.slaveName as a.description for a in conditionusetypeList"  class="form-control" ng-model="addFormula.conditionusetype" id="conditionusetype">
+                                <option value="">--请选择--</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            以下条件
+                        </div>-->
+                        <div class="col-lg-4 col-md-4 col-sm-4 text-right col-lg-offset-8 col-md-offset-8 col-sm-offset-8">
+                            <button type="button" class="btn btn-default btn-primary" data-toggle="modal" data-target="#revise" ng-click="createCon()">
+                                生成条件
+                            </button>
+                        </div>
+                    </div>
+                    <div class="search-padding-10">
+                    <table id="commonText">
+                        <thead>
+                        <tr>
+                        	<th>条件</th>
+                            <th>变量</th>
+                            <th>变量</th>
+                            <th>关系</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="items in newCurrentBuilding.areaNew" ng-show="newCurrentBuilding.areaNew.length>0">
+                            <td>{{items.commonName}}</td>
+                            <td>
+                                {{items.symbolDescription}}
+                            </td>
+                            <td>{{items.commonvalue}}</td>
+                            <td>{{items.relationship}}</td>
+                            <td>
+                                <!--<button type="button" class="btn btn-default btn-primary" ng-click="addConstants2(items.areaTypeId)">修改</button>-->
+                                <button type="button" class="btn btn-default btn-primary" ng-click="cleanCon(items.areaTypeId)">删除</button>
+                            </td>
+                        </tr>
+                        <tr ng-show="_addCondition.totalship!=''&&_addCondition.totalship!=undefined">
+                            <td colspan="4">{{_addCondition.totalship}}</td>
+                            <td><button type="button" class="btn btn-default btn-primary" ng-click="cleaner()">删除</button></td>
+                        </tr>
+                        <tr ng-show="mark1">
+                            <td>
+                                <select ng-options="a.constantId as a.constantName for a in constant" id="commonName" class="form-control" ng-model="_addCondition.commonName">
+                                    <option value="">--请选择--</option>
+                                </select>
+                                <span style="color:red;">*</span>
+                            </td>
+                            <td>
+                                <select ng-options="a.slaveId as a.description for a in symbolList" id="conditionname" class="form-control" ng-model="_addCondition.symbol">
+                                    <option value="">--请选择--</option>
+                                </select>
+                                <span style="color:red;">*</span>
+                            </td>
+                            <td>
+                                <input  class="form-control" id="commonvalue" ng-model="_addCondition.commonvalue">
+                                <span style="color:red;">*</span>
+                            </td>
+                            <td>
+                                <select class="form-control" ng-model="_addCondition.relationship">
+                                    <option value="">--请选择--</option>
+                                    <option value="并且">并且</option>
+                                    <option value="或者">或者</option>
+                                </select>
+                                <span style="color:red;">*</span>
+                            </td>
+                            <td><button type="button" class="btn btn-default btn-primary" ng-click="addConstants1()">保存</button></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-6 col-md-6 col-dm-6">
+                            <div class="seach-padding10">
+                                插入变量或函数
+                                <button ng-click="clearAll()" class="form-control">清空</button>
+                        </div>
+                            <div class="form-control" style="height: 250px" id="logDiv"></div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-dm-6">
+                            <div class="seach-padding10">
+                                常用常量及符号
+                            </div>
+                            <div class="form-control" style="height: 250px">
+                       			 <ul id="treeConstant"  style="height: 248px;background-color: #fff;" class="ztree"></ul>
+                   			 </div>
+                        </div>
+                    </div>
+
+                    <!--<div class="search-padding-10">
+                        新增物业类常项
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <input class="form-control" value="" placeholder="请输入常量名" id="constantName" ng-model="Constant.constantName">
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <input class="form-control" value="" placeholder="请输入常量值" id="constantValue" ng-model="Constant.value">
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4 text-right">
+                        	<button type="button" class="btn btn-default btn-primary" ng-click="delConstants()">删除</button>
+                            <button type="button" class="btn btn-default btn-primary" ng-show="mark==false" ng-click="addConstants()">新增</button>
+                            <button type="button" class="btn btn-default btn-primary" ng-show="mark==true" ng-click="updateConstants()">修改</button>
+                        </div>
+                    </div> -->
+                    
+                    <!-- <table>
+                        <thead>
+                        <tr>
+                            <th>常量名</th>
+                            <th>常量值</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tr ng-repeat="item in currentBuilding.areaNew">
+                            <td>{{item.ciName}}</td>
+                            <td>{{item.ciNum}}</td>
+                            <td>
+                                <button type="button" ng-click="addConstants($index)">修改</button>
+                                <button type="button" ng-click="deleteItem($index)">删除</button>
+                            </td>
+                        </tr>
+                        <tr ng-show="editArea">
+                            <td><input style="width: 150px" ng-model="Constant.constantName"></td>
+                            <td><input style="width: 150px" ng-model="Constant.value"></td>
+                            <td>
+                                <button type="button" ng-click="addConstants()">保存</button>
+                                <button type="button" ng-click="delConstants()">取消</button>
+                            </td>
+                        </tr>
+                    </table> -->
+            </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" ng-click="saveFormula()">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+<!--新增公式模态框 END-->
+</body>
+</html>

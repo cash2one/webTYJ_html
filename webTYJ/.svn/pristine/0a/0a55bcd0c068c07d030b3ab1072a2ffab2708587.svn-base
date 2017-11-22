@@ -1,0 +1,121 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 巡检管理
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../../app');
+
+    app.controller('newPlanCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        var url = $rootScope.url;
+
+        $scope.addInspectionPlan={inspectionPlan:{},tList:[]};  //最终保存的对象
+        $scope.currentEditIndex=null;      //当前编辑框(初始为空)
+        $scope.editData=false;
+        $scope.currentObject={object:[]};
+        $scope.currentData={};
+
+        /**
+         *  修改按钮点击事件
+         * @param index  行下标
+         */
+        $scope.updateItem=function(index){
+            $scope.editData=true;
+            $scope.currentEditIndex=index;
+            var current=$scope.currentObject.object[index];
+            $scope.currentData={
+                checkItemName:current.checkItemName,
+                checkItemUnit:current.checkItemUnit,
+                checkItemReference:current.checkItemReference,
+                inputType:current.inputType
+            };
+        };
+        /**
+         * 修改保存
+         * @param index 行下标
+         */
+        $scope.updateSave=function(index){
+            $scope.inspectionPlan[index].editing=false;
+        };
+        /**
+         * 取消
+         * @param index 行下标
+         */
+        $scope.updateCancel=function(index){
+            $scope.inspectionPlan[index]=$scope.cloneItem;
+            $scope.inspectionPlan[index].editing=false;
+        };
+        /**
+         * 删除数据
+         * @param index 行下标
+         */
+        $scope.deleteItem=function(index){
+            $scope.currentObject.object.splice(index,1);
+        };
+        /**
+         * 新增按钮事件
+         */
+        $scope.addItem=function(){
+            $scope.editData=true;
+            $scope.currentEditIndex=null;
+        };
+        /**
+         * 新增保存功能
+         */
+        $scope.addSave=function(){
+            if($scope.currentEditIndex!=null){
+                $scope.currentObject.object[$scope.currentEditIndex]={
+                    checkItemName:$scope.currentData.checkItemName,
+                    checkItemUnit:$scope.currentData.checkItemUnit,
+                    checkItemReference:$scope.currentData.checkItemReference,
+                    inputType:$scope.currentData.inputType
+                };
+            }
+            else{
+                $scope.currentObject.object.push({
+                    checkItemName:$scope.currentData.checkItemName,
+                    checkItemUnit:$scope.currentData.checkItemUnit,
+                    checkItemReference:$scope.currentData.checkItemReference,
+                    inputType:$scope.currentData.inputType
+                });
+            }
+            $scope.currentData={};
+            $scope.editData=false;
+            $scope.addInspectionPlan.tList = $scope.currentObject.object;
+        };
+        /**
+         * 新增取消
+         */
+        $scope.addCancel=function(){
+            $scope.editData=false;
+            $scope.currentEditArea ={};
+        };
+
+        //新增保存
+        $scope.saveAll=function(){
+            for(var i=0;i<$scope.addInspectionPlan.tList.length;i++){
+                if($scope.addInspectionPlan.tList[i].inputType="填写输入"){
+                    $scope.addInspectionPlan.tList[i].inputType=0;
+                }else if($scope.addInspectionPlan.tList[i].inputType="选择输入"){
+                    $scope.addInspectionPlan.tList[i].inputType=1;
+                }
+            }
+            $http.post(url+'/InspectionPlan/insertInspectionPlan',{InspectionPlan:$scope.addInspectionPlan}).success(function(data) {
+                alert('添加成功');
+                $scope.addInspectionPlan={inspectionPlan:{},tList:[]};  //最终保存的对象
+
+            }).error(function(data, status, headers, config){
+                alert('添加失败');
+            });
+        };
+
+        //取消
+        $scope.cancle=function(){
+            $scope.addInspectionPlan={inspectionPlan:{},plans:[]};  //最终保存的对象
+        };
+
+    }]);
+});

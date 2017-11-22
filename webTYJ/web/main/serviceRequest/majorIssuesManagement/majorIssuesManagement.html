@@ -1,0 +1,43 @@
+<!--
+    创建人：彭婷婷  创建时间：2015/6/12
+    页面名称：重大事项管理
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>重大事项管理</title>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="complaint_user">
+        <div class="row padding">
+            <div class="col-xs-4 col-lg-2 col-md-2" >
+                <div class="row">
+                    <div class="col-xs-6 col-lg-6 col-md-6">
+                        <img src="images/project/user/user_2.png" width="100" height="100">
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-xs-8 col-lg-10 col-md-9">
+                <div class="row">
+                    描述：重大事项是用来处理重大紧急事项
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="row padding">
+        <div id="content-first">
+            <div id="tab">
+                <a ng-class="{'this_action ':btnIndex==1}" ng-click="doClick(1)" ui-sref="index.serviceRequest.majorIssuesManagement.majorIssuesList">重大事项管理</a>
+                <a lang="no" ng-class="{'this_action ':btnIndex==2}" ng-click="doClick(2)" ui-sref="index.serviceRequest.majorIssuesManagement.handleMechanism">重大事项处理机制管理</a>
+            </div>
+            <div ui-view></div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

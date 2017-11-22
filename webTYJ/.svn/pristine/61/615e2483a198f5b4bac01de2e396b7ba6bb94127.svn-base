@@ -1,0 +1,690 @@
+<!--
+    创建人:彭婷婷  创建时间：2015/6/8
+    页面名称:人员管理查询
+    js路径:js/controllers/internalProfession/staffsuperviseITCheck.js
+    修改人：倪明   修改时间:2015/9/17
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>人员管理查询</title>
+    <link rel="stylesheet" href="bower_components/skins/zyupload-1.0.0.min.css " type="text/css">
+    <script type="text/javascript">
+        function importExcelTemplet(){
+            var url = document.getElementById("fileUrls").value;
+            window.location.href=url +"/info/importStaffTemplet.do"
+        }
+    </script>
+
+    <script type="text/javascript">
+        function exportStaffExcel(){
+            var url = document.getElementById("fileUrl").value;
+            var staffName = $("#staffName").val();
+            window.location.href=url +"/info/outStaffExcel.do?staffName="+encodeURI(encodeURI(staffName))
+        }
+    </script>
+</head>
+<body>
+<div id="content-first">
+    <div class="row padding">
+        <div class="col-lg-12">
+            <div class="row search-padding-10" >
+                <div class="col-lg-4 col-md-2 col-sm-3 text-right">
+                    员工姓名 :
+                </div>
+
+                <div class="col-lg-3 col-md-2 col-sm-5">
+                     <input type="text" class="form-control" id="staffName" ng-model="Staff.staffName" set-Focus=""   placeholder="请输入员工姓名">
+                </div>
+
+                <div class="col-lg-2 col-md-2 col-sm-5 ">
+                    <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="searchPaginator._load()">
+                        <span class="glyphicon glyphicon-search btn_icon"></span>
+                        查询
+                    </button>
+                    <a style="color:red;cursor:pointer" ng-click="changeState()">高级搜索</a>
+                </div>
+
+                <div class="col-lg-3 col-md-4 col-sm-4 text-right">
+                    <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="listview()">
+                        <span class="glyphicon glyphicon-th-list btn_icon"></span>
+                        列表
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="tabview()">
+                        <span class="glyphicon glyphicon-th-large btn_icon"></span>
+                        网格
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary" ng-click="backTo()">
+                        返回
+                    </button>
+                </div>
+            </div>
+            <div class="row search-padding-10" ng-show="search==1">
+
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    工号：
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-4">
+                    <input type="text" id="staffNo" ng-model="Staff.staffNo" set-Focus="" placeholder="请输入员工工号" class="form-control">
+                </div>
+
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    出生日期：
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-4">
+                    <input type="text" id="birthday" ng-model="Staff.birthday" set-Focus="" placeholder="请输入出生日期" class="form-control">
+                </div>
+
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    联系电话：
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-4">
+                    <input type="text" id="telphone" ng-model="Staff.telphone" set-Focus="" placeholder="请输入联系电话" class="form-control">
+                </div>
+               <!-- <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    籍贯:
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-4">
+                    <input type="text" id="nativePlace" ng-model="Staff.nativePlace" set-Focus="" placeholder="请输入籍贯" class="form-control">
+                </div>-->
+            </div>
+            <div class="row search-padding-10" ng-show="search==1">
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    住址 :
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-4">
+                    <input type="text" id="address" ng-model="Staff.address" set-Focus="" placeholder="请输入住址" class="form-control">
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    性别：
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-4">
+                    <select ng-model="Staff.sex1" name="sex1" id="sex1" class="form-control">
+                        <option value="">请选择</option>
+                        <option value="0">男</option>
+                        <option value="1">女</option>
+                    </select>
+                </div>
+            </div>
+
+        </div>
+        <div class="search-padding-10">
+            <table ng-show="showStatus==1">
+                <thead>
+                <tr>
+                    <th><span style="width: 15px">&nbsp;</span></th>
+                    <th>序号</th>
+                    <th>员工工号</th>
+                    <th>姓名</th>
+                    <th>性别</th>
+                    <th>出生日期</th>
+                    <th>证件类型</th>
+                    <th>证件号码</th>
+                    <th>联系电话</th>
+                    <!--<th>籍贯</th>-->
+                    <th>住址</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr style="cursor:pointer;" ng-repeat="items in searchPaginator.object.staffs" ng-show="items.staffId!=null" ng-dblclick="toShow(items);">
+                    <td><input type="hidden" id="{{items.staffId}}"  ng-click="getData(items)" onclick="if(this.checked){this.parentNode.parentNode.style.background='#f6f8fa'}else{this.parentNode.parentNode.style.background=''}"></td>
+                    <td>{{$index}}</td>
+                    <td>{{items.staffNo}}</td>
+                    <td >{{items.staffName}}</td>
+                    <td>
+                                        <span ng-switch on="items.sex">
+                                         <span ng-switch-when="0">男</span>
+                                         <span ng-switch-when="1">女</span>
+                                        </span>
+                    </td>
+                    <td>{{items.birthday | date:'yyyy-MM-dd'}}</td>
+                    <td>
+                                        <span ng-switch on="items.cardType" >
+                                            <span ng-switch-when="0">身份证</span>
+                                            <span ng-switch-when="1">护照</span>
+                                        </span>
+                    </td>
+                    <td>{{items.cardNum| limitTo:18}}</td>
+                    <td>{{items.telphone}}</td>
+                   <!-- <td>{{items.nativePlace}}</td>-->
+                    <td >{{items.address}}</td>
+                </tr>
+                <tr ng-if="searchPaginator.object.staffs.length == null">
+                    <td colspan="12">没有数据！</td>
+                </tr>
+                </tbody>
+            </table>
+            <!-- 增加网格的显示与隐藏 朱琪 2016-2-3 start -->
+            <div class="col-lg-12" ng-show="showStatus ==0">
+                <div class="col-lg-4 col-md-4 col-sm-4 " ng-repeat="items in searchPaginator.object.staffs" ng-show="items.staffId!=null">
+                    <div id="pannel">
+                        <div class="title">
+                            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">员工信息</div>
+                            <div class="downList">
+                                <div class="col-xs-12 col-lg-12 col-md-12 col-sm-12 text-right">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pannel_content" ng-dblclick="toShow(items);">
+                            <div class="col-lg-12">
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">员工工号：</div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">{{items.staffNo}}</div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">姓名：</div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">{{items.staffName}}</div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">性别：</div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">
+                                    <span ng-switch on="items.sex">
+                                         <span ng-switch-when="0">男</span>
+                                         <span ng-switch-when="1">女</span>
+                                        </span></div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+                                    <span ng-switch on="items.cardType" >
+                                            <span ng-switch-when="0">身份证</span>
+                                            <span ng-switch-when="1">护照</span>
+                                        </span>：</div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">{{items.cardNum| limitTo:18}}</div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">联系电话：</div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">{{items.telphone}}</div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">籍贯：</div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">{{items.nativePlace}}</div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">住址：</div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">{{items.address}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 增加网格的显示与隐藏 朱琪 2016-2-3 end -->
+            <div class="col-lg-4 col-md-6 col-sm-6" ng-show="searchPaginator.object.staffs.length == null && showStatus ==0">
+                <div id="pannel">
+                    <div class="title">
+                        <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                            <h3>员工信息</h3>
+                        </div>
+                        <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                            <!-- <span class="glyphicon glyphicon-search"></span>-->
+                        </div>
+                    </div>
+                    <div class="pannel_content">
+                        <div class="row">
+                            <div class="col-xs-8 col-lg-8 col-md-8">
+                                <div class="row search-padding 10">
+                                    暂无数据！
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+            <div class="padding col-lg-12">
+                <div class="bill_paging">
+                    <span>共{{searchPaginator.object.page.totalResult}}条</span>
+                    <ul class="pagination">
+                        <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                            <a href="javascript:void(0)" ng-click="searchPaginator.go(1)">首页</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                            <a href="javascript:void(0)" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a>
+                        </li>
+                        <li ng-class="{true:'active'}[searchPaginator.page.currentPage==i]" ng-repeat="i in searchPaginator.pages">
+                            <a href="javascript:void(0)"  ng-click="searchPaginator.go(i)">{{i}}</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                            <a href="javascript:void(0)" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                            <a href="javascript:void(0)" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    <!--</div>-->
+<!--</div>-->
+
+<!--查看模态框开始-->
+<div class="modal fade" id="personDatil" role="dialog" aria-label="personDatil" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>员工基本信息：</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="sel1">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            员工工号：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            {{staff1.staffNo}}
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            员工姓名：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            {{staff1.staffName}}
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            出生日期：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            {{staff1.birthday|date:'yyyy-MM-dd'}}
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            员工性别：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <span ng-switch on="staff1.sex"  >
+                                <span ng-switch-when="0">男</span>
+                                <span ng-switch-when="1">女</span>
+                            </span>
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            联系电话：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                           {{staff1.telphone}}
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            婚姻状况：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <span ng-switch on="staff1.married">
+                                <span ng-switch-when="0">已婚</span>
+                                <span ng-switch-when="1">未婚</span>
+                            </span>
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            证件类型：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                           <span ng-switch on="staff1.cardType">
+                                <span ng-switch-when="0">身份证</span>
+                                <span ng-switch-when="1">护照</span>
+                            </span>
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            现居地址：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            {{staff1.address}}
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            证件号码：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                          {{staff1.cardNum|limitTo:18}}
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            学历：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <span ng-switch on="staff1.eduLever">
+                                <span ng-switch-when="1">小学</span>
+                                <span ng-switch-when="2">初中</span>
+                                <span ng-switch-when="3">中专</span>
+                                <span ng-switch-when="4">高中</span>
+                                <span ng-switch-when="5">大专</span>
+                                <span ng-switch-when="6">本科</span>
+                                <span ng-switch-when="7">硕士研究生</span>
+                                <span ng-switch-when="8">博士研究生</span>
+                            </span>
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            户籍：
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-6">
+                            {{staff1.nativePlace}}
+                        </div>
+
+                        <div class="clear"></div>
+
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            图片：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4"  ng-repeat="item in staff1.annexs track by $index"  ng-show="item.annexAddress != null">
+                            <img src={{fileUrl}}/{{item.annexAddress}} width="80px" height="80px">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="save_concel_botton icon_float_else">
+                    <a href="" class="radius_all button_bule" data-dismiss="modal" aria-label="Close">关闭</a>
+                    <div class="clear"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--查看模态框结束-->
+<!--修改模态框开始-->
+<div class="modal fade" id="update" role="dialog" aria-label="personDatil" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                编辑
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row sel1">
+                    <form id="css_form" name="mainForm" novalidate>
+                        <div class="sel1">
+                            <div class="row search-padding-10">
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                    员工姓名：
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4">
+                                    <input type="text" class="form-control" ng-model="staff1.staffName" name="staffName" required  placeholder="请输入员工姓名">
+
+                                </div>
+                                <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                                    <span style="color: red">*</span>
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                    出生日期：
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4">
+                                    <input type="date" class="form-control" ng-model="staff1.birthday">
+                                </div>
+                                <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                                    <span style="color: red">*</span>
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                    员工性别：
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4">
+                                    <select ng-options="a.slaveName as a.description for a in sexList" required class="form-control" ng-model="staff1.sex">
+                                        <option value="">--请选择--</option>
+                                    </select>
+
+                                </div>
+                                <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                                    <span style="color: red">*</span>
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                    户籍：
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4">
+                                    <span name="nativePlace" required ng-model="staff1.nativePlace" required >{{staff1.nativePlace}}</span>
+                                        <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.nativePlace.$dirty && mainForm.nativePlace.$invalid">
+                                            <p class="alter" ng-show="mainForm.nativePlace.$error.required">
+                                                不能为空
+                                            </p>
+                                            <p class="alter" ng-show="mainForm.nativePlace.defined ">
+                                                正确
+                                            </p>
+                                         </span>
+                                    </span>
+                                </div>
+                                <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                                    <a ng-click="addCity()"><span class="glyphicon glyphicon-plus"></span></a>
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                    联系电话：
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4">
+                                    <input type="text" class="form-control" ng-model="staff1.telphone"  ng-pattern="/^1[3|4|5|7|8][0-9]\d{8}$/" name="telphone" required  placeholder="请输入联系电话">
+                                    <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.telphone.$dirty && mainForm.telphone.$invalid">
+                                        <p class="alter" ng-show="mainForm.telphone.$error.required">
+                                            不能为空
+                                        </p>
+                                        <p class="alter" ng-show="mainForm.telphone.defined ">
+                                            正确
+                                        </p>
+                                    </span>
+                                </div>
+                                <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                                    <span style="color: red">*</span>
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                    婚姻状况:
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4">
+                                    <select ng-options="a.slaveName as a.description for a in marriedList" required class="form-control" ng-model="staff1.married">
+                                        <option value="">--请选择--</option>
+                                    </select>
+
+                                </div>
+                                <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                                    <span style="color: red">*</span>
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                    证件类型：
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4">
+                                    <select ng-options="a.slaveName as a.description for a in cardTypeList" required class="form-control" ng-model="staff1.cardType" id="card" ng-change="changeData()">
+                                        <option value="">--请选择--</option>
+                                    </select>
+
+                                </div>
+                                <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                                    <span style="color: red">*</span>
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                    现居地址：
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4">
+                                    <input type="text" class="form-control" ng-model="staff1.address" name="address" required  placeholder="请输入现居住地">
+                                    <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.address.$dirty && mainForm.address.$invalid">
+                                        <p class="alter" ng-show="mainForm.address.$error.required">
+                                            不能为空
+                                        </p>
+                                        <p class="alter" ng-show="mainForm.address.defined ">
+                                            正确
+                                        </p>
+                                    </span>
+                                </div>
+                                <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                                    <span style="color: red">*</span>
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                    证件号码：
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4" ng-show="sf">
+                                    <input type="text" class="form-control" ng-model="cardNum " ng-pattern="/(^\d{15}$)|(^\d{17}([0-9]|X)$)/" name="cardNum" required  placeholder="请输入证件号码">
+                                    <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.cardNum.$dirty && mainForm.cardNum.$invalid">
+                                        <p class="alter" ng-show="mainForm.cardNum.$error.required">
+                                            不能为空
+                                        </p>
+                                        <p class="alter" ng-show="mainForm.cardNum.defined ">
+                                            正确
+                                        </p>
+                                    </span>
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4" ng-show="hz">
+                                    <input type="text" class="form-control" ng-model="cardNum " ng-pattern="/^1[45][0-9]{7}$|G[0-9]{8}$|P[0-9]{7}$|S[0-9]{7,8}$|D[0-9]$/" name="cardNum1" required  placeholder="请输入证件号码">
+                                    <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.cardNum1.$dirty && mainForm.cardNum1.$invalid">
+                                        <p class="alter" ng-show="mainForm.cardNum1.$error.required">
+                                            不能为空
+                                        </p>
+                                        <p class="alter" ng-show="mainForm.cardNum1.defined ">
+                                            正确
+                                        </p>
+                                    </span>
+                                </div>
+                                <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                                    <span style="color: red">*</span>
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                    学历：
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4">
+                                    <select ng-options="a.slaveName as a.description for a in eduLeverList" required class="form-control" name="eduLever" ng-model="staff1.eduLever">
+                                        <option value="">--请选择--</option>
+                                    </select>
+                                    <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.eduLever.$dirty && mainForm.eduLever.$invalid">
+                                      <p class="alter" ng-show="mainForm.eduLever.$error.required">
+                                          不能为空
+                                      </p>
+                                      <p class="alter" ng-show="mainForm.eduLever.defined ">
+                                          正确
+                                      </p>
+                                    </span>
+                                </div>
+                                <div class="clear"></div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                    图片：
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4" ng-repeat="item in staff1.annexs track by $index"  ng-show="item.annexAddress != null&&item1.annexAddress!=''">
+                                   <img src={{fileUrl}}/{{item.annexAddress}} width="80px" height="80px">
+                                   <br>
+                                   <button class="btn btn-default btn-primary tab-btn" ng-click="delPic(item);">移除</button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+                <div id="remove">
+                     <div id="zyupload" class="zyupload" ></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="" class="btn btn-default" ng-click="cancle()">取消</a>
+                <a href="" class="btn btn-primary"  ng-click="save()">保存</a>
+            </div>
+        </div>
+    </div>
+</div>
+<!--修改模态框结束-->
+<!-- excel导入模态框开始 -->
+    <div class="modal fade" id="addExcel" tabindex="-1" role="dialog"
+         aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close"
+                            data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                <span>
+                 上传
+                </span>
+                </div>
+                <div class="modal-body">
+                    <div class="padding">
+                        <div class="row search-padding-10">
+                            <div class="col-lg-12 col-md-2 col-sm-2 ">
+                                <input type="hidden" id="fileUrls" value="{{fileUrl}}">
+                            </div>
+                            <div class="col-lg-12 col-md-2 col-sm-2 text-right">
+                                <button class="btn-primary btn" onClick="importExcelTemplet()">
+                                    导入模版下载
+                                </button>
+                            </div>
+                        </div>
+                        <div id="remove1">
+                            <div id="excelupload" class="zyupload"></div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" ng-click="cancleExcel()">关闭</button>
+                    <button type="button" class="btn btn-primary" ng-click="saveExcel()">确认</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+<!-- excel导入模态框结束 -->
+
+    <!--户籍模态框-->
+    <div class="modal fade" id="chooseCity" tabindex="-1" role="dialog"
+         aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close"
+                            data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title">
+                        选择省市
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="sel1">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            所在省：
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            <select required="" class="form-control" ng-model="staff1.province" ng-options="key as key for (key,value) in division"
+                                    ng-change="staff1.city='';staff1.district='';">
+                                <option value="">省</option>
+                            </select>
+                        </div>
+
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            所在市：
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            <select class="form-control" ng-model="staff1.city" ng-options="key as key for (key,value) in division[staff1.province]"
+                                    ng-change="staff1.district='';">
+                                <option value="">市</option>
+                            </select>
+                        </div>
+
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            所在县/区：
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            <select class="form-control" ng-model="staff1.district" ng-options="value as value for value in division[staff1.province][staff1.city]">
+                                <option value="">区</option>
+                            </select>
+                        </div>
+
+                        <div class="clear"></div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" ng-click="cancleCity()">取消</button>
+                    <button class="btn btn-primary" ng-click="saveCity()">提交</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+</body>
+</html>

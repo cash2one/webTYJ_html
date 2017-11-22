@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>产品初始化--停车月卡</title>
+</head>
+<body>
+<div class="row padding">
+    <form id="css_form" name="mainForm" novalidate>
+    <div class="col-lg-12">
+     <div class="col-lg-3"></div>
+    <div class="col-lg-6">
+        <div class="row search-padding-10">
+            <div class="col-lg-2"></div>
+            <div class="col-lg-2 col-md-4 col-sm-4">
+                产品名称：
+            </div>
+            <div class="col-lg-6 col-md-8 col-sm-8">
+                <input type="text" ng-model="Product.productName" name="productName"  required class="form-control">
+                  <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.productName.$dirty && mainForm.productName.$invalid">
+                                <p class="alter" ng-show="mainForm.productName.$error.required">
+                                    不能为空
+                                </p>
+                                <p class="alter" ng-show="mainForm.productName.defined ">
+                                    正确
+                                </p>
+                              </span>
+            </div><span class="red">*</span>
+            <div class="col-lg-2"></div>
+        </div>
+        <div class="row search-padding-10">
+            <div class="col-lg-2"></div>
+            <div class="col-lg-2 col-md-4 col-sm-4">
+                产品编号：
+            </div>
+            <div class="col-lg-6 col-md-8 col-sm-8">
+                <input type="text" ng-model="Product.productNum" name="productNum"  required class="form-control">
+                 <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.productNum.$dirty && mainForm.productNum.$invalid">
+                                <p class="alter" ng-show="mainForm.productNum.$error.required">
+                                    不能为空
+                                </p>
+                                <p class="alter" ng-show="mainForm.productNum.defined ">
+                                    正确
+                                </p>
+                              </span>
+            </div><span class="red">*</span>
+            <div class="col-lg-2"></div>
+        </div>
+        <div class="row search-padding-10">
+            <div class="col-lg-2"></div>
+            <div class="col-lg-2 col-md-4 col-sm-4">
+                生效日期：
+            </div>
+            <div class="col-lg-6 col-md-8 col-sm-8">
+                <input type="date" data-ng-model="Product.effectDate"  name="effectDate"  required class="form-control">
+                 <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.effectDate.$dirty && mainForm.effectDate.$invalid">
+                                <p class="alter" ng-show="mainForm.effectDate.$error.required">
+                                    不能为空
+                                </p>
+                                <p class="alter" ng-show="mainForm.effectDate.defined ">
+                                    正确
+                                </p>
+                              </span>
+            </div><span class="red">*</span>
+            <div class="col-lg-2"></div>
+        </div>
+        <div class="row search-padding-10">
+            <div class="col-lg-2"></div>
+            <div class="col-lg-2 col-md-4 col-sm-4">
+                金额：
+            </div>
+            <div class="col-lg-6 col-md-8 col-sm-8">
+                <input type="text" ng-model="Product.price" class="form-control" name="price" ng-blur="formatRent()" >
+                <!-- <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.price.$dirty && mainForm.price.$invalid">
+                                <p class="alter" ng-show="mainForm.price.$error.required">
+                                    不能为空
+                                </p>
+                                <p class="alter" ng-show="mainForm.price.defined ">
+                                    正确
+                                </p>
+                              </span>-->
+            </div><span class="red">*</span>月/元
+            <!--<div class="col-lg-2">月/元</div>-->
+        </div>
+        <div class="row search-padding-10">
+            <div class="col-lg-2"></div>
+            <div class="col-lg-2 col-md-2 col-sm-2">
+                绑定车库：
+            </div>
+        </div>
+        <div class="row search-padding-10">
+            <div class="col-lg-2"></div>
+            <div class="col-lg-2 col-md-4 col-sm-4">
+                车库名称：
+            </div>
+            <div class="col-lg-6 col-md-8 col-sm-8">
+                <input type="text" ng-model="fullname" class="form-control">
+            </div>
+            <div class="col-lg-1">
+                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="getGarage();">
+                    <span class="glyphicon glyphicon-search btn_icon"></span>
+                    查询
+                </button>
+            </div>
+        </div>
+        <div class="row search-padding-10">
+            <div class="col-lg-2"></div>
+            <div class="col-lg-2">车库名称：</div>
+            <div class="col-lg-6">
+        <div class="rh ">
+            <ul ng-repeat="item in BuildingStructureNewLists">
+                <li>
+                    <span>{{item.fullName}}</span>
+                </li>
+                <ul style="margin-left: 15px" ng-repeat="itn in item.children">
+                    <li>
+                        <input type="checkbox" class="checkboxa" id="{{itn.id}}" name="tcyk" ng-click="chargeItem(itn);">
+                        <span>{{itn.fullName}}</span>
+                    </li>
+                </ul>
+
+            </ul>
+        </div>
+            </div>
+    </div>
+    </div>
+   </div>
+    </form>
+    <div class="text-center">
+        <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="backToProduct();">
+            取消
+        </button>
+        <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="addOrUpdateProduct();">
+            提交
+        </button>
+    </div>
+</div>
+</body>
+</html>

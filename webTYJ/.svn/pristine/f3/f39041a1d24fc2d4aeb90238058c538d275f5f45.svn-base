@@ -1,0 +1,52 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 消息公告管理
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../app');
+
+    app.controller('internalNoticeCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+        $scope.doClick(1);
+        var url=$rootScope.url;
+        /**
+         * 初始化富文本编辑器
+         */
+        var ue = UE.getEditor('container',{
+            elementPathEnabled:false
+        });
+
+        /**
+         * 点击发布
+         */
+        $scope.Inform={};
+        $scope.Inform.inform="";
+        $scope.Inform.writer="";
+        $scope.Inform.department="";
+        $scope.Inform.abstracts="";
+        $scope.Inform.project="";
+        $scope.Inform.content="";
+        $scope.updateInternalNotice=function(){
+            console.log("Inform的内容："+$scope.Inform);
+            console.log("Inform的inform内容："+$scope.Inform.inform);
+            $http.post(url+'/Inform/insertInforms',{Inform:$scope.Inform}).success(function(){
+                layer.msg('发布成功',{icon : 1,time : 2000});
+                //$scope.load();
+
+
+            }).error(function(data,status,headers,config){
+                alert("新增失败！");
+            });
+        };
+
+        /**
+         * 显示标题信息
+         */
+        $scope.Informs={};
+        $http.get(url + '/Inform/listAllsinform').success(function(data) {
+            $scope.Informs = data.Inform;
+        });
+    }]);
+});

@@ -1,0 +1,176 @@
+/**
+ * Created by Administrator on 2015/12/15.
+ */
+/*define(['tyjApp',
+],function(module){
+    module.controller("auditCtrl",function($scope,$location,$http,$cookieStore,$rootScope,Paginator){*/
+        'use strict';
+
+        define(function (require) {
+            var app = require('../../../../app');
+            app.controller('auditCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+        $scope.test='审核';
+        var url = $rootScope.url;
+        $scope.show1=false;
+        $scope.show2=false;
+        $scope.show3=true;
+        $scope.show4=true;
+        //显示详情
+        $scope.item2={};
+        $scope.showList=function(item){
+            $scope.show1=true;
+            $scope.show2=true;
+            $scope.show3=false;
+            $scope.show4=false;
+            $scope.item2=item;
+            //显示计划下抄表数据
+            $scope.searchMeter1 = {page: {}};
+            $scope.load1=function(){
+                var checkWaters = function (page, callback) {
+                    $scope.searchMeter1.page = page;
+                    $scope.searchMeter1.meterReadingProgramId=item.meterReadingProgramId;
+                    $http.post(url + '/MeterReadingProgram/listPageMeterReadingProgramById', {MeterReadingProgram: $scope.searchMeter1}).success(callback);
+                };
+                $scope.currentWaters = app.get('Paginator').list(checkWaters, 5);
+                console.log($scope.currentWaters);
+            };
+            $scope.load1();
+        };
+
+        /**
+         * 获取选中的对象
+         * @param id
+         */
+        $scope.leasesArray = [];//选中项
+        var getAllChechedLeases = function() {
+            $scope.leasesArray = [];//清空
+            $("input[name='things']:checked").each(function(){
+                var lease = $(this).val();
+                var l = lease.substring(0,lease.length-1);
+                //console.log(l);
+                $scope.leasesArray.push($.parseJSON(l));
+            });
+            //console.log($scope.leasesArray);
+        };
+
+        $scope.addLeases = function() {
+            //alert("winPhone");
+            getAllChechedLeases();
+            if($scope.leasesArray.length>0) {
+                layer.confirm("您确定审核通过吗？",
+                    {btn: ['确定', '取消']}, function () {
+                        $scope.remoe();
+                        $scope.load1();
+                    }
+                );
+                $("input[name='things']:checked").each(function () {//取消选中项
+                    $(this).attr("checked", false);
+                })
+            }else{
+                layer.msg('您未选择！',{icon : 0});
+            }
+
+        };
+        $scope.addLeases1 = function() {
+            //alert("winPhone");
+            getAllChechedLeases();
+            if($scope.leasesArray.length>0) {
+                layer.confirm("您确定添加到重抄任务？",
+                    {btn: ['确定', '取消']}, function () {
+                        $scope.addVerification();
+                        $scope.load1();
+                    }
+                );
+                $("input[name='things']:checked").each(function () {//取消选中项
+                    $(this).attr("checked", false);
+                })
+            }else{
+                layer.msg('您未选择！',{icon : 0});
+            }
+
+        };
+        /**
+         * 修改读数
+         * @type {{}}
+         */
+        $scope.leasesToModify ={};
+        $scope.getModifyLease = function(){
+            getAllChechedLeases();
+            if($scope.leasesArray.length>1){
+                /*             alert("修改时只能选择一项租赁！");*/
+                layer.msg('修改时只能选择一项',{icon : 0});
+                //$("#modifyLeases").model("hide");
+                $scope.leasesToModify ={};
+                $("input[name='things']:checked").each(function(){//取消选中项
+                    $(this).attr("checked",false);
+                });
+            }else if($scope.leasesArray.length==1){
+                $("#myModal1").modal("show");
+                //      console.log($scope.leasesArray);
+                $scope.leasesToModify = $scope.leasesArray[0];
+
+                //      console.log($scope.leasesToModify);
+                $scope.load1();
+            }else{
+                /*    alert("您未选择修改项！");*/
+                layer.msg('您未选择修改项！',{icon : 0});
+            }
+        };
+        //核实
+        $scope.remoe=function(){
+            if($scope.leasesArray != null && $scope.leasesArray.length>0) {
+                for (var i = 0; i < $scope.leasesArray.length; i++) {
+                    var id = $scope.leasesArray[i].meterReadingDataId;
+                    if (id != null && id != '') {
+                        $http.put(url + '/MeterReadingData/updateMeterChecked/' + id).success(function () {
+                            /*alert("修改租赁信息成功！");*/
+                            layer.msg('核实成功！', {icon: 1});
+
+                        }).error(function () {
+                            layer.msg('核实失败！', {icon: 2});
+                        });
+                    }
+                }
+            }
+        };
+        //重抄任务
+        $scope.addVerification=function(){
+            if($scope.leasesArray != null && $scope.leasesArray.length>0) {
+                for (var i = 0; i < $scope.leasesArray.length; i++) {
+                    var id = $scope.leasesArray[i].meterReadingDataId;
+                    if (id != null && id != '') {
+                        $http.put(url + '/MeterReadingData/updateMeterRecoed/' +id).success(function () {
+                            /*alert("修改租赁信息成功！");*/
+                            layer.msg('成功！', {icon: 1});
+
+                        }).error(function () {
+                            layer.msg('失败！', {icon: 2});
+                        });
+                    }
+                }
+            }
+        };
+
+        //修正读数
+        $scope.updateWaterRead=function(){
+            $http.put(url+'/MeterReadingData/updateMeter/'+  $scope.item2.meterReadingDataId).success(function(){
+                /*alert("修改租赁信息成功！");*/
+                layer.msg('成功！',{icon : 1});
+
+            }).error(function(){
+                layer.msg('失败！',{icon : 2});
+            });
+        };
+        //******************审核计划**************************//
+        $scope.searchMeter = {page: {}};
+        $scope.load=function(){
+            var checkWater = function (page, callback) {
+                $scope.searchMeter.page = page;
+                $http.post(url + '/MeterReadingProgram/listPageMeterReadingProgramAll', {MeterReadingProgram: $scope.searchMeter}).success(callback);
+            };
+            $scope.currentWater = app.get('Paginator').list(checkWater, 5);
+            console.log($scope.currentWater);
+        };
+        $scope.load();
+    }]);
+});

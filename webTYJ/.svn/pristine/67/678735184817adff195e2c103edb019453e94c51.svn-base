@@ -1,0 +1,214 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 巡检管理
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../../app');
+
+    app.controller('newPatrolServiceRequestCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        var url = $rootScope.url;
+
+        $scope.serviceRequest={
+            inspectionConfiguration:[],
+            frequencyRecord:{}
+        };
+
+        //新增银行存单表
+        $scope.newConfiguration={Configuration:[]};
+
+        $scope.demand={
+            /**任务类型**/
+            frequency:[
+                { id: '0',name:'日检' },
+                { id: '1',name:'周检' },
+                { id: '2',name:'半月检' },
+                { id: '3',name:'月检' }
+            ]
+        };
+
+        //负责人信息
+        $scope.Teamworkstaff = {page:{}};
+
+        $scope.load= function(){
+            var fetchFunction = function (page, callback) {
+                $scope.Teamworkstaff.page = page;
+                $http.post(url + '/Teamworkstaff/listPageTeamworkStaff',{Teamworkstaff:$scope.Teamworkstaff}).success(callback)
+
+            };
+            $scope.searchPaginator2 = app.get('Paginator').list(fetchFunction,5);
+            console.log($scope.searchPaginator2);
+        };
+        $scope.load();
+
+        //判断checkbx是否选中
+        $scope.d=false;
+        $scope.getdata = function(Relation,name,event){
+            var temp;
+            var aNames = document.getElementsByName(name);
+            for(var i=0;i<aNames.length;i++){
+                aNames[i].checked = false;
+                aNames[i].parentNode.parentNode.style.background = '';
+            }
+            var oId = document.getElementById(Relation.id);
+            oId.checked = true;
+            $scope.accountRecord=Relation;
+            $scope.d=true;
+            oId.parentNode.parentNode.style.background = '#f6f8fa';
+
+            //阻止默认事件
+            event.stopPropagation();
+            // console.log(Relation);
+            /*var chk = document.getElementsByName("aaa");
+             for(var i=0;i<chk.length;i++){
+             if( chk[i].checked==true){
+             $scope.accountRecord=item;
+             $scope.abIndex = item.id;
+             $scope.d=true;
+             return;
+             }else{
+             $scope.d=false;
+             }
+             }*/
+        };
+
+        $scope.addPerson=function(){
+            $scope.person= $scope.accountRecord;
+            console.log($scope.person)
+        };
+
+
+        //全选
+        $scope.selectAll=function(name)
+        {
+            var el=document.getElementsByName("checkb");
+            var s="";
+            for (var i=0;i<el.length;i++) {
+                if(el[i].type=="checkbox"&&el[i].name==name) {
+                    el[i].checked=true;
+                }
+                if(el[i].checked) s+=el[i].value+',';  //如果选中，将value添加到变量s中
+            };
+        };
+        //取消
+        $scope.clearAll=function (name)
+        {
+            var el=document.getElementsByName("checkb");
+            for (var i=0;i<el.length;i++)
+            {
+                if(el[i].type=="checkbox"&&el[i].name==name)
+                {
+                    el[i].checked=false;
+                }
+            }
+        };
+
+        /**
+         * 添加行
+         */
+        $scope.itemRecord2=[{}];
+        $scope.add=function(){
+            var item1={};
+            $scope.itemRecord2.push(item1)
+        };
+
+
+        /**新增开始**/
+        /**
+         *  修改按钮点击事件
+         * @param index  行下标
+         */
+        $scope.updateItem=function(index){
+            $scope.editArea=true;
+            $scope.currentEditIndex=index;
+            var current = $scope.serviceRequest.inspectionConfiguration[index]
+            $scope.currentEditArea={
+                inspectionPropertyId:current.inspectionPropertyId,
+                inspectionPlanId:current.inspectionPlanId
+            };
+        };
+        /**
+         * 修改保存
+         * @param index 行下标
+         */
+        $scope.updateSave=function(index){
+            $scope.currentEditArea[index].editing=false;
+        };
+        /**
+         * 取消
+         * @param index 行
+         * 下标
+         */
+        $scope.updateCancel=function(index){
+            $scope.currentEditArea[index]=$scope.cloneItem;
+            $scope.currentEditArea[index].editing=false;
+        };
+        /**
+         * 删除数据
+         * @param index 行下标
+         */
+        $scope.deleteItem=function(index){
+            $scope.serviceRequest.inspectionConfiguration.splice(index,1);
+        };
+        /**
+         * 新增按钮事件
+         */
+        $scope.addItem=function(){
+            $scope.editArea=true;
+            $scope.currentEditIndex=null;
+        };
+        /**
+         *
+         */
+        $scope.addSave=function(){
+            if($scope.currentEditIndex!=null){
+                $scope.serviceRequest.inspectionConfiguration[$scope.currentEditIndex]={
+                    inspectionPropertyId:$scope.currentEditArea.inspectionPropertyId,
+                    inspectionPlanId:$scope.currentEditArea.inspectionPlanId
+                };
+            }
+            else{
+                $scope.serviceRequest.inspectionConfiguration.push({
+                    inspectionPropertyId:$scope.currentEditArea.inspectionPropertyId,
+                    inspectionPlanId:$scope.currentEditArea.inspectionPlanId
+                });
+            }
+            $scope.currentEditArea={};
+            $scope.editArea=false;
+           ;
+            console.log( $scope.serviceRequest);
+        };
+        /*
+         * 新增取消
+         */
+        $scope.addCancel=function(){
+            $scope.editArea=false;
+            $scope.currentEditArea={};
+        };
+        /**新增结束**/
+
+            //查询所有的巡检方案
+        $http.get(url + '/InspectionPlan/listAllInspectionPlan').success(function(data) {
+            $scope.inspectionPlans= data.InspectionPlan;
+            console.log(data);
+        });
+
+
+        //新建巡检服务请求
+        $scope.saveServiceRequest=function(){
+            $scope.serviceRequest.serviceRequestType=9;//巡检
+
+            $http.post(url+'/ServiceRequest/insertInspectionPlan',{ServiceRequest:$scope.serviceRequest}).success(function()
+            {
+                $location.path("/index/serviceRequest/patrolManagement/serviceRequests/isGoingServiceRequest");
+
+            }).error(function(data, status, headers, config){
+                layer.alert("添加失败");
+            }) ;
+        };
+
+    }]);
+});

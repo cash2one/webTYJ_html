@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>工作台首页</title>
+</head>
+<body>
+<!--我的任务 -->
+<div class="col-lg-4 col-md-6 col-sm-6">
+    <div id="pannel">
+        <div class="title">
+            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                <h3>我的任务</h3>
+            </div>
+            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                <a ui-sref="index.workBench.myTask"><span class="glyphicon glyphicon-unchecked"></span></a>
+            </div>
+        </div>
+        <div class="pannel_content" ui-sref="index.workBench.myTask">
+            <ul>
+                <li><a href="javascript:void(0)">待处理：<span class="pull-right">{{toCompleted}}</span></a></li>
+                <li><a href="javascript:void(0)">处理中：<span class="pull-right">{{completed}}</span></a></li>
+                <li><a href="javascript:void(0)">历史任务：<span class="pull-right">{{notBeginning}}</span></a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!--我的任务 结束-->
+
+<!--任务池 -->
+<div class="col-lg-4 col-md-6 col-sm-6">
+    <div id="pannel">
+        <div class="title">
+            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                <h3>任务池</h3>
+            </div>
+            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                <a ui-sref="index.workBench.taskPools"><span class="glyphicon glyphicon-unchecked"></span></a>
+            </div>
+        </div>
+        <div class="pannel_content" ui-sref="index.workBench.taskPools" style="height:0px;overflow:scroll;overflow-x:hidden">
+            <ul>
+                <li ng-show="countGarden"><a href="javascript:void(0)">园林：<span class="pull-right">{{countGarden}}</span></a></li>
+                <li ng-show="countRepair"><a href="javascript:void(0)">维修：<span class="pull-right">{{countRepair}}</span></a></li>
+                <li ng-show="countProtect"><a href="javascript:void(0)">护管：<span class="pull-right">{{countProtect}}</span></a></li>
+                <li ng-show="countClean"><a href="javascript:void(0)">清洁：<span class="pull-right">{{countClean}}</span></a></li>
+                <li ng-show="countRevisit"><a href="javascript:void(0)">回访：<span class="pull-right">{{countRevisit}}</span></a></li>
+                <li ng-show="countComplain"><a href="javascript:void(0)">投诉：<span class="pull-right">{{countComplain}}</span></a></li>
+                <li ng-show="countWater"><a href="javascript:void(0)">抄水表：<span class="pull-right">{{countWater}}</span></a></li>
+                <li ng-show="countElectricity"><a href="javascript:void(0)">抄电表：<span class="pull-right">{{countElectricity}}</span></a></li>
+                <li ng-show="countClaim"><a href="javascript:void(0)">向业主索赔：<span class="pull-right">{{countClaim}}</span></a></li>
+                <li ng-show="countPay"><a href="javascript:void(0)">赔偿给业主：<span class="pull-right">{{countPay}}</span></a></li>
+                <li ng-show="countLot"><a href="javascript:void(0)">固定车位：<span class="pull-right">{{countLot}}</span></a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!--任务池 结束-->
+
+<!-- 集中处理处理管理项-->
+<div class="col-lg-4 col-md-6 col-sm-6">
+    <div id="pannel">
+        <div class="title">
+            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                <h3>集中处理项管理</h3>
+            </div>
+            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                <a ui-sref="index.workBench.focusOnManagement"><span class="glyphicon glyphicon-unchecked"></span></a>
+            </div>
+        </div>
+        <div class="pannel_content" ui-sref="index.workBench.focusOnManagement">
+            <ul>
+                <li><a href="javascript:void(0)">处理中：<span class="pull-right">{{countP}}</span></a></li>
+                <li><a href="javascript:void(0)">历史处理项：<span class="pull-right">{{countP3}}</span></a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!--集中处理处理管理项 结束-->
+
+<!-- 专项资金处理管理项-->
+<div class="col-lg-4 col-md-6 col-sm-6">
+    <div id="pannel">
+        <div class="title">
+            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                <h3>专项资金处理项管理</h3>
+            </div>
+            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                <a ui-sref="index.workBench.specialProjectManagement"><span class="glyphicon glyphicon-unchecked"></span></a>
+            </div>
+        </div>
+        <div class="pannel_content" ui-sref="index.workBench.specialProjectManagement">
+            <ul>
+                <li><a href="javascript:void(0)">处理中：<span class="pull-right">{{countS}}</span></a></li>
+                <li><a href="javascript:void(0)">历史专项：<span class="pull-right">{{countS3}}</span></a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!--专项资金处理管理项 结束-->
+
+<!--重大事项 -->
+<div class="col-lg-4 col-md-6 col-sm-6">
+    <div id="pannel">
+        <div class="title">
+            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                <h3>重大事项</h3>
+            </div>
+            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                <span class="glyphicon glyphicon-unchecked"></span>
+            </div>
+        </div>
+        <!--<div class="pannel_content" ui-sref="index.serviceRequest.majorIssuesManagement.majorIssuesList">-->
+        <div class="pannel_content" ui-sref="index.workBench.majorEvent">
+            <!-- <div class="row">
+                 <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                     状态
+                 </div>
+                 <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 text-right">
+                     {{items.evtStatCd}}
+                 </div>
+             </div>
+             <div class="row">
+                 <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                     事项标题
+                 </div>
+                 <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 text-right">
+                     {{items.commentsName}}
+                 </div>
+             </div>
+             <div class="row">
+                 <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                     事项描述
+                 </div>
+                 <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 text-right">
+                     {{items.commentsLong | limitTo:4}}...
+                 </div>
+             </div>
+             <div class="row">
+                 <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                     时间
+                 </div>
+                 <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 text-right">
+                     {{items.created | date:"yyyy-MM-dd"}}
+                 </div>
+             </div>-->
+            <ul>
+                <!--<li><a href="javascript:void(0)">待处理：<span class="pull-right">{{company.companyName}}</span></a></li>-->
+                <li><a href="javascript:void(0)">处理中：<span class="pull-right">{{goingEventSum}}</span></a></li>
+                <li><a href="javascript:void(0)">历史任务：<span class="pull-right">{{endEventSum}}</span></a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!--重大事项 结束-->
+
+<!--审批代办-->
+<div class="col-lg-4 col-md-6 col-sm-6">
+    <div id="pannel">
+        <div class="title">
+            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                <h3>审批代办</h3>
+            </div>
+            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                <a ui-sref="index.workBench.approvalPending"><span class="glyphicon glyphicon-unchecked"></span></a>
+            </div>
+        </div>
+        <div class="pannel_content" ui-sref="index.workBench.approvalPending">
+
+        </div>
+    </div>
+</div>
+<!--审批代办-结束-->
+
+</body>
+</html>

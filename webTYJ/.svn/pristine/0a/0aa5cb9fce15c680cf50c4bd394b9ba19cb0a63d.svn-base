@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<!--&lt;!&ndash;  办事处级，公司级全选反选效果start  &ndash;&gt;-->
+<script type="text/javascript">
+    // 选择或者反选 checkbox
+    function CheckSelect(thisform,flag)
+    {
+        // 遍历 form
+        for ( var i = 0; i < thisform.elements.length; i++)
+        {
+            // 提取控件
+            var checkbox = thisform.elements[i];
+            // 检查是否是指定的控件
+            if(flag === 1){
+                if (checkbox.name === "checkbox" && checkbox.type === "checkbox" && checkbox.checked === false)
+                {
+                    // 正选
+                    checkbox.checked = true;
+                } else if(checkbox.name ==="checknonalls"){
+                    checkbox.checked = false;
+                }
+            } else if(flag === 0){
+                if(checkbox.name === "checkbox" && checkbox.type === "checkbox" && checkbox.checked === true){
+                    checkbox.checked = false;
+                } else if(checkbox.name === "checkalls"){
+                    checkbox.checked = false;
+                }
+            }
+        }
+    }
+</script>
+<!--办事处级，公司级全选反选效果end办事处级，公司级全选反选效果end-->
+<!--右侧正文内容 开始-->
+<div id="content-first">
+    <div id="tab">
+        <a lang="no">审核待办</a>
+    </div>
+    <div class="sel_top">
+        <div class="row">
+            <div class="col-lg-8 col-md-6 col-sm-6">
+                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="openPending()">
+
+                    打开
+                </button>
+                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="restart()">
+
+                    重新分配
+                </button>
+
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-4">
+                <input class="form-control" ng-model="pendingApproval.theme" placeholder="请输入申请主题"/>
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2">
+                <button type="button" class="btn btn-default btn-primary" ng-click="searchPaginator._load();">
+                    <span class="glyphicon glyphicon-search btn_icon"></span>
+                    搜索
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="row padding">
+        <div class="col-lg-12">
+            <table>
+                <tr>
+                    <thead>
+                    <th></th>
+                    <th>主题</th>
+                    <th>类型</th>
+                    <th>申请人</th>
+                    <th>申请时间</th>
+                    <th>状态</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="item in searchPaginator.object.pendingApprovals" ng-show="item.personVip.vipId!=null">
+                    <td><input type="checkbox" id="{{item.personVip.vipId}}" ng-click="getData1(item)"></td>
+                    <td>{{item.personVip.theme}}</td>
+                    <td ng-switch on="item.personVip.applystype">
+                        <span ng-switch-when="0">vip申请</span>
+                        <span ng-switch-when="1">vip失效申请</span>
+                        <span ng-switch-when="2">重点客户申请</span>
+                        <span ng-switch-when="3">重点客户失效申请</span>
+                    </td>
+                    <td>{{item.personVip.name}}</td>
+                    <td>{{item.personVip.vipStart|date:'yyyy-MM-dd'}}</td>
+
+                    <td  ng-switch on="item.personVip.reviewState">
+                        <span ng-switch-when="0">待审核</span>
+                        <span ng-switch-when="1">完成</span>
+                        <span ng-switch-when="2">驳回</span>
+                    </td>
+                </tr>
+                <tr ng-repeat="items in searchPaginator.object.pendingApprovals" ng-show="items.personEmphasis.emphasisId!=null">
+                    <td><input type="checkbox" id="{{items.personEmphasis.emphasisId}}" ng-click="getData1(items)"></td>
+                    <td>{{items.personEmphasis.theme1}}</td>
+                    <td ng-switch on="items.personEmphasis.applystype1">
+                        <span ng-switch-when="0">vip申请</span>
+                        <span ng-switch-when="1">vip失效申请</span>
+                        <span ng-switch-when="2">重点客户申请</span>
+                        <span ng-switch-when="3">重点客户失效申请</span>
+                    </td>
+                    <td>{{items.personEmphasis.username}}</td>
+
+                    <td>{{items.personEmphasis.applydate|date:'yyyy-MM-dd'}}</td>
+
+                    <td ng-switch on="items.personEmphasis.applystatus">
+                        <span ng-switch-when="0">待审核</span>
+                        <span ng-switch-when="1">完成</span>
+                        <span ng-switch-when="2">驳回</span>
+                    </td>
+                </tr>
+
+                </tbody>
+            </table>
+            <div class="bill_paging">
+                <ul class="pagination">
+                    <li><a style="cursor:pointer;" ng-click="searchPaginator.go(1)">首页</a></li>
+                    <li><a style="cursor:pointer;" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a></li>
+                    <li><a style="cursor:pointer;" ng-repeat="i in searchPaginator.pages"  ng-click="searchPaginator.go(i)">{{i}}</a></li>
+                    <li><a style="cursor:pointer;" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a></li>
+                    <li><a style="cursor:pointer;" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<!--&lt;!&ndash;右侧正文内容 END&ndash;&gt;-->
+
+<!--&lt;!&ndash;详细信息模态框&ndash;&gt;-->
+<div class="modal fade" id="show" role="dialog" aria-label="personDatil" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>详细信息：</span>
+                <button type="button" class="close" ng-click="cancle3()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                    <div class="sel">
+                        <div class="row search-padding-10">
+                            <div class="col-lg-3 col-md-3 col-md-3">
+                                记录：{{num}}/{{total}}
+                            </div>
+                            <div class="col-lg-9 col-md-9 col-md-9 text-right">
+                                <button type="button" class="btn btn-default btn-primary"  ng-click="next()">下一条 </button>
+                                <button type="button" class="btn btn-default btn-primary" ng-click="getPass()">通过 </button>
+                                <button type="button" class="btn btn-default btn-primary" ng-click="getNoPass()">不通过 </button>
+                                <button type="button" class="btn btn-default btn-primary" ng-click="back()">返回 </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class=" sel1">
+                        <div class="row" ng-show="showData.personVip.vipId!=null">
+                            <div class="row sel">
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right search-padding-10">
+                                    申请人：
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4  search-padding-10">
+                                    {{showData.personVip.name}}
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right search-padding-10">
+                                    申请人号码：
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4   search-padding-10">
+                                    {{showData.personCustNew.registerPhone}}
+                                </div>
+                                <div class="clear"></div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right search-padding-10">
+                                    证件号码：
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4  search-padding-10">
+                                    {{showData.personCustNew.cardNum}}
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right search-padding-10">
+                                    推荐人：
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4  search-padding-10">
+                                    {{showData.teamworkstaff.staffName}}
+                                </div>
+                                <div class="clear"></div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right search-padding-10">
+                                    联系电话：
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4  search-padding-10">
+                                    {{showData.teamworkstaff.telphone}}
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right search-padding-10">
+                                    部门：
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4  search-padding-10">
+                                    {{showData.teamworkstaff.specialtyName}}
+                                </div>
+                                <div class="clear"></div>
+
+
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right search-padding-10">
+                                    申请时间：
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4  search-padding-10">
+                                    {{showData.personVip.vipStart|date:'yyyy-MM-dd'}}
+                                </div>
+
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right search-padding-10">
+                                    申请类型：
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4  search-padding-10">
+                                <span ng-switch on="showData.personVip.applystype ">
+                                        <span ng-switch-when="0">vip申请</span>
+                                        <span ng-switch-when="1">vip失效申请</span>
+                                    </span>
+                                </div>
+                                <div class="clear"></div>
+
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right search-padding-10">
+                                    申请理由：
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4  search-padding-10">
+                                    {{showData.personVip.applyReason}}
+                                </div>
+                                <div class="clear"></div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right search-padding-10">
+                                    附件：
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4  search-padding-10">
+                                    <a  ng-repeat="item in showData.vipList"  ng-show="item.annexAddress != null&&item1.annexAddress!=''">
+                                        <img src={{fileUrl}}/{{item.annexAddress}} width="80px" height="80px">
+                                    </a>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row" ng-show="showData.personEmphasis.emphasisId!=null" >
+                            <div class="row sel">
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right search-padding-10">
+                                    申请人：
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4  search-padding-10">
+                                    {{showData.personEmphasis.username}}
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right search-padding-10">
+                                    申请人号码：
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4   search-padding-10">
+                                    {{showData.personEmphasis.phonenum}}
+                                </div>
+                                <div class="clear"></div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right search-padding-10">
+                                    证件号码：
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4  search-padding-10">
+                                    {{showData.personEmphasis.idcard}}
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right search-padding-10">
+                                    申请时间：
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4  search-padding-10">
+                                    {{showData.personEmphasis.applydate|date:'yyyy-MM-dd'}}
+                                </div>
+                                <div class="clear"></div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right search-padding-10">
+                                    申请类型：
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4  search-padding-10">
+                              <span ng-switch on="showData.personEmphasis.applystype1 ">
+                                        <span ng-switch-when="2">重点客户申请</span>
+                                        <span ng-switch-when="3">重点客户失效申请</span>
+                                    </span>
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right search-padding-10">
+                                    申请理由：
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4  search-padding-10">
+                                    {{showData.personEmphasis.applyreason}}
+                                </div>
+                                <div class="clear"></div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right search-padding-10">
+                                    附件：
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4  search-padding-10">
+                                    <a  ng-repeat="item in showData.emphasisList"  ng-show="item.annexAddress != null&&item1.annexAddress!=''">
+                                        <img src={{fileUrl}}/{{item.annexAddress}} width="80px" height="80px">
+                                    </a>
+                                </div>
+
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="" class="btn btn-default"  ng-click="cancle1()">取消</a>
+                <a href="" class="btn btn-primary" aria-label="Close" ng-click="cancle2()">关闭</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="restart" role="dialog" aria-label="personDatil" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="sel1">
+                    <select class="form-control" ng-model="pendingApproval.types" ng-options="option.id as option.name for option in pendingApproval.type">
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <a href="" class="btn btn-default" data-dismiss="modal">取消</a>
+                <a href="" class="btn btn-primary" data-dismiss="modal" aria-label="Close" ng-click="searchPaginator._load();">确认</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--&lt;!&ndash;弹出填写审核未通过原因模态框&ndash;&gt;-->
+<div class="modal fade" id="inputReason" role="dialog" aria-label="personDatil" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="width: 800px">
+            <div class="modal-header" style="background-color: white;height: 50px">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="col-lg-12 col-md-12 col-sm-6">
+                    <div class="custumer_info">
+                        <div><span>审核未通过原因：</span></div>
+                        <div>
+                            <textarea ng-model="personEmphasis.failreason" style="width: 95%;"></textarea>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" name="btn" class="btn bg-primary" data-dismiss="modal" ng-click="updatePerson()">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--&lt;!&ndash;弹出填写审核未通过原因模态框&ndash;&gt;-->
+<div class="modal fade" id="Reason" role="dialog" aria-label="personDatil" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>审核</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="col-lg-12 col-md-12 col-sm-6">
+                    <div class="sel1">
+                        <div><span>审核未通过原因：</span></div>
+                        <div>
+                            <textarea ng-model="personVip.refuseReason" class="text_min"></textarea>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" name="btn" class="btn bg-primary" data-dismiss="modal" ng-click="update()">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--&lt;!&ndash;弹出查看模态框&ndash;&gt;-->
+<div class="modal fade" id="personDatil" role="dialog" aria-label="personDatil" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" >
+            <div class="modal-header" >
+                <span>信息</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                    <div class="sel1"><form>
+                        <p>请选择享受范围区域：</p>
+                        <div class="col-md-3">
+                            <input type="checkbox" class="checkboxa" name="checkalls" onclick="CheckSelect(this.form,1)">公司级
+                        </div>
+                        <div class="col-md-3">
+                            <input type="checkbox" class="checkboxa" name="checknonalls" onclick="CheckSelect(this.form,0)"> 办事处级
+                        </div>
+                        <div class="clear"></div>
+                        <div class="col-md-3" ng-repeat="ip in Project" >
+                            <input type="checkbox" class="checkboxa" name="checkbox" id="{{ip.projectId}}" />{{ip.projectName}}
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            请选择负责专员：
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <select ng-model="staffid" class="form-control">
+                                <option ng-repeat="is in Staff" value="{{is.staffId}}">{{is.staffName}}</option>
+                            </select>
+                            </p>
+                        </div></form>
+                    </div>
+                </div>
+                <div class="clear"></div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close">关闭</button>
+                <button type="button" class="btn bg-primary" ng-click="addVipProStaff(per.vipId)">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

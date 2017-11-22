@@ -1,0 +1,314 @@
+<!--
+    创建人：彭婷婷
+    创建时间：2015-10-10
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>账单查询</title>
+</head>
+<body>
+<div class="sel">
+    <div class="row search-padding-10">
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            账单编号：
+        </div>
+        <div class="col-lg-2 col-md-4 col-sm-4">
+            <input type="text" class="form-control" placeholder="请输入账单编号" ng-model="bill.billNum">
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            客户姓名：
+        </div>
+        <div class="col-lg-2 col-md-4 col-sm-4">
+            <input type="text" class="form-control" placeholder="请输入客户姓名" ng-model="bill.custName">
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            证件号：
+        </div>
+        <div class="col-lg-2 col-md-4 col-sm-4">
+            <input type="text" class="form-control" placeholder="请输入客户证件号" ng-model="bill.cardNum">
+        </div>
+        <div class="col-lg-3 col-md-2 col-sm-2 text-right">
+            <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="searchData()">
+                <span class="glyphicon glyphicon-search btn_icon"></span>
+                搜索
+            </button>
+        </div>
+        <!--
+            <div class="search-padding-10" style="float: right">
+                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="listview()">
+                    <span class="glyphicon glyphicon-th-list btn_icon"></span>
+                    列表
+                </button>
+                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="tabview()">
+                    <span class="glyphicon glyphicon-th-large btn_icon"></span>
+                    网格
+                </button>
+            </div>
+            -->
+    </div>
+</div>
+<div class="row padding">
+    <div class="col-lg-12">
+        <div class="col-lg-12 text-right">单位：元</div>
+        <!--<table ng-show="showStatus==1">-->
+        <table>
+            <thead>
+            <tr>
+                <th>账单时间</th>
+                <th>账单编号</th>
+                <th>地址</th>
+                <th>本期应收金额</th>
+                <th>本期应收余额</th>
+                <th>上期未结清累计金额</th>
+                <th>违约金</th>
+                <th>本期欠款累计金额</th>
+
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="item in searchPaginator.object.bills" ng-class="{'this_info':btnIndex==item.buildingId}" ng-show="item.billNum!=null" ng-click="showBills(item)">
+            <tr ng-repeat="item in searchPaginator.object.bills" ng-class="{'this_info':btnIndex==item.buildingId}" ng-show="item.buildingId!=null" ng-click="showBills(item)">
+                <td>{{item.billDate | date : 'yyyy-MM-dd'}}</td>
+                <td>{{item.billNum}}</td>
+                <td>{{item.fullName}}</td>
+                <td>{{item.totalCurrentSum|number:2}}</td>
+                <!-- 本期应收余额=本期应收金额-已收金额+上期未结清金额+滞纳金=本期欠款金额-->
+                <td>{{item.totalCurrentOweSum|number:2}}</td>
+                <!--上期未结清累计金额=上月 本期欠款累计金额-->
+                <td>{{item.totalLastOweSum|number:2}}</td>
+                <td>{{item.totalOverdue|number:2}}</td>
+                <!--本期欠款累计金额=滞纳金+上期未结算金额+本期应收余额-->
+                <td>{{item.totalOverdue+item.totalLastOweSum+item.totalCurrentOweSum|number:2}}</td>
+            </tr>
+            <tr ng-if="searchPaginator.object.bills.length == null">
+                <td colspan="8">暂无数据！</td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="bill_paging">
+            <ul class="pagination">
+                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                    <a href="javascript:void(0)" ng-click="searchPaginator.go(1)">首页</a>
+                </li>
+                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                    <a href="javascript:void(0)" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a>
+                </li>
+                <li ng-class="{true:'active'}[searchPaginator.page.currentPage==i]" ng-repeat="i in searchPaginator.pages">
+                    <a href="javascript:void(0)"  ng-click="searchPaginator.go(i)">{{i}}</a>
+                </li>
+                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                    <a href="javascript:void(0)" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a>
+                </li>
+                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                    <a href="javascript:void(0)" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a>
+                </li>
+            </ul>
+            <span>共{{searchPaginator.object.page.totalResult}}条</span>
+        </div>
+    </div>
+</div>
+<div id="now" ng-show="show1">
+    <div class="sel">
+        <div class="row search-padding-10">
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                账单编号：{{info.billNum}}
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                总欠款：{{info.total|number:2}}
+            </div>
+        </div>
+    </div>
+    <div class="row padding">
+        <div class="col-lg-12">
+            <div class="col-lg-12 ">本月明细：</div>
+            <div class="search-padding-10 col-lg-6 ">
+                <button type="button" class="btn btn-default btn-primary" ng-click="addCart()">添加到购物车</button>
+                <button type="button" class="btn btn-default btn-primary" ng-click="showHistory()">查询历史明细</button>
+            </div>
+            <div class="col-lg-6 text-right">单位：元</div>
+            <table>
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>出账时间</th>
+                    <th>应收月份</th>
+                    <th>收费单号</th>
+                    <th>收费项目</th>
+                    <th>本期应收金额</th>
+                    <th>本期应收余额</th>
+                    <th>上期未结清累计金额</th>
+                    <th>违约金</th>
+                    <th>本期欠款累计金额</th>
+                   <!-- <th>可抵扣金额</th>-->
+                   <!-- <th>通用金额</th>-->
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="item in searchPaginator1.object.bills"  ng-class="{'this_info':btnIndex==item.chargeTypeId}" ng-show="item.billId!=null" ng-click="getWaterDetails(item)">
+                    <td ng-click="getData(item)"><input type="checkbox" id="{{item.billId}}"  ></td>
+                    <td>{{item.billDate | date : 'yyyy-MM-dd'}}</td>
+                    <td>{{item.billDate | date : 'yyyy-MM'}}</td>
+                    <td>{{item.billNum}}</td>
+                    <td>{{item.chargeTypeName}}</td>
+                    <td>{{item.totalCurrentSum|number:2}}</td>
+                    <!-- 本期应收余额=本期应收金额-已收金额+上期未结清金额+滞纳金=本期欠款金额-->
+                    <td>{{item.totalCurrentOweSum|number:2}}</td>
+                    <!--上期未结清累计金额=上月 本期欠款累计金额-->
+                    <td>{{item.totalLastOweSum|number:2}}</td>
+                    <td>{{item.totalOverdue|number:2}}</td>
+                    <!--本期欠款累计金额=滞纳金+上期未结算金额+本期应收余额-->
+                    <td>{{item.totalOverdue+item.totalLastOweSum+item.totalCurrentOweSum|number:2}}</td>
+                    <!--可抵扣金额 -->
+                  <!--  <td>{{item.disposableBalance|number:2}}</td>-->
+                    <!--通用金额 -->
+                   <!-- <td>{{item.generalBalance|number:2}}</td>-->
+                </tr>
+                <tr ng-if="searchPaginator1.object.bills.length == null">
+                    <td colspan="9">暂无数据！</td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="bill_paging">
+                <ul class="pagination">
+                    <li ng-class="{true:'disabled'}[searchPaginator1.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-click="searchPaginator1.go(1)">首页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchPaginator1.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-show="searchPaginator1.hasPrevious()" ng-click="searchPaginator1.previous()">上一页</a>
+                    </li>
+                    <li ng-class="{true:'active'}[searchPaginator1.page.currentPage==i]" ng-repeat="i in searchPaginator1.pages">
+                        <a href="javascript:void(0)"  ng-click="searchPaginator1.go(i)">{{i}}</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchPaginator1.page.currentPage==searchPaginator1.page.totalPage]">
+                        <a href="javascript:void(0)" ng-show="searchPaginator1.hasNext()" ng-click="searchPaginator1.next()">下一页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchPaginator1.page.currentPage==searchPaginator1.page.totalPage]">
+                        <a href="javascript:void(0)" ng-click="searchPaginator1.go(searchPaginator1.page.totalPage)">尾页</a>
+                    </li>
+                </ul>
+                <span>共{{searchPaginator1.object.page.totalResult}}条</span>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="ago" ng-show="show2">
+    <div class="row padding">
+        <div class="col-lg-6 search-padding-10">
+            <span class="tab-btn">历史明细：</span>
+        </div>
+        <div class="col-lg-6 text-right">单位：元</div>
+        <div class="col-lg-12">
+            <table>
+                <thead>
+                <tr>
+                    <th>出账时间</th>
+                    <th>应收月份</th>
+                    <th>收费单号</th>
+                    <th>收费项目</th>
+                    <th>本期应收金额</th>
+                    <th>本期应收余额</th>
+                    <th>上期未结清累计金额</th>
+                    <th>违约金</th>
+                    <th>本期欠款累计金额</th>
+                   <!-- <th>可抵扣金额</th>-->
+                    <!--<th>通用金额</th>-->
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="item in searchPaginator2.object.bills" ng-show="item.billId!=null" ng-click="getWaterDetails(item)">
+                    <td>{{item.billDate | date : 'yyyy-MM-dd'}}</td>
+                    <td>{{item.billDate | date : 'yyyy-MM'}}</td>
+                    <td>{{item.billNum}}</td>
+                    <td>{{item.chargeTypeName}}</td>
+                    <td>{{item.currentSum|number:2}}</td>
+                    <!-- 本期应收余额=本期应收金额-已收金额+上期未结清金额+滞纳金=本期欠款金额-->
+                    <td>{{item.currentOweSum|number:2}}</td>
+                    <!--上期未结清累计金额=上月 本期欠款累计金额-->
+                    <td>{{item.lastOweSum|number:2}}</td>
+                    <td>{{item.overdue|number:2}}</td>
+                    <!--本期欠款累计金额=滞纳金+上期未结算金额+本期应收余额-->
+                    <td>{{item.overdue+item.lastOweSum+item.currentOweSum|number:2}}</td>
+                    <!--可抵扣金额 -->
+                   <!-- <td>{{item.disposableBalance|number:2}}</td>-->
+                    <!--通用金额 -->
+                   <!-- <td>{{item.generalBalance|number:2}}</td>-->
+                </tr>
+                </tbody>
+            </table>
+            <div class="bill_paging">
+                <ul class="pagination">
+                    <li ng-class="{true:'disabled'}[searchPaginator2.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-click="searchPaginator2.go(1)">首页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchPaginator2.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-show="searchPaginator2.hasPrevious()" ng-click="searchPaginator2.previous()">上一页</a>
+                    </li>
+                    <li ng-class="{true:'active'}[searchPaginator2.page.currentPage==i]" ng-repeat="i in searchPaginator2.pages">
+                        <a href="javascript:void(0)"  ng-click="searchPaginator2.go(i)">{{i}}</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchPaginator2.page.currentPage==searchPaginator2.page.totalPage]">
+                        <a href="javascript:void(0)" ng-show="searchPaginator2.hasNext()" ng-click="searchPaginator2.next()">下一页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchPaginator2.page.currentPage==searchPaginator2.page.totalPage]">
+                        <a href="javascript:void(0)" ng-click="searchPaginator2.go(searchPaginator2.page.totalPage)">尾页</a>
+                    </li>
+                </ul>
+                <span>共{{searchPaginator2.object.page.totalResult}}条</span>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!--水费详情的模态框-->
+<div class="modal fade" id="waterDetailsModal" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" id="myModalLabel" ng-modle="chargeTypeName">
+                    {{chargeTypeName}}详情
+                </h4>
+            </div>
+            <div class="modal-body">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>收费项目</th>
+                        <th>本期应收金额</th>
+                        <!--<th>本期应收余额</th>-->
+                        <!--<th>上期未结清累计金额</th>-->
+                        <!-- <th>违约金</th>-->
+                        <!--<th>本期欠款累计金额</th>-->
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="item in searchPaginator3.object.bills"  ng-show="item.billId!=null">
+                        <td>{{item.chargeTypeDetailsName}}</td>
+                        <td>{{item.currentSum|number:2}}</td>
+                        <!-- 本期应收余额=本期应收金额-已收金额+上期未结清金额+滞纳金=本期欠款金额-->
+                       <!-- <td>{{item.currentOweSum|number:2}}</td>-->
+                         <!--上期未结清累计金额=上月 本期欠款累计金额-->
+                        <!--<td>{{item.lastOweSum|number:2}}</td>-->
+                        <!--<td>{{item.overdue|number:2}}</td>-->
+                        <!--本期欠款累计金额=滞纳金+上期未结算金额+本期应收余额-->
+                        <!-- <td>{{item.overdue+item.lastOweSum+item.currentOweSum|number:2}}</td>-->
+                     </tr>
+                     </tbody>
+                 </table>
+                 <div class="modal-footer">
+                     <button type="button" class="btn btn-default"
+                             data-dismiss="modal">关闭
+                     </button>
+                 </div>
+             </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+        </div>
+    </div>
+</body>
+</html>

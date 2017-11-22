@@ -1,0 +1,693 @@
+<!--
+    页面名称：【建筑组件初始化】组件列表
+    撰写人：朱伟
+-->
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>组件列表(建筑组件初始化)</title>
+    <link rel="stylesheet" href="bower_components/skins/zyupload-1.0.0.min.css " type="text/css">
+    <!--<script type="text/javascript" src="bower_components/zyupload-1.0.0.min.js"></script>-->
+    <link rel="stylesheet" href="css/ztree/ztreeAssets.css" type="text/css">
+    <link rel="stylesheet" href="css/ztree/zTreeStyle.css" type="text/css">
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.core-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.excheck-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.exedit-3.5.js"></script>
+    <script>
+        var setting = {
+            view: {
+                dblClickExpand: false
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            },
+            callback: {
+                beforeClick: beforeClick,
+                onClick: onClick
+            }
+
+        };
+        function beforeClick(treeId, treeNode) {
+            var check = (treeNode && !treeNode.isParent && treeNode.types != 'pt');
+            if (!check){
+                //修改提示方式，保证下拉树不会隐藏  王洲  2016.1.11
+                layer.msg("只能选择资产！",{icon:0,time : 1000});
+            }
+            return check;
+        }
+
+        function onClick(e, treeId, treeNode) {
+            var zTree = $.fn.zTree.getZTreeObj("treeDemo"),
+
+                    nodes = zTree.getSelectedNodes(),
+                    v = "";
+            var t ="";
+            nodes.sort(function compare(a,b){return a.id-b.id;});
+            for (var i=0, l=nodes.length; i<l; i++) {
+                v += nodes[i].name + ",";
+                t+= nodes[i].id + ",";
+            }
+            if (v.length > 0 ) v = v.substring(0, v.length-1);
+            if (t.length > 0 ) t = t.substring(0, t.length-1);
+            $("#citySel").val(v);
+            $("#propertyId").val(t);
+        }
+        /*Bug 570
+         修改人：陈浪
+         2016年2月19*/
+        var num=1;
+        function showMenu() {
+            var cityObj = $("#citySel");
+            var cityOffset = $("#citySel").offset();
+            num++;
+            if(num%2==0){
+                $("#menuContent").css({left:cityOffset.left + "px", top:cityOffset.top + cityObj.outerHeight() + "px"}).slideDown("fast");
+            }else{
+                hideMenu();
+            }
+            $("body").bind("mousedown", onBodyDown);
+        }
+        function hideMenu() {
+            $("#menuContent").fadeOut("fast");
+            $("body").unbind("mousedown", onBodyDown);
+        }
+        function onBodyDown(event) {
+            if (!(event.target.id == "menuBtn" || event.target.id == "menuContent" || $(event.target).parents("#menuContent").length>0)) {
+                hideMenu();
+            }
+        }
+    </script>
+</head>
+<body>
+            <!--合同内容模板列表-->
+                <!--配置数据-->
+            <div class="row padding">
+                <div class="col-lg-12">
+                    <div class="search-padding-10 col-lg-10">
+                        <button type="button" class="btn btn-default btn-primary" ng-click="doClick(1)" ui-sref="index.baseManagement.buildingInitialization.buildingDetails">
+                            <span class="glyphicon glyphicon-plus btn_icon"></span>新增 </button>
+                        <button type="button" class="btn btn-default btn-primary" ng-click="updateBuildingComponent(-1)" ng-show="grid == false">
+                            <span class="glyphicon glyphicon-edit btn_icon"  ></span>编辑 </button>
+                        <button type="button" class="btn btn-default btn-primary" ng-click="deleteBuildingComponent(-1)" ng-show="grid == false">
+                            <span class="glyphicon glyphicon-remove btn_icon"></span>删除 </button>
+                        <input type="hidden" id="fileurl" value="{{fileUrl}}">
+                        <button type="button" data-toggle="modal" class="btn btn-default btn-primary" onclick="exportExcel()">模板下载</button>
+                        <button type="button" data-toggle="modal" class="btn btn-default btn-primary" href="#importExcel" ng-click="inportExcel()">导入</button>
+                        <button type="button" data-toggle="modal" class="btn btn-default btn-primary"  ng-click="exportComponent()">导出</button>
+                    </div>
+                    <div class="col-lg-2 col-md-6 col-sm-6 text-right">
+                        <button type="button" class="btn btn-default btn-primary" ng-click="showGrid(1)" >
+                            <span class="glyphicon glyphicon-th-large btn_icon"></span>
+                            网格
+                        </button>
+                        <button type="button" class="btn btn-default btn-primary" ng-click="showGrid(2)">
+                            <span class="glyphicon glyphicon-th-list btn_icon"></span>
+                            列表
+                        </button>
+                    </div>
+                    <table ng-show="grid == false">
+                        <thead>
+                        <tr>
+                            <th>操作</th>
+                            <th>序号</th>
+                            <th>组件编号</th>
+                            <th>组件名称</th>
+                            <th>创建人</th>
+                            <th>创建时间</th>
+                            <th>修改人</th>
+                            <th>修改时间</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr   ng-class="{'this_info ':btnIndex==c['componentId']}"   ng-dblclick="checkShow(c)" onclick="check(this)"  ng-click="getdata(c,$event)" ng-repeat="c in currentBuildingComponent.object.buildingComponents | orderBy: '-sortDate'" ng-show="c.componentId != null">
+                            <td><input name="cid" type="checkbox" class="checkbox_info" onclick="check(this)" id="{{c.componentId}}" ng-click="getdata(c,$event)"></td>
+                            <td><input id="$index" type="hidden" value="{{c.componentId}}" />{{$index}}</td>
+                            <td>{{c.componentNum}}</td>
+                            <td>{{c.componentName}}</td>
+
+                            <td ng-if="c.createUser.loginName != null">{{c.createUser.loginName}}</td>
+                            <td ng-if="c.createUser.loginName== null">系统管理员</td>
+                            <td>{{c.createrDate | date:"yyyy-MM-dd HH:mm:ss"}}</td>
+                            <td  ng-if="c.updateUser.loginName != null || c.updateDate ==null">{{c.updateUser.loginName}}</td>
+                            <td  ng-if="c.updateUser.loginName== null && c.updateDate !=null">系统管理员</td>
+
+                            <td>{{c.updateDate | date:"yyyy-MM-dd HH:mm:ss"}}</td>
+                        </tr>
+                        <tr ng-if="currentBuildingComponent.object.buildingComponents.length == null">
+                            <td colspan="8">没有数据！</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <!-- 增加网格的显示与隐藏 朱琪 2016-2-2 17:16:03 -->
+                    <div class="col-lg-12" ng-show="grid == true">
+                        <div class="col-lg-4 col-md-4 col-sm-4 " ng-repeat="c in currentBuildingComponent.object.buildingComponents | orderBy: '-sortDate'" ng-show="c.componentId != null">
+                            <div id="pannel">
+                                <div class="title">
+                                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">组件信息</div>
+                                    <div class="downList">
+                                        <div class="col-xs-12 col-lg-12 col-md-12 col-sm-12 text-right" >
+                                            <span class="glyphicon glyphicon-chevron-down" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ></span>
+                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1" ><!--  网格下的编辑和删除增加手型显示  王洲  2016.04.12  -->
+                                                <li><a data-toggle="modal" ng-click="updateBuildingComponent(c.componentId)" style="cursor: pointer">编辑</a></li>
+                                                <li><a data-toggle="modal" ng-click="deleteBuildingComponent(c)" style="cursor: pointer">删除</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="pannel_content">
+                                    <div class="col-lg-12">
+                                        <div class="col-lg-6 col-md-6 col-sm-6 text-right">序号：</div>
+                                        <div class="col-lg-6 col-md-6 col-sm-6">{{$index}}</div>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <div class="col-lg-6 col-md-6 col-sm-6 text-right">组件编号：</div>
+                                        <div class="col-lg-6 col-md-6 col-sm-6">{{c.componentNum}}</div>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <div class="col-lg-6 col-md-6 col-sm-6 text-right">组件名称：</div>
+                                        <div class="col-lg-6 col-md-6 col-sm-6">{{c.componentName}}</div>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <div class="col-lg-6 col-md-6 col-sm-6 text-right">创建人：</div>
+                                        <div class="col-lg-6 col-md-6 col-sm-6" ng-if="c.createUser.staff != null">{{c.createUser.staff.staffName}}</div>
+                                        <div class="col-lg-6 col-md-6 col-sm-6" ng-if="c.createUser.staff == null">系统管理员</div>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <div class="col-lg-6 col-md-6 col-sm-6 text-right">创建时间：</div>
+                                        <div class="col-lg-6 col-md-6 col-sm-6">{{c.createrDate | date:"yyyy-MM-dd HH:mm:ss"}}</div>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <div class="col-lg-6 col-md-6 col-sm-6 text-right">修改人：</div>
+                                        <div class="col-lg-6 col-md-6 col-sm-6"  ng-if="c.createUser.staff != null && c.updateDate !=null">{{c.updateUser.staff.staffName}}</div>
+                                        <div class="col-lg-6 col-md-6 col-sm-6"  ng-if="c.createUser.staff == null && c.updateDate !=null">系统管理员</div>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <div class="col-lg-6 col-md-6 col-sm-6 text-right">修改时间：</div>
+                                        <div class="col-lg-6 col-md-6 col-sm-6">{{c.updateDate | date:"yyyy-MM-dd HH:mm:ss"}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-sm-6" ng-show="currentBuildingComponent.object.buildingComponents.length == null && grid == true">
+                        <div id="pannel">
+                            <div class="title">
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                    <h3>组件信息</h3>
+                                </div>
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                   <!-- <span class="glyphicon glyphicon-search"></span>-->
+                                </div>
+                            </div>
+                            <div class="pannel_content">
+                                <div class="row">
+                                    <div class="col-xs-8 col-lg-8 col-md-8">
+                                        <div class="row search-padding 10">
+                                            暂无数据！
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="padding">
+                    <div class="bill_paging">
+                        <span>共{{currentBuildingComponent.object.page.totalResult}}条</span>
+                        <ul class="pagination">
+                            <li ng-class="{true:'disabled'}[currentBuildingComponent.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-click="currentBuildingComponent.go(1)">首页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[currentBuildingComponent.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-show="currentBuildingComponent.hasPrevious()" ng-click="currentBuildingComponent.previous()">上一页</a>
+                            </li>
+                            <li ng-class="{true:'active'}[currentBuildingComponent.page.currentPage==i]" ng-repeat="i in currentBuildingComponent.pages">
+                                <a href="javascript:void(0)"  ng-click="currentBuildingComponent.go(i)">{{i}}</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[currentBuildingComponent.page.currentPage==currentBuildingComponent.page.totalPage]">
+                                <a href="javascript:void(0)" ng-show="currentBuildingComponent.hasNext()" ng-click="currentBuildingComponent.next()">下一页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[currentBuildingComponent.page.currentPage==currentBuildingComponent.page.totalPage]">
+                                <a href="javascript:void(0)" ng-click="currentBuildingComponent.go(currentBuildingComponent.page.totalPage)">尾页</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+                <!--配置数据结束-->
+
+<!--右侧内容结束-->
+    <!--新增建筑模态框弹出信息-->
+    <div class="modal fade" id="chooseBuildingComponent" role="dialog" aria-label="myModalLabel" aria-hidden="true" ng-show="buildingComponentEdit" backdrop="static">
+        <div class="modal-dialog" style="width: 1000px;">
+            <div class="modal-content" style="width: auto">
+                <div class="modal-header">
+                    组件详情
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <!--
+                <div class="modal-body">
+                    <div class="padding">
+                        <div class="sel1">
+                            <div class="row search-padding-10">
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                    编号：
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    {{buildingComponent.componentNum}}
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                    名称：
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    {{buildingComponent.componentName}}
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                    类型：
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    {{buildingComponent.areaTypeName}}
+                                </div>
+                            </div>
+                        </div>
+                            面积属性数据录入
+                        <div class="professional_initialize">
+                            <ul>
+                                <li class="professional_width_20">编号</li>
+                                <li class="professional_width_20">名称</li>
+                                <li class="professional_width_20">规格</li>
+                                <li class="professional_width_20">数量</li>
+                                <li class="professional_width_20">单位</li>
+                                <div class="clear"></div>
+                            </ul>
+                        </div>
+                        <div class="professional_initialize_height" ng-repeat="item in componentpropertys">
+                            <ul>
+                                <li class="professional_width_20_left"><b>{{item.functionals.functionalNo}}</b></li>
+                                <li class="professional_width_20_left"><b>{{item.functionals.functionalName}}</b></li>
+                                <li class="professional_width_20"></li>
+                                <li class="professional_width_20"></li>
+                                <li class="professional_width_20"></li>
+                                <div class="clear"></div>
+                            </ul>
+                       </div>
+                        <div class="professional_initialize_height">
+                            <ul ng-show="item1.propertyTypeId!= null" ng-repeat="item1 in item.propertytype">
+                                <li class="professional_width_20_left"><span>&nbsp;{{item1.propertyTypeNumber}}</span></li>
+                                <li class="professional_width_20_left"><span>&nbsp;{{item1.propertyTypeName}}</span></li>
+                                <li class="professional_width_20"></li>
+                                <li class="professional_width_20"></li>
+                                <li class="professional_width_20"></li>
+                                <div class="clear"></div>
+
+                            <div class="professional_initialize_height" ng-repeat="iteme2 in item1.propertyTypes" ng-show="iteme2.propertyTypeId!= null">
+                                <ul>
+                                    <li class="professional_width_20"><span>{{iteme2.propertyTypeNumber}}</span></li>
+                                    <li class="professional_width_20"><span>{{iteme2.propertyTypeName}}</span></li>
+                                    <li class="professional_width_20"></li>
+                                    <li class="professional_width_20"></li>
+                                    <li class="professional_width_20"></li>
+                                    <div class="clear"></div>
+                                </ul>
+                                <div class="professional_initialize_height">
+                                    <ul ng-repeat="itemses in iteme2.propertys" ng-show="itemses.propertyId!= null">
+                                        <li class="professional_width_20_right"><span>{{itemses.propertyNumber}}</span></li>
+                                        <li class="professional_width_20_right"><span>{{itemses.propertyName}}</span></li>
+                                        <li class="professional_width_20_right"><span>{{itemses.propertySpecification}}</span></li>
+                                        <li class="professional_width_20_right"><span>{{itemses.num}}</span></li>
+                                        <li class="professional_width_20_right"><span>{{itemses.area}}</span></li>
+                                        <div class="clear"></div>
+                                    </ul>
+                                </div>
+                            </div>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+        -->
+                <div class="modal-body">
+                    <div class="padding">
+                        <div class="sel1">
+                            <form id="" name="mainForm" novalidate>
+                                <div class="row search-padding-10">
+                                    <!--
+                                    <input id="cpmponentnum" name="componentNum" class="form-control" type="text"  ng-model="buildingComponent.componentNum" value="{{buildingComponent.componentNum}}"required  />
+                                  -->
+                                    <!--<div class="col-lg-2 col-md-2 col-sm-2">
+                                        编号
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-3">
+
+                                        <input id="cpmponentnum" name="componentNum" class="form-control" type="text"  ng-model="buildingComponent.componentNum" value="{{buildingComponent.componentNum}}" required />
+                                        <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.componentNum.$dirty && mainForm.componentNum.$invalid">
+                                                <p class="alter" ng-show="mainForm.componentNum.$error.required">
+                                                    不能为空
+                                                </p>
+                                                <p class="alter" ng-show="mainForm.componentNum.defined ">
+                                                    正确
+                                                </p>
+                                                <p class="alter" ng-show="mainForm.componentNum.$error.pattern">
+                                                    只能是数字
+                                                </p>
+                                            </span>
+                                    </div>
+                                    <div class="col-lg-1 col-md-1 col-sm-1">
+                                        <span style="color: red">*</span>
+                                    </div>-->
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        名称：
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-3">
+                                        <input id="" class="form-control" name="componentName" type="text"  ng-model="buildingComponent.componentName" value="{{buildingComponent.componentName}}" required />
+                                 <!--
+                                         <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.componentName.$dirty && mainForm.componentName.$invalid">
+                                             <p class="alter" ng-show="mainForm.componentName.$error.required">
+                                                 不能为空
+                                             </p>
+                                             <p class="alter" ng-show="mainForm.componentName.defined ">
+                                                 正确
+                                             </p>
+                                         </span>
+                                         -->
+                                    </div>
+                                    <div class="col-lg-1 col-md-1 col-sm-1">
+                                        <span style="color: red">*</span>
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        类型：
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-3">
+
+                                        <select id="areaType1" name="componentType" class="form-control" ng-model="buildingComponent.componentType" class="form-control" ng-change="getAreaTypeId();" disabled="">
+                                            <option value=""></option>
+                                            <option ng-repeat="a in areatypenews" value="{{a.id}}">{{a.areaTypeName}}</option>
+                                        </select>
+                                        <!--<input id="componentTypes" name="input" type="text" ng-model="buildingComponent.areaTypeName" value="buildingComponent.areaTypeName" />-->
+                                    </div>
+                                    <div class="col-lg-1 col-md-1 col-sm-1">
+                                        <span style="color: red">*</span>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="professional_initialize" >
+                            <table>
+                                <tr>
+                                    <td  style="display: none">关联id</td>
+                                    <td>功能区间编号</td>
+                                    <td>功能区间名称</td>
+                                    <td>资产上级编号</td>
+                                    <td>资产上级名称</td>
+                                    <td>资产编号</td>
+                                    <td>资产名称</td>
+                                    <td>资产编号</td>
+                                    <td>资产名称</td>
+                                    <td>资产规格</td>
+                                    <td>资产数量</td>
+
+
+                                </tr>
+                                <tr ng-repeat="item in componentpropertys" ng-show="componentpropertys.length!=0">
+                                    <td style="display: none">{{item.componentPropertyId}}</td>
+                                    <td>{{item.functionals.functionalNo}}</td>
+                                    <td>{{item.functionals.functionalName}}</td>
+                                    <td>{{item.property.propertytype.propertyTypeParent.propertyTypeNumber}}</td>
+                                    <td>{{item.property.propertytype.propertyTypeParent.propertyTypeName}}</td>
+                                    <td>{{item.property.propertytype.propertyTypeNumber}}</td>
+                                    <td>{{item.property.propertytype.propertyTypeName}}</td>
+                                    <td>{{item.property.propertyNumber}}</td>
+                                    <td>{{item.property.propertyName}}</td>
+                                    <td>{{item.property.propertySpecification}}</td>
+                                    <td>{{item.propertyNumber}}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 组件详情查看修改模态框 -->
+    <div class="modal fade" id="showBuildingComponent" role="dialog" aria-label="myModalLabel" aria-hidden="true" ng-show="buildingComponentEdit" backdrop="static" >
+        <div class="modal-dialog" style="width: 1000px;;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    组件编辑
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="padding">
+                        <div class="sel1">
+                            <form id="css_form" name="mainForm" novalidate>
+                                <div class="row search-padding-10">
+                                    <!--
+                                    <input id="cpmponentnum" name="componentNum" class="form-control" type="text"  ng-model="buildingComponent.componentNum" value="{{buildingComponent.componentNum}}"required  />
+                                  -->
+                                    <!--<div class="col-lg-2 col-md-2 col-sm-2">
+                                        编号
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-3">
+
+                                        <input id="cpmponentnum" name="componentNum" class="form-control" type="text"  ng-model="buildingComponent.componentNum" value="{{buildingComponent.componentNum}}" required />
+                                        <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.componentNum.$dirty && mainForm.componentNum.$invalid">
+                                                <p class="alter" ng-show="mainForm.componentNum.$error.required">
+                                                    不能为空
+                                                </p>
+                                                <p class="alter" ng-show="mainForm.componentNum.defined ">
+                                                    正确
+                                                </p>
+                                                <p class="alter" ng-show="mainForm.componentNum.$error.pattern">
+                                                    只能是数字
+                                                </p>
+                                            </span>
+                                    </div>
+                                    <div class="col-lg-1 col-md-1 col-sm-1">
+                                        <span style="color: red">*</span>
+                                    </div>-->
+                                    <input id="componentid" class="form-control" name="input" type="hidden" ng-model="buildingComponent.componentId" value="{{buildingComponent.componentId}}" />
+                                    <input id="componentNum" name="componentNum" class="form-control" type="hidden"  ng-model="buildingComponent.componentNum" value="{{buildingComponent.componentNum}}" />
+                                    <div class="col-lg-1 col-md-1 col-sm-1 text-right">
+                                        组件名称：
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-3">
+                                        <input id="componentname" class="form-control" name="componentName" type="text"  ng-model="buildingComponent.componentName" value="{{buildingComponent.componentName}}" required />
+                                       <!--
+                                        <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.componentName.$dirty && mainForm.componentName.$invalid">
+                                            <p class="alter" ng-show="mainForm.componentName.$error.required">
+                                                不能为空
+                                            </p>
+                                            <p class="alter" ng-show="mainForm.componentName.defined ">
+                                                正确
+                                            </p>
+                                        </span>
+                                        -->
+                                    </div>
+                                    <div class="col-lg-1 col-md-1 col-sm-1">
+                                        <span style="color: red">*</span>
+                                    </div>
+                                    <div class="col-lg-1 col-md-1 col-sm-1 text-right">
+                                        组件类型：
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-3">
+                                        <input type="hidden" class="form-control" id="componentType1" class="professional_input"/>
+                                        <select id="areaType" name="componentType" class="form-control" ng-model="buildingComponent.componentType" class="form-control" ng-change="getAreaTypeId();" required>
+                                            <option value=""></option>
+                                            <option ng-repeat="a in areatypenews" value="{{a.id}}">{{a.areaTypeName}}</option>
+                                        </select>
+                                        <!--<input id="componentTypes" name="input" type="text" ng-model="buildingComponent.areaTypeName" value="buildingComponent.areaTypeName" />-->
+                                    </div>
+                                    <div class="col-lg-1 col-md-1 col-sm-1">
+                                        <span style="color: red">*</span>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="professional_initialize" >
+                            <table>
+                                <tr>
+                                    <td  style="display: none">关联id</td>
+                                    <td>功能区间编号</td>
+                                    <td>功能区间名称</td>
+                                    <td>资产上级编号</td>
+                                    <td>资产上级名称</td>
+                                    <td>资产编号</td>
+                                    <td>资产名称</td>
+                                    <td>资产编号</td>
+                                    <td>资产名称</td>
+                                    <td>资产规格</td>
+                                    <td>资产数量</td>
+                                    <td colspan="2">操作</td>
+
+                                </tr>
+                                <tr ng-repeat="item in componentpropertys" ng-show="componentpropertys.length!=0">
+                                    <td style="display: none">{{item.componentPropertyId}}</td>
+                                    <td>{{item.functionals.functionalNo}}</td>
+                                    <td>{{item.functionals.functionalName}}</td>
+                                    <td>{{item.property.propertytype.propertyTypeParent.propertyTypeNumber}}</td>
+                                    <td>{{item.property.propertytype.propertyTypeParent.propertyTypeName}}</td>
+                                    <td>{{item.property.propertytype.propertyTypeNumber}}</td>
+                                    <td>{{item.property.propertytype.propertyTypeName}}</td>
+                                    <td>{{item.property.propertyNumber}}</td>
+                                    <td>{{item.property.propertyName}}</td>
+                                    <td>{{item.property.propertySpecification}}</td>
+                                    <td>{{item.propertyNumber}}</td>
+                                    <td><button type="button" class="btn btn-primary"  ng-click="updateCompen(item.componentPropertyId);">修改</button>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-primary"  ng-click="delComent(item.componentPropertyId)">删除</button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary"  ng-click="addNewComponentPro()">新增</button>
+                    <button type="button" class="btn btn-primary" ng-click="saveBuildingComponent()">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--excel导入-->
+    <div class="modal fade" id="importExcel" tabindex="-1" role="dialog"
+         aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close"
+                            data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title">
+                        上传
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div id="remove">
+                        <div id="excelupload" class="zyupload"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">确认</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+            <div class="modal fade" id="choosePropertyRs" tabindex="-1" role="dialog"
+                 aria-labelledby="myModalLabel" aria-hidden="true" ng-show="propertyRsEdit" data-backdrop="static">
+                <div class="modal-dialog">
+                    <div class="modal-content" style="width: 700px">
+                        <div class="modal-header">
+                            组件与资产关系
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class=" padding">
+                                <table style="table-layout: fixed">
+                                    <thead>
+                                    <tr>
+                                        <th style="width: auto">功能区</th>
+                                        <th>资产</th>
+                                        <th>数量</th>
+                                        <th>单位</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td  valign="top" style="width: 25%; overflow: hidden;text-overflow: ellipsis">
+                                            <input id="functionalId" type="hidden" class="form-control" />
+                                            <input id="functionalName" type="hidden" class="form-control" />
+                                            <select class="form-control" id="functional"  ng-model="FunctionalId" ng-change="selectFunctional()">
+                                                <option value="">请选择功能区</option>
+                                                <option ng-repeat="functional in functionals" value="{{functional.functionalId}}">{{functional.functionalName}}</option>
+                                            </select>
+                                            <span style="color: red">*</span>
+                                        </td>
+                                        <td>
+                                            <input id="comPropertyId" type="hidden" class="form-control">
+                                            <input id="propertyId" type="hidden" class="form-control" />
+                                            <input id="propertyName" type="hidden" class="form-control" />
+
+                                            <div >
+                                                <ul class="list">
+                                                    <li class="title" id="menuBtnTwo"   ><input id="citySel" type="text" class="form-control" readonly value=""  onclick="showMenu(); return false;" />
+                                                </ul>
+                                                <div id="menuContent" class="menuContent" style="display:none; ">
+                                                    <ul id="treeDemo" class="ztree" ></ul>
+                                                </div>
+                                            </div>
+                                            <span style="color: red">*</span>
+
+                                        </td>
+                                        <td  valign="top">
+                                            <input id="propertyNumber" class="form-control" type="text"><span style="color: red">*</span>
+                                        </td>
+                                        <td  valign="top">
+                                            <input id="proSlaveId" type="hidden" class="form-control" />
+                                            <input id="proSlaveName" type="hidden" class="form-control" />
+                                            <select class="form-control" id="propertyAreaType"  ng-model="SlaveId"  ng-change="selectSlave();">
+                                                <option value="">---请选择---</option>
+                                                <option ng-repeat="a in unitList" value="{{a.slaveId}}">{{a.description}}</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                            <button type="button" class="btn btn-primary" ng-click="updateComponentProperty()">确认</button>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal -->
+            </div>
+</body>
+<script>
+    function check(obj) {
+        $(':checkbox').each(function () {
+            if (this != obj)
+                $(this).attr("checked", false);
+            else {
+                if ($(this).prop("checked")){
+                    $(this).attr("checked", true);
+                }
+                else
+                    $(this).attr("checked", false);
+            }
+        });
+    }
+
+    function exportExcel(){
+        var url = document.getElementById("fileurl").value;
+        window.location.href=url +"/info/importExcelBuildingComponent.do";
+    }
+
+    //导出数据至本地  王洲  2016.1.11
+//    function exportBuildingComponent(){
+//        var url = document.getElementById('fileurl').value;
+//        window.location.href = url + '/info/getexportExcelBuildingComponent.do'
+//    }
+</script>
+</html>

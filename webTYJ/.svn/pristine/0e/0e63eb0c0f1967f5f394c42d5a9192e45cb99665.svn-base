@@ -1,0 +1,673 @@
+<!--作者：陶勇超
+名称：质检管理-全部部门质检评分标准
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        .littleTitle{width: 200px; background-color: rgb(2,159,240);color: #fff;border-radius: 4px;}
+    </style>
+</head>
+<body>
+<div id="content-first">
+    <!--tab页切换开始-->
+    <div id="tab">
+        <a ng-click="showClean()">清洁</a>
+        <a  ng-click="selectGarden()">园林</a>
+        <a ng-click="showSecurity()">安保</a>
+        <a ng-click="showMaintenance()">维修</a>
+        <a href="# " lang="no">客服</a>
+    </div>
+    <div class="padding">
+        <div class="search-padding-10">
+            <a  ui-sref="index.serviceRequest.newTemplate" >
+                <button type="button" class="btn btn-default btn-primary tab-btn">
+                    <span class="glyphicon glyphicon-plus btn_icon"></span>
+                    新建部门质检评分标准
+                </button>
+            </a>
+        </div>
+        <div ng-show="cleans">
+        <div class="contract_panner">
+            <div class="contract_detail_nav">
+                <a>清洁日检评分标准</a>
+                <div class="clear"></div>
+            </div>
+            <div class="row rightpadding">
+                <div class="col-lg-4 col-md-6 col-sm-6" ng-repeat="day in cleanDayCheck" ng-click="checkGrade(day.criteriaId)">
+                    <div id="pannel">
+                        <div class="title">
+                            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                <h3>日检评分标准</h3>
+                            </div>
+                            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                <span class="glyphicon glyphicon-chevron-down"></span>
+                            </div>
+                        </div>
+                        <div class="pannel_content">
+                            <div class="dot">
+                                <div class="clear"></div>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <img style="width: 80px;height: 80px" src="images/img/img_04.png">
+                            </div>
+                            <div class="col-lg-8 col-md-8 col-sm-8">
+                                <ul>
+                                    <li>名称：{{day.criteriaName}}</li>
+                                    <li>状态：有效</li>
+                                    <li>创建人：老王</li>
+                                    <li>创建时间：{{day.createTime}}</li>
+                                    <li>备注：{{day.remarks}}</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="contract_panner">
+            <div class="contract_detail_nav">
+                <a>清洁周检评分标准</a>
+                <div class="clear"></div>
+            </div>
+            <div class="row rightpadding">
+                <div class="col-lg-4 col-md-6 col-sm-6"  ng-repeat="week in cleanWeekCheck" ng-click="checkGrade(week.criteriaId)">
+                    <div id="pannel">
+                        <div class="title">
+                            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                <h3>周检评分标准</h3>
+                            </div>
+                            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                <span class="glyphicon glyphicon-chevron-down"></span>
+                            </div>
+                        </div>
+                        <div class="pannel_content">
+                            <div class="dot">
+                                <div class="clear"></div>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <img style="width: 80px;height: 80px" src="images/img/img_04.png">
+                            </div>
+                            <div class="col-lg-8 col-md-8 col-sm-8">
+                                <ul>
+                                    <li>名称：{{week.criteriaName}}</li>
+                                    <li>状态：有效</li>
+                                    <li>创建人：老王</li>
+                                    <li>创建时间：{{week.createTime}}</li>
+                                    <li>备注：{{week.remarks}}</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="contract_panner">
+            <div class="contract_detail_nav">
+                <a>清洁双周检评分标准</a>
+                <div class="clear"></div>
+            </div>
+            <div class="row rightpadding">
+                <div class="col-lg-4 col-md-6 col-sm-6" ng-repeat="halfMonth in cleanHalfMonthCheck" ng-click="checkGrade(halfMonth.criteriaId)">
+                    <div id="pannel">
+                        <div class="title">
+                            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                <h3>双周检评分标准</h3>
+                            </div>
+                            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                <span class="glyphicon glyphicon-chevron-down"></span>
+                            </div>
+                        </div>
+                        <div class="pannel_content">
+                            <div class="dot">
+                                <div class="clear"></div>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <img style="width: 80px;height: 80px" src="images/img/img_04.png">
+                            </div>
+                            <div class="col-lg-8 col-md-8 col-sm-8">
+                                <ul>
+                                    <li>名称：{{halfMonth.criteriaName}}</li>
+                                    <li>状态：有效</li>
+                                    <li>创建人：老王</li>
+                                    <li>创建时间：{{halfMonth.createTime}}</li>
+                                    <li>备注：{{halfMonth.remarks}}</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="contract_panner">
+            <div class="contract_detail_nav">
+                <a>清洁月检评分标准</a>
+                <div class="clear"></div>
+            </div>
+            <div class="row rightpadding">
+                <div class="col-lg-4 col-md-6 col-sm-6" ng-repeat="month in cleanMonthCheck" ng-click="checkGrade(month.criteriaId)">
+                    <div id="pannel">
+                        <div class="title">
+                            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                <h3>月检评分标准</h3>
+                            </div>
+                            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                <span class="glyphicon glyphicon-chevron-down"></span>
+                            </div>
+                        </div>
+                        <div class="pannel_content">
+                            <div class="dot">
+                                <div class="clear"></div>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <img style="width: 80px;height: 80px" src="images/img/img_04.png">
+                            </div>
+                            <div class="col-lg-8 col-md-8 col-sm-8">
+                                <ul>
+                                    <li>名称：{{month.criteriaName}}</li>
+                                    <li>状态：有效</li>
+                                    <li>创建人：老王</li>
+                                    <li>创建时间：{{month.createTime}}</li>
+                                    <li>备注：{{month.remarks}}</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        </div>
+    <!--    园林-->
+        <div ng-show="gardens">
+            <div class="contract_panner">
+                <div class="contract_detail_nav">
+                    <a>园林日检评分标准</a>
+                    <div class="clear"></div>
+                </div>
+                <div class="row rightpadding">
+                    <div class="col-lg-4 col-md-6 col-sm-6" ng-repeat="day in gardenDayCheck" ng-click="checkGrade(day.criteriaId)">
+                        <div id="pannel">
+                            <div class="title">
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                    <h3>日检评分标准</h3>
+                                </div>
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                    <span class="glyphicon glyphicon-chevron-down"></span>
+                                </div>
+                            </div>
+                            <div class="pannel_content">
+                                <div class="dot">
+                                    <div class="clear"></div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <img style="width: 80px;height: 80px" src="images/img/img_04.png">
+                                </div>
+                                <div class="col-lg-8 col-md-8 col-sm-8">
+                                    <ul>
+                                        <li>名称：{{day.criteriaName}}</li>
+                                        <li>状态：有效</li>
+                                        <li>创建人：老王</li>
+                                        <li>创建时间：{{day.createTime}}</li>
+                                        <li>备注：{{day.remarks}}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="contract_panner">
+                <div class="contract_detail_nav">
+                    <a>园林周检评分标准</a>
+                    <div class="clear"></div>
+                </div>
+                <div class="row rightpadding">
+                    <div class="col-lg-4 col-md-6 col-sm-6"  ng-repeat="week in gardenWeekCheck" ng-click="checkGrade(week.criteriaId)">
+                        <div id="pannel">
+                            <div class="title">
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                    <h3>周检评分标准</h3>
+                                </div>
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                    <span class="glyphicon glyphicon-chevron-down"></span>
+                                </div>
+                            </div>
+                            <div class="pannel_content">
+                                <div class="dot">
+                                    <div class="clear"></div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <img style="width: 80px;height: 80px" src="images/img/img_04.png">
+                                </div>
+                                <div class="col-lg-8 col-md-8 col-sm-8">
+                                    <ul>
+                                        <li>名称：{{week.criteriaName}}</li>
+                                        <li>状态：有效</li>
+                                        <li>创建人：老王</li>
+                                        <li>创建时间：{{week.createTime}}</li>
+                                        <li>备注：{{week.remarks}}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="contract_panner">
+                <div class="contract_detail_nav">
+                    <a>园林双周检评分标准</a>
+                    <div class="clear"></div>
+                </div>
+                <div class="row rightpadding">
+                    <div class="col-lg-4 col-md-6 col-sm-6" ng-repeat="halfMonth in gardenHalfMonthCheck" ng-click="checkGrade(halfMonth.criteriaId)">
+                        <div id="pannel">
+                            <div class="title">
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                    <h3>双周检评分标准</h3>
+                                </div>
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                    <span class="glyphicon glyphicon-chevron-down"></span>
+                                </div>
+                            </div>
+                            <div class="pannel_content">
+                                <div class="dot">
+                                    <div class="clear"></div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <img style="width: 80px;height: 80px" src="images/img/img_04.png">
+                                </div>
+                                <div class="col-lg-8 col-md-8 col-sm-8">
+                                    <ul>
+                                        <li>名称：{{halfMonth.criteriaName}}</li>
+                                        <li>状态：有效</li>
+                                        <li>创建人：老王</li>
+                                        <li>创建时间：{{halfMonth.createTime}}</li>
+                                        <li>备注：{{halfMonth.remarks}}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="contract_panner">
+                <div class="contract_detail_nav">
+                    <a>园林月检评分标准</a>
+                    <div class="clear"></div>
+                </div>
+                <div class="row rightpadding">
+                    <div class="col-lg-4 col-md-6 col-sm-6" ng-repeat="month in gardenMonthCheck" ng-click="checkGrade(month.criteriaId)">
+                        <div id="pannel">
+                            <div class="title">
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                    <h3>月检评分标准</h3>
+                                </div>
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                    <span class="glyphicon glyphicon-chevron-down"></span>
+                                </div>
+                            </div>
+                            <div class="pannel_content">
+                                <div class="dot">
+                                    <div class="clear"></div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <img style="width: 80px;height: 80px" src="images/img/img_04.png">
+                                </div>
+                                <div class="col-lg-8 col-md-8 col-sm-8">
+                                    <ul>
+                                        <li>名称：{{month.criteriaName}}</li>
+                                        <li>状态：有效</li>
+                                        <li>创建人：老王</li>
+                                        <li>创建时间：{{month.createTime}}</li>
+                                        <li>备注：{{month.remarks}}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!--安保-->
+        <div ng-show="securities">
+            <div class="contract_panner">
+                <div class="contract_detail_nav">
+                    <a>安保日检评分标准</a>
+                    <div class="clear"></div>
+                </div>
+                <div class="row rightpadding">
+                    <div class="col-lg-4 col-md-6 col-sm-6" ng-repeat="day in securityDayCheck" ng-click="checkGrade(day.criteriaId)">
+                        <div id="pannel">
+                            <div class="title">
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                    <h3>日检评分标准</h3>
+                                </div>
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                    <span class="glyphicon glyphicon-chevron-down"></span>
+                                </div>
+                            </div>
+                            <div class="pannel_content">
+                                <div class="dot">
+                                    <div class="clear"></div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <img style="width: 80px;height: 80px" src="images/img/img_04.png">
+                                </div>
+                                <div class="col-lg-8 col-md-8 col-sm-8">
+                                    <ul>
+                                        <li>名称：{{day.criteriaName}}</li>
+                                        <li>状态：有效</li>
+                                        <li>创建人：老王</li>
+                                        <li>创建时间：{{day.createTime}}</li>
+                                        <li>备注：{{day.remarks}}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="contract_panner">
+                <div class="contract_detail_nav">
+                    <a>安保周检评分标准</a>
+                    <div class="clear"></div>
+                </div>
+                <div class="row rightpadding">
+                    <div class="col-lg-4 col-md-6 col-sm-6"  ng-repeat="week in securityWeekCheck" ng-click="checkGrade(week.criteriaId)">
+                        <div id="pannel">
+                            <div class="title">
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                    <h3>周检评分标准</h3>
+                                </div>
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                    <span class="glyphicon glyphicon-chevron-down"></span>
+                                </div>
+                            </div>
+                            <div class="pannel_content">
+                                <div class="dot">
+                                    <div class="clear"></div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <img style="width: 80px;height: 80px" src="images/img/img_04.png">
+                                </div>
+                                <div class="col-lg-8 col-md-8 col-sm-8">
+                                    <ul>
+                                        <li>名称：{{week.criteriaName}}</li>
+                                        <li>状态：有效</li>
+                                        <li>创建人：老王</li>
+                                        <li>创建时间：{{week.createTime}}</li>
+                                        <li>备注：{{week.remarks}}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="contract_panner">
+                <div class="contract_detail_nav">
+                    <a>安保双周检评分标准</a>
+                    <div class="clear"></div>
+                </div>
+                <div class="row rightpadding">
+                    <div class="col-lg-4 col-md-6 col-sm-6" ng-repeat="halfMonth in securityHalfMonthCheck" ng-click="checkGrade(halfMonth.criteriaId)">
+                        <div id="pannel">
+                            <div class="title">
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                    <h3>双周检评分标准</h3>
+                                </div>
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                    <span class="glyphicon glyphicon-chevron-down"></span>
+                                </div>
+                            </div>
+                            <div class="pannel_content">
+                                <div class="dot">
+                                    <div class="clear"></div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <img style="width: 80px;height: 80px" src="images/img/img_04.png">
+                                </div>
+                                <div class="col-lg-8 col-md-8 col-sm-8">
+                                    <ul>
+                                        <li>名称：{{halfMonth.criteriaName}}</li>
+                                        <li>状态：有效</li>
+                                        <li>创建人：老王</li>
+                                        <li>创建时间：{{halfMonth.createTime}}</li>
+                                        <li>备注：{{halfMonth.remarks}}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="contract_panner">
+                <div class="contract_detail_nav">
+                    <a>安保月检评分标准</a>
+                    <div class="clear"></div>
+                </div>
+                <div class="row rightpadding">
+                    <div class="col-lg-4 col-md-6 col-sm-6" ng-repeat="month in securityMonthCheck" ng-click="checkGrade(month.criteriaId)">
+                        <div id="pannel">
+                            <div class="title">
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                    <h3>月检评分标准</h3>
+                                </div>
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                    <span class="glyphicon glyphicon-chevron-down"></span>
+                                </div>
+                            </div>
+                            <div class="pannel_content">
+                                <div class="dot">
+                                    <div class="clear"></div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <img style="width: 80px;height: 80px" src="images/img/img_04.png">
+                                </div>
+                                <div class="col-lg-8 col-md-8 col-sm-8">
+                                    <ul>
+                                        <li>名称：{{month.criteriaName}}</li>
+                                        <li>状态：有效</li>
+                                        <li>创建人：老王</li>
+                                        <li>创建时间：{{month.createTime}}</li>
+                                        <li>备注：{{month.remarks}}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+       <!-- 维修-->
+        <div ng-show="maintenances">
+            <div class="contract_panner">
+                <div class="contract_detail_nav">
+                    <a>维修日检评分标准</a>
+                    <div class="clear"></div>
+                </div>
+                <div class="row rightpadding">
+                    <div class="col-lg-4 col-md-6 col-sm-6" ng-repeat="day in maintenanceDayCheck" ng-click="checkGrade(day.criteriaId)">
+                        <div id="pannel">
+                            <div class="title">
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                    <h3>日检评分标准</h3>
+                                </div>
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                    <span class="glyphicon glyphicon-chevron-down"></span>
+                                </div>
+                            </div>
+                            <div class="pannel_content">
+                                <div class="dot">
+                                    <div class="clear"></div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <img style="width: 80px;height: 80px" src="images/img/img_04.png">
+                                </div>
+                                <div class="col-lg-8 col-md-8 col-sm-8">
+                                    <ul>
+                                        <li>名称：{{day.criteriaName}}</li>
+                                        <li>状态：有效</li>
+                                        <li>创建人：老王</li>
+                                        <li>创建时间：{{day.createTime}}</li>
+                                        <li>备注：{{day.remarks}}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="contract_panner">
+                <div class="contract_detail_nav">
+                    <a>维修周检评分标准</a>
+                    <div class="clear"></div>
+                </div>
+                <div class="row rightpadding">
+                    <div class="col-lg-4 col-md-6 col-sm-6"  ng-repeat="week in maintenanceWeekCheck" ng-click="checkGrade(week.criteriaId)">
+                        <div id="pannel">
+                            <div class="title">
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                    <h3>周检评分标准</h3>
+                                </div>
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                    <span class="glyphicon glyphicon-chevron-down"></span>
+                                </div>
+                            </div>
+                            <div class="pannel_content">
+                                <div class="dot">
+                                    <div class="clear"></div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <img style="width: 80px;height: 80px" src="images/img/img_04.png">
+                                </div>
+                                <div class="col-lg-8 col-md-8 col-sm-8">
+                                    <ul>
+                                        <li>名称：{{week.criteriaName}}</li>
+                                        <li>状态：有效</li>
+                                        <li>创建人：老王</li>
+                                        <li>创建时间：{{week.createTime}}</li>
+                                        <li>备注：{{week.remarks}}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="contract_panner">
+                <div class="contract_detail_nav">
+                    <a>维修双周检评分标准</a>
+                    <div class="clear"></div>
+                </div>
+                <div class="row rightpadding">
+                    <div class="col-lg-4 col-md-6 col-sm-6" ng-repeat="halfMonth in maintenanceHalfMonthCheck" ng-click="checkGrade(halfMonth.criteriaId)">
+                        <div id="pannel">
+                            <div class="title">
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                    <h3>双周检评分标准</h3>
+                                </div>
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                    <span class="glyphicon glyphicon-chevron-down"></span>
+                                </div>
+                            </div>
+                            <div class="pannel_content">
+                                <div class="dot">
+                                    <div class="clear"></div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <img style="width: 80px;height: 80px" src="images/img/img_04.png">
+                                </div>
+                                <div class="col-lg-8 col-md-8 col-sm-8">
+                                    <ul>
+                                        <li>名称：{{halfMonth.criteriaName}}</li>
+                                        <li>状态：有效</li>
+                                        <li>创建人：老王</li>
+                                        <li>创建时间：{{halfMonth.createTime}}</li>
+                                        <li>备注：{{halfMonth.remarks}}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="contract_panner">
+                <div class="contract_detail_nav">
+                    <a>维修月检评分标准</a>
+                    <div class="clear"></div>
+                </div>
+                <div class="row rightpadding">
+                    <div class="col-lg-4 col-md-6 col-sm-6" ng-repeat="month in maintenanceMonthCheck" ng-click="checkGrade(month.criteriaId)">
+                        <div id="pannel">
+                            <div class="title">
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                    <h3>月检评分标准</h3>
+                                </div>
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                    <span class="glyphicon glyphicon-chevron-down"></span>
+                                </div>
+                            </div>
+                            <div class="pannel_content">
+                                <div class="dot">
+                                    <div class="clear"></div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <img style="width: 80px;height: 80px" src="images/project/car/c_06.png">
+                                </div>
+                                <div class="col-lg-8 col-md-8 col-sm-8">
+                                    <ul>
+                                        <li>名称：{{month.criteriaName}}</li>
+                                        <li>状态：有效</li>
+                                        <li>创建人：老王</li>
+                                        <li>创建时间：{{month.createTime}}</li>
+                                        <li>备注：{{month.remarks}}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+<!--<div>
+    <div>
+        <div class="architecturepadding">
+            <div class="contract_panner charge_project">
+                <div class="contract_detail_nav">
+                    <a ui-sref="index.serviceRequest.departmentOfQualityManagement.departmentOfQualityInspectionCriteria.gardens">园林</a>
+                    <a ui-sref="index.serviceRequest.departmentOfQualityManagement.departmentOfQualityInspectionCriteria.clean">清洁</a>
+                    <a ui-sref="index.serviceRequest.departmentOfQualityManagement.departmentOfQualityInspectionCriteria.security">安保</a>
+                    <a ui-sref="index.serviceRequest.departmentOfQualityManagement.departmentOfQualityInspectionCriteria.service">维修</a>
+                    <div class="clear"></div>
+                 </div>
+                <div class="row rightpadding">
+                    <button ui-sref="index.serviceRequest.newTemplate" class="btn btn-md pull-right littleTitle" style="width: 120px;margin:0 20px 0 0;">创建评分标准</button>
+                </div>
+                <div ui-view></div>
+            </div>
+        </div>
+     </div>
+</div>-->
+</body>
+</html>

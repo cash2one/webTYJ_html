@@ -1,0 +1,82 @@
+/*左侧样式*/
+.left{background:#dddddd; border:1px solid #bbbbbb; -moz-border-radius:7px; -webkit-border-radius:7px; border-radius:7px; height:584px;  margin:5px auto; }
+
+
+/*左侧用户头像和名称样式*/
+.user{ padding:10px 10px 10px 20px; margin-bottom:10px; min-height:80px;}
+.user_img{ width:55px; height:58px; float:left;}
+.user_img img{width: 100%; height: 100%;border-radius: 50%;border: 2px solid #eee; }
+.user_info{ height:58px; float:left; margin-left:5px; margin-top:5px;}
+.user_number{ display:block; width:15px; height:15px; background:#F00; text-align:center; line-height:15px; color:#fff;-moz-border-radius:10px; -webkit-border-radius:10px; border-radius:10px; float:right;}
+.user_info a{ color:#03a0f1;}
+.user_info a:hover{ color:#313131;}
+/*左侧搜索框样式*/
+.search{}
+.search_input{
+    width:80%;
+    float:left;
+    height:40px;
+    background:#ddd;
+    border:none;
+    padding-left:10px;
+    border-bottom:1px solid #a4a4a4;
+    border-top:1px solid #a4a4a4;
+    -moz-border-radius:0;
+    -webkit-border-radius:0;
+    border-radius:0;
+}
+.search_button{
+    width:20%;
+    float:left;
+    height:40px;
+    /*background:#ddd url(../images/search.png) center 5px no-repeat;*/
+    border:none;
+    border-bottom:1px solid #a4a4a4;
+    border-top:1px solid #a4a4a4;
+    -moz-border-radius:0;
+    -webkit-border-radius:0;
+    border-radius:0;
+}
+
+/*左侧用户切换按钮样式*/
+.user_list_btton{}
+.user_list_button_left{
+    width:50%;
+    height:40px;
+    /*background:#029ff0 url(../images/linkman.png) center 10px no-repeat;*/
+    border:none;
+    float:left;
+    -moz-border-radius:0;
+    -webkit-border-radius:0;
+    border-radius:0;
+}
+.user_list_button_right{
+    width:50%; height:40px;
+    /*background:#c3c0b9 url(../images/recentlyLink.png) center 10px no-repeat;*/
+    border:none; }
+
+/*左侧组名用户名样式*/
+.user_panel_group{ height:356px; overflow:hidden; margin-bottom:10px; }
+.user_panel_session{ height:356px;  overflow:hidden; margin-bottom:10px;}
+.user_group_name{ width:90%; padding-left:15px; background:url(../images/jiantoua.jpg) no-repeat 6px center;}
+.user_group_name:hover{ width:90%; padding-left:15px; background:url(../images/jiantou.jpg) no-repeat left 7px;}
+.user_group_user{width:90%; padding-left:15px; }
+.user_group_user_list{ margin-top:5px; height:35px;}
+.user_group_user_list_img{ width:37px; height:35px; float:left;}
+.user_group_user_list_name{ float:left; font-size:12px; line-height:14px;}
+
+/*左侧底部按钮样式*/
+.left_email_button{width:50%; float:left; text-align:center; border-top:1px solid #bbb; border-right:1px solid #bbb; height:40px; -moz-border-radius:0 0 07px; -webkit-border-radius:0 0 0  7px; border-radius:0 0 0 7px;
+    /*background:url(../images/b.png) no-repeat center 9px; */
+}
+.left_email_button:hover{width:50%; float:left; text-align:center; border-top:1px solid #bbb; border-right:1px solid #bbb; height:40px; -moz-border-radius:0 0 0 7px; -webkit-border-radius:0 0 0 7px; border-radius:0 0 0 7px;
+    /*background:url(../images/ba.png) no-repeat center 9px;*/
+}
+
+.left_set_button{width:50%;text-align:center; border-top:1px solid #bbb; height:40px; -moz-border-radius:0 0 7px 0; -webkit-border-radius:
+0 0 7px 0; border-radius:0 0 7px 0;
+    /*background:url(../images/setb.png) no-repeat center 9px;*/
+    float:right;}
+.left_set_button:hover{width:50%;text-align:center; border-top:1px solid #bbb;  height:40px; -moz-border-radius:0 0 7px 0; -webkit-border-radius:0 0 7px 0; border-radius:0 0 7px 0;
+    /*background:url(../images/setc.png) no-repeat center 9px; */
+    float:right;}

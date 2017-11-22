@@ -1,0 +1,19 @@
+/**
+ * Created by SZ on 2018/1/18.
+ * 家家账号管理js
+ */
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../app');
+
+    app.controller('homeManagementCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        var homeUrl = $rootScope.homeUrl;
+
+        $http.get(homeUrl + "/sample/getUserByCompany/1").success(function(data){
+            console.log(data);
+        });
+
+    }]);
+});

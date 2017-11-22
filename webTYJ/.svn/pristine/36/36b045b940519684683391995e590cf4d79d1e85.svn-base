@@ -1,0 +1,38 @@
+/**
+ * Created by Zms on 2016/7/12.
+ */
+
+'use strict';
+
+define(function (require) {
+    var app=require('../../../app');
+
+    app.controller('workflowCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+        //$scope.text = '1111';
+        var url = $rootScope.url;
+
+        var subCompanyName = sessionStorage.getItem("_subCompanyName");
+        var projectName = sessionStorage.getItem("_projectName");
+        $scope.subCompanyName = subCompanyName;
+        $scope.projectName = projectName;
+        $scope.searchWorkFlow = {page:{}};
+
+        var workFlowFunction = function(page,callback){
+            $scope.searchWorkFlow.page = page;
+            $http.post(url + "/WorkFlow/listPageSelectAll",{WorkFlow:$scope.searchWorkFlow}).success(callback);
+        }
+        $scope.currentWorkFlow = app.get('Paginator').list(workFlowFunction,6);
+
+        $scope.goToAccountForApproval=function(temp){
+            $scope.temp = temp;
+            if($scope.temp.status==0)
+            {
+                layer.msg('请选择可配置项！', {icon: 0, time: 2000});
+            }else
+            {
+                $location.path("/index/systemSettings/workflow/accountForApproval");
+                //productAndProperty/product/propertyProject/plan/detailPlan/
+            }
+        }
+    }]);
+});

@@ -1,0 +1,342 @@
+/**
+ * Created by SZ on 2018/1/18.
+ * 门控机账号管理js
+ */
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../app');
+    app.controller('accountNumberManagementCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+        var url = $rootScope.videoUrl;
+        $scope.account = {};
+
+
+        //获取user对象信息
+        $scope.USER_LOGIN = JSON.parse(sessionStorage.getItem('USER_LOGIN'));
+
+        //分组数组
+        $scope.area = [];
+        //分组对象
+        $scope.areaEntity = {};
+
+
+        $scope.init = function() {
+            /**
+             * 获取门控机账号列表
+             */
+            $scope.accountList = [];
+            $http.get(url + "/Account/getAccountList/" + $scope.USER_LOGIN.companyId + "/-1").success(function (data) {
+                if (data.state == "success") {
+                    $scope.temp = data.info;
+                    if (!angular.isArray($scope.temp)) {
+                        $scope.accountList.push($scope.temp);
+                    } else {
+                        $scope.accountList = $scope.temp;
+                    }
+                    $scope.loadPages($scope.accountList);
+                } else if (data.state == "failure") {
+                    layer.alert(data.info, {icon: 2});
+                }
+            });
+        }
+
+        $scope.init();
+
+        /**
+         * 搜索查询
+         */
+        //查询参数
+        $scope.searchPram = '';
+        $scope.accountSearch = [];      //门控机账号搜索数组
+        $scope.searchInfo = function(){
+            var parm ;
+            if($scope.searchPram == ''){
+                parm = -1;
+            }else{
+                parm = $scope.searchPram;
+            }
+
+            $http.get(url + "/Account/getAccountList/" + $scope.USER_LOGIN.companyId + "/" + parm).success(function (data) {
+                if (data.state == "success") {
+                    $scope.temp = data.info;
+                    if (!angular.isArray($scope.temp)) {
+                        $scope.accountSearch.push($scope.temp);
+                    } else {
+                        $scope.accountSearch = $scope.temp;
+                    }
+                    $scope.loadPages($scope.accountSearch);
+                } else if (data.state == "failure") {
+                    layer.alert(data.info, {icon: 2});
+                }
+            });
+        }
+
+        /**
+         * 点击新增按钮事件
+         */
+        $scope.addModel = function(){
+            $scope.account = {};
+            $('#new2').modal({backdrop: 'static', keyboard: false});
+
+            /**
+             * 获取分组下拉列表
+             */
+            $http.get(url + "/areaService/getAreaByProjectId/" + $scope.USER_LOGIN.companyId).success(function (data) {
+                console.log(data);
+                $scope.temp = data.info;
+                if (!angular.isArray($scope.temp)) {
+                    $scope.area.push($scope.temp);
+                } else {
+                    $scope.area = $scope.temp;
+                }
+            });
+        }
+
+        /**
+         * 选择复选框事件
+         * @param arg
+         */
+        var arr = [];
+        $scope.getCheckBoxs = function(arg){
+            var index = arr.indexOf(arg);
+            if(index > -1){
+                arr.splice(index,1);
+            }else{
+                arr.push(arg);
+            }
+        }
+
+        /**
+         * 修改按钮事件
+         */
+        $scope.updateModel = function(){
+            $scope.tempPWD = {};
+            if(arr.length == 0){
+                layer.alert("请选择一条信息进行修改！",{icon:2});
+                return;
+            }
+            if(arr.length >1){
+                layer.alert("请选择一条信息进行修改！",{icon:2});
+                return;
+            }
+            $scope.account = arr[0];
+            $('#new3').modal({backdrop: 'static', keyboard: false});
+        }
+
+        /**
+         * 修改密码
+         */
+        $scope.tempPWD = {};
+        $scope.updatePwd = function(){
+            var reg =/\s/;
+            //密码不能为空
+            if($scope.tempPWD.nwePassword == "" || $scope.tempPWD.secondPassword == ""
+                || $scope.tempPWD.nwePassword==undefined || $scope.tempPWD.secondPassword==undefined){
+                layer.alert("密码不能为空！",{icon:2});
+                return;
+            }
+            //密码不能包含空格
+            if(reg.test($scope.tempPWD.nwePassword) || reg.test($scope.tempPWD.secondPassword) ){
+                layer.alert("密码中不能包含空格！",{icon:2});
+                return;
+            }
+            //长度验证
+            if($scope.tempPWD.nwePassword.length>7){
+                layer.alert("密码不能超过6位字符！",{icon:2});
+                return;
+            }
+            //密码一致性
+            if($scope.tempPWD.nwePassword != $scope.tempPWD.secondPassword){
+                layer.alert("输入的密码不一致，请再次输入！",{icon:2});
+                $scope.tempPWD.nwePassword = "";
+                $scope.tempPWD.secondPassword="";
+                return;
+            }
+
+            $scope.account = arr[0];
+            $scope.account.password = $scope.tempPWD.nwePassword;
+
+            $http.post(url + "/Account/updatePassword",{Account:$scope.account}).success(function(data){
+                layer.alert("密码修改成功！",{icon:1});
+                arr.splice(0,arr.length);
+                $scope.init();
+            }).error(function(){
+                layer.alert("密码修改失败！",{icon:2});
+            });
+
+        }
+
+
+        /**
+         * 添加门控机账号
+         */
+        $scope.addAccount = function(){
+            if($scope.account.accountNum == null || $scope.account.accountNum == ""){
+                layer.alert("请填写账号上！",{icon:2});
+                return;
+            }
+            if($scope.account.password == null || $scope.account.password == ""){
+                layer.alert("请填写密码！",{icon:2});
+                return;
+
+            }
+            if($scope.account.gateaddress == null || $scope.account.gateaddress == ""){
+                layer.alert("请填写地址！",{icon:2});
+                return ;
+            }
+            if($scope.account.isWallGating == null || $scope.account.isWallGating == ""){
+                layer.alert("请选择门控机类型！",{icon:2});
+                return ;
+            }
+            if($scope.areaEntity == null){
+                layer.alert("请选择分组！",{icon:2});
+                return ;
+            }
+
+            $scope.account.areaId = $scope.areaEntity.id;
+            $scope.account.projectId = $scope.areaEntity.projectId;
+
+            $http.post(url + "/Account/addAccount",{Account:$scope.account}).success(function(data){
+                if(data.state == "success"){
+                    layer.alert(data.info,{icon:1});
+                    $scope.init();
+                }else if(data.state == "failure"){
+                    layer.alert(data.info,{icon:2});
+                }
+            });
+        }
+
+        //开通权限
+
+        $scope.updateAut = function(){
+            if(arr.length == 0){
+                layer.alert("请选择一条信息开通权限！",{icon:2});
+                return;
+            }
+            if(arr.length >1){
+                layer.alert("请选择一条信息开通权限！",{icon:2});
+                return;
+            }
+            $scope.account = arr[0];
+            console.log($scope.account);
+            if($scope.account.isPwd == "true"){
+                document.getElementById("isPwd").checked = true;
+            }if($scope.account.isVideo == "true"){
+                document.getElementById("isVideo").checked = true;
+            }if($scope.account.isVoice == "true"){
+                document.getElementById("isVoice").checked = true;
+            }if($scope.account.isTdcode == "true"){
+                document.getElementById("isTdcode").checked = true;
+            }
+
+            $('#new5').modal({backdrop: 'static', keyboard: false});
+        }
+
+        //开通权限
+        $scope.updateAu = function(){
+            $scope.account.isPwd = document.getElementById("isPwd").checked;
+            $scope.account.isVideo = document.getElementById("isVideo").checked;
+            $scope.account.isVoice = document.getElementById("isVoice").checked;
+            $scope.account.isTdcode = document.getElementById("isTdcode").checked;
+
+            $http.post(url + "/Account/updateAccount",{Account:$scope.account}).success(function(data){
+                layer.alert("开通权限成功！",{icon:1});
+                arr.splice(0,arr.length);
+                $scope.init();
+            }).error(function(){
+                layer.alert("开通权限失败！",{icon:2});
+            });
+        }
+
+        /****************************   分页start   ******************************/
+
+        $scope.currentPage = 1;             //分页相关参数
+        $scope.totalPage = 1;
+        $scope.pageSize = 5;
+        $scope.pages = [];
+        $scope.endPage = 1;
+
+        /**
+         * 实现分页
+         */
+        $scope.listPages=function(currentPage,pageSize,array){
+            var dataArray=[];
+            if(currentPage*pageSize>array.length){
+                for(var i=(currentPage-1)*pageSize;i<array.length;i++) {
+                    dataArray.push(array[i]);
+                }
+            }else{
+                for(var i=(currentPage-1)*pageSize;i<currentPage*pageSize;i++){
+                    dataArray.push(array[i]);
+                }
+            }
+            return dataArray;
+        };
+
+        /**
+         * 实现分页及参数改变
+         */
+        $scope.currentHouse = [];
+        $scope.loadPages = function (array) {
+            //for(var i=0;i<$scope.checked.length;i++){
+            //    $scope.checked[i]=false;
+            //}
+            $scope.currentHouse = $scope.listPages($scope.currentPage,$scope.pageSize,array);
+            $scope.totalPage = Math.ceil(array.length / $scope.pageSize);
+            $scope.endPage = $scope.totalPage;
+            //生成数字链接
+            if ($scope.currentPage > 1 && $scope.currentPage < $scope.totalPage) {
+                $scope.pages = [
+                    $scope.currentPage - 1,
+                    $scope.currentPage,
+                    $scope.currentPage + 1
+                ];
+            } else if ($scope.currentPage == 1 && $scope.totalPage > 1) {
+                $scope.pages = [
+                    $scope.currentPage,
+                    $scope.currentPage + 1
+                ];
+            } else if ($scope.currentPage == $scope.totalPage && $scope.totalPage > 1) {
+                $scope.pages = [
+                    $scope.currentPage - 1,
+                    $scope.currentPage
+                ];
+            }else if($scope.currentPage == 1 && $scope.totalPage == 1){
+                $scope.pages = [
+                    $scope.currentPage
+                ];
+            }
+        };
+
+        /**
+         *查询下一页
+         */
+        $scope.next = function () {
+            if ($scope.currentPage < $scope.totalPage) {
+                $scope.currentPage++;
+            }
+            $scope.loadPages($scope.accountList);
+        };
+
+        /**
+         *  查询前一页
+         */
+        $scope.prev = function () {
+            if ($scope.currentPage > 1) {
+                $scope.currentPage--;
+            }
+            $scope.loadPages($scope.accountList);
+        };
+
+        /**
+         * 查询当前页
+         */
+        $scope.loadPage = function (page) {
+            $scope.currentPage = page;
+            $scope.loadPages($scope.accountList);
+        };
+
+        /****************************   分页end   ******************************/
+
+    }]);
+});

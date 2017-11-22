@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div class="sel_top">
+    <div class="row">
+        <div class="col-lg-9 col-md-9 col-sm-6">
+            <button type="button" class="btn btn-default btn-primary" ng-click="outelectricDataReportExcel()">
+                <span class="glyphicon glyphicon-log-out btn_icon"></span>
+                导出
+            </button>
+        </div>
+        <div class="col-lg-2 col-md-2 col-sm-4"><input class="form-control" ng-model="MeterReadingData.electricMeterNum" placeholder="请输入编号"></div>
+        <div class="col-lg-1 col-md-1 col-sm-2">
+            <button type="button" class="btn btn-default btn-primary" ng-click="waterChecks._load()">
+                <span class="glyphicon glyphicon-search btn_icon"></span>
+                查询
+            </button>
+        </div>
+    </div>
+
+</div>
+<div class="row padding">
+    <div class="col-lg-12">
+        <table>
+            <thead>
+            <th width="50px"><!--<input type="checkbox" id="selectAll" ng-click="selectAll()" />--></th>
+            <th>序号</th>
+            <th>计划名称</th>
+            <th>电表编号</th>
+            <th>电表表描述</th>
+            <th>本月读数</th>
+            <th>本月修正量</th>
+            <th>本月用量</th>
+            <th>上月读数</th>
+            <th>上月用量</th>
+            <th>同比</th>
+            <th>去年读数</th>
+            <th>去年用量</th>
+            <th>环比</th>
+            </thead>
+            <tbody id="selectInput">
+            <tr ng-class="{'this_info ':btnIndex==wd}" ng-click="check(wd)"
+                ng-repeat="db in electricChecks.object.meterReadingData"
+                ng-if="wd['meterReadingDataId'] != null"
+            >
+                <td><!--<input type="checkbox" id="{{wd.meterReadingDataId}}">--></td>
+                <td>{{$index}}</td>
+                <td>{{db.projectName}}</td>
+                <td>{{db.electricMeterNum}}</td>
+                <td>{{db.electricMeterDescribed}}</td>
+                <td>{{db.reading}}</td>
+                <td>{{db.correction}}</td>
+                <td>{{db.reading}}</td>
+                <td>{{db.lastMonthReading}}</td>
+                <td>{{db.lastMonthUse}}</td>
+                <td>{{db.comparedSame}}</td>
+                <td>{{db.lastYearRead}}</td>
+                <td>{{db.lastYearUse}}</td>
+                <td>{{db.sequential}}</td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="bill_paging">
+            <span>共{{electricChecks.object.page.totalResult}}条</span>
+            <ul class="pagination">
+                <li ng-class="{true:'disabled'}[electricChecks.page.currentPage==1]">
+                    <a href="javascript:void(0)" ng-click="electricChecks.go(1)">首页</a>
+                </li>
+                <li ng-class="{true:'disabled'}[electricChecks.page.currentPage==1]">
+                    <a href="javascript:void(0)" ng-show="electricChecks.hasPrevious()" ng-click="electricChecks.previous()">上一页</a>
+                </li>
+                <li ng-class="{true:'active'}[electricChecks.page.currentPage==i]" ng-repeat="i in electricChecks.pages">
+                    <a href="javascript:void(0)"  ng-click="electricChecks.go(i)">{{i}}</a>
+                </li>
+                <li ng-class="{true:'disabled'}[electricChecks.page.currentPage==electricChecks.page.totalPage]">
+                    <a href="javascript:void(0)" ng-show="electricChecks.hasNext()" ng-click="electricChecks.next()">下一页</a>
+                </li>
+                <li ng-class="{true:'disabled'}[electricChecks.page.currentPage==electricChecks.page.totalPage]">
+                    <a href="javascript:void(0)" ng-click="electricChecks.go(electricChecks.page.totalPage)">尾页</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+</body>
+</html>

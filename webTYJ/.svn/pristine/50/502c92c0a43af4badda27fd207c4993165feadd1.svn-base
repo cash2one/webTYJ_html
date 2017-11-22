@@ -1,0 +1,99 @@
+<!--
+    创建人:彭婷婷  创建时间：2015/06/08
+    页面名称:人员管理设置
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>人员管理设置</title>
+</head>
+<body>
+<div id="content-first">
+
+    <div id="tab">
+        <a lang="no" class="this_action">人员管理设置</a>
+    </div>
+        <div class="row padding">
+            <div class="col-lg-12">
+                <table>
+                    <thead>
+                    <th>项目名称</th>
+                    <th ng-repeat="items in title" id="{{items.SpecialtyInfo.specialtyId}}">
+                        {{items.SpecialtyInfo.specialtyName}}经理
+                    </th>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="data in data1">
+                        <td>{{data.tr.project.projectName}}</td>
+                        <td ng-repeat="td in data.td" ng-click="searchManage($index,data.tr.project.projectId,td.teamper)">
+                            <span ng-if="td.teamper.corePositionId == '' || td.teamper == ''"></span>
+                            <span ng-if="td.teamper != ''">{{td.teamper.corePosition.staffName}}</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+</div>
+<!--<div class="complaint_user_list">-->
+    <!--<div class="architecturepadding">-->
+        <!--<div class="row">-->
+            <!--<div class="row acreage_padding">-->
+                <!--<span class="acreage_left">人员管理设置：</span>-->
+                <!--<div class="clear"></div>-->
+            <!--</div>-->
+            <!--<div class="col-lg-12 col-md-12 col-sm-6">-->
+                <!--<table>-->
+                    <!--<thead>-->
+                        <!--<th>项目名称</th>-->
+                        <!--<th ng-repeat="items in title" id="{{items.SpecialtyInfo.specialtyId}}">-->
+                            <!--{{items.SpecialtyInfo.specialtyName}}-->
+                        <!--</th>-->
+                    <!--</thead>-->
+                    <!--<tbody>-->
+                        <!--<tr ng-repeat="data in data1">-->
+                            <!--<td>{{data.tr.project.projectName}}</td>-->
+                            <!--<td ng-repeat="td in data.td" ng-click="searchManage($index,data.tr.project.projectId,td.teamper)">-->
+                                <!--<span ng-if="td.teamper.corePositionId == '' || td.teamper == ''">尚未设置负责人！</span>-->
+                                <!--<span ng-if="td.teamper != ''">{{td.teamper.corePosition.staffName}}</span>-->
+                            <!--</td>-->
+                        <!--</tr>-->
+                    <!--</tbody>-->
+                <!--</table>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->
+<!--选择人员-->
+<div class="modal fade" id="myModal" role="dialog" aria-label="updateStaff" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: white;height: 50px">
+                人员选择列表
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                <div class="user_check_pannel sel1">
+                    <div class="col-md-3 text-center" ng-repeat="cp in CorePosition"style="padding:8px;margin-right:6px;margin-bottom:6px;" onclick="if(this.style.background==''){this.style.background='#f6f8fa'}else{this.style.background=''}">
+                            <a href="">
+                                <img src="images/project/user/user_3.png" ng-click="changeCore(cp)">
+                            </a>
+                            <span>{{cp.staffName}}</span>
+                           <div class="clear"></div>
+                    </div>
+                </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

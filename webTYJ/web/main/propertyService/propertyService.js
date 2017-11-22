@@ -1,0 +1,374 @@
+/**
+ * Created by 倪明 on 2015/3/11.
+ * 物业服务
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../app');
+    app.filter('len',function(){
+        return function(items,start,end){
+            var it =[];
+            for(var i=start;i<end;i++){
+                it.push(items[i]);
+            }
+            return it;
+        }
+    });
+    app.controller('psCtrl', ['$scope', '$http','$rootScope',
+        function ($scope,$http,$rootScope) {
+            //设置人员空数组
+            var url = $rootScope.url;
+            $scope.search={staffName:"",idNum:"",carportNum:"",carNum:"",phone:"",productName:"",houseAddress:""};
+
+            $scope.search.property=false;
+            $scope.search.staff=false;
+            $scope.search.product=false;
+            $scope. search.bill=false;
+            $scope.persons=[];  //人员信息
+            $scope.carInfos =[];    //车辆信息
+            $scope.houses =[];  //住宅信息
+            $scope.stalls =[];  //车位信息
+            $scope.stores =[];  //商铺信息
+            //搜索人员和资产
+            $scope.check=function() {
+                if($scope.search.serch1==true||$scope.search.serch2==true)
+                {
+                    layer.alert('产品及账单功能暂未开放',{icon : 0});
+                    return;
+                }
+                if(!$scope.search.property && !$scope.search.staff && !$scope.search.product && !$scope.search.bill){
+                    layer.alert('请勾选筛选条件',{icon : 0});
+                    return;
+                }
+
+                if($scope.search.staffName||$scope.search.idNum||$scope.search.carportNum||$scope.search.carNum||$scope.search.phone
+                    ||$scope.search.productName || $scope.search.houseAddress||$scope.search.phone) {
+                    $scope.err="";
+                    $http.post(url + '/PersonCustNew/propertyServiceSearch', {Search: $scope.search}).success(function (data) {
+                        console.log(data);
+                        if (!$scope.search.property && !$scope.search.staff && !$scope.search.product && !$scope.search.bill) {
+                            layer.alert('请勾选筛选条件',{icon : 0});
+                        }
+                        else {
+                            if($scope.search.property && !$scope.search.staff){
+                                if((data.propertyService.carInfos.carId == null && !angular.isArray(data.propertyService.carInfos)) &&
+                                    (data.propertyService.houses.id == null && !angular.isArray(data.propertyService.houses)) &&
+                                    (data.propertyService.stalls.stallId == null && !angular.isArray(data.propertyService.stalls)) &&
+                                    (data.propertyService.stores.storeId == null && !angular.isArray(data.propertyService.stores))){
+                                    layer.msg('没有符合条件的数据，请重新输入查询条件！',{icon : 0,time : 2000});
+                                }
+                            }
+                            if(!$scope.search.property && $scope.search.staff){
+                                if(data.propertyService.personCusts.custId == null && !angular.isArray(data.propertyService.personCusts)){
+                                    layer.msg('没有符合条件的数据，请重新输入查询条件！',{icon : 0,time : 2000});
+                                }
+                            }
+                            if($scope.search.property && $scope.search.staff){
+                                if((data.propertyService.personCusts.custId == null && !angular.isArray(data.propertyService.personCusts)) &&
+                                    (data.propertyService.carInfos.carId == null && !angular.isArray(data.propertyService.carInfos)) &&
+                                    (data.propertyService.houses.id == null && !angular.isArray(data.propertyService.houses)) &&
+                                    (data.propertyService.stalls.stallId == null && !angular.isArray(data.propertyService.stalls)) &&
+                                    (data.propertyService.stores.storeId == null && !angular.isArray(data.propertyService.stores))){
+                                    layer.msg('没有符合条件的数据，请重新输入查询条件！',{icon : 0,time : 2000});
+                                }
+                            }
+
+                            $scope.persons=[];
+                            $scope.carInfos =[];
+                            $scope.houses =[];
+                            $scope.stalls =[];
+                            $scope.stores =[];
+
+
+                            //设置分页数组，将所有数据存入对应的数组
+
+                            if(angular.isDefined(data.propertyService.personCusts)){
+                                for(var i = 0; i < data.propertyService.personCusts.length; i ++){
+                                    if(data.propertyService.personCusts[i].custId != null){
+                                        $scope.persons.push(data.propertyService.personCusts[i]);
+                                    }
+                                }
+                            }
+                            if(angular.isDefined(data.propertyService.carInfos)){
+                                for(var i = 0; i < data.propertyService.carInfos.length; i ++){
+                                    if(data.propertyService.carInfos[i].carId != null){
+                                        $scope.carInfos.push(data.propertyService.carInfos[i]);
+                                    }
+                                }
+                            }
+                            if(angular.isDefined(data.propertyService.houses)){
+                                for(var i = 0; i < data.propertyService.houses.length; i ++){
+                                    if(data.propertyService.houses[i].id != null){
+                                        $scope.houses.push(data.propertyService.houses[i]);
+                                    }
+                                }
+                            }
+                            if(angular.isDefined(data.propertyService.stalls)){
+                                for(var i = 0; i < data.propertyService.stalls.length; i ++){
+                                    if(data.propertyService.stalls[i].stallId != null){
+                                        $scope.stalls.push(data.propertyService.stalls[i]);
+                                    }
+                                }
+                            }
+                            if(angular.isDefined(data.propertyService.stores)){
+                                for(var i = 0; i < data.propertyService.stores.length; i ++){
+                                    if(data.propertyService.stores[i].storeId != null){
+                                        $scope.stores.push(data.propertyService.stores[i]);
+                                    }
+                                }
+                            }
+
+                            //分别对每个分组进行分页初始化
+                            $scope.currentPagePerson = 1;
+                            $scope.currentPageCar = 1;
+                            $scope.currentPageHouse = 1;
+                            $scope.currentPageStall = 1;
+                            $scope.currentPageStore = 1;
+
+                            $scope.totalPagePerson = 1;
+                            $scope.totalPageCar = 1;
+                            $scope.totalPageHouse = 1;
+                            $scope.totalPageStall = 1;
+                            $scope.totalPageStore = 1;
+
+                            $scope.pageSizePerson = 6;
+                            $scope.pageSizeCar = 6;
+                            $scope.pageSizeHouse = 6;
+                            $scope.pageSizeStall = 6;
+                            $scope.pageSizeStore = 6;
+
+                            $scope.loadPerson();
+                            $scope.loadCar();
+                            $scope.loadHouse();
+                            $scope.loadStall();
+                            $scope.loadStore();
+                        }
+                    }).error(function (err) {
+                        layer.alert('显示人员信息失败，请重新搜索！',{icon : 2});
+                    });
+                }else{
+                    //$scope.err="请您输入搜索条件！";
+                    layer.msg('请您输入搜索条件！',{icon : 0,time : 2000});
+                }
+            };
+
+            //将选择的人员信息传递到父节点，其他子模块引用
+            $scope.switch=function(person){
+                sessionStorage.setItem('person_property',JSON.stringify(person));
+                $rootScope.user=person;
+            };
+
+            $scope.togglePanel=function(index){
+                $scope.persons[index].active=!$scope.persons[index].active;
+            };
+            $scope.showMore=function(index){
+
+            };
+
+            /**
+             * enter 搜索
+             *
+             */
+            $scope.inputSearch = function(ev)
+            {
+                var e = ev||event;
+                if(e.keyCode == 13)
+                {
+                    $scope.check();
+                }
+            };
+
+            //分页方法
+            $scope.currentPagePerson = 1;
+            $scope.currentPageCar = 1;
+            $scope.currentPageHouse = 1;
+            $scope.currentPageStall = 1;
+            $scope.currentPageStore = 1;
+
+            $scope.totalPagePerson = 1;
+            $scope.totalPageCar = 1;
+            $scope.totalPageHouse = 1;
+            $scope.totalPageStall = 1;
+            $scope.totalPageStore = 1;
+
+            $scope.pageSizePerson = 6;
+            $scope.pageSizeCar = 6;
+            $scope.pageSizeHouse = 6;
+            $scope.pageSizeStall = 6;
+            $scope.pageSizeStore = 6;
+
+            //员工分页
+            $scope.loadPerson = function () {
+                $scope.itemsperson = $scope.persons;
+                //获取总页数
+                $scope.totalPagePerson = Math.ceil($scope.itemsperson.length / $scope.pageSizePerson);
+                //$scope.endPage = $scope.totalPage;
+                //当前页显示的数据
+                if($scope.totalPagePerson < 2){
+                    $scope.itemsperson = $scope.persons;
+                }else if($scope.currentPagePerson == $scope.totalPagePerson){
+                    $scope.itemsperson = $scope.persons.slice(($scope.currentPagePerson - 1) * 6, $scope.itemsperson.length);
+                }else{
+                    $scope.itemsperson = $scope.persons.slice(($scope.currentPagePerson - 1) * 6, $scope.currentPagePerson * 6);
+                }
+            };
+
+            $scope.nextPerson = function () {
+                if ($scope.currentPagePerson < $scope.totalPagePerson) {
+                    $scope.currentPagePerson++;
+                    $scope.loadPerson();
+                }else{
+                    layer.alert('已是最后一页',{icon : 0});
+                }
+            };
+
+            $scope.prevPerson = function () {
+                if ($scope.currentPagePerson > 1) {
+                    $scope.currentPagePerson--;
+                    $scope.loadPerson();
+                }else{
+                    layer.alert('已是第一页',{icon : 0});
+                }
+            };
+
+            //车辆分页
+            $scope.loadCar = function () {
+                $scope.itemscar = $scope.carInfos;
+                //获取总页数
+                $scope.totalPageCar = Math.ceil($scope.itemscar.length / $scope.pageSizeCar);
+                //$scope.endPage = $scope.totalPage;
+                //当前页显示的数据
+                if($scope.totalPageCar < 2){
+                    $scope.itemscar = $scope.carInfos;
+                }else if($scope.currentPageCar == $scope.totalPageCar){
+                    $scope.itemscar = $scope.carInfos.slice(($scope.currentPageCar - 1) * 6, $scope.itemscar.length);
+                }else{
+                    $scope.itemscar = $scope.carInfos.slice(($scope.currentPageCar - 1) * 6, $scope.currentPageCar * 6);
+                }
+            };
+
+            $scope.nextCar = function () {
+                if ($scope.currentPageCar < $scope.totalPageCar) {
+                    $scope.currentPageCar++;
+                    $scope.loadCar();
+                }else{
+                    layer.alert('已是最后一页',{icon : 0});
+                }
+            };
+
+            $scope.prevCar = function () {
+                if ($scope.currentPageCar > 1) {
+                    $scope.currentPageCar--;
+                    $scope.loadCar();
+                }else{
+                    layer.alert('已是第一页',{icon : 0});
+                }
+            };
+
+            //住宅分页
+            $scope.loadHouse = function () {
+                console.log($scope.houses);
+                $scope.itemshouse = $scope.houses;
+                //获取总页数
+                $scope.totalPageHouse = Math.ceil($scope.itemshouse.length / $scope.pageSizeHouse);
+                //$scope.endPage = $scope.totalPage;
+                //当前页显示的数据
+                if($scope.totalPageHouse < 2){
+                    $scope.itemshouse = $scope.houses;
+                }else if($scope.currentPageHouse == $scope.totalPageHouse){
+                    $scope.itemshouse = $scope.houses.slice(($scope.currentPageHouse - 1) * 6, $scope.itemshouse.length);
+                }else{
+                    $scope.itemshouse = $scope.houses.slice(($scope.currentPageHouse - 1) * 6, $scope.currentPageHouse * 6);
+                }
+                console.log($scope.itemshouse);
+            };
+
+            $scope.nextHouse = function () {
+                if ($scope.currentPageHouse < $scope.totalPageHouse) {
+                    $scope.currentPageHouse++;
+                    $scope.loadHouse();
+                }else{
+                    layer.alert('已是最后一页',{icon : 0});
+                }
+            };
+
+            $scope.prevHouse = function () {
+                if ($scope.currentPageHouse > 1) {
+                    $scope.currentPageHouse--;
+                    $scope.loadHouse();
+                }else{
+                    layer.alert('已是第一页',{icon : 0});
+                }
+            };
+
+            //车位分页
+            $scope.loadStall = function () {
+                $scope.itemsstall = $scope.stalls;
+                //获取总页数
+                $scope.totalPageStall = Math.ceil($scope.itemsstall.length / $scope.pageSizeStall);
+                //$scope.endPage = $scope.totalPage;
+                //当前页显示的数据
+                if($scope.totalPageStall < 2){
+                    $scope.itemsstall = $scope.stalls;
+                }else if($scope.currentPageStall == $scope.totalPageStall){
+                    $scope.itemsstall = $scope.stalls.slice(($scope.currentPageStall - 1) * 6, $scope.itemsstall.length);
+                }else{
+                    $scope.itemsstall = $scope.stalls.slice(($scope.currentPageStall - 1) * 6, $scope.currentPageStall * 6);
+                }
+            };
+
+            $scope.nextStall = function () {
+                if ($scope.currentPageStall < $scope.totalPageStall) {
+                    $scope.currentPageStall++;
+                    $scope.loadStall();
+                }else{
+                    layer.alert('已是最后一页',{icon : 0});
+                }
+            };
+
+            $scope.prevStall = function () {
+                if ($scope.currentPageStall > 1) {
+                    $scope.currentPageStall--;
+                    $scope.loadStall();
+                }else{
+                    layer.alert('已是第一页',{icon : 0});
+                }
+            };
+
+            //商铺分页
+            $scope.loadStore = function () {
+                $scope.itemsstore = $scope.stores;
+                //获取总页数
+                $scope.totalPageStore = Math.ceil($scope.itemsstore.length / $scope.pageSizeStore);
+                //$scope.endPage = $scope.totalPage;
+                //当前页显示的数据
+                if($scope.totalPageStore < 2){
+                    $scope.itemsstore = $scope.stores;
+                }else if($scope.currentPageStore == $scope.totalPageStore){
+                    $scope.itemsstore = $scope.stores.slice(($scope.currentPageStore - 1) * 6, $scope.itemsstore.length);
+                }else{
+                    $scope.itemsstore = $scope.stores.slice(($scope.currentPageStore - 1) * 6, $scope.currentPageStore * 6);
+                }
+            };
+
+            $scope.nextStore = function () {
+                if ($scope.currentPageStore < $scope.totalPageStore) {
+                    $scope.currentPageStore++;
+                    $scope.loadStore();
+                }else{
+                    layer.alert('已是最后一页',{icon : 0});
+                }
+            };
+
+            $scope.prevStore = function () {
+                if ($scope.currentPageStore > 1) {
+                    $scope.currentPageStore--;
+                    $scope.loadStore();
+                }else{
+                    layer.alert('已是第一页',{icon : 0});
+                }
+            };
+        }]);
+});

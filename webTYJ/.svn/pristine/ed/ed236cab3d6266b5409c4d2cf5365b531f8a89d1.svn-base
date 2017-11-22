@@ -1,0 +1,120 @@
+/**
+ * Created by NM on 2016/1/21.
+ *
+ */
+'use strict';
+
+define(function (require) {
+    var app = require('../../app');
+
+    app.controller('headCtrl', ['$scope','$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+        var fileUrl = $rootScope.fileUrl;           //获取请求路径
+        var saasUrl = $rootScope.saasUrl;           //子系统路径
+        //获取user对象信息
+        $scope.USER_LOGIN = JSON.parse(sessionStorage.getItem('USER_LOGIN'));
+
+
+        /**
+         * 退出操作
+         */
+        $scope.loginOut = function(){
+            layer.confirm('退出后将重新登录，您确定要退出系统吗?', {icon: 3, title:'提示'}, function(index){
+                $http({
+                    method:"GET",
+                    url: fileUrl + "/login/loginOut.do",
+                    headers:{'x-user-session':$scope.USER_LOGIN.sessionId}
+                }).success(function(data){
+                    $location.path("/login");
+                    sessionStorage.removeItem('USER_LOGIN');
+                });
+                layer.close(index);
+            });
+        };
+        //------------------------
+        /**
+         * 编辑logo
+         */
+        var filePath='';          //上传文件的路径
+        $scope.editLogo = function(){
+            console.log("logo");
+            //模态框
+            $('#myModale').modal('toggle')
+            $("#editlogo").remove();
+            $("#edit").append("<div id='editlogo' class='zyupload'></div>");
+            //上传图片
+            $(function(){
+                // 初始化插件
+                $("#editlogo").zyUpload({
+                    width            :   "auto",                 // 宽度
+                    height           :   "auto",                 // 宽度
+                    itemWidth        :   "140px",                 // 文件项的宽度
+                    itemHeight       :   "115px",                 // 文件项的高度
+                    url              :   fileUrl+"/FileService",  // 上传文件的路径
+                    fileType         :   ["jpg","png","jpeg","gif","xls","docx","xlsx","pdf","txt","doc","ppt"],// 上传文件的类型
+                    fileSize         :   51200000,                // 上传文件的大小
+                    multiple         :   true,                    // 是否可以多个文件上传
+                    dragDrop         :   true,                    // 是否可以拖动上传文件
+                    tailor           :   true,                    // 是否可以裁剪图片
+                    del              :   true,                    // 是否可以删除文件
+                    finishDel        :   false,  				  // 是否在上传文件完成后删除预览
+                    /* 外部获得的回调接口 */
+                    onSelect: function(selectFiles, allFiles){    // 选择文件的回调方法  selectFile:当前选中的文件  allFiles:还没上传的全部文件
+                        console.info(selectFiles);
+                    },
+                    onDelete: function(file, files){
+                        console.info(file.name);
+                    },
+                    onSuccess: function(file, response){
+                        $scope.annex = {annexAddress:'',annexName:''};
+                        filePath=response;
+                        $scope.annex.annexAddress=filePath;
+                        $scope.annex.annexName = file.name;
+                        //$scope.personCustNew.annexs.push($scope.annex);
+                        layer.msg("上传成功",{icon : 1,time : 2000});
+
+                    },
+                    onFailure: function(file, response){          // 文件上传失败的回调方法
+                        layer.msg("上传失败",{icon : 1,time : 2000});
+                    },
+                    onComplete: function(response){           	  // 上传完成的回调方法
+
+                    }
+                });
+            });
+        };
+        /**
+         * 确认修改logo
+         */
+        $scope.confirmLogo = function(){
+            if(filePath!=null && filePath != ""){
+
+            //取出截取好路径filePath:/upload\20160615\20160615150611_960.jpg
+           var path = filePath.substring(filePath.lastIndexOf('\\')+1);
+            console.log(filePath);
+            //修改logo样式
+            filePath=filePath.replace(/\\/g,'/');
+            $(".logo").css({"background":"url(" +fileUrl+ filePath + ")",'background-size':'126px 47px'}).css("height","47px");
+           // layer.alert('修改LOGO成功',{icon : 0});
+            }
+        };
+
+        //------------------
+
+        $scope.loadDefault=function(){
+            var wWidth = $(window).width();
+            var wHeight = $(window).height();
+            $(".container-fluid .left").height(wHeight-70);
+            $(".container-fluid .content").height(wHeight-100);
+        };
+
+        $scope.personCenter = function(){
+            var user = {employId : ''};
+            var userCookie = JSON.parse(sessionStorage.getItem("USER_LOGIN"));
+            $scope.user = userCookie?userCookie:user;
+            //window.open('http://10.0.13.33:8080/SaaS/login?username='+$scope.user.loginName+'&password='+$scope.user.password);
+            //window.open('http://120.24.223.107:8080/SaaS/wy?loginName='+$scope.user.loginName);
+            window.open(saasUrl + '/wy?loginName='+$scope.user.loginName+'&password='+$scope.user.passwordToSaas);
+        };
+
+    }]);
+});

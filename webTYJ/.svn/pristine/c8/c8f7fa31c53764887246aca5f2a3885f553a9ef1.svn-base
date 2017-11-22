@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div id="content-first">
+    <!--tab页切换开始-->
+    <div id="tab">
+        <a ui-sref="index.businessManagement.newWaterMeterManagement.waterMeterMaintenance.listOfWaterMeter" ng-class="{'this_action':btnIndex==1}" ng-click="doClick(1)">水表维护</a>
+        <a ui-sref="index.businessManagement.newWaterMeterManagement.meterReadingProgram" ng-class="{'this_action':btnIndex==2}" ng-click="doClick(2)">抄表计划</a>
+        <a ui-sref="index.businessManagement.newWaterMeterManagement.meteringResults" ng-class="{'this_action':btnIndex==3}" ng-click="doClick(3)">抄表结果</a>
+        <a lang="no" ui-sref="index.businessManagement.newWaterMeterManagement.audit" ng-class="{'this_action':btnIndex==4}" ng-click="doClick(4)">审核</a>
+    </div>
+    <!--tab页切换结束-->
+    <!--视图加载-->
+    <div ui-view></div>
+    <!--视图加载结束-->
+</div>
+</body>
+</html>

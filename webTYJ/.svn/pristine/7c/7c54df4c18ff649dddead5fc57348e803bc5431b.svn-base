@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="bower_components/skins/zyupload-1.0.0.min.css " type="text/css">
+
+    <script type="text/javascript">
+        function exportExcelHouse(){
+            var url = document.getElementById("fileurls").value;
+            window.location.href=url +"/info/outMeterReadingExcel.do?"
+        }
+        function exportExcelMeter(){
+            var url = document.getElementById("fileurl").value;
+            window.location.href=url +"/info/outMeterRecordsExcel.do?"
+        }
+    </script>
+</head>
+<body>
+<div ng-show="showList">
+<div class="sel_top">
+    <div class="row">
+        <div class="col-lg-9 col-md-9 col-sm-6">
+
+            <button type="button" class="btn btn-default btn-primary" data-target="#outPut" data-toggle="modal" ng-click="inportExcel()">
+                <span class="glyphicon glyphicon-log-in btn_icon"></span>
+                导入
+            </button>
+            <button type="button" class="btn btn-default btn-primary" onClick="exportExcelHouse()">
+                <span class="glyphicon glyphicon-log-out btn_icon"></span>
+                导入模版下载
+        </button>
+            <input type="hidden" id="fileurls" value="{{fileUrl}}">
+        </div>
+        <div class="col-lg-2 col-md-2 col-sm-4"><input class="form-control" ng-model="searchMeter.projectName"></div>
+        <div class="col-lg-1 col-md-1 col-sm-2">
+            <button type="button" class="btn btn-default btn-primary"  ng-click="waterChecks._load()">
+                <span class="glyphicon glyphicon-search btn_icon"></span>
+                查询
+            </button>
+        </div>
+    </div>
+
+</div>
+<div class="row padding">
+
+    <div class="col-lg-12">
+
+        <table>
+            <thead>
+            <tr>
+                <th>序号</th>
+                <th>计划名称</th>
+                <th>已抄表数</th>
+                <th>未抄表</th>
+                <th>抄表人</th>
+                <th>抄表日期</th>
+            </tr>
+
+            </thead>
+            <tbody>
+            <tr  ng-class="{'this_info ':btnIndex==item}"
+                 ng-click="check (item)"
+                 ng-dblclick="showDetails(item)"
+                 ng-repeat="item in waterChecks.object['meterReadingProgram']"
+                 ng-show="item['meterReadingProgramId'] != null">
+                <td>{{$index}}</td>
+                <td>{{item.projectName}}</td>
+                <td>{{item.meterReadingNum}}</td>
+                <td>{{item.unfinishedNum}}</td>
+                <td>{{item.currentExecutor}}</td>
+                <td>{{item.meterExecutiveTime|date :"yyyy-MM-dd"}}</td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="bill_paging">
+            <ul class="pagination">
+                <li><a style="cursor:pointer;" ng-click="waterChecks.go(1)">首页</a></li>
+                <li><a style="cursor:pointer;" ng-show="waterChecks.hasPrevious()" ng-click="waterChecks.previous()">上一页</a></li>
+                <li><a style="cursor:pointer;" ng-repeat="i in waterChecks.pages"  ng-click="waterChecks.go(i)">{{i}}</a></li>
+                <li><a style="cursor:pointer;" ng-show="waterChecks.hasNext()" ng-click="waterChecks.next()">下一页</a></li>
+                <li><a style="cursor:pointer;" ng-click="waterChecks.go(waterChecks.page.totalPage)">尾页</a></li>
+            </ul>
+        </div>
+        </div>
+    </div>
+</div>
+<div ng-show="showDetalis">
+    <div class="sel_top">
+        <div class="row">
+            <div class="col-lg-9 col-md-9 col-sm-6">
+                <button type="button" class="btn btn-default btn-primary" ng-click="getBack()">
+                    <span class="glyphicon glyphicon-arrow-left btn_icon"></span>
+                    返回
+                </button>
+                <button type="button" class="btn btn-default btn-primary" data-target="#outPut1" data-toggle="modal" ng-click="inportMeterExcel()" >
+                    <span class="glyphicon glyphicon-log-in btn_icon"></span>
+                    导入
+                </button>
+                <button type="button" class="btn btn-default btn-primary" onClick="exportExcelMeter()">
+                    <span class="glyphicon glyphicon-log-out btn_icon"></span>
+                    导入模版下载
+                </button>
+                <input type="hidden" id="fileurl" value="{{fileUrl}}">
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-4"><input class="form-control" ng-model="waterMeterRecords.fullName"></div>
+            <div class="col-lg-1 col-md-1 col-sm-2">
+                <button type="button" class="btn btn-default btn-primary"  ng-click="waterMeterChecks._load()">
+                    <span class="glyphicon glyphicon-search btn_icon"></span>
+                    查询
+                </button>
+            </div>
+        </div>
+
+    </div>
+<div class="row padding" >
+    <div class="col-lg-12">
+        <table>
+            <thead>
+            <th>序号</th>
+            <th>抄表人</th>
+            <th>水表编号</th>
+            <th>区域</th>
+            <th>上月读数</th>
+            <th>本月读数</th>
+            </thead>
+            <tbody>
+            <tr  ng-class="{'this_info ':btnIndex==item}" ng-click="check1 (item)"  ng-repeat="item in waterMeterChecks.object['waterMeterRecords']" ng-show="item['waterMeterRecordsId'] != null">
+                <td>{{$index}}</td>
+                <td>{{item.meterReadingPeople}}</td>
+                <td>{{item.waterMeter.waterMeterNum}}</td>
+                <td>{{item.fullName}}</td>
+                <td>{{item.lastMonthReading}}</td>
+                <td>{{item.reading}}</td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="bill_paging">
+            <ul class="pagination">
+                <li><a style="cursor:pointer;" ng-click="waterChecks.go(1)">首页</a></li>
+                <li><a style="cursor:pointer;" ng-show="waterChecks.hasPrevious()" ng-click="waterChecks.previous()">上一页</a></li>
+                <li><a style="cursor:pointer;" ng-repeat="i in waterChecks.pages"  ng-click="waterChecks.go(i)">{{i}}</a></li>
+                <li><a style="cursor:pointer;" ng-show="waterChecks.hasNext()" ng-click="waterChecks.next()">下一页</a></li>
+                <li><a style="cursor:pointer;" ng-click="waterChecks.go(waterChecks.page.totalPage)">尾页</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+</div>
+<div class="modal fade" id="outPut" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" >
+        <div class="modal-content">
+            <div class="modal-header">
+                导入Excel表
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="padding"  >
+                    <div id="remove">
+                        <div id="excelupload" class="zyupload"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消 </button>
+                <button class="btn btn-default btn-primary" data-dismiss="modal"  >确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="outPut1" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" >
+        <div class="modal-content">
+            <div class="modal-header">
+                导入Excel表
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="padding"  >
+                    <div id="remove1">
+                        <div id="excelupload1" class="zyupload"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消 </button>
+                <button class="btn btn-default btn-primary" data-dismiss="modal"  >确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

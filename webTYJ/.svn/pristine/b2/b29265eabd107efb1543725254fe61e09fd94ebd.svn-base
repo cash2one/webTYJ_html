@@ -1,0 +1,97 @@
+<!--author:王志刚-->
+<!--页面名称：物业服务装修发放许可证流程页面-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>发放许可证</title>
+</head>
+<body>
+<div class="row">
+<div class="complaint_user">
+    <div class="building_padding">
+        <div class="text_center">
+    <span><strong class="font_20">施工备案证</strong></span>
+        </div>
+        <div>
+        <div class="col-lg-4 col-md-4 col-sm-4">
+            <div class="row print_left">
+                <div class="text_title">
+                    <span class="text_center">管理处存根</span>
+                </div>
+                <div class="form_list">
+                <ul>
+                    <li><span>施工单位：</span><input placeholder="施工单位"></li>
+                    <li><span>备案证号：</span><input placeholder="备案证号"></li>
+                    <li><span>办证人：</span><input placeholder="办证人"></li>
+                    <li><span>办证日期：</span><input type="datetime-local"></li>
+                    <li><span>有效期</span><input type="datetime-local"></li>
+                    <li><span></span><span class="text_right">----</span></li>
+                    <li><span></span><input type="datetime-local"></li>
+                </ul>
+            </div>
+            </div>
+        </div>
+        <div class="col-lg-8 col-md-8 col-sm-8">
+            <div class="print_left building_padding"">
+            <div>
+                <div class="col-lg-6 col-md-6 col-sm-6">
+                    <span>物业公司名称：</span>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6">
+                    <span>证件号：</span>
+                </div>
+            </div>
+            <div class="print_table building_padding">
+            <table width="100%" class="text_center">
+              <tr>
+                <td>业主名称：</td>
+                <td>赵脑残</td>
+                <td>装修地址：</td>
+                <td>武汉市武昌区</td>
+                <td>开工日期：</td>
+                <td>2015.05.05</td>
+              </tr>
+              <tr>
+                <td>装修单位：</td>
+                <td>软件园</td>
+                <td>现场负责人：</td>
+                <td>钱脑残</td>
+                <td>消防批文号：</td>
+                <td>NC_941</td>
+              </tr>
+              <tr>
+                <td>环保批文号：</td>
+                <td colspan="5"></td>
+              </tr>
+                <tr>
+                    <td>装修项目：</td>
+                    <td colspan="5"></td>
+                </tr>
+                <tr>
+                    <td colspan="6">。。。。。。。。。。。。。。。</td>
+                </tr>
+                <tr>
+                    <td>签发人：</td>
+                    <td colspan="2"></td>
+                    <td>客户服务签章</td>
+                    <td colspan="2">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td>备注：</td>
+                    <td colspan="5"></td>
+                </tr>
+            </table>
+                <span class="center">注： 此证须规范张贴在施工现场。此证的发出，并不代表贵户可豁免相关的法律责任。</span>
+          </div>
+            </div>
+        </div>
+        </div>
+<div style="text-align: center;margin-top: 30px">
+    <button type="button" class="btn btn-default">打印</button>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

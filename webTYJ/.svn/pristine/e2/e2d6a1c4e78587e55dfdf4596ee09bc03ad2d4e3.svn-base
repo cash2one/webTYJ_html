@@ -1,0 +1,524 @@
+/**
+ * Created by wangzhou on 2016/1/25.
+ * Name : 项目团队管理
+ */
+'use strict';
+define(function (require) {
+    var app = require('../../../app');
+
+    app.controller('projectTeamManagementCtrl', ['$scope', '$http', '$rootScope',
+        function ($scope, $http, $rootScope) {
+            var url = $rootScope.url;    //url地址
+
+            var user = {};                                             //设置默认用户信息为空
+            var companyId ;//设置默认用户信息为空
+            var userCook = JSON.parse(sessionStorage.getItem("USER_LOGIN"));   //从cook中获取用户信息
+            $scope.user = userCook ? userCook : user;                      //三目运算获取用户信息
+            companyId= $scope.user.companyId;
+
+            $scope.teamwork = {page: {}};
+            $scope.teamworka = {};
+            var number = 0;
+            /**
+             * 分页获取所有团队
+             */
+            var fetchFunction = function (page, callback) {
+                $scope.teamwork.page = page;
+                //设置团队成员数量
+                $http.post(url + '/Teamwork/listPageTeamworks', {Teamwork: $scope.teamwork}).success(callback);
+            };
+            $scope.searchPaginator = app.get('Paginator').list(fetchFunction, 6);
+
+            //查询未分配的员工信息
+            $scope.getStaff = function () {
+                //增加条件，根据团队id查询非团队内成员的所有员工
+                if (angular.isUndefined($scope.teamLeaderInfo)) {
+                    return;
+                }
+                $http.get(url + '/staff/listAllStaffNoAllot/' + $scope.teamLeaderInfo.id+ '/'+companyId).success(function (data) {
+                    $scope.staffsone = [];
+                    $scope.staffs = data.Staff;
+                    if (angular.isArray($scope.staffs)) {
+                        $scope.staffsone = $scope.staffs;
+                    } else {
+                        $scope.staffsone.push($scope.staffs);
+                    }
+                }).error(function (data, status, headers, config) {
+                    layer.alert('未获取到有效的员工信息！', {icon: 2});
+                });
+            };
+            $scope.getStaff();
+
+            //默认已列表方式显示  songjia  2016-02-06
+            $scope.showStatus = 1;
+
+            //网格
+            $scope.tabview = function () {
+                $scope.showStatus = 0;
+            }
+            //列表
+            $scope.listview = function () {
+                $scope.showStatus = 1;
+            }
+
+
+            $scope.staffInfo = [];    //根据id获取团队成员
+            /**
+             * 根据据团队id查询该团队人员
+             * @param obj   选中的团队
+             */
+                //实时显示图标显示状态 朱琪 2016-2-17
+            $scope.showMarkState = false;
+            $scope.getTeam = function (obj) {
+                $scope.insertStaff = {staffs: []};
+                $scope.staffToAdd = [];
+                $scope.tuserInfo = false;
+                $scope.showteaminfo = false;
+                $scope.showteam = false;
+                $scope.staffInfo = [];
+                $scope.teamLeaderInfo = obj;
+                number = obj.teamworkAmount;//团队人人数
+                $scope.insertStaff.teamworkId = $scope.teamLeaderInfo.id;
+                $scope.teamworka.id = obj.id;
+                $scope.TUserInfo1.loginName = '';//初始化负责人登录名
+                $scope.TUserInfo.loginName = '';//初始化负责人登录名
+                $http.get(url + '/Teamworkstaff/getTeamworkstaffbyStaffId/'+$scope.teamLeaderInfo.leader+'/'+$scope.teamworka.id).success(function (data) {
+                    if (data.Teamworkstaff.length != 0) {
+                        var tasks = data.Teamworkstaff;
+                        for (var i = 0; i < tasks.length; i++) {
+                            if (tasks[i].staff != null) {
+                                tasks[i].staff.markState = tasks[i].markState;
+                                tasks[i].staff.id = tasks[i].id;
+                                $scope.staffInfo.push(tasks[i].staff);
+                            }
+                        }
+                    }
+                    $scope.ifUsers($scope.teamLeaderInfo.staff, 1);
+                }).error(function (data, status, headers, config) {
+                    layer.alert('获取所有团队失败！', {icon: 2});
+                });
+                $scope.teamPost = [];
+                $scope.staffId = obj.staff.staffId;
+                $http.post(url + '/Post/listTeamPost/' + $scope.staffId).success(function (data) {
+                    $scope.teamPost = data;
+                }).error (function (data) {
+                });
+            };
+
+
+            /**
+             * 选中样式
+             */
+            /* $scope.chocieCss=function(items){
+             if($scope.staffToAdd.length==0){
+             return false;
+             }
+             var j=0;
+             for(var i=0;i<$scope.staffToAdd.length;i++){
+             if($scope.staffToAdd[i].staffId==items.staffId){
+             j=1;
+             }
+             }
+             if(j==1){
+             return true;
+             }else{
+             return false;
+             }
+             };*/
+
+            /**
+             * 增加团队人员
+             * 修改功能，选择成员时不将成员放入team的成员数组，而是直接在页面上显示存放添加成员的数组  王洲   2016.1.27
+             */
+            $scope.staffIds = [];
+            $scope.staffToAdd = [];
+            $scope.nowAddress = [];
+            $scope.checkIt = function (items) {
+                if ($scope.staffToAdd.length == 0) {
+                    $scope.staffToAdd.push(items);
+                } else {
+                    var j = 0;
+                    for (var i = 0; i < $scope.staffToAdd.length; i++) {
+                        if ($scope.staffToAdd[i].staffId == items.staffId) {
+                            $scope.staffToAdd.splice(i, 1);
+                            j++;
+                        }
+                    }
+                    if (j == 0) {
+                        $scope.staffToAdd.push(items);
+                    }
+                }
+                for (var i in $scope.staffToAdd) {
+                    $scope.nowAddress[i] = $scope.staffToAdd[i];
+                }
+            };
+            /**
+             * 点击确定按钮重新获取所有团员
+             * 添加成员时，点击保存人员未在成员列表处展示 朱琪 2016.03.01
+             */
+            $scope.addTeamNumber = function () {
+                if ($scope.insertStaff.staffs.length == 0) {
+                    $scope.insertStaff.staffs = $scope.nowAddress;
+                } else {
+                    $scope.insertStaff.staffs = $scope.insertStaff.staffs.concat($scope.nowAddress); //数组相加
+                }
+                $scope.insertStaff.staffs = $scope.staffToAdd;
+                //if($scope.insertStaff.staffs.length == 0)
+                //{
+                //    $scope.insertStaff.staffs = $scope.nowAddress;
+                //}else
+                //{
+                //    $scope.immp = $scope.insertStaff.staffs;
+                //    $scope.hove = $scope.insertStaff.staffs.concat($scope.nowAddress); //数组相加
+                //    $scope.insertStaff.staffs = [];
+                //    for(var i=0;i<$scope.immp.length;i++)
+                //    {
+                //        for(var j=0;j<$scope.hove.length;j++)
+                //        {
+                //            if($scope.immp[i].staffId == $scope.hove[j].staffId)
+                //            {
+                //                continue;
+                //            }else
+                //            {
+                //                $scope.insertStaff.staffs.push($scope.hove[j].staffId);
+                //            }
+                //        }
+                //    }
+                //    $scope.insertStaff.staffs = $scope.immp.concat($scope.insertStaff.staffs);
+                //}
+                $scope.nowAddress = [];
+                $scope.staffToAdd = [];
+                $('.choose').css('background', '');
+            };
+
+            //去重
+            function unique(arr) {
+                var tmp = new Array();
+                for (var i in arr) {
+                    if (tmp.indexOf(arr[i]) == -1) {
+                        tmp.push(arr[i]);
+                    }
+                }
+                return tmp;
+            }
+
+            /**
+             * enter 查询
+             *
+             */
+            $scope.clickSearch = function (ev) {
+                var e = ev || event;
+                if (e.keyCode == 13) {
+                    $scope.searchPaginator._load();
+                }
+            };
+
+            /**
+             * bug 844 修复
+             */
+            $scope.css = function () {
+                $('.choose').css('background', '');
+                $scope.nowAddress = [];
+                $scope.staffToAdd = [];
+            };
+            /**
+             * 保存添加的团队人员
+             */
+            $scope.insertStaff = {staffs: []};
+            $scope.insert = function () {
+                if ($scope.insertStaff.staffs.length == 0) {
+                    return;
+                } else {
+                    if (number == undefined) {
+                        number = 0;
+                    }
+                    number = number + $scope.insertStaff.staffs.length;
+                    $scope.teamworka.teamworkAmount = number;
+                }
+                $http.post(url + '/Teamworkstaff/insertListTeamworkstaff', {Teamworkstaff: $scope.insertStaff}).success(function () {
+                    layer.msg('保存团队人员成功！', {icon: 1, time: 2000});
+                    $http.put(url + '/Teamwork/UpdateTeamwork', {Teamwork: $scope.teamworka}).success(function () {
+                        layer.msg('修改团队信息成功！', {icon: 1, time: 2000});
+                        $scope.searchPaginator._load();
+                    }).error(function (data, status, headers, config) {
+                        layer.alert('修改团队信息失败！', {icon: 2});
+                    });
+                    $scope.staffIds = [];
+                    $scope.insertStaff = {staffs: []};
+                    $scope.staffToAdd = [];
+                    $scope.getStaff();
+                }).error(function () {
+                    layer.alert('保存团队人员失败！', {icon: 2});
+                });
+            };
+
+            $scope.cancle = function () {
+                $('#datil').modal('hide');
+            }
+
+            //判断团队成员是否有用户数据
+            $scope.tuserInfo = false;//用户信息显示div
+            $scope.showteaminfo = false;//确认是否设置为操作员
+            $scope.showteam = false;//关联团队
+            $scope.tUser = {};//用户账户
+            $scope.TUserInfo1 = {};
+            $scope.TUserInfo = {};
+            /**
+             * @author zhqi
+             * 增加团队人员负责人没有设置功能问题
+             * 2016年2月4日
+             * @param items
+             * @param state
+             */
+            $scope.ifUsers = function (items, state) {
+                //选中样式
+                if (document.getElementById(items.staffId) != null || state == 1) {
+                    //选中
+                    if (state == 1 || document.getElementById(items.staffId).style.background == '') {
+                        if(state != 1){
+                            document.getElementById(items.staffId).style.background = '#f6f8fa';
+                            for (var i = 0; i < $scope.staffInfo.length; i++) {
+                                if ($scope.staffInfo[i].staffId != items.staffId) {
+                                    document.getElementById($scope.staffInfo[i].staffId).style.background = '';
+                                }
+                            }
+                        }
+                        $scope.tUser.employId = items.staffId;
+                        //判断在用户表中是否存在
+                        $http.post(url + '/Admin/getCountByTUser', {TUser: $scope.tUser}).success(function (data) {
+                            if (data == 0) {
+                                $scope.tuserInfo = false;
+                                //不存在数据询问是否添加为用户
+                                layer.confirm('该员工尚未设置用户账户，是否现在设置？', {
+                                    btn: ['是', '否']
+                                }, function () {
+                                    //确定时直接调用tuser的新增方法
+                                    items.roleType = 'normal';
+                                    items.addState = '3';
+                                    $http.post(url + '/Admin/insertTUserByStaff', {Staff: items}).success(function (data) {
+                                        layer.msg('添加成功！', {icon: 1});
+                                        //添加成功后显示模态框，包括账户信息以及团队操作信息
+                                        $scope.getTuserByStaff(items,1);
+                                        document.getElementById(items.staffId).style.background = '';
+                                    }).error(function (data) {
+                                        layer.alert('添加失败，请重新操作！', {icon: 2});
+                                    });
+                                }, function () {
+                                    //选择否时无操作！
+                                });
+                            } else {
+                                //存在数据显示用户信息
+                                $scope.getTuserByStaff(items, state);
+                            //    $scope.tuserInfo = false;
+                            }
+                        }).error(function (data) {
+                            layer.alert('未查询到有效数据！', {icon: 2});
+                        });
+                    } else {
+                        document.getElementById(items.staffId).style.background = '';
+                        $scope.tuserInfo = false;
+                    }
+                }
+
+            };
+
+            $scope.getTuserByStaff = function (items, state) {
+                $http.get(url + '/Admin/getTUserByStaffId/' + items.staffId).success(function (data) {
+                    data.TUser.markState = items.markState;
+                    var inputss = document.getElementsByName("teamids");
+                    for (var k = 0; k < inputss.length; k++) {
+                        document.getElementById(inputss[k].id).checked = false;
+                    }
+                    $scope.tuserInfo = true;
+                    //负责人
+                    if (state == 1) {
+                        $scope.TUserInfo1 = data.TUser;
+                        $scope.tuserInfo = false;
+                        chaxun($scope.TUserInfo1);
+                    } else if (state == 2)//团队成员
+                    {
+                        $scope.TUserInfo = data.TUser;
+                        //   $scope.tuserInfo = false;
+                        chaxun($scope.TUserInfo);
+                    }
+
+                }).error(function (data) {
+                    layer.alert('用户信息查询失败，请重试！', {icon: 2});
+                });
+            };
+
+            function chaxun(TUserInfo) {
+                var types = [];
+                if (angular.isArray(TUserInfo.tUserRoles)) {
+                    types = TUserInfo.tUserRoles;
+                } else {
+                    types.push(TUserInfo.tUserRoles);
+                }
+/*                var tmp = 0
+                for(; tmp<types.length; tmp++) {
+                    if(types[tmp].tRole.roleType == 4){
+                        break;
+                    }
+                }
+                if (tmp == types.length || types.length==0) {*/
+                if (TUserInfo.markState == '0') {
+                    $scope.showteaminfo = true;
+                    $scope.showteam = false;
+                } else {
+                    $http.get(url + '/Admin/listAuthorityForTeam/' + TUserInfo.userId).success(function (data) {
+                        var inputs = document.getElementsByName("teamids");
+
+                        for(var i = 0; i<$scope.data1.length; i++){
+                            for(var j = 0; j<$scope.data1[i].td.length; j++){
+                                for(var k = 0; k<data.HrAuthority.length; k++){
+                                    if($scope.data1[i].td[j].corePositionId == data.HrAuthority[k].corePositionId &&
+                                        $scope.data1[i].td[j].teamid == $scope.teamworka.id
+                                    ){
+                                        document.getElementById($scope.data1[i].tr.project.projectId+''+j).checked = true;
+                                    }
+                                }
+                            }
+                        }
+
+                       /* for (var j = 0; j < data.HrAuthority.length; j++) {
+                            for (var i = 0; i < inputs.length; i++) {
+                                if (document.getElementById(inputs[i].id).value == data.HrAuthority[j].corePositionId) {
+                                    document.getElementById(inputs[i].id).checked = true;
+                                }
+                                /!*if (document.getElementById(inputs[i].id).value == data.HrAuthority[j].corePositionId) {
+                                 document.getElementById(inputs[i].id).checked = true;
+                                 }*!/
+                            }
+                        }*/
+
+                    }).error(function (data) {
+                        layer.alert('团队权限查询失败！', {icon: 2});
+                    });
+                    $scope.showteaminfo = false;
+                    $scope.showteam = true;
+                }
+                //获取该用户在团队关系表中关联的数据
+            }
+
+            //将普通用户设置为团队操作员
+            $scope.changeRole = function () {
+                $http.post(url + '/Admin/getTUserRoleByUserId/'+ $scope.TUserInfo.staff.staffId).success(function (data) {
+                    if(data == 1){
+                        layer.alert('该员工已是其他团队操作员！', {icon: 0});
+                    }
+                    else{
+                        $scope.TUserInfo.teamworkId = $scope.teamLeaderInfo.id;
+                        $http.post(url + '/Admin/changeRoleByUser', {TUser: $scope.TUserInfo}).success(function (data) {
+                            layer.msg('设置成功！', {icon: 1, time: 2000});
+                            $scope.staffsUser = {};
+                            $scope.staffsUser.staffId = $scope.TUserInfo.employId;
+                            $scope.getTuserByStaff($scope.staffsUser,2);
+                            $scope.staffInfo = [];
+                            $http.get(url + '/Teamworkstaff/getTeamworkstaffbyStaffId/' + $scope.teamLeaderInfo.leader+'/'+$scope.teamLeaderInfo.id).success(function (data) {
+                                if (data.Teamworkstaff.length != 0) {
+                                    var tasks = data.Teamworkstaff;
+                                    for (var i = 0; i < tasks.length; i++) {
+                                        if (tasks[i].staff != null) {
+                                            tasks[i].staff.markState = tasks[i].markState;
+                                            tasks[i].staff.id = tasks[i].id;
+                                            $scope.staffInfo.push(tasks[i].staff);
+                                        }
+                                    }
+                                }
+                                $scope.ifUsers($scope.teamLeaderInfo.staff, 1);
+                            }).error(function (data, status, headers, config) {
+                                layer.alert('获取所有团队失败！', {icon: 2});
+                            });
+                        }).error(function (data) {
+                            layer.alert('设置失败，请重试！', {icon: 2});
+                        });
+                    }
+                }).error(function (data) {
+                    layer.alert('设置失败，请重试！', {icon: 2});
+                });
+            };
+
+            //获取专业线及项目及每个专业线对应的团队
+            $http.get(url + '/TeamPermissions/getTeamworkByProjectAndSpecialty').success(function (data) {
+                var teamworkResult = data.TeamworkResult;
+                $scope.data = JSON.parse(teamworkResult.data);
+                $scope.title = $scope.data.shift();
+                $scope.tr = [];
+                for (var i = 0; i < $scope.data.length; i++) {
+                    var tr = $scope.data[i].shift();
+                    $scope.tr.push(tr);
+                }
+                $scope.data1 = [];
+                for (var i = 0; i < $scope.tr.length; i++) {
+                    var data = {tr: $scope.tr[i], td: $scope.data[i]}
+                    $scope.data1.push(data);
+                }
+            }).error(function (data) {
+                layer.alert('项目专业线查询异常！', {icon: 2});
+            });
+
+            //将团队id和用户绑定
+            $scope.updateTeamToUser = function (id,item,corePositionId) {
+                var values = document.getElementById(id).value;
+                if (values == 'novalue') {
+                    document.getElementById(id).checked = false;
+                    layer.msg('当前专业线没有设置团队！', {icon: 0, time: 1000});
+                    return;
+                }if(values != $scope.teamworka.id) {
+                    document.getElementById(id).checked = false;
+                    layer.msg('没有该专业线的操作权限！', {icon: 0, time: 1000});
+                    return;
+                }else {
+                    $scope.hrAuthority = {};
+                    $scope.hrAuthority.tUserId = $scope.TUserInfo.userId;
+                    $scope.hrAuthority.corePositionId = corePositionId;
+                    $scope.hrAuthority.type = "0";
+                    $scope.hrAuthority.teamworkId =  $scope.teamworka.id;
+                    $scope.hrAuthority.projectId = item.tr.project.projectId;
+                    if (document.getElementById(id).checked == true) {
+                        $http.post(url + '/Admin/insertAuthority', {HrAuthority: $scope.hrAuthority}).success(function (data) {
+                            layer.msg('绑定成功！', {icon: 1, time: 1000});
+                        }).error(function (data) {
+                            layer.alert('绑定失败！', {icon: 2});
+                        });
+                    } else {
+                        $http.post(url + '/Admin/deleteAuthority', {HrAuthority: $scope.hrAuthority}).success(function (data) {
+                            layer.msg('解除绑定成功！', {icon: 1});
+                        }).error(function (data) {
+                            layer.alert('解除绑定失败！', {icon: 2});
+                        });
+                    }
+                }
+            };
+
+            //封装teamwork对象，将staffId和teamworkId 传达后台进行操作    王洲    2016.1.27
+            $scope.delMember = function (items, index) {
+                //获取staffId、teamworkId，并进行封装
+                $scope.teams = {};
+                $scope.teams.teamworkId = $scope.teamworka.id;
+                $scope.teams.staffId = items.staffId;
+                $scope.teams.id = items.id;
+                $scope.staffInfo.splice(index, 1);
+                $scope.insertStaff.staffs.push($scope.teams);
+                /*                layer.confirm('是否从团队中移除'+items.staffName,{
+                 btn : ['是','否']
+                 },function(){
+                 $http.post(url + '/Teamworkstaff/deleteMember',{Teamworkstaff : $scope.teams}).success(function(data){
+                 $http.get(url + '/Teamwork/getTeamworkById/' + $scope.teamworka.id).success(function(data){
+                 $scope.searchPaginator._load();
+                 $scope.getTeam(data.Teamwork);
+                 layer.msg('已移除！',{icon : 1,time : 1000});
+                 })
+                 }).error(function(data){
+                 layer.msg('移除出现异常，请重试！',{icon : 2,time : 1000});
+                 });
+                 },function(){
+                 //选择否时无操作！
+                 });*/
+            };
+
+            $scope.removelist = function (index) {
+                $scope.insertStaff.staffs.splice(index, 1);
+            };
+        }]);
+});

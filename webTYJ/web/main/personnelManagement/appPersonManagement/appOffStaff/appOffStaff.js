@@ -1,0 +1,41 @@
+/**
+ * Created by 彭婷婷 on 2015/6/1.
+ * 名称：人员管理新增
+ * 修改人：倪明   修改时间：2015/8/26
+ */
+define(function (require) {
+    var app = require('../../../../app');
+    app.controller('appOffStaffCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+        var url = $rootScope.url;
+        var fileUrl=$rootScope.fileUrl;    //上传的文件路径
+        var filePath='';
+        var user = {};                                             //设置默认用户信息为空
+        var userSession= JSON.parse(sessionStorage.getItem("USER_LOGIN"));   //从cook中获取用户信息
+        $scope.user = userSession?userSession:user;                      //三目运算获取用户信息
+
+        /**
+         * 在职员工页面网格列表切换
+         */
+        $scope.grid = true;
+        $scope.list=function(){
+            $scope.grid=true;
+        };
+        $scope.gridChange=function(){
+            $scope.grid=false;
+        };
+
+        $scope.staff = {page: {}};
+        var fetchFunction = function (page, callback) {
+            $scope.staff.processStatus = -2;
+            $scope.staff.page = page;
+            $http.post(url + '/staff/listPageAllStaff_Unckeck', {Staff: $scope.staff}).success(callback)
+        };
+        $scope.searchPaginator = app.get('Paginator').list(fetchFunction, 6);
+
+        $scope.getStaffInfo = function (item) {
+            $scope.index = item.staffId;
+            $scope.staffInfo = item;
+        };
+
+    }]);
+});

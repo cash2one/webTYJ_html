@@ -1,0 +1,63 @@
+/**
+ * Created by Administrator on 2015/12/15.
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../../app');
+    app.controller('analysisOfWaterDamageCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+        $scope.doClick(2);//tab刷新高亮
+        //显示隐藏控制
+        $scope.showState1 = true;
+        $scope.showState2 = false;
+        $scope.name = '';//tab高亮控制
+        $scope.total=[{id:'1a',name:'1区总表',pid:'0'},{id:'2a',name:'2区总表',pid:'0'}];
+        $scope.tabs = [{id:'aaa',name:'总表'}];
+        /**
+         * 根据总表类型显示详情列表
+         * @param item
+         */
+        $scope.showDetail = function(item){
+            $scope.addTab(item);
+            /*$http.post(url).success(function(){
+
+            });*/
+            if(true){
+                $scope.total = [{id:'1b',name:'1区入水口总表',pid:'1'},{id:'2b',name:'2区入水口总表','pid':'1'}];
+            }else{
+
+            }
+        };
+        /**
+         * 新增tab选项卡
+         * @param item
+         */
+        $scope.addTab = function(item){
+            var bool = false;
+            for(var i = 0;i<$scope.tabs.length;i++){
+                if(item.id==$scope.tabs[i].id){
+                    bool = true;
+                }
+            }
+            if(bool){
+                $('#'+item.id).addClass('this_info').siblings().removeClass('this_info');
+            }else{
+                $scope.tabs.push(item);
+                setTimeout(function(){
+                   $('#'+item.id).siblings().removeClass('this_info');
+                },10);
+            }
+        };
+
+        /**
+         *  根据选中的id获取数据后赋值到列表
+         * @type {{}[]}
+         */
+        $scope.tabChecked = function(item){
+            var index = $scope.tabs.indexOf(item);
+            $scope.tabs = $scope.tabs.slice(0,index+1);
+        };
+        $scope.detail = [{},{}]
+    }]);
+});

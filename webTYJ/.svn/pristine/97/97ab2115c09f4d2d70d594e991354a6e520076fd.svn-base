@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>合同管理</title>
+</head>
+<body>
+<div id="content-first">
+    <!--tab页切换开始-->
+    <div id="tab">
+        <a ui-sref="index.internalProfession.contractManagement.newContract">新增合同</a>
+        <a lang="no" ui-sref="index.internalProfession.contractManagement.contractInquiry">合同查询</a>
+    </div>
+    <!--tab页切换结束-->
+    <!--视图加载-->
+    <div ui-view></div>
+    <!--视图加载结束-->
+</div>
+    <!--<div class="complaint_user">
+        <div class="complaint_user_info">
+            <div class="complaint_user_info_navigation">
+                <a ui-sref="index.internalProfession.contractManagement.newContract">新增合同</a>
+                <a ui-sref="index.internalProfession.contractManagement.contractInquiry">合同查询</a>
+            </div>
+        </div>
+        <div class="clear"></div>
+    </div>
+
+    <div class="row" style="padding:5px 10px 0">
+        <div ui-view></div>
+    </div>-->
+
+</body>
+</html>

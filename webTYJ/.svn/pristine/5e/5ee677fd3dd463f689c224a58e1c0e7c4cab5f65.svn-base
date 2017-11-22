@@ -1,0 +1,83 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 全部业务查询
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../app');
+
+    app.controller('carsInquiryCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        var url = $rootScope.url;
+        $scope.CarInfo={page:{}};
+        //分页查询
+        $scope.load=function(){
+            var fetchFunction1 = function (page, callback) {
+                $scope.CarInfo.page = page;
+                $http.post(url + '/CarInfo/listPageCarInfoByContion', {CarInfo: $scope.CarInfo}).success(callback)
+            };
+            $scope.searchPaginator = app.get('Paginator').list(fetchFunction1,6);
+        };
+        $scope.load();
+
+        //选中车辆
+        $scope.carInfoone={};
+        $scope.choiceCar=function(carInfo){
+            $scope.carInfoone=carInfo;
+        };
+
+        //编辑车辆信息
+        $scope.updateCarInfo=function(){
+            $http.put(url+'/CarInfo/UpdateCarInfo',{CarInfo:$scope.carInfoone}).success(function()
+            {
+                layer.msg('编辑成功!',{icon : 1});
+                $scope.load();
+            }).error(function(data, status, headers, config){
+                layer.alert('修改失败',{icon : 2});
+            }) ;
+        };
+
+        $scope.quxiao=function(){
+            $scope.load();
+        };
+        //删除车辆信息
+        $scope.deleteCarInfo=function(carInfo)
+        {
+            $http.put(url + '/CarInfo/deleteCarInfo/'+ carInfo.carId).success(function()
+            {layer.msg('删除成功!',{icon : 1});
+                $scope.load();
+            }).error(function(data, status, headers, config){
+                layer.alert('删除失败',{icon : 2});
+            }) ;
+
+        };
+
+        //重新获取车辆信息
+        $scope.repeatCarInfo=function(){
+            $scope.search={};
+            $scope.search.custId=$rootScope.user.custId;
+            $http.post(url+'/CarInfo/listSearchCarInfoAu',{Search:$scope.search}).success(function(data)
+            {
+                $scope.carInfos=data.CarInfo;
+
+            }).error(function(data, status, headers, config){
+                //      console.log("获取车辆失败");
+            }) ;
+        };
+
+        //去重车辆信息
+        $scope.notrepeat=function(entrances){
+            for ( var i = 0; i < entrances.length; i++) {
+                for(var j = entrances.length-1 ; j > i; j--){
+                    if (entrances[i].carId == entrances[j].carId) {
+                        entrances[j]={};
+                    }
+                }
+            }
+            return entrances;
+        };
+
+    }]);
+});

@@ -1,0 +1,400 @@
+<!--
+    创建人：倪明
+    页面名称：物业服务
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>物业服务</title>
+    <!--<link rel="stylesheet" href="css/propertyService.css">-->
+</head>
+<body ng-controller="psCtrl">
+<div class="row pannel-padding-15">
+    <div id="search">
+        <div class="accordion" id="accordion2">
+            <div class="row" >
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    筛选：
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2">
+                    <label class="checkbox inline">
+                        <input type="checkbox" value="1" ng-model="search.staff" checked="true">
+                        <span>人员</span>
+                    </label>
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2">
+                    <label class="checkbox inline">
+                        <input type="checkbox"  ng-model="search.property">
+                        <span>资产</span>
+                    </label>
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2">
+                    <label class="checkbox inline">
+                        <input type="checkbox" ng-model="search.serch1">
+                        <span>产品</span>
+                    </label>
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2">
+                    <label class="checkbox inline">
+                        <input type="checkbox" ng-model="search.serch2">
+                        <span>账单</span>
+                    </label>
+                </div>
+            </div>
+            <div class="row search-padding">
+                <div class="col-lg-1 col-md-2 col-sm-2  text-right">
+                    人员姓名：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <input type="text" class="form-control" placeholder="请输入搜索条件" ng-model="search.staffName" ng-keyup="inputSearch()">
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2  text-right">
+                    证件号：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <input type="text" class="form-control" placeholder="请输入搜索条件" ng-model="search.idNum" ng-keyup="inputSearch()">
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2  text-right">
+                    注册电话：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4  text-right">
+                    <input type="text" class="form-control" placeholder="请输入搜索条件"  ng-model="search.phone" ng-keyup="inputSearch()">
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2  text-right">
+                    车位号：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <input type="text" class="form-control" placeholder="请输入搜索条件" ng-model="search.carportNum" ng-keyup="inputSearch()">
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2  text-right">
+                    车牌号：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <input type="text" class="form-control" placeholder="请输入搜索条件" ng-model="search.carNum" ng-keyup="inputSearch()">
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2  text-right">
+                    产品名称：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <input type="text" class="form-control" placeholder="请输入搜索条件" ng-model="search.productName" ng-keyup="inputSearch()">
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2  text-right">
+                    地址：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <input type="text" class="form-control" placeholder="请输入搜索条件" ng-model="search.houseAddress" ng-keyup="inputSearch()">
+                </div>
+                <div class="col-lg-8 col-md-6 col-sm-6 text-right">
+                    <button type="button" class="btn btn-default btn-primary" ng-click="check()" ><span class="glyphicon glyphicon-search btn_icon"></span>查询 </button>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+    <div id="content-main">
+        <!--人员信息 -->
+        <form class="">
+            <div class="row">
+                <div class="col-lg-1 col-md-1 col-sm-1">
+                    <span ng-show="persons.length>6 && currentPagePerson > 1">
+                         <a ng-click="prevPerson()"><span class="btn btn-sm glyphicon glyphicon-menu-left switch" aria-hidden="true"></span></a>
+                    </span>
+                </div>
+                <div class="col-lg-10 col-md-10 col-sm-10">
+                    <span class="form-group" ng-repeat="person in itemsperson" ng-show="person.custId!=null" ng-click="togglePanel($index+persons.currentIndex)">
+                        <div class="col-lg-4 col-md-4 col-sm-6">
+                            <div id="pannel">
+                                <div class="title">
+                                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                        人员信息
+                                    </div>
+                                    <!--<div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 text-right">
+                                        <span class="glyphicon glyphicon-chevron-down" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="#">办理放行条</a></li>
+                                            <li><a href="#">办理门禁卡</a></li>
+                                            <li><a href="#">宠物登记</a></li>
+                                            <li><a href="#">缴纳物业费</a></li>
+                                        </ul>
+                                    </div>-->
+                                </div>
+                                <div class="pannel_content_form">
+                                    <div class="row">
+                                        <div class="col-xs-3 col-lg-3 col-md-3">
+                                            <a style="cursor:pointer" ui-sref="index.propertyService.staffHome.commonUser" ng-click="switch(person)">
+                                                <img src="images/project/user/user_3.png" width="100%">
+                                            </a>
+                                        </div>
+                                        <div class="col-xs-9 col-lg-9 col-md-9">
+                                            <ul>
+                                               <div class="col-lg-6 col-md-6 col-sm-6 text-right">客户姓名：</div><div class="col-lg-6 col-md-6 col-sm-6"> <li><nobr>&nbsp;{{person.name}}</nobr></li></div>
+                                               <div class="col-lg-6 col-md-6 col-sm-6 text-right">注册电话：</div><div class="col-lg-6 col-md-6 col-sm-6"> <li title="{{person.registerPhone}}"><nobr>&nbsp;{{person.registerPhone}}</nobr></li></div>
+                                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">身份证：</div><div class="col-lg-6 col-md-6 col-sm-6"><li title="{{person.cardNum.substring(0,person.cardNum.length-1)}}"><nobr>&nbsp;{{person.cardNum.substring(0,person.cardNum.length-1)}}</nobr></li></div>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </span>
+                </div>
+                <div class="col-lg-1 col-md-1 col-sm-1">
+                    <span ng-show="persons.length>6 && currentPagePerson < totalPagePerson">
+                         <a><span class="btn btn-sm glyphicon glyphicon-menu-right switch" aria-hidden="true" ng-click="nextPerson()"></span></a>
+                    </span>
+                </div>
+            </div>
+        </form>
+        <!--人员信息 结束-->
+
+        <!--车辆信息-->
+        <form class="">
+            <div class="row">
+                <div class="col-lg-1 col-md-1 col-sm-1">
+                    <span ng-show="carInfos.length>6 && currentPageCar > 1">
+                         <a ng-click="prevCar()"><span class="btn btn-sm glyphicon glyphicon-menu-left switch" aria-hidden="true"></span></a>
+                    </span>
+                </div>
+                <div class="col-lg-10 col-md-10 col-sm-10">
+                    <span class="form-group" ng-repeat="carInfo in itemscar" ng-show="carInfo.carId!=null">
+                        <div class="col-lg-4 col-md-4 col-sm-6">
+                            <div id="pannel">
+                                <div class="title">
+                                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                        车辆信息
+                                    </div>
+                                    <!--<div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 text-right">
+                                        <span class="glyphicon glyphicon-chevron-down" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="#">办理放行条</a></li>
+                                            <li><a href="#">办理门禁卡</a></li>
+                                            <li><a href="#">宠物登记</a></li>
+                                            <li><a href="#">缴纳物业费</a></li>
+                                        </ul>
+                                    </div>-->
+                                </div>
+                                <div class="pannel_content_form">
+                                    <div class="row">
+                                        <div class="col-xs-3 col-lg-3 col-md-3">
+                                            <a style="cursor:pointer" href="/index/propertyService/staffHome/vehicleManagement/vehicleManagementCheck" ui-sref="index.propertyService.staffHome.vehicleManagement.vehicleManagementCheck">
+                                                <img src="images/project/car/c_03.png" width="100%">
+                                            </a>
+                                        </div>
+                                        <div class="col-xs-9 col-lg-9 col-md-9">
+                                            <ul>
+                                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">车牌号：</div><div class="col-lg-6 col-md-6 col-sm-6"><li><nobr>&nbsp;{{carInfo.carNum}}</nobr></li></div>
+                                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">车辆型号：</div><div class="col-lg-6 col-md-6 col-sm-6"><li><nobr>&nbsp;{{carInfo.carType}}</nobr></li></div>
+                                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">车辆所有人：</div><div class="col-lg-6 col-md-6 col-sm-6"><li><nobr>&nbsp;{{carInfo.personCustNew.name}}</nobr></li></div>
+                                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">车辆所有人：</div><div class="col-lg-6 col-md-6 col-sm-6"><li><nobr>&nbsp;{{carInfo.regeditDate|date:"yyyy-MM-dd"}}</nobr></li></div>
+                                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">停车卡状态：</div><div class="col-lg-6 col-md-6 col-sm-6"><li><nobr>&nbsp;{{carInfo.caraccesscard.cardState}}</nobr></li></div>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </span>
+                </div>
+                <div class="col-lg-1 col-md-1 col-sm-1">
+                    <span ng-show="carInfos.length>6 && currentPageCar < totalPageCar">
+                         <a><span class="btn btn-sm glyphicon glyphicon-menu-right switch" aria-hidden="true" ng-click="nextCar()"></span></a>
+                    </span>
+                </div>
+            </div>
+        </form>
+        <!--车辆信息 结束-->
+
+        <!--房屋信息-->
+        <form class="">
+            <div class="row">
+                <div class="col-lg-1 col-md-1 col-sm-1">
+                    <span ng-show="houses.length>6 && currentPageHouse > 1">
+                         <a ng-click="prevHouse()"><span class="btn btn-sm glyphicon glyphicon-menu-left switch" aria-hidden="true"></span></a>
+                    </span>
+                </div>
+                <div class="col-lg-10 col-md-10 col-sm-10">
+                     <span class="form-group" ng-repeat=" house in itemshouse" ng-show="house.id!=null">
+                        <div class="col-lg-4 col-md-4 col-sm-6">
+                            <div id="pannel">
+                                <div class="title">
+                                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                        房屋信息
+                                    </div>
+                                    <!--<div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 text-right">
+                                        <span class="glyphicon glyphicon-chevron-down" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="#">办理放行条</a></li>
+                                            <li><a href="#">办理门禁卡</a></li>
+                                            <li><a href="#">宠物登记</a></li>
+                                            <li><a href="#">缴纳物业费</a></li>
+                                        </ul>
+                                    </div>-->
+                                </div>
+                                <div class="pannel_content_form">
+                                    <div class="row">
+                                        <div class="col-xs-3 col-lg-3 col-md-3">
+                                            <a style="cursor:pointer" ui-sref="index.propertyService.housesHome.homePage">
+                                                <img src="images/project/bud/b_01.png" width="100%">
+                                            </a>
+                                        </div>
+                                        <div class="col-xs-9 col-lg-9 col-md-9">
+                                            <ul>
+                                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">资产类型：</div><div class="col-lg-6 col-md-6 col-sm-6"><li><nobr>&nbsp;住宅</nobr></li></div>
+                                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">建筑面积：</div><div class="col-lg-6 col-md-6 col-sm-6"><li><nobr>&nbsp;{{house.houseArea}}</nobr></li></div>
+                                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">房屋户型：</div><div class="col-lg-6 col-md-6 col-sm-6"><li><nobr>&nbsp;{{house.houseName}}</nobr></li></div>
+                                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">房屋地址：</div><div class="col-lg-6 col-md-6 col-sm-6" style="max-height: 48px;
+    overflow: hidden;"><li title="{{house.fullName}}">&nbsp;{{house.fullName}}</li></div>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </span>
+                </div>
+                <div class="col-lg-1 col-md-1 col-sm-1">
+                    <span ng-show="houses.length>6 && currentPageHouse < totalPageHouse">
+                         <a><span class="btn btn-sm glyphicon glyphicon-menu-right switch" aria-hidden="true" ng-click="nextHouse()"></span></a>
+                    </span>
+                </div>
+            </div>
+        </form>
+        <!--房屋信息 结束-->
+
+        <!--车位信息-->
+        <form class="">
+            <div class="row">
+                <div class="col-lg-1 col-md-1 col-sm-1">
+                    <span ng-show="stalls.length>6 && currentPageStall > 1">
+                         <a ng-click="prevStall()"><span class="btn btn-sm glyphicon glyphicon-menu-left switch" aria-hidden="true"></span></a>
+                    </span>
+                </div>
+                <div class="col-lg-10 col-md-10 col-sm-10">
+                     <span class="form-group" ng-repeat="stall in itemsstall" ng-show="stall.stallId!=null">
+                        <div class="col-lg-4 col-md-4 col-sm-6">
+                            <div id="pannel">
+                                <div class="title">
+                                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                        车位信息
+                                    </div>
+                                    <!--<div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 text-right">
+                                        <span class="glyphicon glyphicon-chevron-down" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="#">办理放行条</a></li>
+                                            <li><a href="#">办理门禁卡</a></li>
+                                            <li><a href="#">宠物登记</a></li>
+                                            <li><a href="#">缴纳物业费</a></li>
+                                        </ul>
+                                    </div>-->
+                                </div>
+                                <div class="pannel_content_form" ng-show="stall.stallId!=null">
+                                    <div class="row">
+                                        <div class="col-xs-3 col-lg-3 col-md-3">
+                                            <a style="cursor:pointer" ui-sref="index.propertyService.parkingHome">
+                                                <img src="images/project/car/c_02.png" width="100%">
+                                            </a>
+                                        </div>
+                                        <div class="col-xs-9 col-lg-9 col-md-9">
+                                            <ul>
+                                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">资产类型：</div><div class="col-lg-6 col-md-6 col-sm-6"><li><nobr>&nbsp;车位</nobr></li></div>
+                                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">车位属性：</div><div class="col-lg-6 col-md-6 col-sm-6"><li><nobr>&nbsp;{{stall.stallProperty}}</nobr></li></div>
+                                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">车位类型：</div><div class="col-lg-6 col-md-6 col-sm-6"><li><nobr>&nbsp;{{stall.stallType}}</nobr></li></div>
+                                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">详细位置：</div><div class="col-lg-6 col-md-6 col-sm-6" style="max-height:48px;overflow:hidden;"><li title="stall.garagePosition">&nbsp;{{stall.garagePosition}}</li></div>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </span>
+                </div>
+                <div class="col-lg-1 col-md-1 col-sm-1">
+                    <span ng-show="stalls.length>6 && currentPageStall < totalPageStall">
+                         <a><span class="btn btn-sm glyphicon glyphicon-menu-right switch" aria-hidden="true" ng-click="nextStall()"></span></a>
+                    </span>
+                </div>
+            </div>
+        </form>
+        <!--车位信息 结束-->
+
+        <!--商铺信息-->
+        <form class="">
+            <div class="row">
+                <div class="col-lg-1 col-md-1 col-sm-1">
+                    <span ng-show="stores.length>6 && currentPageStore > 1">
+                         <a ng-click="prevStore()"><span class="btn btn-sm glyphicon glyphicon-menu-left switch" aria-hidden="true"></span></a>
+                    </span>
+                </div>
+                <div class="col-lg-10 col-md-10 col-sm-10">
+                     <span class="form-group" ng-repeat=" store in itemsstore" ng-show="store.storeId!=null">
+                        <div class="col-lg-4 col-md-4 col-sm-6">
+                            <div id="pannel">
+                                <div class="title">
+                                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                        商铺信息
+                                    </div>
+                                    <!--<div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 text-right">
+                                        <span class="glyphicon glyphicon-chevron-down" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="#">办理放行条</a></li>
+                                            <li><a href="#">办理门禁卡</a></li>
+                                            <li><a href="#">宠物登记</a></li>
+                                            <li><a href="#">缴纳物业费</a></li>
+                                        </ul>
+                                    </div>-->
+                                </div>
+                                <div class="pannel_content_form">
+                                    <div class="row">
+                                        <div class="col-xs-3 col-lg-3 col-md-3">
+                                            <a style="cursor:pointer" ui-sref="index.propertyService.shopHome.homePage">
+                                                <img src="images/project/bud/b_05.png" width="100%">
+                                            </a>
+                                        </div>
+                                        <div class="col-xs-9 col-lg-9 col-md-9">
+                                            <ul>
+                                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">资产类型：</div><div class="col-lg-6 col-md-6 col-sm-6"><li><nobr>&nbsp;商铺</nobr></li></div>
+                                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">商铺属性：</div><div class="col-lg-6 col-md-6 col-sm-6"><li><nobr>&nbsp;{{store.shopAttributes}}</nobr></li></div>
+                                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">建筑面积：</div><div class="col-lg-6 col-md-6 col-sm-6"><li><nobr>&nbsp;{{store.buildingArea}}</nobr></li></div>
+                                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">商铺编号：</div><div class="col-lg-6 col-md-6 col-sm-6"><li><nobr>&nbsp;{{store.storeNumber}}</nobr></li></div>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </span>
+                </div>
+                <div class="col-lg-1 col-md-1 col-sm-1"3>
+                    <span ng-show="stores.length>6 && currentPageStore < totalPageStore">
+                         <a><span class="btn btn-sm glyphicon glyphicon-menu-right switch" aria-hidden="true" ng-click="nextStore()"></span></a>
+                    </span>
+                </div>
+            </div>
+        </form>
+        <!--商铺信息 结束-->
+    </div>
+</div>
+
+
+<!--提交消息提示框-->
+<div class="message_eject">
+    <div>
+        <span class="glyphicon glyphicon-info-sign message_warning"></span>
+        <p>请核查填写内容</p>
+    </div>
+    <div>
+        <span class="glyphicon glyphicon-ok message_ok"></span>
+        <p>请核查填写内容</p>
+    </div>
+    <div>
+        <span class="glyphicon glyphicon-remove message_error"></span>
+        <p>请核查填写内容</p>
+    </div>
+</div>
+<!--提交消息提示框-->
+
+</body>
+</html>

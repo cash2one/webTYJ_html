@@ -1,0 +1,472 @@
+<!--
+    作者：尹霞
+    名称：银联银行托收
+-->
+
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>银联银行托收</title>
+    <link rel="stylesheet" href="bower_components/skins/zyupload-1.0.0.min.css " type="text/css">
+    <script>
+        function check(obj) {
+            $(':checkbox').each(function () {
+                if (this != obj)
+                    $(this).attr("checked", false);
+                else {
+                    if ($(this).prop("checked")){
+                        $(this).attr("checked", true);
+                    }
+                    else
+                        $(this).attr("checked", false);
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+<div id="content-first">
+    <!--tab页切换开始-->
+    <div id="tab">
+        <a href="javascript:void(0)" ng-click="finance()" ng-class="{'this_action ':btnIndex0==1}">银行托收</a>
+        <a href="javascript:void(0)"  lang="no"  ng-click="unionPay()" ng-class="{'this_action ':btnIndex0==2}">银行回盘</a>
+    </div>
+    <!--tab页切换结束-->
+    <!--视图加载-->
+    <!--tab页切换开始-->
+    <!--银行托收-->
+    <div ng-show="show1">
+        <div class="sel">
+            <div class="row search-padding-10">
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    <!--修改时间控件
+                        徐文广
+                        2016/5/18
+                     -->
+                    时间：
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-4">
+                    <input type="text" onclick="WdatePicker({readOnly:true})"  class="Wdate form-control" ng-model="unionpayCollectionTotall.minStaTime" onchange=""  ng-blur="checkDates()" ng-change="getStall(stallss.id,false)">
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 text-center">
+                    至
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-4">
+                    <input type="text" onclick="WdatePicker({readOnly:true})"  class="Wdate form-control" ng-model="unionpayCollectionTotall.maxStaTime" onchange=""  ng-blur="checkDates()" ng-change="getStall(stallss.id,false)">
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    项目：
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-4">
+                    <select ng-model="selectProjects.id" class="form-control" name="name"
+                            ng-options="p.id as p.name for p in selectProjects" required
+                            ng-change="getProject(selectProjects.id)">
+                        <option value="">请选择项目</option>
+                    </select>
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4 text-right">
+                    <button type="button" class="btn btn-default btn-primary" ng-click="searchPaginator._load()"><span
+                            class="glyphicon glyphicon-search btn_icon"></span>查询
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row padding">
+            <div class="col-lg-12">
+                <div class="search-padding-10">
+                    <div class="col-lg-6 col-md-4 col-sm-4">
+                    文件头
+                        </div>
+                    <div class="col-lg-6 col-md-4 col-sm-4 text-right search-padding-10">
+                    <button type="button" class="btn btn-default btn-primary"  ng-click="exportExcelFile()"><span class="glyphicon glyphicon-file btn_icon"></span>生成文件</button></div>
+                    </div>
+                <div class="search-padding-10">
+                <table>
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>项目</th>
+                        <th>商户号</th>
+                        <th>批次号</th>
+                        <th>创建时间</th>
+                        <th>总金额</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                     <tr  ng-repeat="item in searchPaginator.object.unionpayCollectionTotalls" ng-show="item.unionpayCollectionTotallId != null"
+                          ng-click="select(item)"  ng-class="{'this_info':btnIndex==item.unionpayCollectionTotallId}" >
+                         <td><input type="checkbox" id="{{item.batchNum}}" name="aaa" onclick="check(this)" ng-click="getdata(item)"></td>
+                         <td >{{item.project.projectName}}</td>
+                         <td>{{item.merchantsNum}}</td>
+                         <td>{{item.batchNum}}</td>
+                         <td>{{item.createTime | date:'yyyy-MM-dd'}}</td>
+                         <td>{{item.totalSum}}</td>
+                     </tr>
+                    </tbody>
+                </table>
+                </div>
+                <div class="search-padding-10">
+                    <div class="bill_paging">
+                        <span>共{{searchPaginator.object.page.totalResult}}条</span>
+                        <ul class="pagination">
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]"><a href="javascript:void(0)" ng-click="searchPaginator.go(1)">首页</a></li>
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]"><a href="javascript:void(0)" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a></li>
+                            <li ng-class="{true:'active'}[searchPaginator.page.currentPage==i]" ng-repeat="i in searchPaginator.pages" ><a href="javascript:void(0)" on-show="searchPaginator.go(i)"  ng-click="searchPaginator.go(i)">{{i}}</a></li>
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]"><a href="javascript:void(0)" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a></li>
+                            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]"><a href="javascript:void(0)" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a></li>
+                        </ul>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+                <div ng-show="show5">
+                    <div class="search-padding-10">文件体</div>
+                    <table ng-show="show5">
+                        <thead>
+                        <tr>
+                            <th>商户日期</th>
+                            <th>客户号</th>
+                            <th>卡号/折号</th>
+                            <th>金额</th>
+                            <th>私有域</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="item1 in sreachDetail.object.unionpayCollectionDetails" ng-show="item1.unionpayCollectionTotallId!=null">
+                            <td>{{item1.merchantsDate | date:'yyyy-MM-dd'}}</td>
+                            <td>{{item1.custNum}}</td>
+                            <td>{{item1.bankAccount}}</td>
+                            <td>{{item1.accountType}}</td>
+                            <td>{{item1.privateDomain}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="bill_paging">
+                        <span>共{{sreachDetail.object.page.totalResult}}条</span>
+                        <ul class="pagination">
+                            <li ng-class="{true:'disabled'}[sreachDetail.page.currentPage==1]"><a href="javascript:void(0)" ng-click="sreachDetail.go(1)">首页</a></li>
+                            <li ng-class="{true:'disabled'}[sreachDetail.page.currentPage==1]"><a href="javascript:void(0)" ng-show="sreachDetail.hasPrevious()" ng-click="sreachDetail.previous()">上一页</a></li>
+                            <li ng-class="{true:'active'}[sreachDetail.page.currentPage==i]" ng-repeat="i in sreachDetail.pages" ><a href="javascript:void(0)" on-show="sreachDetail.go(i)"  ng-click="sreachDetail.go(i)">{{i}}</a></li>
+                            <li ng-class="{true:'disabled'}[sreachDetail.page.currentPage==sreachDetail.page.totalPage]"><a href="javascript:void(0)" ng-show="sreachDetail.hasNext()" ng-click="sreachDetail.next()">下一页</a></li>
+                            <li ng-class="{true:'disabled'}[sreachDetail.page.currentPage==sreachDetail.page.totalPage]"><a href="javascript:void(0)" ng-click="sreachDetail.go(sreachDetail.page.totalPage)">尾页</a></li>
+                        </ul>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!--银行托收结束-->
+
+    <!--银行导入数据展示-->
+    <div ng-show="show3">
+        <div class="sel">
+            <div class="row search-padding-10">
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    <!--修改时间控件
+                         徐文广
+                         2016/5/18
+                     -->
+                    上传时间：
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-4">
+                            <input type="text" onclick="WdatePicker({readOnly:true})"  class="Wdate form-control" ng-model="unionpayCounterofferTotal_check.minStaTime" onchange=""  ng-blur="checkDates()" ng-change="getStall(stallss.id,false)">
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2">
+                    至
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-4">
+                            <input type="text" onclick="WdatePicker({readOnly:true})"  class="Wdate form-control" ng-model="unionpayCounterofferTotal_check.maxStaTime" onchange=""  ng-blur="checkDates()" ng-change="getStall(stallss.id,false)">
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2  text-right">
+                    文件名称：
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-4">
+                            <input type="text" class="form-control" ng-model="unionpayCounterofferTotal_check.fileName">
+                </div>
+                <div class="col-lg-3 col-md-2 col-sm-2 text-right">
+                    <button type="button" class="btn btn-default btn-primary"  ng-click="searchPaginator1._load()">
+                        <span class="glyphicon glyphicon-search btn_icon"></span>查询
+                    </button>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+        <div class="row padding">
+            <div class="col-lg-12">
+                <div class="padding10">
+                    <div class="col-md-1">
+                        <h5>统计信息</h5>
+                    </div>
+                    <div class="col-md-8"></div>
+                    <div class="col-md-3 text-right">
+                        <button type="button" class="btn btn-default btn-primary" style="cursor:pointer" tabindex="-1" ng-click="exportMBExcelFile()"></span>导出回盘文件模版</button>
+                        <button type="button" class="btn btn-default btn-primary"  role="presentation" data-toggle="modal" data-target="#ddd" style="cursor:pointer" tabindex="-1" ng-click="inportExcel()"></span>导入回盘文件</button>
+                    </div>
+                     </div>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>文件名</th>
+                        <th>总笔数</th>
+                        <th>总金额</th>
+                        <th>上传日期</th>
+                        <th>成功金额</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr  ng-repeat="item in searchPaginator1.object.unionpayCounterofferTotals"
+                         ng-show="item.unionpayCounterofferCotalId != null"
+                         ng-class="{'this_info':btnIndex3==item.unionpayCounterofferCotalId}"
+                         ng-click="select1(item)">
+                        <td>{{item.fileName}}</td>
+                        <td>{{item.totalTradeNum}}</td>
+                        <td>{{item.totalSum}}</td>
+                        <td>{{item.upDate | date:'yyyy-MM-dd'}}</td>
+                        <td>{{item.successSum}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="bill_paging">
+                    <div class="pagination">
+                        <span>共{{searchPaginator1.object.page.totalResult}}条</span>
+                        <ul class="pagination">
+                        <li><a style="cursor:pointer;" ng-click="searchPaginator1.go(1)">首页</a></li>
+                        <li><a style="cursor: pointer" ng-show="searchPaginator1.hasPrevious()" ng-click="searchPaginator1.previous()">上一页</a></li>
+                        <li ng-class="{true:'active'}[searchPaginator1.page.currentPage==i]" ng-repeat="i in searchPaginator1.pages" ><a href="javascript:void(0)" on-show="searchPaginator1.go(i)"  ng-click="searchPaginator1.go(i)">{{i}}</a></li>
+                        <li><a style="cursor: pointer" ng-show="searchPaginator1.hasNext()" ng-click="searchPaginator1.next()">下一页</a></li>
+                        <li><a style="cursor:pointer;" ng-click="searchPaginator1.go(searchPaginator1.page.totalPage)">尾页</a></li>
+                        </ul>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row padding">
+            <div class="col-lg-12" ng-show="show4">
+                <h5>明细数据</h5>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Cp日期</th>
+                        <th>Cp流水</th>
+                        <th>客户编号</th>
+                        <th>客户名称</th>
+                        <th>持卡人姓名</th>
+                        <th>证件类型</th>
+                        <th>证件号</th>
+                        <th>卡折类型</th>
+                        <th>卡号/折号</th>
+                        <th>开户行行号</th>
+                        <th>交易日期</th>
+                        <th>交易状态</th>
+                        <th>响应码</th>
+                        <th>金额</th>
+                        <th>私有域</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!--
+                    <tr  ng-repeat="item1 in UnionpayCounterofferDetai">
+                        <td>{{item1.cpDate | date:"yyyy-MM-dd"}}</td>
+                        <td>{{item1.cpRunning}}</td>
+                        <td>{{item1.custNum}}</td>
+                        <td>{{item1.custName}}</td>
+                        <td>{{item1.cardHost}}</td>
+                        <td>{{item1.cardType}}</td>
+                        <td>{{item1.cardNum}}</td>
+                        <td>{{item1.accountType}}</td>
+                        <td>{{item1.accountNum}}</td>
+                        <td>{{item1.bankNum}}</td>
+                        <td>{{item1.transactionDate| date:'yyyy-MM-dd'}}</td>
+                        <td>{{item1.transactionType}}</td>
+                        <td>{{item1.responseCode}}</td>
+                        <td>{{item1.sum}}</td>
+                        <td>{{item1.privateDomain}}</td>
+                    </tr>
+                    -->
+                    <tr   ng-repeat="item1 in searchunionpayDetail.object.unionpayCounterofferDetais" ng-show="item1.unionpayCounterofferDetaiId!=null" >
+                        <td>{{item1.cpDate | date:"yyyy-MM-dd"}}</td>
+                        <td>{{item1.cpRunning}}</td>
+                        <td>{{item1.custNum}}</td>
+                        <td>{{item1.custName}}</td>
+                        <td>{{item1.cardHost}}</td>
+                        <td>
+                            <span ng-switch on="item1.cardType">
+                                <span ng-switch-when="0">身份证</span>
+                                <span ng-switch-when="1">学生证</span>
+                                <span ng-switch-when="2">驾驶证</span>
+                            </span>
+                        </td>
+                        <td>{{item1.cardNum}}</td>
+                        <td>
+                            <span ng-switch on="item1.accountType">
+                                <span ng-switch-when="0"> 银行卡</span>
+                                <span ng-switch-when="1">存折</span>
+                            </span>
+                        </td>
+                        <td>{{item1.accountNum}}</td>
+                        <td>{{item1.bankNum}}</td>
+                        <td>{{item1.transactionDate| date:'yyyy-MM-dd'}}</td>
+                        <td>{{item1.transactionType}}</td>
+                        <td>{{item1.responseCode}}</td>
+                        <td>{{item1.sum}}</td>
+                        <td>{{item1.privateDomain}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="bill_paging">
+                    <span>共{{searchunionpayDetail.object.page.totalResult}}条</span>
+                    <ul class="pagination">
+                        <li ng-class="{true:'disabled'}[searchunionpayDetail.page.currentPage==1]"><a href="javascript:void(0)" ng-click="searchunionpayDetail.go(1)">首页</a></li>
+                        <li ng-class="{true:'disabled'}[searchunionpayDetail.page.currentPage==1]"><a href="javascript:void(0)" ng-show="searchunionpayDetail.hasPrevious()" ng-click="searchunionpayDetail.previous()">上一页</a></li>
+                        <li ng-class="{true:'active'}[searchunionpayDetail.page.currentPage==i]" ng-repeat="i in searchunionpayDetail.pages" ><a href="javascript:void(0)" on-show="searchunionpayDetail.go(i)"  ng-click="searchunionpayDetail.go(i)">{{i}}</a></li>
+                        <li ng-class="{true:'disabled'}[searchunionpayDetail.page.currentPage==searchunionpayDetail.page.totalPage]"><a href="javascript:void(0)" ng-show="searchunionpayDetail.hasNext()" ng-click="searchunionpayDetail.next()">下一页</a></li>
+                        <li ng-class="{true:'disabled'}[searchunionpayDetail.page.currentPage==searchunionpayDetail.page.totalPage]"><a href="javascript:void(0)" ng-click="searchunionpayDetail.go(searchunionpayDetail.page.totalPage)">尾页</a></li>
+                    </ul>
+                    <div class="clear"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--银行导入结束-->
+    <!--银行回盘-->
+    <div ng-show="show2">
+        <div class="row padding">
+            <div class="col-lg-12">
+                <div>
+                    <div class="col-lg-4 col-md-4 col-sm-4">
+                        <h5>统计信息</h5>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4">
+                        <select ng-model="projectIdImport" class="form-control" name="name"
+                                ng-options="p.id as p.name for p in selectProjects" required  ng-change="getProject(selectProjects.id)">
+                            <option value="">请选择所属项目</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 text-right">
+                        <!--<button type="button" class="btn btn-default btn-primary" style="cursor:pointer" tabindex="-1" ng-click="exportMBExcelFile()"></span>导出回盘相关文件模版</button>
+                        <button type="button" class="btn btn-default btn-primary"  role="presentation" data-toggle="modal" data-target="#ddd" style="cursor:pointer" tabindex="-1" ng-click="inportExcel()"></span>导入回盘文件</button>-->
+                        <button type="button" class="btn btn-default btn-primary" ng-click="qingkong()"><span class="glyphicon glyphicon-trash btn_icon"></span>清空</button>
+                    </div>
+                </div>
+                <table >
+                    <thead>
+                    <tr>
+                        <th>文件名</th>
+                        <th>总笔数</th>
+                        <th>总金额</th>
+                        <th>成功笔数</th>
+                        <th>成功金额</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr  ng-repeat="item2 in unionpayCounterofferTotal" ng-show="item2.unionpayCounterofferCotalId != null" ng-click="importDetails(item2)" data-toggle="modal" data-target="#ddd" data-toggle="tab"  ng-class="{'this_info':btnIndex2==item2.unionpayCounterofferCotalId}" >
+                        <td >{{item2.fileName}}</td>
+                        <td>{{item2.totalTradeNum}}</td>
+                        <td>{{item2.totalSum}}</td>
+                        <td>{{item2.successTradeNum}}</td>
+                        <td>{{item2.successSum}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row padding">
+            <div class="col-lg-12">
+                <h5>明细数据</h5>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Cp日期</th>
+                        <th>Cp流水</th>
+                        <th>客户编号</th>
+                        <th>客户名称</th>
+                        <th>持卡人姓名</th>
+                        <th>证件类型</th>
+                        <th>证件号</th>
+                        <th>卡折类型</th>
+                        <th>卡号/折号</th>
+                        <th>开户行行号</th>
+                        <th>交易日期</th>
+                        <th>交易状态</th>
+                        <th>响应码</th>
+                        <th>金额</th>
+                        <th>私有域</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr  ng-repeat="item1 in unionpayCounterofferDetai" ng-show="item1.unionpayCounterofferTotalId==TotalId">
+                        <td >{{item1.cpDate | date:"yyyy-MM-dd"}}</td>
+                        <td>{{item1.cpRunning}}</td>
+                        <td>{{item1.custNum}}</td>
+                        <td>{{item1.custName}}</td>
+                        <td>{{item1.cardHost}}</td>
+                        <td>
+                            <span ng-switch on="item1.cardType">
+                                <span ng-switch-when="0">身份证</span>
+                                <span ng-switch-when="1">学生证</span>
+                                <span ng-switch-when="2">驾驶证</span>
+                            </span>
+                        </td>
+                        <td>{{item1.cardNum}}</td>
+                        <td>
+                             <span ng-switch on="item1.accountType">
+                                <span ng-switch-when="0"> 银行卡</span>
+                                <span ng-switch-when="1">存折</span>
+                            </span>
+
+                        </td>
+                        <td>{{item1.accountNum}}</td>
+                        <td>{{item1.bankNum}}</td>
+                        <td>{{item1.transactionDate| date:'yyyy-MM-dd'}}</td>
+                        <td>{{item1.transactionType}}</td>
+                        <td>{{item1.responseCode}}</td>
+                        <td>{{item1.sum}}</td>
+                        <td>{{item1.privateDomain}}</td>
+                    </tr>
+
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+        <div class="row padding">
+            <div class="text-center">
+                <button class="btn btn-default" ng-click="cancel()">取消</button>
+                <button class="btn btn-primary" ng-click="leading()">确认导入</button>
+            </div>
+        </div>
+    </div>
+    <!--银行回盘结束-->
+</div>
+<div class="modal fade" id="ddd" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    上传
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                <div id="remove">
+                    <div id="excelupload" class="zyupload"></div>
+                </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">确认</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+</body>
+</html>

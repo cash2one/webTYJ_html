@@ -1,0 +1,118 @@
+<!--
+    作者：陶勇超
+    名称：评分标准详情
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        .gradeListContainerShow{width: 97%;height:auto;border-top: 4px solid rgb(2,159,240);border-bottom: 4px solid rgb(2,159,240);margin: 10px;background-color:#eee;border-radius: 10px;}
+        .listOneShow{width: 85%;border: 1px solid #ddd;margin: 10px auto;border-radius: 15px;}
+        .backgroundColorSet{background-color:#fff;border-radius: 15px;padding: 10px;}
+        .paddingTopSet{padding: 10px;}
+        .addUl2{width:90%;margin: 5px auto;}
+        .addUl2 td{padding-top:10px;margin-left: 20px;}
+    </style>
+</head>
+<body>
+
+<div class="complaint_user_list" style="margin: 10px 10px;width: 97%">
+    <div  style="margin-top: 10px">
+        <div style="border: 1px solid ;width: 80px;height: 80px;margin: 15px 20px" >
+            <div style="margin-top: 25px;margin-left: 10px">
+                <span style="font-size: 30px;">评分</span>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="row" style="margin-left: 100px;margin-top: -90px">
+                <div class="col-md-4">评分标准名称：{{ScoreCriteria.criteriaName}}</div>
+                <div class="col-md-5">描述：{{ScoreCriteria.remarks}}</div>
+            </div>
+            <div class="row" style="margin-left: 100px;margin-top: -80px">
+                <div class="col-md-4">
+                    <p ng-switch on="ScoreCriteria.criteriaType">表分类：
+                        <span ng-switch-when="0">园林</span>
+                        <span ng-switch-when="1">清洁</span>
+                        <span ng-switch-when="2">安保</span>
+                        <span ng-switch-when="3">维修</span>
+                    </p>
+                </div>
+                <div class="col-md-5">
+                    <p ng-switch on="ScoreCriteria.cycle">周期：
+                        <span ng-switch-when="0">日检</span>
+                        <span ng-switch-when="1">周检</span>
+                        <span ng-switch-when="2">半月检</span>
+                        <span ng-switch-when="3">月检</span>
+                    </p>
+                </div>
+                <!--<div class="col-md-4">岗位：{{ScoreCriteria.post}}</div> ng-repeat="state in scoreCriteriaItemsList"-->
+            </div>
+        </div>
+    </div>
+</div>
+<div class="gradeListContainerShow">
+    <div class="listOneShow">
+        <div class="col-md-12 backgroundColorSet" ng-repeat="item in ScoreCriteria.scoreCriteriaItemsList" ng-show="item.criteriaItemId != null">
+            <!--评分项展示开始{{ScoreCriteria.scoreCriteriaItemsList.number}}-->
+            <div class="row ">
+                <div class="col-md-10" style="margin-left: 10%;">
+                    <div class="row paddingTopSet">
+                        <div class="col-md-4">评分项序号：{{$index}}</div>
+                        <div class="col-md-5">评分项名称：{{item.criteriaItemName}}</div>
+                        <div class="col-md-3">权重：{{item.weight}}</div>
+                    </div>
+                </div><br>
+                <hr/>
+            </div>
+            <!--评分项展示结束-->
+            <!--评分子项展示开始{{ScoreCriteria.scoreCriteriaItemsList.scoreSubitemItemsList.number}}-->
+            <div class="row backgroundColorSet" style="width: 90%;margin: 10px auto;border: 1px solid #ddd;" ng-repeat="item1 in item.scoreSubitemItemsList" ng-show="item1.subitemId != null">
+                <div class="col-md-11" style="margin-left: 5%;">
+                    <div class="row paddingTopSet">
+                        <div class="col-md-4">评分子项序号：{{$index+1}}</div>
+                        <div class="col-md-5">评分子项名称：{{item1.subitemName}}</div>
+                        <div class="col-md-3">权重：{{item1.weight}}</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-10" style="margin-left: 4%;">
+                        <table class="addUl2">
+                            <tr>
+                                <td>评分1</td>
+                                <td>描述：非常不满意/很差</td>
+                                <td>评分标准：{{item1.score1}}</td>
+                            </tr>
+                            <tr>
+                                <td>评分2</td>
+                                <td>描述：不满意/差</td>
+                                <td>评分标准：{{item1.score2}}</td>
+                            </tr>
+                            <tr>
+                                <td>评分3</td>
+                                <td>描述：一般</td>
+                                <td>评分标准：{{item1.score3}}</td>
+                            </tr>
+                            <tr>
+                                <td>评分4</td>
+                                <td>描述：满意/好</td>
+                                <td>评分标准：{{item1.score4}}</td>
+                            </tr>
+                            <tr>
+                                <td>评分5</td>
+                                <td>描述：非常满意/很好</td>
+                                <td>评分标准：{{item1.score5}}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!--评分子项展示结束-->
+        </div>
+        <div style="clear: both"></div>
+    </div>
+    <div style="clear: both"></div>
+</div>
+</body>
+</html>

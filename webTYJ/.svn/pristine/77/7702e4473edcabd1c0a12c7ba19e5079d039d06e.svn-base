@@ -1,0 +1,304 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 金融联银行托收js
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../app');
+
+    app.controller('financeCollectionCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        var url = $rootScope.url;
+        $scope.show1 = true;
+        $scope.show2 = false;
+        $scope.show3 = false;
+
+        /***查询所有的项目**/
+        $http.get(url+'/Project/listAllProject').success(function(data){
+            $scope.projects=data.Project;
+        });
+
+        /**
+         * 根据条件分页查询
+         */
+        $scope.financial={page:{}};
+        $scope.getTotals=function(){
+        $scope.getTotals=function(){
+            var fetchFunction=function(page,callback){
+                $scope.financial.page=page;
+                $http.post(
+                    url + '/FinancialGroupTotal/listPageFinancial', {FinancialGroupTotal:$scope.financial}).success(callback);
+            };
+            $scope.searchPaginator=app.get('Paginator').list(fetchFunction,5);
+            console.log($scope.searchPaginator);
+        };
+
+        $scope.getTotals();
+        //根据总结文件查询明细文件
+        $scope.datasForExport1={financialGroupDetails:[]};//需要导出的明细文件数据
+        $scope.getDatils=function(id){
+            //console.log(id);
+            $scope.btnIndex=id;
+            // $scope.financialGroupTotalId=id;
+            $http.get(url+'/FinancialGroupDetail/getDatas/'+id).success(function(data)
+            {
+                //console.log(data);
+                $scope.financiala=data.FinancialGroupDetail;
+                for(var i=0;i<$scope.financiala.length;i++){
+                    if($scope.financiala[i]!='undefined' && $scope.financiala[i].length!=0){
+                        //console.log($scope.financiala[i]);
+                        $scope.datasForExport1.financialGroupDetails.push($scope.financiala[i]);
+                    }
+                }
+            });
+        };
+
+        //判断checkbx是否选中
+        $scope.d=false;
+        $scope.getAllChecks=function(item){
+            var chk = document.getElementsByName("addDatas");
+            for(var i=0;i<chk.length;i++){
+                if( chk[i].checked==true){
+                    $scope.accountRecord=item;
+                    $scope.d=true;
+                    return;
+                }else{
+                    $scope.d=false;
+                }
+            }
+        };
+
+        /**
+         * 导出数据到excel文件
+         * */
+        $scope.datasForExport={financialGroupTotals:[]};//需要导出的总文件数据
+        $scope.datasForExport1={financialGroupDetails:[]};//需要导出的明细文件数据
+        /* $scope.getAllChecks=function(item){
+         if(document.getElementById(item.financialGroupTotalId).checked == true){
+         $scope.datasForExport.financialGroupTotals.push(item);
+         }else{
+         $scope.temp = [];
+         $scope.temp = $scope.datasForExport.financialGroupTotals;
+         $scope.datasForExport.financialGroupTotals = [];
+         for(var i = 0; i < $scope.temp.length; i ++){
+         if($scope.temp[i].financialGroupTotalId != item.financialGroupTotalId){
+         $scope.datasForExport.financialGroupTotals.push($scope.temp[i]);
+         }
+         }
+         }
+         console.log($scope.datasForExport.financialGroupTotals);
+         };*/
+        $scope.exportToExcel=function(){
+            /*    $http.post(url+'/FinancialGroupTotal/exportToExcel',{FinancialGroupTotal:$scope.datasForExport}).success(function(data){
+             console.log(data);
+             alert(data.Info.info.$);
+             }).error(
+             console.log("ooh ! No no no no ...")
+             )
+             $http.post(url+'/FinancialGroupDetail/exportToExcel',{FinancialGroupDetail:$scope.datasForExport1}).success(function(data){
+             console.log(data);
+             alert("明细文件已导入到桌面");
+             }).error(
+             console.log("ooh ! No no no no ...")
+             );*/
+
+            if($scope.d==false){
+                layer.msg("请先选择导出项 ",{icon:0});
+            }else if($scope.d==true) {
+                layer.confirm("是否导出总结文件？",
+                    {btn : ['是','否']},function(){
+                        if(angular.isUndefined($scope.accountRecord)){
+                            layer.msg("请选择要导出的文件 ",{icon:0});
+                            return;
+                        }
+                        window.location.href=fileUrl +"/info/exportFTotalFile.do?financialGroupTotalId="+$scope.accountRecord.financialGroupTotalId;
+                        layer.msg("导出总结文件成功 ",{icon:0});
+                        layer.confirm("是否导出明细文件？",
+                            {btn : ['是','否']},function(){
+                                window.location.href=fileUrl +"/info/exportFDetailFile.do?financialGroupTotalId="+$scope.accountRecord.financialGroupTotalId;
+                                layer.msg("导出明细文件成功 ",{icon:0});
+                            })
+                    })
+            }
+            //$scope.getTotals();
+        };
+
+        /**
+         * 导出总结文件模版，方便导入数据
+         */
+        $scope.exportFTotalMBFile=function(){
+            layer.confirm("是否导出盘回总结文件模版？",
+                {btn : ['是','否']},function(){
+                    window.location.href=fileUrl +"/info/exportFTotalMBFile.do";
+                    layer.msg("导出盘回总结文件模版成功 ",{icon:0});
+                    layer.confirm("是否导出盘回明细文件模版？",
+                        {btn : ['是','否']},function(){
+                            window.location.href=fileUrl +"/info/exportMFUDetailFile.do";
+                            layer.msg("导出盘回明细文件模版成功 ",{icon:0});
+                        });
+                });
+        };
+
+        /**
+         * 导入总结文件
+         */
+        var fileUrl=$rootScope.fileUrl;    //上传的文件路径
+        var filePath='';          //上传文件的路径
+        $scope.annex={
+            annexAddress:'',
+            annexName:'',
+            relationId:''
+        };
+        $scope.inportExcel = function(){
+            $scope.fileState="1";
+            $(function(){
+                $("#remove").html('');
+                $("#remove").append('<div id="excelupload" class="zyupload"></div>');
+                // 初始化插件
+                $("#excelupload").zyUpload({
+                    width            :   "550px",                 // 宽度
+                    height           :   "auto",                 // 宽度
+                    itemWidth        :   "140px",                 // 文件项的宽度
+                    itemHeight       :   "115px",                 // 文件项的高度
+                    url              :   fileUrl+"/FileService",  // 上传文件的路径
+                    fileType         :   ["jpg","png","jpeg","gif","xls","docx","xlsx","pdf","txt","doc","ppt"],// 上传文件的类型
+                    fileSize         :   51200000,                // 上传文件的大小
+                    multiple         :   true,                    // 是否可以多个文件上传
+                    dragDrop         :   true,                    // 是否可以拖动上传文件
+                    tailor           :   true,                    // 是否可以裁剪图片
+                    del              :   true,                    // 是否可以删除文件
+                    finishDel        :   false,  				  // 是否在上传文件完成后删除预览
+                    /* 外部获得的回调接口 */
+                    onSelect: function(selectFiles, allFiles){    // 选择文件的回调方法  selectFile:当前选中的文件  allFiles:还没上传的全部文件
+                        //console.info(selectFiles);
+                    },
+                    onDelete: function(file, files){
+                        //console.info(file.name);
+                    },
+                    onSuccess: function(file, response){          // 文件上传成功的回调方法
+                        filePath=response;
+                        $scope.annex.annexAddress=filePath;
+                        $scope.annex.annexName=file.name;
+                        $http.post(url + "/FinancialGroupTotal/getImportFileDatas",{Annex:$scope.annex}).success(function(data){
+                            console.log(data);
+                            $scope.financialGroupTotal=data.FinancialGroupTotal;
+                            //
+                            $scope.annex={};
+                        });
+                        console.info(filePath);
+                    },
+                    onFailure: function(file, response){          // 文件上传失败的回调方法
+                        alert("此文件上传失败：");
+                        //console.info(file.name);
+                    },
+                    onComplete: function(response){           	  // 上传完成的回调方法
+                        //console.info("文件上传完成");
+                        //console.info(response);
+                    }
+                });
+
+            });
+        };
+        /*导入明细文件*/
+        $scope.importDetails = function(financialGroupTotalId){
+            $scope.btnIndex2=financialGroupTotalId;
+            $scope.fileState="2";
+            $(function(){
+                $("#remove").html('');
+                $("#remove").append('<div id="excelupload" class="zyupload"></div>');
+                // 初始化插件
+                $("#excelupload").zyUpload({
+                    width            :   "550px",                 // 宽度
+                    height           :   "auto",                 // 宽度
+                    itemWidth        :   "140px",                 // 文件项的宽度
+                    itemHeight       :   "115px",                 // 文件项的高度
+                    url              :   fileUrl+"/FileService",  // 上传文件的路径
+                    fileType         :   ["jpg","png","jpeg","gif","xls","docx","xlsx","pdf","txt","doc","ppt"],// 上传文件的类型
+                    fileSize         :   51200000,                // 上传文件的大小
+                    multiple         :   true,                    // 是否可以多个文件上传
+                    dragDrop         :   true,                    // 是否可以拖动上传文件
+                    tailor           :   true,                    // 是否可以裁剪图片
+                    del              :   true,                    // 是否可以删除文件
+                    finishDel        :   false,  				  // 是否在上传文件完成后删除预览
+                    /* 外部获得的回调接口 */
+                    onSelect: function(selectFiles, allFiles){    // 选择文件的回调方法  selectFile:当前选中的文件  allFiles:还没上传的全部文件
+                        //console.info(selectFiles);
+                    },
+                    onDelete: function(file, files){
+                        //console.info(file.name);
+                    },
+                    onSuccess: function(file, response){          // 文件上传成功的回调方法
+                        filePath=response;
+                        $scope.annex.annexAddress=filePath;
+                        $scope.annex.annexName=file.name;
+                        $scope.annex.relationId=financialGroupTotalId;//传递回盘总文件id
+                        $http.post(url + "/FinancialGroupDetail/getImportFileDatas",{Annex:$scope.annex}).success(function(data){
+                            console.log(data);
+                            $scope.financialGroupDetails=data.FinancialGroupDetail;
+                            //
+                            $scope.annex={};
+                        });
+                        console.info(filePath);
+                    },
+                    onFailure: function(file, response){          // 文件上传失败的回调方法
+                        alert("此文件上传失败：");
+                        //console.info(file.name);
+                    },
+                    onComplete: function(response){           	  // 上传完成的回调方法
+                        //console.info("文件上传完成");
+                        //console.info(response);
+                    }
+                });
+
+            });
+        };
+
+        /**
+         * 显示新建方案
+         */
+        $scope.finance=function(){
+            $scope.btnIndex='';
+            $scope.btnIndex0=1;
+            $scope.show1 = true;
+            $scope.show2 = false;
+            $scope.show3 = false;
+        };
+
+        $scope.unionPay=function(){
+            $scope.btnIndex='';
+            $scope.btnIndex0=2;
+            $scope.show1 = false;
+            $scope.show2 = true;
+            $scope.show3 = false;
+        };
+
+        //添加数据库
+        $scope.totals={financialGroupTotals:[]};//总结文件
+        $scope.details={financialGroupDetails:[]};//明细文件
+        $scope.leading=function(){
+            $scope.show1 = false;
+            $scope.show2 = false;
+            $scope. show3= true;
+            //添加到数据库
+            $scope.totals.financialGroupTotals = $scope.financialGroupTotal;
+            $scope.details.financialGroupDetails = $scope.financialGroupDetails;
+            $http.post(url+'/FinancialGroupTotal/importDataFromExcelFile',{FinancialGroupTotal:$scope.totals}).success(function(data){
+                console.log(data);
+                alert(data.Info.info.$);
+            });//总结文件添加到数据库
+            $http.post(url+'/FinancialGroupDetail/importDataFromExcelFile',{FinancialGroupDetail:$scope.details}).success(function(data){
+                console.log(data);
+                alert(data.Info.info.$);
+            });//明细文件添加到数据库
+            $scope.getTotals();//从新查询总文件
+        }
+        //清空数据
+        $scope.clearAll=function(){
+            $scope.financialGroupTotal={};
+            $scope.financialGroupDetails={};
+        }
+
+    }]);
+});

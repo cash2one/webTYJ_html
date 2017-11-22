@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script type="text/javascript">
+        function exportExcelHouse(){
+            var url = document.getElementById("fileurl").value;
+            window.location.href=url +"/info/outMeterReadingResultsExcel.do?"
+        }
+    </script>
+</head>
+<body>
+<div class="sel_top">
+    <div class="row">
+        <div class="col-lg-9 col-md-9 col-sm-6">
+            <button type="button" class="btn btn-default btn-primary"  onClick="exportExcelHouse()">
+                <span class="glyphicon glyphicon-log-out btn_icon"></span>
+                导出
+            </button>
+            <input type="hidden" value="{{fileurl}}" id="fileurl">
+        </div>
+        <div class="col-lg-2 col-md-2 col-sm-4"><input class="form-control" ng-model="searchMeter.projectName"></div>
+        <div class="col-lg-1 col-md-1 col-sm-2">
+            <button type="button" class="btn btn-default btn-primary" ng-click="waterChecks._load()">
+                <span class="glyphicon glyphicon-search btn_icon"></span>
+                查询
+            </button>
+        </div>
+    </div>
+
+</div>
+<div class="row padding">
+    <div class="col-lg-12">
+        <table>
+            <thead>
+            <th>序号</th>
+            <th>计划名称</th>
+            <th>总表数</th>
+            <th>是否上传成功</th>
+            <th>未抄表数</th>
+            <th>已审核表数</th>
+            <th>正常表数</th>
+            <th>异常表数</th>
+            <th>错误表数</th>
+            <th>当前执行人</th>
+            <th>抄表年月</th>
+            </thead>
+            <tbody>
+            <tr  ng-class="{'this_info ':btnIndex==item}" ng-click="check (item)" ng-repeat="item in waterChecks.object['meterReadingResult']" ng-show="item['meterReadingProgramId'] != null">
+                <td>{{$index}}</td>
+                <td>{{item.projectName}}</td>
+                <td>{{item.meterReadingNum}}</td>
+                <td>{{item.whetherUploadSuccess}}</td>
+                <td>{{item.noMeterReadingNum}}</td>
+                <td>{{item.reviewMeterNum}}</td>
+                <td>{{item.meterReadingNormalNum}}</td>
+                <td>{{item.meterReadingWarningNum}}</td>
+                <td>{{item.meterReadingErrorNum}}</td>
+                <td>{{item.currentExecutor}}</td>
+                <td>{{item.meterExecutiveTime|date :"yyyy-MM-dd"}}</td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="bill_paging">
+            <ul class="pagination">
+                <li><a style="cursor:pointer;" ng-click="waterChecks.go(1)">首页</a></li>
+                <li><a style="cursor:pointer;" ng-show="waterChecks.hasPrevious()" ng-click="waterChecks.previous()">上一页</a></li>
+                <li><a style="cursor:pointer;" ng-repeat="i in waterChecks.pages"  ng-click="waterChecks.go(i)">{{i}}</a></li>
+                <li><a style="cursor:pointer;" ng-show="waterChecks.hasNext()" ng-click="waterChecks.next()">下一页</a></li>
+                <li><a style="cursor:pointer;" ng-click="waterChecks.go(waterChecks.page.totalPage)">尾页</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

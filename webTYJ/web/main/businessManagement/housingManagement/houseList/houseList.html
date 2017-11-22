@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>房屋初验</title>
+</head>
+<body>
+<div class="row padding">
+    <div class="col-lg-12">
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right input_text">
+        验房活动开始日期：
+    </div>
+        <div class="col-lg-2 col-md-2 col-sm-3">
+            <input class="form-control" type="date" ng-model="acceptanceHouse.startDate">
+        </div>
+        <div class="col-lg-1 col-md-1 col-sm-1">
+            <span style="color: red">*</span>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right input_text">
+            验房活动结束日期：
+        </div>
+        <div class="col-lg-2 col-md-2 col-sm-3">
+            <input class="form-control" type="date" ng-model="acceptanceHouse.endDate" ng-blur="cheakTime()">
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-6">
+            <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="currentAcceptanceHouse._load()">
+                <span class="glyphicon glyphicon-search btn_icon"></span>
+                搜索
+            </button>
+        </div>
+        <!-- 2015.12.22 王洲 新增操作按钮，新增跳转到新增页面，修改、删除置灰 -->
+        <div class="sel">
+            <div class="row search-padding-10">
+                <div class="search-padding-10 col-lg-10 text-left">
+                    <button type="button" class="btn btn-default btn-primary" ui-sref="index.businessManagement.housingManagement.houseNew" >
+                        <span class="glyphicon glyphicon-plus btn_icon"></span>新增
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary" disabled="disabled">
+                        <span class="glyphicon glyphicon-edit btn_icon"></span>修改
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary" disabled="disabled">
+                        <span class="glyphicon glyphicon-remove btn_icon"></span>删除
+                    </button>
+                </div>
+                <div class="col-lg-2 col-md-3 col-sm-3 text-right">
+                    <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="listview()">
+                        <span class="glyphicon glyphicon-th-list btn_icon"></span>
+                        列表
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="tabview()">
+                        <span class="glyphicon glyphicon-th-large btn_icon"></span>
+                        网格
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2015.12.22 王洲 取消查看详细列，增加任务进度显示 -->
+    <table  ng-show="showStatus==1" id="acceptanceTable">
+        <thead>
+        <tr>
+            <th>验房负责人</th>
+            <th>验收类型 </th>
+            <th>任务下达时间</th>
+            <th>任务完成进度</th>
+            <th>任务发布人</th>
+            <th>任务发布时间</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="item in currentAcceptanceHouse.object.acceptanceHouses | orderBy:'id'" ng-show="item['id']!=null">
+            <td><span id="cache181">{{item.personInChargeName}}</span></td>
+            <td><span id="cache184">房屋验收</span></td>
+            <td>{{item.startDate |date:'yyyy-MM-dd'}}</td>
+            <td><span ng-if="item.finishNum.length!=null">{{item.finishNum.length}}</span>
+                <span ng-if="item.finishNum.length==null && item.finishNum.taskId==null">0</span>
+                <span ng-if="item.finishNum.length==null && item.finishNum.taskId!=null">1</span>
+                /<span ng-if="item.allNum.length!=null">{{item.allNum.length}}</span>
+                <span ng-if="item.allNum.length==null && item.allNum.taskId==null">0</span>
+                <span ng-if="item.allNum.length==null && item.allNum.taskId!=null">1</span>
+            </td>
+            <td>{{item.issuerName.userName}}</td>
+            <td>{{item.issuerDate |date:'yyyy-MM-dd'}}</td>
+        </tr>
+
+        <tr ng-show="currentAcceptanceHouse.object.acceptanceHouses.length == null ">
+            <td colspan="12">暂无数据！</td>
+        </tr>
+        </tbody>
+    </table>
+    <!-- 网格的显示与隐藏 chenqiuxu 2016-03-22 start -->
+    <div class="search-padding-10"  ng-show="showStatus==0">
+        <div class="col-lg-4 col-md-6 col-sm-6" ng-repeat="item in currentAcceptanceHouse.object.acceptanceHouses | orderBy:'id'" ng-show="item['id']!=null"  ng-show="items.custId!=null">
+            <div id="pannel">
+                <div class="title">
+                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                        <h3 class="text-left">验房负责人</h3>
+                    </div>
+                    <div class="col-xs-5 col-lg-5 col-md-6 col-sm-5 text-right">
+                        {{item.personInChargeName}}
+                    </div>
+                    <!--
+                    <div class="downList">
+                        <div class="col-xs-12 col-lg-12 col-md-12 col-sm-12 text-right">
+                            <span class="glyphicon glyphicon-chevron-down" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                <li><a style="cursor: pointer" ng-click="">编辑</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    -->
+                </div>
+                <div class="pannel_content">
+                    <div class="row"  ng-dblclick="show(items)">
+                        <div class="col-xs-12 col-lg-12 col-md-12">
+                            <div class="row search-padding">
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <div class="col-lg-6 col-md-6 col-sm-6 text-right">验收类型 </div>
+                                    <div class="col-lg-6 col-md-6 col-sm-6">房屋验收</div>
+                                </div>
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <div class="col-lg-6 col-md-6 col-sm-6 text-right">任务下达时间:</div>
+                                    <div class="col-lg-6 col-md-6 col-sm-6 ">
+                                        {{item.startDate |date:'yyyy-MM-dd'}}
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <div class="col-lg-6 col-md-6 col-sm-6 text-right">任务完成进度</div>
+                                    <div class="col-lg-6 col-md-6 col-sm-6 ">
+                                        <span ng-if="item.finishNum.length!=null">{{item.finishNum.length}}</span>
+                                        <span ng-if="item.finishNum.length==null && item.finishNum.taskId==null">0</span>
+                                        <span ng-if="item.finishNum.length==null && item.finishNum.taskId!=null">1</span>
+                                        /<span ng-if="item.allNum.length!=null">{{item.allNum.length}}</span>
+                                        <span ng-if="item.allNum.length==null && item.allNum.taskId==null">0</span>
+                                        <span ng-if="item.allNum.length==null && item.allNum.taskId!=null">1</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <div class="col-lg-6 col-md-6 col-sm-6 text-right">任务发布人:</div>
+                                    <div class="col-lg-6 col-md-6 col-sm-6 ">
+                                        {{item.issuerName.userName}}
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <div class="col-lg-6 col-md-6 col-sm-6 text-right">任务发布时间:</div>
+                                    <div class="col-lg-6 col-md-6 col-sm-6 ">
+                                        {{item.issuerDate |date:'yyyy-MM-dd'}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-6" ng-show="currentAcceptanceHouse.object.acceptanceHouses.length == null">
+            <div id="pannel">
+                <div class="title">
+                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                        <h3>房屋初验</h3>
+                    </div>
+                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                        <!-- <span class="glyphicon glyphicon-search"></span>-->
+                    </div>
+                </div>
+                <div class="pannel_content">
+                    <div class="row">
+                        <div class="col-xs-8 col-lg-8 col-md-8">
+                            <div class="row search-padding 10">
+                                暂无数据！
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div class="bill_paging">
+        <ul class="pagination">
+            <li ng-class="{true:'disabled'}[currentAcceptanceHouse.page.currentPage==1]"><a  href="javascript:void(0)"  ng-click="currentAcceptanceHouse.go(1)" >首页</a></li>
+            <li ng-class="{true:'disabled'}[currentAcceptanceHouse.page.currentPage==1]"><a  href="javascript:void(0)"  ng-show="currentAcceptanceHouse.hasPrevious()" ng-click="currentAcceptanceHouse.previous()" >上一页</a></li>
+            <li ng-class="{true:'active'}[currentAcceptanceHouse.page.currentPage==i]"  ng-repeat="i in currentAcceptanceHouse.pages" ><a  href="javascript:void(0)"  on-show="currentAcceptanceHouse.go(i)" ng-click="currentAcceptanceHouse.go(i)">{{i}}</a></li>
+            <li ng-class="{true:'disabled'}[currentAcceptanceHouse.page.currentPage==currentAcceptanceHouse.page.totalPage]"><a  href="javascript:void(0)"  ng-show="currentAcceptanceHouse.hasNext()" ng-click="currentAcceptanceHouse.next()" n>下一页</a></li>
+            <li ng-class="{true:'disabled'}[currentAcceptanceHouse.page.currentPage==currentAcceptanceHouse.page.totalPage]"><a  href="javascript:void(0)"  ng-click="currentAcceptanceHouse.go(currentAcceptanceHouse.page.totalPage)" >尾页</a></li>
+        </ul>
+    </div>
+</div>
+
+
+
+<!--模态框-->
+<div class="modal fade" id="show" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>详情</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>验房负责人</th>
+                            <th>验房地址</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td><b>{{acceptance.personInChargeName}}</b></td>
+                            <td></td>
+                        </tr>
+                        <tr ng-repeat="item in acceptance.ahrList">
+                            <td>{{item.staff.staffName}}</td>
+                            <td>{{item.buildingStructureNew.fullName}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

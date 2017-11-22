@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        .back_red{
+            background: red !important;
+        }
+        .back_yellow{
+            background: #ffff00 !important;
+        }
+    </style>
+</head>
+<body>
+<div class="sel_top" ng-show="show3">
+    <div class="row">
+        <div class="col-lg-9 col-md-9 col-sm-6">
+            <button type="button" class="btn btn-default btn-primary" ng-click="addLeasesTop()">
+                核实
+            </button>
+        </div>
+        <div class="col-lg-2 col-md-2 col-sm-4"><input class="form-control" ng-model="searchMeter.projectName"></div>
+        <div class="col-lg-1 col-md-1 col-sm-2">
+            <button type="button" class="btn btn-default btn-primary" ng-click="currentWater._load()">
+                <span class="glyphicon glyphicon-search btn_icon"></span>
+                查询
+            </button>
+        </div>
+    </div>
+
+</div>
+<div class="row padding" ng-show="show4">
+    <div class="col-lg-12">
+        <table id="table">
+            <thead>
+            <tr>
+                <th width="50px"></th>
+                <th>序号</th>
+                <th>计划名称</th>
+                <th>总表数</th>
+                <th>未抄表数</th>
+                <th>未审核表数</th>
+                <th>已审核表数</th>
+                <th>重新抄表数</th>
+                <th>正常表数</th>
+                <th>异常表数</th>
+                <th>错误表数</th>
+                <th>当前执行人</th>
+                <th>抄表年月</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-dblclick="showList(item)" ng-repeat="item in currentWater.object.meterReadingProgram"
+                ng-show="item.meterReadingProgramId != null"
+                ng-class="{'1':'back_yellow','2':'back_red'}[item.programExceptionStatus]">
+                <td><input name="things1" type="checkbox" value={{item.meterReadingProgramId}} /></td>
+                <td>{{$index}}</td>
+                <td>{{item.projectName}}</td>
+                <td>{{item.allNum}}</td>
+                <td>{{item.allNum - item.meterReadingNum}}</td>
+                <td>{{item.allNum - item.reviewMeterNum}}</td>
+                <td>{{item.reviewMeterNum}}</td>
+                <td>{{item.meterReadingNum - item.meterReadingNormalNum}}</td>
+                <td>{{item.meterReadingNormalNum}}</td>
+                <td>{{item.meterReadingWarningNum}}</td>
+                <td>{{item.meterReadingErrorNum}}</td>
+                <td>{{item.currentExecutor}}</td>
+                <td>{{item.startTime|date :"yyyy-MM"}}</td>
+            </tr>
+            <!--<tr ng-dblclick="showList(item)" ng-repeat="item in currentWater.object['meterReadingProgram']" ng-show="item['meterReadingProgramId'] != null"  ng-if="item.colors=='red'" style="background-color: red">
+                <td><input type="checkbox"></td>
+                <td>{{$index}}</td>
+                <td>{{item.projectName}}</td>
+                <td>{{}}</td>
+                <td>{{}}</td>
+                <td>{{}}</td>
+                <td>{{}}</td>
+                <td>{{}}</td>
+                <td>{{}}</td>
+                <td>{{}}</td>
+                <td>{{}}</td>
+                <td>{{item.currentExecutor}}</td>
+                <td>{{item.meterReadingDate|date :'yyyy-MM-dd'}}</td>
+            </tr>-->
+            </tbody>
+        </table>
+       <!-- <div class="bill_paging">
+            <ul class="pagination">
+                <li><a style="cursor:pointer;" ng-click="currentWater.go(1)">首页</a></li>
+                <li><a style="cursor:pointer;" ng-show="currentWater.hasPrevious()" ng-click="currentWater.previous()">上一页</a></li>
+                <li><a style="cursor:pointer;" ng-repeat="i in currentWater.pages"  ng-click="currentWater.go(i)">{{i}}</a></li>
+                <li><a style="cursor:pointer;" ng-show="currentWater.hasNext()" ng-click="currentWater.next()">下一页</a></li>
+                <li><a style="cursor:pointer;" ng-click="currentWater.go(currentWater.page.totalPage)">尾页</a></li>
+            </ul>
+        </div>-->
+        <div class="bill_paging">
+            <span>共{{currentWater.object.page.totalResult}}条</span>
+            <ul class="pagination">
+                <li ng-class="{true:'disabled'}[currentWater.page.currentPage==1]">
+                    <a href="javascript:void(0)" ng-click="currentWater.go(1)">首页</a>
+                </li>
+                <li ng-class="{true:'disabled'}[currentWater.page.currentPage==1]">
+                    <a href="javascript:void(0)" ng-show="currentWater.hasPrevious()" ng-click="currentWater.previous()">上一页</a>
+                </li>
+                <li ng-class="{true:'active'}[currentWater.page.currentPage==i]" ng-repeat="i in currentWater.pages">
+                    <a href="javascript:void(0)"  ng-click="currentWater.go(i)">{{i}}</a>
+                </li>
+                <li ng-class="{true:'disabled'}[currentWater.page.currentPage==currentWater.page.totalPage]">
+                    <a href="javascript:void(0)" ng-show="currentWater.hasNext()" ng-click="currentWater.next()">下一页</a>
+                </li>
+                <li ng-class="{true:'disabled'}[currentWater.page.currentPage==currentWater.page.totalPage]">
+                    <a href="javascript:void(0)" ng-click="currentWater.go(currentWater.page.totalPage)">尾页</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="sel_top" ng-show="show1">
+    <div class="row">
+        <div class="col-lg-9 col-md-9 col-sm-6">
+            <button type="button" class="btn btn-default btn-primary" ng-click="back()">
+                <span class="glyphicon glyphicon-arrow-left btn_icon"></span>
+                返回
+            </button>
+            <button type="button" class="btn btn-default btn-primary" ng-click="addLeases()" >
+                <span class="glyphicon glyphicon-ok btn_icon"></span>
+                核实
+            </button>
+            <button type="button" class="btn btn-default btn-primary" ng-click="addLeases1()">
+                <span class="glyphicon glyphicon-plus btn_icon"></span>
+                添加
+            </button>
+            <button type="button" class="btn btn-default btn-primary" ng-click="getModifyLease()">
+                <span class="glyphicon glyphicon-edit btn_icon"></span>
+                修改读数
+            </button>
+            <button type="button" class="btn btn-default btn-primary" data-toggle="modal" data-target="#myModal">
+                <span class="glyphicon glyphicon-refresh btn_icon"></span>
+                重抄任务
+            </button>
+        </div>
+        <div class="col-lg-2 col-md-2 col-sm-4"><input class="form-control" ng-model="searchMeter1.waterMeterNum"></div>
+        <div class="col-lg-1 col-md-1 col-sm-2">
+            <button type="button" class="btn btn-default btn-primary" ng-click="currentWaters._load()">
+                <span class="glyphicon glyphicon-search btn_icon"></span>
+                查询
+            </button>
+        </div>
+    </div>
+
+</div>
+<div class="row padding"  ng-show="show2">
+    <div class="col-lg-12">
+        <table>
+            <thead>
+            <tr>
+                <th width="50px"></th>
+                <th>序号</th>
+                <th>抄表人</th>
+                <th>水表编号</th>
+                <th>表名称</th>
+                <th>本月读数</th>
+                <th>上月读数</th>
+                <th>重抄读数</th>
+                <th>本月用量</th>
+                <th>状态</th>
+                <th>审核记录</th>
+                <th>备注</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="item in currentWaters.object['meterReadingData']"
+                ng-show="item['meterReadingDataId'] != null"
+                ng-class="{'1':'back_yellow','2':'back_red'}[item.abnormalState]">
+                <td><input name="things" type="checkbox" value={{item.meterReadingDataId}} /></td>
+                <td>{{$index}}</td>
+                <td>{{item.meterReadingPeople}}</td>
+                <td>{{item.waterMeterNum}}</td>
+                <td>{{item.fullName}}</td>
+                <td>{{item.reading}}</td>
+                <td>{{item.lastMonthReading}}</td>
+                <td></td>
+                <td>{{item.consumption}}</td>
+                <td ng-switch on="item.abnormalState">
+                    <span ng-switch-when="0">正常</span>
+                    <span ng-switch-when="1">异常</span>
+                    <span ng-switch-when="2">错误</span>
+                </td>
+                <td ng-switch on="item.verificationRecord">
+                    <span ng-switch-when="0">待核实</span>
+                    <span ng-switch-when="1">已核实</span>
+                    <span ng-switch-when="2">待重抄</span>
+                    <span ng-switch-when="3">已重抄</span>
+                </td>
+
+                <td>{{item.note}}</td>
+            </tr>
+            </tbody>
+        </table>
+        <!--<div class="bill_paging">
+            <ul class="pagination">
+                <li><a style="cursor:pointer;" ng-click="currentWaters.go(1)">首页</a></li>
+                <li><a style="cursor:pointer;" ng-show="currentWaters.hasPrevious()" ng-click="currentWaters.previous()">上一页</a></li>
+                <li><a style="cursor:pointer;" ng-repeat="i in currentWaters.pages"  ng-click="currentWaters.go(i)">{{i}}</a></li>
+                <li><a style="cursor:pointer;" ng-show="currentWaters.hasNext()" ng-click="currentWaters.next()">下一页</a></li>
+                <li><a style="cursor:pointer;" ng-click="currentWaters.go(currentWaters.page.totalPage)">尾页</a></li>
+            </ul>
+        </div>-->
+        <div class="bill_paging">
+            <span>共{{currentWaters.object.page.totalResult}}条</span>
+            <ul class="pagination">
+                <li ng-class="{true:'disabled'}[currentWaters.page.currentPage==1]">
+                    <a href="javascript:void(0)" ng-click="currentWaters.go(1)">首页</a>
+                </li>
+                <li ng-class="{true:'disabled'}[currentWaters.page.currentPage==1]">
+                    <a href="javascript:void(0)" ng-show="currentWaters.hasPrevious()" ng-click="currentWaters.previous()">上一页</a>
+                </li>
+                <li ng-class="{true:'active'}[currentWaters.page.currentPage==i]" ng-repeat="i in currentWaters.pages">
+                    <a href="javascript:void(0)"  ng-click="currentWaters.go(i)">{{i}}</a>
+                </li>
+                <li ng-class="{true:'disabled'}[currentWaters.page.currentPage==currentWaters.page.totalPage]">
+                    <a href="javascript:void(0)" ng-show="currentWaters.hasNext()" ng-click="currentWaters.next()">下一页</a>
+                </li>
+                <li ng-class="{true:'disabled'}[currentWaters.page.currentPage==currentWaters.page.totalPage]">
+                    <a href="javascript:void(0)" ng-click="currentWaters.go(currentWaters.page.totalPage)">尾页</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <span class="modal-title" id="myModalLabel" ng-click="load2">重抄任务</span>
+            </div>
+            <div class="modal-body">
+                <div class=" padding">
+                    <div class="row search-padding-10">
+                    <div class="row sel">
+                    <div class="col-lg-12">填写任务内容</div>
+                    <div class="col-lg-2 col-md-2 col-sm-2">
+                        是否加急：
+                    </div>
+                    <div class="col-lg-1 col-md-2 col-sm-2">
+                        <label class="radio inline">
+                            <input type="radio"  value="0" ng-model="searchMeter2.staff">
+                            <span>是</span>
+                        </label>
+                    </div>
+                    <div class="col-lg-3 col-md-2 col-sm-2">
+                        <label class="radio inline">
+                            <input type="radio"  value="1" ng-model="searchMeter2.staff">
+                            <span>否</span>
+                        </label>
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2">
+                        抄表人：
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4">
+                            <select name="" class="form-control" ng-model="searchMeter2.meterReadingPeople">
+                                <option value="">--请选择--</option>
+                                <option value="张三">张三</option>
+                                <option value="王五">王五</option>
+                                <option value="李四">王五</option>
+                            </select>
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2">
+                        开始时间：
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4">
+                            <!-- <input type="date"/>-->
+                        <input type="text" onclick="WdatePicker({readOnly:true})"  placeholder="开始时间"  class="Wdate form-control"   ng-model="searchMeter2.startTime" onchange=""  ng-blur="checkDates()" ng-change="getStall(stallss.id,false)">
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2">
+                        结束时间：
+                    </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <!-- <input class="form-control" type="date" ng-model="waterAddSave.endTime"
+                                    name="endTime" required>-->
+                            <input type="text" onclick="WdatePicker({readOnly:true})"  placeholder="结束时间"  class="Wdate form-control"   ng-model="searchMeter2.endTime" onchange=""  ng-blur="checkDates()" ng-change="getStall(stallss.id,false)">
+                        </div>
+                    <div class="clear"></div>
+                    <div class="col-lg-2 col-md-2 col-sm-2">
+                        备注描述：
+                    </div>
+                    <div class="col-lg-10 col-md-10 col-sm-10">
+                        <textarea class="text_min" ng-model="searchMeter2.note"></textarea>
+                    </div>
+                </div>
+                     </div>
+                <div class="row search-padding-10">
+                    <div class="col-lg-2 col-md-2 col-sm-2">
+                        重抄明细：
+                    </div>
+                    <div class="col-lg-10 col-md-10 col-sm-10 text-right">
+                        <button type="button" class="btn btn-default btn-primary" ng-click="reject()">
+                            驳回
+                        </button>
+                    </div>
+                </div>
+                    <table>
+                        <thead>
+                        <tr >
+                            <th><input type="checkbox" id="executeAll" ng-click="executeAll()"/></th>
+                            <th>序号</th>
+                            <th>抄表人</th>
+                            <th>抄表计划</th>
+                            <th>位置描述</th>
+                            <th>本月读数</th>
+                            <th>上月读数</th>
+                            <th>本月用量</th>
+                            <th>备注</th>
+                            <th>核实记录</th>
+                        </tr>
+                        </thead>
+                        <tbody id="executeInput">
+                        <tr ng-class="{'1':'back_yellow','2':'back_red'}[item.abnormalState]"
+                            ng-repeat="item in currentWaters.object['meterReadingData']"
+                            ng-if="item['meterReadingDataId'] != null&&item['verificationRecord']=='2'">
+                           <!-- ng-class="{'this_info':'0','back_yellow this_info':'1','back_red this_info':'2'}[item.abnormalState]">{'this_info ':btnIndex==item}-->
+                            <td><input name="things2" type="checkbox" value={{item.meterReadingDataId}} /></td>
+                            <td>{{$index}}</td>
+                            <td>{{item.meterReadingPeople}}</td>
+                            <td>{{item.specifiedDate | date : 'yyyy-MM-dd'}}</td>
+                            <td>{{item.fullName}}</td>
+                            <td>{{item.reading}}</td>
+                            <td>{{item.lastMonthReading}}</td>
+                            <td>{{item.consumption}}</td>
+                            <td>{{item.note}}</td>
+                            <td ng-switch on="item.verificationRecord">
+                                <span ng-switch-when="0">待核实</span>
+                                <span ng-switch-when="1">已核实</span>
+                                <span ng-switch-when="2">待重抄</span>
+                                <span ng-switch-when="3">已重抄</span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="bill_paging">
+
+                        <ul class="pagination">
+                            <li ng-class="{true:'disabled'}[currentWaters.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-click="currentWaters.go(1)">首页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[currentWaters.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-show="currentWaters.hasPrevious()" ng-click="currentWaters.previous()">上一页</a>
+                            </li>
+                            <li ng-class="{true:'active'}[currentWaters.page.currentPage==i]" ng-repeat="i in currentWaters.pages">
+                                <a href="javascript:void(0)"  ng-click="currentWaters.go(i)">{{i}}</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[currentWaters.page.currentPage==currentWaters.page.totalPage]">
+                                <a href="javascript:void(0)" ng-show="currentWaters.hasNext()" ng-click="currentWaters.next()">下一页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[currentWaters.page.currentPage==currentWaters.page.totalPage]">
+                                <a href="javascript:void(0)" ng-click="currentWaters.go(currentWaters.page.totalPage)">尾页</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" ng-click="Verification()">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <span class="modal-title">修正读数</span>
+            </div>
+            <div class="modal-body">
+                <div id="changeReading1" style="padding-top: 10px;border-bottom: 1px solid #999;">
+                    <div class="row search-padding-10" >
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            <input name="changeReading" ng-model="changeReading" value="1" type="radio" ng-click="changeState()">
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">修改读数：</div>
+                        <div class="col-lg-4 col-md-2 col-sm-2 "><input type="text" ng-model="reading" class="form-control" ></div>
+                    </div>
+                </div>
+                <div id="changeReading2" style="padding-top: 10px;border-bottom: 1px solid #999;">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            <input name="changeReading" ng-model="changeReading" value="2" type="radio" ng-click="changeState()">
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">循环修正：</div>
+                        <div class="col-lg-4 col-md-2 col-sm-2 "><input type="text" ng-model="loopNum" class="form-control" ></div>
+                    </div>
+                </div>
+                <div id="changeReading3">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            <input name="changeReading" ng-model="changeReading" value="3" type="radio" ng-click="changeState()">
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">修正读数：</div>
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2">&nbsp;</div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">本月读数：</div>
+                        <div class="col-lg-1 col-md-1 col-sm-1 text-left">{{correct.reading}}</div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">上月读数：</div>
+                        <div class="col-lg-1 col-md-1 col-sm-1 text-left">{{correct.lastMonthReading}}</div>
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-4 col-md-2 col-sm-2 text-right">修正值：</div>
+                        <div class="col-lg-4 col-md-2 col-sm-2 text-right"><input type="text" class="form-control" ng-model="correct.correctionValue"></div>
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-4 col-md-2 col-sm-2 text-right">错误修正量：</div>
+                        <div class="col-lg-4 col-md-2 col-sm-2 text-right"><input type="text" class="form-control" ng-model="correct.correction" ></div>
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-4 col-md-2 col-sm-2 text-right">备注：</div>
+                        <div class="col-lg-4 col-md-2 col-sm-2 text-right"><textarea  class="form-control" ng-model="correct.reason" ></textarea></div>
+                    </div>
+                    <div class="row search-padding-10">
+                        <div id="remove">
+                            <div id="zyupload" class="zyupload"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="updateWaterRead()">确定</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

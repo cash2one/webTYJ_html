@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>物业管理</title></head>
+<body>
+<div class="padding">
+    <div class="row search-padding-10">
+        <div class="col-lg-1 col-md-2 col-sm-2">巡检名称:<span style="color: red">*</span></div>
+        <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control" ng-model="addInspectionPlan.inspectionPlanName"/></div>
+
+        <div class="col-lg-1 col-md-2 col-sm-2"></div>
+        <div class="col-lg-1 col-md-2 col-sm-2">状态:</div><!--状态(0失效1有效2启用)-->
+        <div class="col-lg-3 col-md-4 col-sm-4"><input class="form-control" placeholder="有效" readonly/></div>
+
+
+        <!--<div class="col-lg-1 col-md-2 col-sm-2">创建时间</div>
+        <div class="col-lg-3 col-md-4 col-sm-4">
+            &lt;!&ndash;<input class="form-control" type="datetime-local" ng-model="addInspectionPlan.createTime"/>&ndash;&gt;
+            <input type="text" onclick="WdatePicker({readOnly:true})" class="Wdate form-control" name="input" onChange=""  ng-model="addInspectionPlan.createTime"/>
+        </div>-->
+    </div>
+    <div class="row search-padding-10">
+        <!--<div class="col-lg-1 col-md-2 col-sm-2">描述</div>
+        <div class="col-lg-11 col-md-10 col-sm-10">
+            <textarea class="form-control" ng-model="addInspectionPlan.remarks">
+
+            </textarea></div>-->
+        <div class="search-padding-10">
+            描述：<span style="color: red">*</span>
+        </div>
+
+        <div class="search-padding-10">
+            <textarea class="form-control" style="height:100px;resize:none;"  placeholder="请输入内容" ng-model="addInspectionPlan.remarks"></textarea>
+        </div>
+
+    </div>
+    <div class="search-padding-10">
+        <button type="button" class="btn btn-default btn-primary " ng-click="addItem()">
+            <span class="glyphicon glyphicon-plus btn_icon"></span>
+            新建
+        </button>
+    </div>
+    <div class="search-padding-10">
+        <table>
+            <thead>
+            <tr>
+                <th>序号</th>
+                <th>检查项名称<span style="color: red">*</span></th>
+                <th>单位<span style="color: red">*</span></th>
+                <th>数据类型<span style="color: red">*</span></th>
+                <th>默认值<span style="color: red">*</span></th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr  ng-repeat="item in currentObject.object">
+                <td>{{$index+1}}</td>
+                <td>{{item.checkItemName}}</td>
+                <td>{{item.checkItemUnit}}</td>
+                <td>{{item.inputType}}</td>
+                <td>{{item.checkItemReference}}</td>
+                <td>
+                    <button type="button" ng-click="updateItem($index)" class="btn btn-default btn-primary ">修改</button>
+                    <button type="button" ng-click="deleteItem($index)" class="btn btn-default ">删除</button>
+                </td>
+            </tr>
+            <tr ng-show="editData">
+                <td>{{$index+1}}</td>
+                <td><input class="form-control" placeholder="检测项名称" ng-model="currentData.checkItemName"/></td>
+                <td><input class="form-control"  placeholder="单位" ng-model="currentData.checkItemUnit"/></td>
+                <td>
+                    <select class="form-control" ng-model="currentData.inputType">
+                        <option value="">--请选择--</option>
+                        <option value="选择输入">选择输入</option>
+                        <option value="填写输入">填写输入</option>
+                    </select>
+                </td>
+                <td><input class="form-control" ng-model="currentData.checkItemReference"/></td>
+                <td>
+                    <button type="button" ng-click="addSave()" class="btn btn-default btn-primary ">保存</button>
+                    <button type="button" ng-click="addCancel()" class="btn btn-default ">取消</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="text_center">
+        <button type="button" class="btn btn-default btn-primary" ng-click="cancle()">
+            取消
+        </button>
+        <button type="button" class="btn btn-default btn-primary " ng-click="saveAll()">
+            提交
+        </button>
+    </div>
+</div>
+</body>
+</html>

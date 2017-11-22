@@ -1,0 +1,436 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 账单js
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../app');
+
+    app.controller('programsCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        //url
+        var url = $rootScope.url;
+        //项目
+        var project = sessionStorage.getItem("_project");
+        $scope.project = JSON.parse(project);
+        //项目ID
+        var projectId =  $scope.project.projectId;
+
+        var user = {employId : ''};
+        var userCook = JSON.parse(sessionStorage.getItem("USER_LOGIN"));   //从cook中获取用户信息
+        $scope.user = userCook?userCook:user;                      //三目运算获取用户信息
+        var companyId= $scope.user.companyId; //获取登录人员的公司Id
+
+        $scope.doClick(1);
+        $scope.show1 = true;
+        $scope.show2 = false;
+        $scope.show3 = false;
+        $scope.chargeItemBilling={chargeItemBillingId:'',projectBillingId:'',buildingBillingId:''};
+
+        /**
+         * maogaofei 20160711
+         * 根据条件查询项目计费列表
+         */
+        $scope.projectBilling={page:{}};
+        $scope.getProjectBillingList = function(){
+            $scope.projectBilling={page:{}};
+            var fetchFunction=function(page,callback){
+                $scope.projectBilling.page=page;
+                $scope.projectBilling.projectId=projectId;
+                $http.post(
+                    url + '/ProjectBilling/listPageProjectBilling',{ProjectBilling:$scope.projectBilling}).success(callback);
+            };
+            $scope.searchPaginator=app.get('Paginator').list(fetchFunction,6);
+            $scope.projectBillingMap=[];
+            $scope.schemeMapp=[];
+        }
+        $scope.getProjectBillingList();
+
+        /**
+         * maogaofei 20160712
+         * 得到选中的项目计费记录
+         */
+        $scope.projectBillingMap=[];
+        $scope.getProjectBillCheck=function(item){
+            var chk = document.getElementById(item.projectBillingId);
+            if(chk.checked == true){
+                $scope.projectBillingMap.push(item);
+                $(chk).parent().parent().css('background','#f6f8fa')
+            }else{
+                for(var i=0;i<$scope.projectBillingMap.length;i++){
+                    if($scope.projectBillingMap[i].projectBillingId == item.projectBillingId){
+                        $scope.projectBillingMap.splice(i,1);
+                        $(chk).parent().parent().css('background','#fff')
+                    }
+                }
+            }
+        };
+
+        /**
+         * maogaofei 20160711
+         * 获取当前可用的手动计费方案列表
+         */
+        $scope.showScheme=function(){
+            $("#new2").modal({backdrop: 'static', keyboard: false});
+            $http.post(url+'/Scheme/getManualSchemeList').success(function(data){
+                $scope.schemeList = data.Scheme;
+            });
+        };
+        /**
+         * maogaofei 20160711
+         * 计费方案的选择
+         */
+        $scope.schemeMapp=[];
+        $scope.getSchemeCheck=function(item){
+            var che = document.getElementById(item.schemeId);
+            if(che.checked == true){
+                $scope.schemeMapp.push(item);
+            }else{
+                for(var i = 0; i < $scope.schemeMapp.length; i ++){
+                    if($scope.schemeMapp[i].schemeId== item.schemeId){
+                        $scope.schemeMapp.splice(i,1);
+                    }
+                }
+            }
+        };
+
+        /**
+         * maogaofei 20160711
+         * 确定手动计费
+         */
+        $scope.manualBilling=function(){
+            if($scope.schemeMapp.length>0){
+                $scope.arr=[];
+                for(var i = 0; i < $scope.schemeMapp.length; i ++){
+                    $scope.arr.push($scope.schemeMapp[i].schemeId);
+                }
+
+                $http.get(url + "/ChargeTypeDetailsBuildingBilling/manualBilling/"+$scope.arr.join(",")).success(function(data){
+                    $scope.getProjectBillingList();
+                    $scope.arr = [];
+                    layer.alert("操作成功!",{icon:1,time:1000});
+                }).error(function(){
+                    layer.alert("操作失败!",{icon:1,time:1000});
+                });
+            }else{
+                layer.alert('请先选择计费方案！',{icon : 0});
+            }
+
+        };
+
+        /**
+         * maogaofei 20160712
+         * 根据选中的项目计费记录重新计费
+         */
+        $scope.reatartAccounting=function(){
+            if($scope.projectBillingMap.length>0){
+                $scope.projectBillingIds=[];
+                for(var i = 0; i < $scope.projectBillingMap.length; i ++){
+                    $scope.projectBillingIds.push($scope.projectBillingMap[i].schemeId);
+                }
+                $http.get(url + "/ChargeTypeDetailsBuildingBilling/reBilling/"+$scope.projectBillingIds.join(",")).success(function(data){
+                    $scope.getProjectBillingList();
+                    $scope.projectBillingIds = [];
+                    layer.alert("操作成功!",{icon:1,time:1000});
+                }).error(function(){
+                    layer.alert("操作失败!",{icon:1,time:1000});
+                });
+            }else{
+                layer.alert('请先选择项目计费记录！',{icon : 0});
+            }
+        };
+
+        //陈雪修改之后的代码，确认计费
+        $scope.verifyAccounting=function(){
+            if($scope.billing.data.length==0){
+                layer.alert('请选择确认计费的项目！',{icon:0});
+                return;
+            }
+            //获取选中项目的id数组
+            var ids=[];
+            for(var i=0;i<$scope.billing.data.length;i++){
+                if($scope.billing.data[i].isPosting==0){
+                    layer.msg('不能勾选已经确定计费的数据！',{icon:2,time:2000});
+                    return;
+                }
+                ids+=$scope.billing.data[i].projectBillingId+'split';
+            }
+            layer.confirm('是否要确定计费？',{btn:['是','否']}, function () {
+                $http.post(url+'/Bill/AddBillRes',ids).success(function(){
+                    layer.alert('确定计费成功！',{icon : 1});
+                    //$scope.update();
+                    $scope.billing.data=[];
+                    $scope.searchPaginator._load();
+                }).error(function(data, status, headers, config){
+                    layer.alert('确定计费失败！',{icon : 2});
+                }) ;
+            });
+        };
+
+        $scope.accounting=function(){
+            $http.post(url+'/ChargeItemBilling/selectIds',{ChargeItemBilling:$scope.chargeItemBilling}).success(function(data)
+            {
+                $scope.sDta=data.ChargeItemBilling;
+                if($scope.sDta!=null){
+                    $scope.updateData1();
+                    $scope.updateData2();
+                    $scope.updateData3();
+                }
+            }).error(function(data, status, headers, config){
+            }) ;
+        };
+
+        $scope.updateData1=function(){
+            $http.put(url+'/ProjectBilling/updateProjectBilling',{ProjectBilling:$scope.sDta.chargeItemBillingId}).success(function(){
+                layer.msg('修改成功！',{icon : 1, time : 2000});
+                $http.post(url+'/Billing/insertBilling',{Billing:$scope.billing}).success(function(){
+                    layer.alert('添加成功！',{icon : 1});
+                }).error(function(data, status, headers, config){
+                    layer.alert('添加失败！',{icon : 2});
+                });
+            }).error(function(data, status, headers, config){
+                layer.alert('修改失败！',{icon : 2});
+            })
+        };
+
+        /**
+         * maogaofei 20160711
+         * 根据条件查询收费类型项目计费列表
+         */
+        $scope.getChargeTypeProjectBillings = function(id){
+            $scope.show1 = false;
+            $scope.show2 = true;
+            $scope.show3 = false;
+            $scope.chargeTypeProjectBilling={page:{},projectBillingId:''};
+            var fetchFunction=function(page,callback) {
+                $scope.chargeTypeProjectBilling.projectBillingId = id;
+                $scope.chargeTypeProjectBilling.page = page;
+                $http.post(
+                    url + '/ChargeTypeProjectBilling/listPageChargeTypeProjectBilling', {ChargeTypeProjectBilling: $scope.chargeTypeProjectBilling}).success(callback);
+            }
+            $scope.searchPaginator1=app.get('Paginator').list(fetchFunction,6);
+        };
+
+        //得到选中的 计费项目
+        $scope.getData1=function(item){
+            var chk = document.getElementById(item.chargeItemBillingId);
+            if(chk.checked == true){
+                $scope.chargeItems.push(item);
+                $(chk).parent().parent().css('background','#f6f8fa')
+            }else{
+                for(var i=0;i<$scope.chargeItems.length;i++){
+                    if($scope.chargeItems[i].chargeItemBillingId == item.chargeItemBillingId){
+                        $scope.chargeItems.splice(i,1);
+                        $(chk).parent().parent().css('background','#fff')
+                    }
+                }
+            }
+        };
+
+        //确定计费
+        $scope.verifyAccounting1=function(){
+            /*if( $scope.bill.datas.length>0){
+                for(var i=0;i<$scope.bill.datas.length;i++){
+                    $scope.bills={electronicBilling:{billingSum:''}};//应收款
+                    $scope.bills.projectName=$scope.bill.datas[i].projectName;//项目名称
+                    $scope.bills.chargeItemName=$scope.bill.datas[i].chargeItemName;//收费项目名称
+                    $scope.bills.chargeItemId=$scope.bill.datas[i].chargeItemId;//收费项目id
+                    $scope.bills.projectId=$scope.bill.datas[i].projectId;//    项目id
+                    $scope.bills.billingSum=$scope.bill.datas[i].sum;//账单金额
+                    $scope.bills.electronicBilling.billingSum=$scope.bill.datas[i].sum;//总金额
+
+                    $http.post(url+'/Bill/AddBillRes',{Bill:$scope.bills}).success(function(){
+                        layer.alert('添加成功！',{icon : 1});
+                    }).error(function(data, status, headers, config){
+                        layer.alert('添加失败！',{icon : 2});
+                    }) ;
+
+                }
+            }else{
+                layer.alert('请选择确认计费的项目！',{icon : 0});
+            }*/
+            //获取选中项目的id数组
+            if($scope.chargeItems.length==0){
+                layer.msg('请选择确认计费的项目！',{icon:2,time:2000});
+                return;
+            }
+            var ids=[];
+            for(var i=0;i<$scope.chargeItems.length;i++){
+                if($scope.chargeItems[i].billingType==0){
+                    layer.msg('不能确定计费已经确定计费过的数据！',{icon:2,time:2000});
+                    return;
+                }
+                ids+=$scope.chargeItems[i].chargeItemBillingId+'split';
+            }
+            layer.confirm('是否要确定计费？',{btn:['是','否']}, function () {
+                $http.post(url + '/Bill/AddBillForChargeItemBilling', ids).success(function () {
+                    layer.alert('确定计费成功！', {icon: 1});
+                    //$scope.update();
+                    $scope.chargeItems = [];
+                    $scope.searchPaginator1._load();
+                    $scope.searchPaginator._load();
+                }).error(function (data, status, headers, config) {
+                    layer.alert('确定计费失败！', {icon: 2});
+                });
+            });
+        }
+
+        //重新计费
+        $scope.sDta={};
+        $scope.reatartAccounting1=function(){
+            if(  $scope.show2 = true){
+                $("#new1").modal({backdrop: 'static', keyboard: false});
+            }
+            $scope.accounting=function(){
+                $http.post(url+'/ChargeItemBilling/selectIds',{ChargeItemBilling:$scope.chargeItemBilling}).success(function(data)
+                {
+                    $scope.sDta=data.ChargeItemBilling;
+                    if($scope.sDta!=null){
+                        $scope.updateData1();
+                        $scope.updateData2();
+                        $scope.updateData3();
+                    }
+                }).error(function(data, status, headers, config){
+                }) ;
+            };
+
+        };
+
+        /**
+         * maogaofei 20160711
+         * 返回项目计费列表
+         */
+        $scope.back=function(){
+            $scope.show1 = true;
+            $scope.show2 = false;
+            $scope.show3 = false;
+            $scope.getProjectBillingList();
+        };
+        /**
+         * maogaofei 20160712
+         * 获取收费类型建筑计费列表
+         */
+        $scope.getChargeTypeBuildingBillings = function(id){
+            $scope.show1 = false;
+            $scope.show2 = false;
+            $scope.show3 = true;
+
+            $scope.chargeTypeBuildingBilling={page:{},chargeTypeProjectBillingId:'',fullName:''};
+            //**********根据项目计费id查询详情 **************/
+            var fetchFunction=function(page,callback) {
+                $scope.chargeTypeBuildingBilling.chargeTypeProjectBillingId = id;
+                $scope.chargeTypeBuildingBilling.page = page;
+                $http.post(
+                    url + '/ChargeTypeBuildingBilling/listPageChargeTypeBuildingBilling', {ChargeTypeBuildingBilling: $scope.chargeTypeBuildingBilling}).success(callback);
+            };
+            $scope.searchPaginator2=app.get('Paginator').list(fetchFunction,6);
+        };
+
+        //得到确认计费的对象
+        $scope.getData2=function(item){
+            var chk = document.getElementById(item.buildingBillingId);
+            if(chk.checked == true){
+                $scope.Buildings.push(item);
+                $(chk).parent().parent().css('background','#f6f8fa')
+            }else{
+                for(var i=0;i<$scope.Buildings.length;i++){
+                    if($scope.Buildings[i].buildingBillingId == item.buildingBillingId){
+                        $scope.Buildings.splice(i,1);
+                        $(chk).parent().parent().css('background','#fff')
+                    }
+                }
+            }
+        };
+        //确定计费
+        $scope.verifyAccounting2=function(){
+            /*if( $scope.bill2.datas.length>0){
+                for(var i=0;i<$scope.bill2.datas.length;i++){
+                    $scope.billz={electronicBilling:{billingSum:''}};//应收款
+                    $scope.billz.buildingId=$scope.bill2.datas[i].buildingId;//项目名称
+                    $scope.billz.chargeItemName=$scope.bill2.datas[i].chargeItemName;//收费项目名称
+                    $scope.billz.chargeItemId=$scope.bill2.datas[i].chargeItemId;//收费项目id
+                    $scope.billz.buildingBillingId=$scope.bill2.datas[i].buildingBillingId;//    项目id
+                    $scope.billz.billingSum=$scope.bill2.datas[i].billingBalance;//账单金额
+                    $scope.billz.fullName=$scope.bill2.datas[i].fullName;//房屋全名
+                    $scope.billz.electronicBilling.billingSum=$scope.bill2.datas[i].billingBalance;//总金额
+                    $scope.billz.electronicBilling.buildingId=$scope.bill2.datas[i].buildingId;//总金额
+
+                    $http.post(url+'/Bill/AddBillRes',{Bill:$scope.billz}).success(function(){
+                        layer.alert('添加成功！',{icon : 1});
+                    }).error(function(data, status, headers, config){
+                        layer.alert('添加失败！',{icon : 2});
+                    }) ;
+
+                }
+            }else{
+                layer.alert('请选择确认计费的项目！',{icon : 0});
+            }*/
+            //获取选中项目的id数组
+            if($scope.Buildings.length==0){
+                layer.msg('请选择确认计费的项目！',{icon:2,time:2000});
+                return;
+            }
+            var ids=[];
+            for(var i=0;i<$scope.Buildings.length;i++){
+                if($scope.Buildings[i].billingState==0){
+                    layer.msg('不能勾选已经确定计费的数据！',{icon:2,time:2000});
+                    return;
+                }
+                ids+=$scope.Buildings[i].buildingBillingId+'split';
+            }
+            layer.confirm('是否要确定计费？',{btn:['是','否']}, function () {
+                $http.post(url + '/Bill/AddBillForBuildingBilling', ids).success(function () {
+                    layer.alert('确定计费成功！', {icon: 1});
+                    //$scope.update();
+                    $scope.Buildings = [];
+                    $scope.searchPaginator2._load();
+                    $scope.searchPaginator1._load();
+                    $scope.searchPaginator._load();
+                }).error(function (data, status, headers, config) {
+                    layer.alert('确定计费失败！', {icon: 2});
+                });
+            });
+        };
+
+        //重新计费
+        $scope.reatartAccounting2=function(){};
+
+        //返回上一个页面
+        $scope.back1=function(){
+            $scope.show1 = false;
+            $scope.show2 = true;
+            $scope.show3 = false;
+
+        };
+
+        $scope.updateData3=function() {
+            $http.put(url + '/ChargeItemBilling/updateChargeItemBilling', {ChargeItemBilling: $scope.sDta.chargeItemBillingId}).success(function () {
+                layer.msg('修改成功！',{icon : 1, time : 2000});
+                $http.post(url+'/Billing/insert',{Billing:$scope.chooseData2}).success(function(){
+                    layer.alert('添加成功！',{icon : 1});
+                }).error(function(data, status, headers, config){
+                    alert('添加失败！',{icon : 2});
+                });
+            }).error(function (data, status, headers, config) {
+                layer.alert('修改失败！',{icon : 2});
+            })
+        };
+
+        /**
+         * maogaofei 20160711
+         * 查看收费类型详情建筑计费列表
+         */
+        $scope.chargeTypeDetailsBuildingBillingList={};
+        $scope.ctdBuildingBill=function(id){
+            $("#detail1").modal({backdrop: 'static', keyboard: false});
+            $scope.newChargeTypeDetailsBuildingBilling = {};
+            $scope.newChargeTypeDetailsBuildingBilling.chargeTypeBuildingBillingId = id;
+            $http.post(url+'/ChargeTypeDetailsBuildingBilling/listAllChargeTypeDetailsBuildingBilling',
+                {ChargeTypeDetailsBuildingBilling:$scope.newChargeTypeDetailsBuildingBilling}).success(function(data){
+                $scope.chargeTypeDetailsBuildingBillingList=data.ChargeTypeDetailsBuildingBilling;
+            });
+        };
+    }]);
+});

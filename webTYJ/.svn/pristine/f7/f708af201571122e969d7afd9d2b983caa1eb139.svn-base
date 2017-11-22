@@ -1,0 +1,176 @@
+<!--
+    创建时间：2015/5/19
+    pageName:放行条查询
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>放行条查询</title>
+</head>
+<body>
+<div id="content-first">
+    <div id="tab">
+        <a lang="no">全部放行条</a>
+    </div>
+    <div class="sel">
+            <div class="row" >
+                <div class="col-lg-1 col-md-2 col-sm-2">
+                    筛选：
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2">
+                    <label class="radio inline">
+                        <input value="1" type="radio" ng-model="sesrch.custType" class="checkbox">
+                        <span>业户</span>
+                    </label>
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2">
+                    <label class="radio inline">
+                        <input type="radio" value="2" ng-model="sesrch.custType" class="checkbox">
+                        <span>单位</span>
+                    </label>
+                </div>
+                <div class="col-lg-9 col-md-12 col-sm-12 text-right">
+                    <button type="button" class="btn btn-default btn-primary" ng-click="change()"><span class="glyphicon glyphicon-search btn_icon"></span>查询 </button>
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2">
+                    客户姓名
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4">
+                    <input type="text" class="form-control"  ng-model='sesrch.staffName'>
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2">
+                    申请身份证号码
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4">
+                    <input type="text" class="form-control" ng-model="sesrch.idNum">
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2">
+                    出运人身份证号
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4">
+                    <input type="text" class="form-control ">
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2">
+                    编号
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4">
+                    <input type="text" class="form-control" ng-model="sesrch.carNum">
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2">
+                    申请单位
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4">
+                    <input type="text" class="form-control" ng-model="sesrch.carportNum">
+                </div>
+            </div>
+    </div>
+
+    <!--记录-->
+    <div class="row padding">
+        <!--<div class="sel1">-->
+            <!--<button type="button" class="btn btn-default btn-primary" ui-sref="index.propertyService.staffHome.vehicleManagement.vehicleManagementAdd">-->
+                <!--新增-->
+            <!--</button>-->
+        <!--</div>-->
+        <div class="col-lg-12">
+            <table>
+                <thead>
+                <th>出口名称</th>
+                <th>申请人</th>
+                <th>有效期</th>
+                <th>放行时间</th>
+                <th>编号</th>
+                <th>需放行时间</th>
+                <th>出运人的电话</th>
+                <th>出运人签名</th>
+                </thead>
+                <tbody>
+                <tr  ng-repeat="item in itemsone" ng-show="item.id!=null" data-toggle="modal" data-target="#modifyPet" ng-click="show(item)">
+                    <td>{{item.userExit}}</td>
+                    <td>{{item.person.name}}</td>
+                    <td>{{item.acceptTime|date:'yyyy-MM-dd'}}</td>
+                    <td>{{item.releaseTime|date:'yyyy-MM-dd'}}</td>
+                    <td>{{item.id}}</td>
+                    <td>{{item.releaseTime|date:'yyyy-MM-dd'}}</td>
+                    <td>{{item.personCust.phoneNum}}</td>
+                    <td>{{item.personCust.name}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!--详细信息模态框-->
+    <div class="modal fade" id="modifyPet" role="dialog" aria-label="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span>车辆详情</span>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <a ui-sref="index.propertyService.staffHome.vehicleManagement.vehicleManagementAdd"></a>
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="padding15">
+                    <div class="sel1">
+                        <div class="row search-padding-10">
+                            <div class="col-lg-3 col-md-6 col-sm-6 text-right">
+                                编号：
+                            </div>
+                            <div class="col-lg-9 col-md-6 col-sm-6">
+                                &nbsp;{{rele.id}}
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-6 text-right">
+                                业户：
+                            </div>
+                            <div class="col-lg-9 col-md-6 col-sm-6">
+                                &nbsp; {{rele.person.name}}
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-6 text-right">
+                                申请人：
+                            </div>
+                            <div class="col-lg-9 col-md-6 col-sm-6">
+                                &nbsp;{{rele.person.name}}
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-6 text-right">
+                                申请时间：
+                            </div>
+                            <div class="col-lg-9 col-md-6 col-sm-6">
+                                &nbsp;{{rele.applyTime|date:'yyyy-MM-dd'}}
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-6 text-right">
+                                有效期：
+                            </div>
+                            <div class="col-lg-9 col-md-6 col-sm-6">
+                                &nbsp;{{rele.acceptTime|date:'yyyy-MM-dd'}}
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-6 text-right">
+                                放行时间：
+                            </div>
+                            <div class="col-lg-9 col-md-6 col-sm-6">
+                                &nbsp; {{rele.releaseTime|date:'yyyy-MM-dd'}}
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-6 text-right">
+                                身份证号码：
+                            </div>
+                            <div class="col-lg-9 col-md-6 col-sm-6">
+                                &nbsp;{{rele.personCust.cardNum}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close">取消</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" aria-label="Close">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

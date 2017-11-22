@@ -1,0 +1,499 @@
+<!--
+    页面名称：新增企业放行条
+    负责人：NM
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>新增企业放行条</title>
+</head>
+<style>
+    .spanInfo span{
+        color:red;
+        display: block;
+        width: 150px;
+        float: left;
+        height: 25px;
+        line-height: 25px;
+    }
+    #css_form input.ng-invalid.ng-dirty {
+        background-color: #FFC0CB;
+    }
+    #css_form input.ng-valid.ng-dirty {
+        background-color: #78FA89;
+    }
+
+</style>
+<body>
+
+<div class="sel1">
+    <div class="row search-padding-10">
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            单位名称
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-4">
+            <input class="form-control" name="enterpriseName" required  ng-model="company.enterpriseName">
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            单位地址
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-4">
+            <input class="form-control" name="businessAddress" required  ng-model="company.businessAddress">
+        </div>
+        <div class="col-lg-4 col-md-2 col-sm-2">
+            <button type="button" class="btn btn-default btn-primary tab-btn"  data-toggle="modal" data-target="#company" ng-click="clearCompany()">
+                <span class="glyphicon glyphicon-plus btn_icon"></span>
+                添加
+            </button>
+        </div>
+    </div>
+    <div class="row search-padding-10">
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            申请人姓名
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-4">
+            <input class="form-control" name="name" required  ng-model="person.name">
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            身份证号
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-4">
+            <input class="form-control" name="cardNum" required  ng-model="person.cardNum">
+        </div>
+    </div>
+    <div class="row search-padding-10">
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            联系电话
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-4">
+            <input class="form-control" name="jiajiaNum" required  ng-model="person.jiajiaNum">
+        </div>
+        <div class="col-lg-8 col-md-4 col-sm-4">
+            <button type="button" class="btn btn-default btn-primary tab-btn"  data-toggle="modal" data-target="#person" ng-click="clearPerson()">
+                <span class="glyphicon glyphicon-plus btn_icon"></span>
+                添加
+            </button>
+        </div>
+    </div>
+    <div class="row search-padding-10">
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            申请时间
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-4">
+            <input class="form-control" name="applyTime" required  ng-model="release.applyTime">
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            放行时间
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-4">
+            <input class="form-control" name="releaseTime" required  ng-model="release.releaseTime">
+        </div>
+    </div>
+    <div class="row search-padding-10">
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            受理人
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-4">
+            <input class="form-control" name="name" required  ng-model="release.name">
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            运出人
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-4">
+            <input class="form-control" name="cardNum" required  ng-model="release.name">
+        </div>
+    </div>
+    <div class="row search-padding-10">
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            运出人身份证
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-4">
+            <input class="form-control" name="name" required  ng-model="release.cid">
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            运出人电话
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-4">
+            <input class="form-control" name="cardNum" required  ng-model="release.nums">
+        </div>
+    </div>
+
+        <!--新增放行条-->
+
+            <!--添加信息-->
+    <div class="row padding">
+        <div class="col-lg-12">
+            <!--按钮-->
+            <div class="search-padding-10">
+                <button type="button" class="btn btn-default btn-primary" ng-click="adds();" >
+                    <span class="glyphicon glyphicon-plus btn_icon"></span>包含物品
+                </button>
+                <button type="button" class="btn btn-default btn-primary" ng-click="add();">
+                    <span class="glyphicon glyphicon-edit btn_icon"></span>不包含物品
+                </button>
+                <button type="button" class="btn btn-default btn-primary" ng-click="addRow();">
+                    <span class="glyphicon glyphicon-plus btn_icon"></span>添加行
+                </button>
+            </div>
+
+            <!--添加物品信息-->
+            <table>
+                <thead>
+                <tr >
+                    <th>序号</th>
+                    <th>物品名称</th>
+                    <th>数量</th>
+                    <th>备注</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="item in items track by $index">
+                    <td>{{$index+1}}</td>
+                    <td><input type="text" class="input-sm form-control" ng-model="item.name"/></td>
+                    <td><input type="text" class="input-sm form-control" ng-model="item.num"/></td>
+                    <td><input type="text" class="input-sm form-control" ng_model="item.Remarks"/></td>
+                </tr>
+                </tbody>
+            </table>
+            <!--添加物品信息 end-->
+        </div>
+            <!--添加信息 end-->
+        <div class="text-center">
+            <button type="button" class="btn btn-default btn-primary tab-btn" >
+                取消
+            </button>
+            <button type="button" class="btn btn-default btn-primary tab-btn"  data-toggle="modal" data-target="#myModal">
+                打印
+            </button>
+            <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="saveRelease();">
+                提交
+            </button>
+        </div>
+
+
+        <!--新增放行条 end-->
+    </div>
+    <!--模态框开始-->
+    <div class="modal fade" id="myModal" role="dialog" aria-label="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span>物品放行条</span>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="padding" >
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                单据号
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                {{release.id}}
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                公司名称
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                {{company.enterpriseName}}
+                            </div>
+                            </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                公司地址
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                {{company.businessAddress}}
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                申请人
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                {{person.name}}
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                运出人
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                {{release.names}}
+                            </div>
+                            <div class="col-lg-3 col-md-2 col-sm-2">
+                                运出人身份证
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-sm-4">
+                                {{release.cid}}
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                运出人电话
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                {{release.nums}}
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                申请时间
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                {{release.applyTime|date:'yyyy-MM-dd'}}
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                放行时间
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                {{release.releaseTime|date:'yyyy-MM-dd'}}
+                            </div>
+
+
+                        </div>
+
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>序号</th>
+                                <th>物品名称</th>
+                                <th>数量</th>
+                                <th>备注</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="baos in bao track by $index">
+                                <td>{{$index+1}}</td>
+                                <td>{{baos.name}}</td>
+                                <td>{{baos.num}}</td>
+                                <td>{{baos.Remarks}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="bill_paging">
+                            <ul class="pagination">
+                                <li><a style="cursor:pointer;" ng-click="searchPaginator.go(1)">首页</a></li>
+                                <li><a style="cursor:pointer;" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a></li>
+                                <li><a style="cursor:pointer;" ng-repeat="i in searchPaginator.pages"  ng-click="searchPaginator.go(i)">{{i}}</a></li>
+                                <li><a style="cursor:pointer;" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a></li>
+                                <li><a style="cursor:pointer;" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a></li>
+                            </ul>
+                        </div>
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>序号</th>
+                                <th>不包含物品名称</th>
+                                <th>数量</th>
+                                <th>备注</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="bubaos in bubao track by $index">
+                                <td>{{$index+1}}</td>
+                                <td>{{bubaos.name}}</td>
+                                <td>{{bubaos.num}}</td>
+                                <td>{{bubaos.Remarks}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="bill_paging">
+                            <ul class="pagination">
+                                <li><a style="cursor:pointer;" ng-click="searchPaginator.go(1)">首页</a></li>
+                                <li><a style="cursor:pointer;" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a></li>
+                                <li><a style="cursor:pointer;" ng-repeat="i in searchPaginator.pages"  ng-click="searchPaginator.go(i)">{{i}}</a></li>
+                                <li><a style="cursor:pointer;" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a></li>
+                                <li><a style="cursor:pointer;" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default"  data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn bg-primary" data-dismiss="modal" ng-click="change()">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--模态框结束-->
+    <!--企业搜索模态框开始-->
+    <div class="modal fade" id="company" tabindex="-1" role="dialog"
+         aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" >
+            <div class="modal-content" >
+                <div class="modal-header">
+                    <button type="button" class="close"
+                            data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <span>企业信息</span>
+                </div>
+                <div class="modal-body"  >
+                    <div class="padding">
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                单位名称
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input type="text" class="form-control " ng-model="company1.enterpriseName">
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                注册地址
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input type="text" class="form-control " ng-model="company1.businessAddress">
+                            </div>
+                            </div>
+                        <div class="row search-padding-10">
+
+                            <div class="col-lg-12 col-md-4 col-sm-4 text-right">
+                                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="selectCompanyBycustId();">
+                                    <span class="glyphicon glyphicon-search btn_icon"></span>
+                                    查询
+                                </button>
+                            </div>
+                            </div>
+
+                            <table class="table_lists" ng-repeat="items2 in company2" ng-show="items2.enterpriseId!=null">
+                                <tbody>
+                                <tr>
+                                    <td width="10%" rowspan="2"><img src="images/staffHome/u116.jpg" ng-click="getCompanyBycustId(items2)" width="55" height="58"></td>
+                                    <td width="20%">单位名称</td>
+                                    <td width="20%">{{items2.enterpriseName}}</td>
+                                    <td width="10%">单位地址</td>
+                                    <td width="20%">{{items2.businessAddress}}</td>
+                                    <td width="10%"></td>
+                                    <td width="10%"></td>
+                                </tr>
+                                <tr>
+                                    <td width="20%">单位电话</td>
+                                    <td width="20%">{{items2.phone}}</td>
+                                    <td width="20%"></td>
+                                    <td width="20%"></td>
+                                    <td width="10%"></td>
+                                    <td width="10%"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <div class="bill_paging">
+                                <ul class="pagination">
+                                    <li><a>首页</a></li>
+                                    <li><a>上一页</a></li>
+                                    <li><a>1</a></li>
+                                    <li><a>2</a></li>
+                                    <li><a>3</a></li>
+                                    <li><a>4</a></li>
+                                    <li><a>5</a></li>
+                                    <li><a>下一页</a></li>
+                                    <li><a>尾页</a></li>
+                                </ul>
+                            </div>
+
+                    </div>
+
+
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default"  data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn bg-primary" data-dismiss="modal" ng-click="change()">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--企业搜索模态框结束-->
+    <!--人员搜索模态框开始-->
+    <div class="modal fade" id="person" tabindex="-1" role="dialog"
+         aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" >
+            <div class="modal-content" >
+                <div class="modal-header">
+                    <button type="button" class="close"
+                            data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <span>放行人信息</span>
+                </div>
+                <div class="modal-body" >
+                    <div class="padding">
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                姓名
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input type="text" class="form-control "  ng-model="person1.staffName">
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                客户编号
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input type="text" class="form-control " ng-model="person1.custCode">
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                身份证号
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input type="text" class="form-control "  ng-model="person1.cardNum">
+                            </div>
+                            <div class="col-lg-6 col-md-4 col-sm-4 text-right" >
+                                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="selectPersonBycustId();">
+                                    <span class="glyphicon glyphicon-search btn_icon"></span>
+                                    查询
+                                </button>
+                            </div>
+                        </div>
+
+                            <table class="table_lists"  ng-repeat="items2 in person2" ng-show="items2.custId!=null">
+                                <tbody>
+                                <tr>
+                                    <td width="10%" rowspan="2"><img src="images/project/user/user_3.png" ng-click="getPersonBycustId(items2)" width="55" height="58"></td>
+                                    <td width="20%">客户姓名</td>
+                                    <td width="20%">{{items2.name}}</td>
+                                    <td width="10%">性别</td>
+                                    <td width="20%">{{items2.sex}}</td>
+                                    <td width="10%"></td>
+                                    <td width="10%"></td>
+                                </tr>
+                                <tr>
+                                    <td width="20%">家家号</td>
+                                    <td width="20%">{{items2.jiajiaNume}}</td>
+                                    <td width="20%">身份证</td>
+                                    <td width="20%">{{items2.cardNum}}</td>
+                                    <td width="10%"></td>
+                                    <td width="10%"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <div class="bill_paging">
+                                <ul class="pagination">
+                                    <li><a>首页</a></li>
+                                    <li><a>上一页</a></li>
+                                    <li><a>1</a></li>
+                                    <li><a>2</a></li>
+                                    <li><a>3</a></li>
+                                    <li><a>4</a></li>
+                                    <li><a>5</a></li>
+                                    <li><a>下一页</a></li>
+                                    <li><a>尾页</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default"  data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn bg-primary" data-dismiss="modal" ng-click="change()">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--人员搜索模态框结束-->
+</div>
+
+</body>
+</html>

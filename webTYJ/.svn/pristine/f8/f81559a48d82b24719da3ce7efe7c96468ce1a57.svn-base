@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div class="sel">
+    <div class="row">
+        <div class="col-lg-8 col-md-12 col-sm-12">
+            <a ng-click="openFaq()">
+                <button type="button" class="btn btn-default btn-primary tab-btn">
+                    <span class="glyphicon glyphicon-plus btn_icon"></span>
+                    新建
+                </button>
+            </a>
+            <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="getAllId()">
+                <span class="glyphicon glyphicon-check btn_icon"></span>
+                全选
+            </button>
+            <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="loseFaqs()">
+                <span class="glyphicon glyphicon-ban-circle btn_icon"></span>
+                失效
+            </button>
+            <button type="button" class="btn btn-default btn-primary" ng-click="updateFaqs()">
+                <span class="glyphicon glyphicon-edit btn_icon"></span>
+                修改
+            </button>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2">
+
+        </div>
+        <div class="col-lg-2 col-md-4 col-sm-4">
+            <input class="form-control" type="text" ng-model="Faqs.condition" placeholder="输入关键字搜索" />
+        </div>
+        <div class="col-lg-1 col-md-6 col-sm-6 text-right">
+            <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="searchFaq._load();">
+                <span class="glyphicon glyphicon-search btn_icon"></span>
+                搜索
+            </button>
+        </div>
+    </div>
+</div>
+<div class="row padding">
+    <div class="col-lg-12">
+        <div class="search-padding-10">
+            <div class="info_lista" ng-repeat="faq in searchFaq.object.faqnew" ng-show="faq.faqQuestionId != null" ng-class="{'this_info ':choiceCss(faq.faqQuestionId)}">
+                <table class="table_lists">
+                    <tbody class="lists_left">
+                    <tr >
+                        <td width="5%" rowspan="2"><input type="checkbox" id="{{faq.faqQuestionId}}" name="faqquestionid" ng-click="getFaqId(faq.faqQuestionId)"></td>
+                        <td width="60%">问：{{faq.faqQuestionName}}</td>
+                        <td width="10%"></td>
+                        <td width="12%">创建人： {{faq.staff.staffName}}</td>
+                        <td width="13%">创建时间：{{faq.creTime | date : 'yyyy-MM-dd'}}</td>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4">答：{{faq.faqQuestionAnswer}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="padding">
+            <div class="bill_paging">
+                <ul class="pagination">
+                    <li><a style="cursor:pointer;" ng-click="searchFaq.go(1)">首页</a></li>
+                    <li><a style="cursor:pointer;" ng-show="searchFaq.hasPrevious()" ng-click="searchFaq.previous()">上一页</a></li>
+                    <li><a style="cursor:pointer;" ng-repeat="i in searchFaq.pages"  ng-click="searchFaq.go(i)">{{i}}</a></li>
+                    <li><a style="cursor:pointer;" ng-show="searchFaq.hasNext()" ng-click="searchFaq.next()">下一页</a></li>
+                    <li><a style="cursor:pointer;" ng-click="searchFaq.go(searchFaq.page.totalPage)">尾页</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<!--右侧正文内容 END-->
+
+<!--新建信息模态框-->
+<div class="modal fade" id="new" role="dialog" aria-label="personDatil" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span ng-if="faqs.faqQuestionId == null">新增</span>
+                <span ng-if="faqs.faqQuestionId != null">修改</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="padding15">
+                    <form id="css_form" name="mainForm" novalidate>
+                        <div class="sel1">
+                            <div class="row search-padding-10">
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">问题名称</div>
+                                <div class="col-lg-9 col-md-9 col-sm-9"><input type="text" class="form-control" ng-model="faqs.faqQuestionName" name="faqname" required>
+                                    <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.faqname.$dirty && mainForm.faqname.$invalid">
+                                        <p class="alter" ng-show="mainForm.faqname.$error.required">
+                                            不能为空
+                                        </p>
+                                        <p class="alter" ng-show="mainForm.faqname.defined ">
+                                            正确
+                                        </p>
+                                    </span>
+                                </div>
+                                <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <span style="color: red">*</span>
+                                </div>
+                            </div>
+                            <div class="row search-padding-10">
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">问题类型</div>
+                                <div class="col-lg-7 col-md-7 col-sm-7"><select name="typeid" id="faqtypeid" class="form-control" ng-model="faqs.faqTypeId" ng-options="o.faqTypeId as o.faqTypeName for o in FaqTypesList"></select>
+                                    <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.typeid.$dirty && mainForm.typeid.$invalid">
+                                        <p class="alter" ng-show="mainForm.typeid.$error.required">
+                                            不能为空
+                                        </p>
+                                        <p class="alter" ng-show="mainForm.typeid.defined ">
+                                            正确
+                                        </p>
+                                    </span>
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2"><a ng-click="addFaqType()" style="color: #0193de; cursor: pointer"><b>新建类型</b></a></div>
+                                <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <span style="color: red">*</span>
+                                </div>
+                            </div>
+                            <div class="row search-padding-10">
+                                <div class="col-lg-2 col-md-2 col-sm-2 text-right">问题回答</div>
+                                <div class="col-lg-9 col-md-9 col-sm-9"><textarea name="answer" class="text_min" ng-model="faqs.faqQuestionAnswer" required></textarea>
+                                    <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.answer.$dirty && mainForm.answer.$invalid">
+                                        <p class="alter" ng-show="mainForm.answer.$error.required">
+                                            不能为空
+                                        </p>
+                                        <p class="alter" ng-show="mainForm.answer.defined ">
+                                            正确
+                                        </p>
+                                    </span>
+                                </div>
+                                <div class="col-lg-1 col-md-1 col-sm-1">
+                                    <span style="color: red">*</span>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" ng-click="closeFaq()">取消</button>
+                <button type="button" class="btn btn-primary" ng-click="insertFaqs()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--新建信息模态框 END-->
+</body>
+</html>

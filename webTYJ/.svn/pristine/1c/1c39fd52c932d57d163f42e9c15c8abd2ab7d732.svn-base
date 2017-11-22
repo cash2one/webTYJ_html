@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div id="content-first">
+
+    <!--视图加载-->
+    <div ui-view class="sel_height"></div>
+    <!--视图加载开始-->
+</div>
+
+</body>
+</html>

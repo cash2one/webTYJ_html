@@ -1,0 +1,195 @@
+/**
+ * Created by LM on 2015/3/11.
+ * 工作台js
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../app');
+
+    app.controller('workCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        //$scope.test = 11111;
+        var url = $rootScope.url;
+        $scope.tasks = [];
+        $scope.specialRepairProjects=[];
+        $scope.centralizedTreatmentProjects=[];
+        $scope.staffs = [];
+        var user = {};
+        var userSession = JSON.parse(sessionStorage.getItem("USER_LOGIN"));
+        $scope.user = userSession?userSession:user;
+        console.log($scope.user);
+        if($scope.user.staff != null){
+            $scope.staffId = $scope.user.staff.staffId;
+        }else{
+            $scope.staffId = $scope.user.userId;
+        }
+        console.log($scope.staffId);
+        //
+        $http.get(url + "/Tasks/getTaskCount/" + $scope.staffId).success(function(data){
+            $scope.toCompleted = data.count0 + data.count1;
+            $scope.completed = data.count2;
+            $scope.notBeginning = data.count3 + data.count4;
+        }).error(function(data,status,headers,config){
+            layer.alert('任务数量查询失败！',{icon:2});
+        });
+
+        //集中处理   处理中状态：1 已完成状态：0,2
+        $http.get(url + "/CentralizedTreatmentProjects/getCentralizedTreatmentProjectsCount/1").success(function(data){
+            //$scope.treatmentProjects = data.CentralizedTreatmentProjects;
+            $scope.countP = data.info;
+        }).error(function(data,status,headers,config){
+            layer.msg("获取进行中的集中处理项失败!",{icon : 0,time : 2000})
+            return;
+
+        });
+
+        $http.get(url + "/CentralizedTreatmentProjects/getCentralizedTreatmentProjectsCount/2").success(function(data){
+            //$scope.treatmentProjects = data.CentralizedTreatmentProjects;
+            $scope.countP1 = data.info;
+            $http.get(url + "/CentralizedTreatmentProjects/getCentralizedTreatmentProjectsCount/0").success(function(data){
+                //$scope.treatmentProjects = data.CentralizedTreatmentProjects;
+                $scope.countP2 = data.info;
+                console.dir($scope.countP1);
+                console.dir($scope.countP2);
+
+                $scope.countP3 = Number($scope.countP1)+Number($scope.countP2);
+            }).error(function(data,status,headers,config){
+                layer.msg("获取已处理的集中处理项失败!",{icon : 0,time : 2000})
+                return;
+            });
+        }).error(function(data,status,headers,config){
+            layer.msg("获取已处理的集中处理项失败!",{icon : 0,time : 2000})
+            return;
+
+        });
+
+        //专项处理  处理中状态：1  已处理状态：0，2
+        //获取处理中个数
+        $http.get(url + "/SpecialRepairProject/getSpecialRepairProjectCountbyState/1").success(function(data){
+            //$scope.treatmentProjects = data.CentralizedTreatmentProjects;
+            $scope.countS = data.info;
+        }).error(function(data,status,headers,config){
+            layer.msg("获取进行中的专项处理项失败!",{icon : 0,time : 2000})
+            return;
+
+        });
+
+        //获取已处理状态
+        $http.get(url + "/SpecialRepairProject/getSpecialRepairProjectCountbyState/0").success(function(data){
+            //$scope.treatmentProjects = data.CentralizedTreatmentProjects;
+            $scope.countS1 = data.info;
+            $http.get(url + "/SpecialRepairProject/getSpecialRepairProjectCountbyState/2").success(function(data){
+                //$scope.treatmentProjects = data.CentralizedTreatmentProjects;
+                $scope.countS2 = data.info;
+
+                $scope.countS3 = Number($scope.countS1)+Number($scope.countS2);
+            }).error(function(data,status,headers,config){
+                layer.msg("获取已处理的专项处理项失败!",{icon : 0,time : 2000})
+                return;
+
+            });
+        }).error(function(data,status,headers,config){
+            layer.msg("获取已处理的专项处理项失败!",{icon : 0,time : 2000})
+            return;
+
+        });
+
+        /*
+         * 根据任务类型查找任务池中的个数，显示在工作台页面中
+         * */
+        //园林
+        $http.get(url + "/Tasks/getTaskPoolsCountBytaskType/0").success(function(data){
+            $scope.countGarden = data.info;
+        }).error(function(data,status,headers,config){
+            layer.msg("获取园林个数失败!",{icon : 0,time : 2000})
+            return;
+
+        });
+        //维修
+        $http.get(url + "/Tasks/getTaskPoolsCountBytaskType/1").success(function(data){
+            $scope.countRepair = data.info;
+        }).error(function(data,status,headers,config){
+            layer.msg("获取维修个数失败!",{icon : 0,time : 2000})
+            return;
+
+        });
+        //护管
+        $http.get(url + "/Tasks/getTaskPoolsCountBytaskType/2").success(function(data){
+            $scope.countProtect = data.info;
+        }).error(function(data,status,headers,config){
+            layer.msg("获取护管个数失败!",{icon : 0,time : 2000})
+            return;
+
+        });
+        //清洁
+        $http.get(url + "/Tasks/getTaskPoolsCountBytaskType/11").success(function(data){
+            $scope.countClean = data.info;
+        }).error(function(data,status,headers,config){
+            layer.msg("获取清洁个数失败!",{icon : 0,time : 2000})
+            return;
+
+        });
+        //回访
+        $http.get(url + "/Tasks/getTaskPoolsCountBytaskType/12").success(function(data){
+            $scope.countRevisit = data.info;
+        }).error(function(data,status,headers,config){
+            layer.msg("获取回访个数失败!",{icon : 0,time : 2000})
+            return;
+
+        });
+        //投诉
+        $http.get(url + "/Tasks/getTaskPoolsCountBytaskType/13").success(function(data){
+            $scope.countComplain = data.info;
+        }).error(function(data,status,headers,config){
+            layer.msg("获取投诉个数失败!",{icon : 0,time : 2000})
+            return;
+
+        });
+        //抄水表
+        $http.get(url + "/Tasks/getTaskPoolsCountBytaskType/16").success(function(data){
+            $scope.countWater = data.info;
+        }).error(function(data,status,headers,config){
+            layer.msg("获取抄水表个数失败!",{icon : 0,time : 2000})
+            return;
+
+        });
+        //抄电表
+        $http.get(url + "/Tasks/getTaskPoolsCountBytaskType/17").success(function(data){
+            //$scope.treatmentProjects = data.CentralizedTreatmentProjects;
+            $scope.countElectricity = data.info;
+        }).error(function(data,status,headers,config){
+            layer.msg("获取抄电表个数失败!",{icon : 0,time : 2000})
+            return;
+
+        });
+        //向业主索赔
+        $http.get(url + "/Tasks/getTaskPoolsCountBytaskType/10").success(function(data){
+
+            $scope.countClaim = data.info;
+        }).error(function(data,status,headers,config){
+            layer.msg("获取向业主索赔个数失败!",{icon : 0,time : 2000})
+            return;
+
+        });
+        //赔偿给业主
+        $http.get(url + "/Tasks/getTaskPoolsCountBytaskType/9").success(function(data){
+
+            $scope.countPay = data.info;
+        }).error(function(data,status,headers,config){
+            layer.msg("获取赔偿给业主个数失败!",{icon : 0,time : 2000})
+            return;
+
+        });
+        //固定车位
+        $http.get(url + "/Tasks/getTaskPoolsCountBytaskType/19").success(function(data){
+
+            $scope.countLot = data.info;
+        }).error(function(data,status,headers,config){
+            layer.msg("获取固定车位个数失败!",{icon : 0,time : 2000})
+            return;
+
+        });
+    }]);
+});

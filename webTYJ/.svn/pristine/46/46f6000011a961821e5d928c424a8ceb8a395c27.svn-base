@@ -1,0 +1,16 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 收费项目js
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../app');
+
+    app.controller('payServiceCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        $scope.test = 11111;
+
+    }]);
+});

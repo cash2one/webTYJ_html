@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div class="padding">
+    <div id="content-first">
+        <!--tab页切换开始-->
+        <div id="tab">
+            <a href="javascript:void(0)" ng-class="{'this_action ':btnIndex==1}" ng-click="doClick(1)">交账列表</a>
+            <a href="javascript:void(0)" ng-class="{'this_action ':btnIndex==3}" ng-click="doClick(3)" lang="no">未交账</a>
+        </div>
+        <!--tab页切换结束-->
+        <div ng-show="show1">
+            <div class="sel">
+                <div class="row search-padding-10">
+                    <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                        出纳：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        <input type="text" class="form-control" ng-model="searchAccountRecord.financialStaffName"
+                               placeholder="请输入出纳姓名">
+                    </div>
+                    <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                        状态：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        <select class="form-control" ng-model="searchAccountRecord.accountState">
+                            <option value="">请选择交账状态</option>
+                            <option value="0">待确认</option>
+                            <option value="1">交账中</option>
+                            <option value="2">已完成</option>
+                            <option value="3">已退回</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-sm-6 ">
+                        <button type="button" class="btn btn-default btn-primary tab-btn"
+                                ng-click="currentMeter._load()">
+                            <span class="glyphicon glyphicon-search btn_icon"></span>
+                            搜索
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="row padding">
+                <div class="col-lg-12">
+                    <div class="col-lg-12 search-padding-10">
+                        <button type="button" class="btn btn-default btn-primary" ng-click="rejection()">退回</button>
+                        <button type="button" class="btn btn-default btn-primary" ng-click="updateAccountRecord()">
+                            确认收账
+                        </button>
+                    </div>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>序号</th>
+                            <th>交账时间</th>
+                            <th>交账人</th>
+                            <th>职位</th>
+                            <th>现金金额</th>
+                            <th>刷卡金额</th>
+                            <th>微信金额</th>
+                            <th>总金额</th>
+                            <th>操作人</th>
+                            <th>状态</th>
+                            <th>存单号详情</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="item in currentMeter.object.accountRecords" ng-show="item['accountRecordId'] != null" style="cursor: pointer">
+                            <td ng-show="item.nameOfCustom=='出纳'">
+                                <span ng-if="item.accountState == '0'">
+                                    <input type="checkbox" id="{{item.accountRecordId}}" ng-click="getData(item)">
+                                </span>
+                                <span ng-if="item.accountState != '0'">
+                                    <input type="checkbox" disabled="disabled">
+                                </span>
+                            </td>
+                            <td ng-show="item.nameOfCustom!='出纳'">
+                                <input type="checkbox" disabled="disabled">
+                            </td>
+                            <td>{{$index}}</td>
+                            <td>{{item.accountTime | date : "yyyy-MM-dd HH:mm:ss"}}</td>
+                            <td>{{item.staffName}}</td>
+                            <td>{{item.nameOfCustom}}</td>
+                            <td>{{item.cashSum|number:2}}</td>
+                            <td>{{item.creditCardSum|number:2}}</td>
+                            <td>{{item.wechatSum|number:2}}</td>
+                            <td>{{item.totalSum|number:2}}</td>
+                            <td>{{item.financialStaffName}}</td>
+                            <td ng-switch on="item.accountState">
+                                <span ng-if="item.nameOfCustom=='收银员'">
+                                    <span ng-switch-when="0">待确认</span>
+                                    <span ng-switch-when="1">已确认</span>
+                                    <span ng-switch-when="2">已退回</span>
+                                    <span ng-switch-when="3">已交账</span>
+                                    <span ng-switch-when="4">已退回</span>
+                                    <span ng-switch-when="9">已撤回</span>
+                                </span>
+                                <span ng-if="item.nameOfCustom=='收银组长'">
+                                    <span ng-switch-when="0">待确认</span>
+                                    <span ng-switch-when="1">已确认</span>
+                                    <span ng-switch-when="2">已退回</span>
+                                    <span ng-switch-when="3">已交账</span>
+                                    <span ng-switch-when="4">已退回</span>
+                                    <span ng-switch-when="9">已撤回</span>
+                                </span>
+                                <span ng-if="item.nameOfCustom=='出纳'">
+                                    <span ng-switch-when="0">待确认</span>
+                                    <span ng-switch-when="1">已确认</span>
+                                    <span ng-switch-when="2">已退回</span>
+                                    <span ng-switch-when="9">已撤回</span>
+                                </span>
+                            </td>
+                            <td>
+                                <span ng-show="item.nameOfCustom=='收银员'">
+                                    <button type="button" class="btn btn-default" style="background-color: darkgray" disabled >查看详情</button>
+                                </span>
+                                <span ng-show="item.nameOfCustom=='收银组长'">
+                                    <span ng-if="item.accountState=='0'||item.accountState=='1'||item.accountState=='3'">
+                                        <button type="button" class="btn btn-default btn-primary" ng-click="getDatils(item.accountRecordId)">查看详情</button>
+                                   </span>
+                                    <span ng-if="item.accountState=='2'||item.accountState=='4'||item.accountState=='9'">
+                                        <button type="button" class="btn btn-default" style="background-color: darkgray" disabled >查看详情</button>
+                                    </span>
+                                </span>
+                                <span ng-show="item.nameOfCustom=='出纳'">
+                                   <span ng-if="item.accountState=='0'||item.accountState=='1'">
+                                        <button type="button" class="btn btn-default btn-primary" ng-click="getDatils(item.accountRecordId)">查看详情</button>
+                                   </span>
+                                    <span ng-if="item.accountState=='2'||item.accountState=='9'">
+                                        <button type="button" class="btn btn-default" style="background-color: darkgray" disabled >查看详情</button>
+                                    </span>
+                                </span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="padding">
+                        <div class="bill_paging">
+                            <span>共{{currentMeter.object.page.totalResult}}条</span>
+                            <ul class="pagination">
+                                <li ng-class="{true:'disabled'}[currentMeter.page.currentPage==1]"><a
+                                        href="javascript:void(0)" ng-click="currentMeter.go(1)">首页</a></li>
+                                <li ng-class="{true:'disabled'}[currentMeter.page.currentPage==1]"><a
+                                        href="javascript:void(0)" ng-show="currentMeter.hasPrevious()"
+                                        ng-click="currentMeter.previous()">上一页</a></li>
+                                <li ng-class="{true:'active'}[currentMeter.page.currentPage==i]"
+                                    ng-repeat="i in currentMeter.pages"><a href="javascript:void(0)"
+                                                                           ng-click="currentMeter.go(i)">{{i}}</a></li>
+                                <li ng-class="{true:'disabled'}[currentMeter.page.currentPage==currentMeter.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-show="currentMeter.hasNext()"
+                                       ng-click="currentMeter.next()">下一页</a></li>
+                                <li ng-class="{true:'disabled'}[currentMeter.page.currentPage==searchPaginator1.page.totalPage]">
+                                    <a href="javascript:void(0)"
+                                       ng-click="currentMeter.go(currentMeter.page.totalPage)">尾页</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--未交帐页面—————————————————————————————————————————BEGIN——————————————————————————————————————————————————————————————————————————————————————————————-->
+        <div id="ago2" ng-show="show3">
+            <div class="row padding">
+                <div class="col-lg-12">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th>交账时间</th>
+                            <th>操作人</th>
+                            <th>职位</th>
+                            <th>现金</th>
+                            <th>刷卡</th>
+                            <th>微信</th>
+                            <th>总额</th>
+                            <th>存单号详情</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="item in searchPaginators.object.accountRecords" ng-show="item.accountRecordId!=null" ng-class="{'this_info':btnIndex==items.accountRecordId}" style="cursor: pointer;">
+                            <td>{{$index}}</td>
+                            <td>{{item.accountTime|date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                            <td>{{item.staffName}}</td>
+                            <td>{{item.nameOfCustom}}</td>
+                            <td>{{item.cashSum|number:2}}</td>
+                            <td>{{item.creditCardSum|number:2}}</td>
+                            <td>{{item.wechatSum|number:2}}</td>
+                            <td>{{item.cashSum+item.creditCardSum+item.wechatSum|number:2}}</td>
+                            <td>
+                                <button type="button" ng-show="item.nameOfCustom!='收银员'" class="btn btn-default btn-primary" ng-click="getDatils(item.accountRecordId)">查看详情</button>
+                                <button type="button" ng-show="item.nameOfCustom=='收银员'" class="btn btn-default"  disabled="disabled" style="background-color: darkgray">查看详情</button>
+                            </td>
+                        </tr>
+                        <tr ng-if="searchPaginators.object.accountRecords.length == null">
+                            <td colspan="9" style="cursor: default">暂无数据！</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="bill_paging">
+                        <span>共{{searchPaginators.object.page.totalResult}}条</span>
+                        <ul class="pagination">
+                            <li ng-class="{true:'disabled'}[searchPaginators.page.currentPage==1]"><a href="javascript:void(0)" ng-click="searchPaginators.go(1)">首页</a></li>
+                            <li ng-class="{true:'disabled'}[searchPaginators.page.currentPage==1]"><a href="javascript:void(0)" ng-show="searchPaginators.hasPrevious()" ng-click="searchPaginators.previous()">上一页</a></li>
+                            <li ng-class="{true:'active'}[searchPaginators.page.currentPage==i]" ng-repeat="i in searchPaginators.pages"><a href="javascript:void(0)"   ng-click="searchPaginators.go(i)">{{i}}</a></li>
+                            <li ng-class="{true:'disabled'}[searchPaginators.page.currentPage==searchPaginators.page.totalPage]"><a href="javascript:void(0)" ng-show="searchPaginators.hasNext()" ng-click="searchPaginators.next()">下一页</a></li>
+                            <li ng-class="{true:'disabled'}[searchPaginators.page.currentPage==searchPaginators.page.totalPage]"><a href="javascript:void(0)" ng-click="searchPaginators.go(searchPaginators.page.totalPage)">尾页</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--未交帐页面—————————————————————————————————————————END——————————————————————————————————————————————————————————————————————————————————————————————-->
+        <div class="modal fade" id="datil" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        存单号详情
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="col-lg-12 col-md-12 col-sm-12 com-xs-12">
+                            <table>
+                                <thead>
+                                <tr>
+                                    <th>序号</th>
+                                    <th>银行存单号</th>
+                                    <th>金额</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="ins in banks" ng-show="ins.bankDepositId!=null">
+                                    <td>{{$index+1}}</td>
+                                    <td>{{ins.bankDepositNum}}</td>
+                                    <td>{{ins.sum|number:2}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="and" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        存单号详情
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>序号</th>
+                                <th>银行存单号</th>
+                                <th>金额</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="itee in BankDeposit">
+                                <td>{{$index}}</td>
+                                <td>{{itee.bankDepositNum}}</td>
+                                <td>{{itee.sum|number:2}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

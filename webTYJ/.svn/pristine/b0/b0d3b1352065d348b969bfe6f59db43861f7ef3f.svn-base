@@ -1,0 +1,54 @@
+<!--
+    前端负责人：倪明
+    页面名称：左边页面
+    js路径：js/left.js
+    创建时间：2015/4/1
+    修改时间：2015/5/27
+-->
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/left.css"/>
+</head>
+<body>
+<div ng-init="loadDefault()">
+<div class="left">
+    <!--用户信息-->
+    <div class="user clear">
+        <div class="user_img"><img src="images/user/user_2.png"></div>
+        <div class="user_info">{{loginName}}<!--<span class="user_number">9</span>--><br/><a href="#" ng-click="changeData()">修改资料</a></div>
+    </div>
+    <!--用户信息结束-->
+    <!--搜索框样式-->
+    <div class="search clear">
+        <form id="form1" name="form1" method="post" action="">
+            <input type="text" class="search_input" placeholder="搜索联系人">
+            <input name="" type="button" class="search_button">
+        </form>
+    </div>
+    <!--搜索框样式结束-->
+    <!--用户组样式-->
+    <div class="user_list clear">
+        <div class="user_list_btn">
+            <form id="form2" name="form2" method="post" action="">
+                <input name="" type="button" class="user_list_button_left" >
+                <input name="" type="button" class="user_list_button_right" >
+            </form>
+        </div>
+        <div class="user_panel_group"  >
+            <div class="weatherposition">
+                <iframe src="http://www.thinkpage.cn/weather/weather.aspx?uid=&cid=101200101&l=zh-CHS&p=CMA&a=1&u=C&s=11&m=0&x=1&d=3&fc=&bgc=&bc=&ti=1&in=1&li=2&ct=iframe" frameborder="0" scrolling="no" width="200" height="330" allowTransparency="true"></iframe>
+            </div>
+        </div>
+    </div>
+    <!--用户组样式结束-->
+    <!--左侧底部按钮-->
+    <div class="user_button">
+        <span class="left_email_button" aria-hidden="true"></span>
+        <span class="left_set_button" aria-hidden="true"></span>
+    </div>
+</div>
+</div>
+</body>
+</html>

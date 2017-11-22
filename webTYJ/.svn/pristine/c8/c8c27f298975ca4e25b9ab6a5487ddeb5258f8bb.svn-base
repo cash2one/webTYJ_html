@@ -1,0 +1,194 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 计费管理--停车月卡模块JS
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../app');
+
+    app.controller('parkingSpacesCtrl', ['$scope', '$http','$rootScope','$filter','$location', function ($scope,$http,$rootScope,$filter,$location) {
+
+        /******************************  定义变量start      *******************************************/
+
+        var url = $rootScope.url;                                       //定义url
+        $scope.productId = $rootScope.productId;                        //修改时获取传入的产品id
+        $scope.Product = {};                                            //定义产品对象
+        $scope.BuildingStructureNew = {};                               //定义建筑结构对象，存放车库信息
+        $scope.BuildingStructureNewList = [];                           //定义建筑结构数组
+        $scope.fullname = '';                                           //定义车库查询条件
+
+        /******************************    定义变量end    *********************************************/
+
+
+        /******************************  页面载入函数start     *****************************************/
+
+            //查询相关产品信息
+        $scope.getProduct = function(){
+            $http.post(url + '/Product/getProductByProductId/' + $scope.productId).success(function(data){
+                $scope.Product = data.Product;
+                if(angular.isDefined($scope.Product)){
+                    $scope.Product.effectDate = new Date($scope.Product.effectDate);
+                    if(angular.isDefined($scope.Product)){
+                        if(angular.isArray($scope.Product.buildingstructruenewlist)){
+                            for(var i = 0; i < $scope.Product.buildingstructruenewlist.length; i ++){
+                                $scope.BuildingStructureNewList.push($scope.Product.buildingstructruenewlist[i]);
+                            }
+                        }else{
+                            $scope.BuildingStructureNewList.push($scope.Product.buildingstructruenewlist);
+                        }
+                    }
+                    for(var i = 0; i < $scope.BuildingStructureNewLists.length; i ++){
+                        for(var j = 0; j < $scope.BuildingStructureNewList.length; j ++){
+                            if($scope.BuildingStructureNewList[j].id == $scope.BuildingStructureNewLists[i].id){
+                                document.getElementById($scope.BuildingStructureNewLists[i].id).checked = true;
+                            }
+                        }
+                    }
+                }
+            }).error(function(data){
+                layer.alert('没有对应的产品信息！',{icon : 2});
+            });
+        };
+
+        //查询相关车库信息
+        $scope.getGarage = function(){
+            $scope.BuildingStructureNew.fullName = $scope.fullname;
+            $http.post(url + '/BuildingStructureNew/listIdAndfullNameByType',{BuildingStructureNew : $scope.BuildingStructureNew}).success(function(data){
+                $scope.BuildingStructureNewLists = data.BuildingStructureNew;
+                $scope.BuildingStructureNewLists= $scope.newDate($scope.BuildingStructureNewLists);
+                //$scope.getProduct();
+            }).error(function(data){
+                layer.alert('查询车库信息出错！',{icon : 2});
+            });
+        };
+        $scope.getGarage();
+
+
+        /******************************  页面载入函数end   *********************************************/
+
+
+        /******************************  方法start  ***************************************************/
+
+            //将车库信息存入数组
+        $scope.chargeItem = function(item){
+            $scope.BuildingStructureNew = {};
+            $scope.BuildingStructureNew = item;
+            var temp = $scope.BuildingStructureNew.id;
+            if(document.getElementById(temp).checked == true){
+                $scope.BuildingStructureNewList.push($scope.BuildingStructureNew);
+            } else{
+                $scope.temps = [];
+                $scope.temps = $scope.BuildingStructureNewList;
+                $scope.BuildingStructureNewList = [];
+                for(var i =0; i < $scope.temps.length; i ++){
+                    if($scope.temps[i].id != item.id){
+                        $scope.BuildingStructureNewList.push($scope.temps[i]);
+                    }
+                }
+            }
+        };
+
+        //新增或修改停车月卡
+        $scope.addOrUpdateProduct = function(){
+            //设置产品属性为1
+            if(angular.isUndefined($scope.Product)){
+                layer.alert('产品参数未填！',{icon : 0});
+                return ;
+            }else{
+                if($scope.Product.productName==undefined||$scope.Product.productName==''){
+                    layer.alert('门禁卡名称未输入',{icon : 0});
+                    return;
+                }
+                if($scope.Product.productNum==undefined||$scope.Product.productNum==''){
+                    layer.alert('门禁卡编号未输入',{icon : 0});
+                    return;
+                }
+                if($scope.Product.effectDate==undefined||$scope.Product.effectDate==''){
+                    layer.alert('门禁卡生效日期未输入',{icon : 0});
+                    return;
+                }
+                if($scope.Product.price==undefined||$scope.Product.price==''){
+                    layer.alert('门禁卡金额未输入或者输入不为数字',{icon : 0});
+                    return;
+                }
+            }
+
+            $scope.Product.productType = 1;
+            $scope.Product.buildingstructruenewlist = $scope.BuildingStructureNewList;
+            console.log($scope.Product);
+            //判断产品id是否存在，如果存在就修改，如果不存在就新增
+            if(angular.isUndefined($scope.productId) || $scope.productId == null){
+                $http.post(url + '/Product/addProduct',{Product : $scope.Product}).success(function(){
+                    layer.alert('新增成功！',{icon : 1});
+                    var tcyks = document.getElementsByTagName("tcyk");
+                    if(tcyks.length>0){
+                        for(var i=0;i<tcyks.length;i++){
+                            tcyks[i].checked=false;
+                        }
+                    }
+                    $location.path("/index/accountManagement/product");
+                }).error(function(){
+                    layer.alert('新增失败！',{icon : 2});
+                });
+            }else{
+                $http.post(url + '/Product/updateProduct',{Product : $scope.Product}).success(function(){
+                    layer.alert('修改成功！',{icon : 1});
+                    $location.path("/index/accountManagement/product");
+                }).error(function(){
+                    layer.alert('修改失败！',{icon : 2});
+                });
+            }
+        };
+
+        //返回列表
+        $scope.backToProduct = function(){
+            $location.path("/index/accountManagement/product");
+        };
+
+        /******************************  方法end  *****************************************************/
+
+        /**
+         * 重新排组数据结构
+         */
+        $scope.newDate=function(array){
+            for(var i=0;i<array.length;i++){
+                if(array[i].children){
+                    if(!isArray(array[i].children)){
+                        var children_copy=array[i].children;
+                        var childArray=[];
+                        childArray.push(children_copy);
+                        array[i].children=childArray;
+                    }
+                }
+            }
+            return array;
+        }
+
+        /**
+         * 判断对象是否是数组
+         * @creat by xiaocong
+         * @data 2015/12/25
+         * @param obj
+         * @returns {boolean}
+         */
+        function isArray(obj) {
+            return Object.prototype.toString.call(obj) === '[object Array]';
+        }
+
+
+        /**
+         * 将输入数字保留两位小数
+         */
+        $scope.formatRent = function(){
+            var num = $("input[name=price]").val();
+            //       console.log(num);
+            var val = $filter('number')(num,2);
+            var val1 = val.replace(/,/g, "");
+            //     console.log(val1);
+            $("input[name=price]").val(val1);
+        };
+
+    }]);
+});

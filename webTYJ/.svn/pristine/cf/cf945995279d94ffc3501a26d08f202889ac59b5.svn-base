@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<!--账单页面-->
+<div ng-show="show1">
+<div class="sel">
+    <div class="row search-padding-10">
+        <div class="col-lg-4 col-md-4 col-sm-4">
+
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            项目：
+        </div>
+        <div class="col-lg-2 col-md-4 col-sm-4">
+            <select class="form-control" ng-model="projectBilling.projectId" ng-options="option.projectId as option.projectName for option in projects">
+                <option value="">请选择</option>
+            </select>
+        </div>
+        <div class="col-lg-5 col-md-4 col-sm-4 text-right">
+            <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="searchPaginator._load();">
+                <span class="glyphicon glyphicon-search btn_icon"></span>
+                搜索
+            </button>
+        </div>
+    </div>
+</div>
+<div class="row padding">
+    <div class="col-lg-12">
+        <div class="search-padding-10 text-left">
+            <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="showCharge()">
+                <span class="glyphicon glyphicon-pencil btn_icon"></span>
+                手动计费
+            </button>
+            <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="reatartAccounting()">
+                <span class="glyphicon glyphicon-repeat btn_icon"></span>
+                重新计费
+            </button>
+            <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="verifyAccounting()">
+                <span class="glyphicon glyphicon-saved btn_icon"></span>
+                确定计费
+            </button>
+        </div>
+        <table>
+            <thead>
+            <tr>
+                <th></th>
+                <th>月份</th>
+                <th>项目</th>
+                <th>计费日期</th>
+                <th>上期余额（元）</th>
+                <th>本期金额（元）</th>
+                <th>总金额（元）</th>
+                <th>状态</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="item in searchPaginator.object.projectBillings" ng-show="item.projectBillingId!=null" >
+                <td><input type="checkbox" id="{{item.projectBillingId}}" ng-click="getData(item)"></td>
+                <td>{{item.month}}</td>
+                <td>{{item.projectName}}</td>
+                <td>{{item.billingStartTime|date:'yyyy-MM-dd'}}</td>
+                <td>{{item.lastSum | number:'2'}}</td>
+                <td>{{item.currentSum | number:'2'}}</td>
+                <td ng-click="getDatil(item.projectBillingId)">{{item.sum | number:'2'}}</td>
+                <td ng-switch on="item.isPosting" style="cursor: pointer">
+                    <span ng-switch-when="0">已过账</span>
+                    <span ng-switch-when="1">未过账</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="bill_paging pull-right">
+        <span>共{{searchPaginator.object.page.totalResult}}条</span>
+        <ul class="pagination">
+            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]"><a href="javascript:void(0)" ng-click="searchPaginator.go(1)">首页</a></li>
+            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]"><a href="javascript:void(0)" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a></li>
+            <li ng-class="{true:'active'}[searchPaginator.page.currentPage==i]" ng-repeat="i in searchPaginator.pages" ><a href="javascript:void(0)" on-show="searchPaginator.go(i)" ng-click="searchPaginator.go(i)">{{i}}</a></li>
+            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]"><a href="javascript:void(0)" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a></li>
+            <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]"><a href="javascript:void(0)" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a></li>
+        </ul>
+        <div class="clear"></div>
+    </div>
+</div>
+</div>
+<!--账单页面 end-->
+<!--账单页面--收费项目-->
+<div ng-show="show2">
+    <div class="sel">
+        <div class="row">
+            <div class="col-lg-4 col-md-4 col-sm-4">
+
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2">
+                收费项目：
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-4">
+                <select class="form-control" ng-model="chargeItemBilling.chargeItemId" ng-options="option1.ciId as option1.ciName for option1 in chargeItemNews">
+                    <option value="">请选择</option>
+                </select>
+            </div>
+            <div class="col-lg-5 col-md-2 col-sm-2 text-right">
+                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="searchPaginator1._load()">
+                    <span class="glyphicon glyphicon-search btn_icon"></span>
+                    搜索
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="row padding">
+        <div class="col-lg-12">
+            <div class="search-padding-10 text-left">
+                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="back()">
+                    <span class="glyphicon glyphicon-arrow-left btn_icon"></span>
+                    返回
+                </button>
+                <button type="button" class="btn btn-default btn-primary tab-btn" data-target="#new1"data-toggle="modal" ng-click="reatartAccounting1()">
+                    <span class="glyphicon glyphicon-repeat btn_icon"></span>
+                    重新计费
+                </button>
+                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="verifyAccounting1()">
+                    <span class="glyphicon glyphicon-saved btn_icon"></span>
+                    确定计费
+                </button>
+            </div>
+            <div class="search-padding-10">
+            <table>
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>项目</th>
+                    <th>收费项目</th>
+                    <th>计费日期</th>
+                    <th>上期余额（元）</th>
+                    <th>本期金额（元）</th>
+                    <th>总金额（元）</th>
+                    <th>状态</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="items in searchPaginator1.object.chargeItemBillings" ng-show="items.chargeItemBillingId!=null">
+                    <td><input type="checkbox" id="{{items.chargeItemBillingId}}" ng-click="getData1(items)"></td>
+                    <td>{{items.projectName}}</td>
+                    <td>{{items.chargeItemName}}</td>
+                    <td>{{items.billingStartTime |date:'yyyy-MM-dd'}}</td>
+                    <td>{{items.lastSum | number:'2'}}</td>
+                    <td>{{items.currentSum  | number:'2'}}</td>
+                    <td ng-click="getDatas(items.chargeItemBillingId)">{{items.sum | number:'2'}}</td>
+                    <!--<td ng-switch on="item.isPosting" style="cursor: pointer" ng-click="getDatil(item.projectBillingId)">-->
+                    <td ng-switch on="items.billingType">
+                        <span ng-switch-when="0">已过账</span>
+                        <span ng-switch-when="1">未过账</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            </div>
+            <div class="bill_paging pull-right">
+                <span>共{{searchPaginator1.object.page.totalResult}}条</span>
+                <ul class="pagination">
+                    <li ng-class="{true:'disabled'}[searchPaginator1.page.currentPage==1]"><a href="javascript:void(0)" ng-click="searchPaginator1.go(1)">首页</a></li>
+                    <li ng-class="{true:'disabled'}[searchPaginator1.page.currentPage==1]"><a href="javascript:void(0)" ng-show="searchPaginator1.hasPrevious()" ng-click="searchPaginator1.previous()">上一页</a></li>
+                    <li ng-class="{true:'active'}[searchPaginator1.page.currentPage==i]" ng-repeat="i in searchPaginator1.pages" ><a href="javascript:void(0)" on-show="searchPaginator1.go(i)" ng-click="searchPaginator1.go(i)">{{i}}</a></li>
+                    <li ng-class="{true:'disabled'}[searchPaginator1.page.currentPage==searchPaginator1.page.totalPage]"><a href="javascript:void(0)" ng-show="searchPaginator1.hasNext()" ng-click="searchPaginator1.next()">下一页</a></li>
+                    <li ng-class="{true:'disabled'}[searchPaginator1.page.currentPage==searchPaginator1.page.totalPage]"><a href="javascript:void(0)" ng-click="searchPaginator1.go(searchPaginator1.page.totalPage)">尾页</a></li>
+                </ul>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--账单页面--收费项目 END-->
+<!--账单页面--建筑收费项目-->
+<div ng-show="show3">
+    <div class="sel">
+        <div class="row">
+            <div class="col-lg-4 col-md-4 col-sm-4">
+
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2">
+                房屋地址：
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-4">
+                <input class="form-control" ng-model="buildingBillings.fullName"></input>
+            </div>
+            <div class="col-lg-5 col-md-2 col-sm-2 text-right">
+                <button type="button" class="btn btn-default btn-primary tab-btn"  ng-click="searchPaginator2._load();">
+                    <span class="glyphicon glyphicon-search btn_icon"></span>
+                    搜索
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="row padding">
+        <div class="col-lg-12">
+            <div class="search-padding-10 text-left">
+                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="back1()">
+                    <span class="glyphicon glyphicon-arrow-left btn_icon"></span>
+                    返回
+                </button>
+                <button type="button" class="btn btn-default btn-primary tab-btn" data-target="#new1"data-toggle="modal" ng-click="reatartAccounting2()">
+                    <span class="glyphicon glyphicon-repeat btn_icon"></span>
+                    重新计费
+                </button>
+                <button type="button" class="btn btn-default btn-primary tab-btn"  ng-click="verifyAccounting2()">
+                    <span class="glyphicon glyphicon-saved btn_icon"></span>
+                    确定计费
+                </button>
+            </div>
+            <div class="search-padding-10">
+                <table>
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>房屋地址</th>
+                        <th>收费项目</th>
+                        <th>计费日期</th>
+                        <th>上期余额（元）</th>
+                        <th>本期金额（元）</th>
+                        <th>总金额（元）</th>
+                        <th>状态</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="itema in searchPaginator2.object.buildingBillings" ng-show="itema.buildingBillingId!=null">
+                        <td><input type="checkbox" id="{{itema.buildingBillingId}}" ng-click="getData2(itema)"></td>
+                        <td>{{itema.fullName}}</td>
+                        <td>{{itema.chargeItemName}}</td>
+                        <td>{{itema.billingStartTime|date:'yyyy-MM-dd'}}</td>
+                        <td>{{itema.lastSum | number:'2'}}</td>
+                        <td>{{itema.currentSum  | number:'2'}}</td>
+                        <td ng-click="datils(itema)">{{itema.billingBalance | number:'2'}}</td>
+                        <td ng-switch on="itema.billingState">
+                            <span ng-switch-when="0">已过账</span>
+                            <span ng-switch-when="1">未过账</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="bill_paging pull-right">
+                <span>共{{searchPaginator2.object.page.totalResult}}条</span>
+                <ul class="pagination">
+                    <li ng-class="{true:'disabled'}[searchPaginator2.page.currentPage==1]"><a href="javascript:void(0)" ng-click="searchPaginator2.go(1)">首页</a></li>
+                    <li ng-class="{true:'disabled'}[searchPaginator2.page.currentPage==1]"><a href="javascript:void(0)" ng-show="searchPaginator2.hasPrevious()" ng-click="searchPaginator2.previous()">上一页</a></li>
+                    <li ng-class="{true:'active'}[searchPaginator2.page.currentPage==i]" ng-repeat="i in searchPaginator2.pages" ><a href="javascript:void(0)" on-show="searchPaginator2.go(i)" ng-click="searchPaginator2.go(i)">{{i}}</a></li>
+                    <li ng-class="{true:'disabled'}[searchPaginator2.page.currentPage==searchPaginator2.page.totalPage]"><a href="javascript:void(0)" ng-show="searchPaginator2.hasNext()" ng-click="searchPaginator2.next()">下一页</a></li>
+                    <li ng-class="{true:'disabled'}[searchPaginator2.page.currentPage==searchPaginator2.page.totalPage]"><a href="javascript:void(0)" ng-click="searchPaginator2.go(searchPaginator2.page.totalPage)">尾页</a></li>
+                </ul>
+                <div class="claer"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--账单页面--建筑收费项目 END-->
+<!--账单页面--计费详细-->
+<div class="modal fade" id="detail1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="row">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                    <!--<div class="col-lg-12">-->
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>收费项目名称</th>
+                                <th>收费编号</th>
+                                <th>上期金额（元）</th>
+                                <th>本期金额（元）</th>
+                                <th>金额（元）</th>
+                                <th>状态</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="itemb in billingList" ng-show="itemb.billingId!=null">
+                                <td>{{itemb.chargeItemName}}</td>
+                                <td>{{itemb.ciNum}}</td>
+                                <td>{{itemb.lastSum | number:'2'}}</td>
+                                <td>{{itemb.currentSum | number:'2'}}</td>
+                                <td>{{itemb.billingBalance | number:'2'}}</td>
+                                <td ng-switch on="itemb.billingState">
+                                    <span ng-switch-when="0">已过账</span>
+                                    <span ng-switch-when="1">未过账</span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    <!--</div>-->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--计费详细 END-->
+<!--重新计费-->
+<div class="modal fade" id="new1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>-->
+            </div>
+            <div class="modal-body">
+                <div style="padding:30px" class="text-center">
+                    <img src="images/question.png"style="width:80px;margin-top:-5px">
+                    <span style="font-size:24px">
+                     确定重新计费？
+                    </span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="text-center">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="accounting()">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--重新计费 END-->
+<!--手动计费-->
+<div class="modal fade" id="new2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content"style="width:300px">
+            <div class="modal-header">
+                国际水费
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div style="padding:30px">
+                    <div class="row">
+                    <div class="col-lg-4 col-md-4 col-sm-4"></div>
+                    <div class="col-lg-6 col-md-6 col-sm-6">
+                    <label class="checkbox inline"  ng-repeat="cha in chargeItemNews" ng-show="cha.parentId==null">
+                        <input type="checkbox" id="{{cha.ciId}}" ng-click="getCharge(cha)">
+                        <span>{{cha.ciName}}</span>
+                    </label>
+
+                    </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="count()">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--手动计费 END-->
+</body>
+</html>

@@ -1,0 +1,1097 @@
+<!--author:王志刚-->
+<!--页面名称：物业服务办理装修流程页面-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>办理装修流程</title>
+    <link rel="stylesheet" href="css/propertyService.css">
+
+    <style type="text/css">
+        #pm img{width:80px;height:80px;}
+        .doted{ height:20px; text-align:center; width:80px; margin:0 auto; }
+        .doted .dot_unChecked{ display:block; width:25px; height:25px; background:#e5e5e7; border:1px solid #a4a4a4; -moz-border-radius:50%; -webkit-border-radius:50%; border-radius:50%; float:left; margin-left:50px; margin-top:10px;}
+        .doted .dot_Check{ display:block; width:25px; height:25px; background:#02a0e7; -moz-border-radius:50%; -webkit-border-radius:50%; border-radius:50%; float:left; margin-left:50px; margin-top:10px;}
+        .doted .dot_Check{ display:block; width:25px; height:25px; background:#02a0e7; -moz-border-radius:50%; -webkit-border-radius:50%; border-radius:50%; float:left; margin-left:50px; margin-top:10px;}
+        .doted .dot_unChecked:hover{ display:block; width:25px; height:25px; background:#02a0e7; -moz-border-radius:50%; -webkit-border-radius:50%; border-radius:50%; float:left; margin-left:50px; margin-top:10px;}
+        .connectLines hr{width:76px;text-align: center;border: 1px dotted rgb(180,180,180);position: absolute;margin: 0 0 0 76px;}
+    </style>
+</head>
+<body>
+
+<div class="complaint_user" >
+    <div class="row col-md-12" style="margin-left: 43px;margin-top: 5px;text-align: center;">
+        <div class="col-md-1" style="margin-left: 15px">
+            <span>选择房屋</span>
+        </div>
+        <div class="col-md-1" style="margin-left: 25px">
+            <span>申请资料</span>
+        </div>
+        <div class="col-md-1" style="margin-left: 25px">
+            <span>现场核查</span>
+        </div>
+        <div class="col-md-1" style="margin-left: 25px">
+            <span>缴费</span>
+        </div>
+        <div class="col-md-1" style="margin-left: 25px">
+            <span>发放许可</span>
+        </div>
+        <div class="col-md-1" style="margin-left: 25px">
+            <span>施工过程</span>
+        </div>
+        <div class="col-md-1" style="margin-left: 25px">
+            <span>验收</span>
+        </div>
+        <div class="col-md-1" style="margin-left: 25px">
+            <span>费用结算</span>
+        </div>
+    </div>
+    <div class="row col-md-12" style="margin-left: -4px;margin-bottom: 20px;">
+        <div class="col-md-1" style="margin-left: 25px">
+                <span>
+                    <div class="doted" style="cursor:pointer">
+                        <a><span class="dot_Check" ng-click="chooseHouse()"></span></a>
+                    </div>
+                    <div class="connectLines">
+                        <hr>
+                    </div>
+                </span>
+        </div>
+        <div class="col-md-1" style="margin-left: 25px">
+                <span>
+                    <div class="doted" style="cursor:pointer">
+                        <a><span class="dot_unChecked" ng-click="applicationData()"></span></a>
+                    </div>
+                    <div class="connectLines">
+                        <hr>
+                    </div>
+                </span>
+        </div>
+        <div class="col-md-1" style="margin-left: 25px">
+                <span>
+                    <div class="doted" style="cursor:pointer">
+                        <a><span class="dot_unChecked" ng-click="verification()"></span></a>
+                    </div>
+                    <div class="connectLines">
+                        <hr>
+                    </div>
+                </span>
+        </div>
+        <div class="col-md-1" style="margin-left: 25px">
+                <span>
+                    <div class="doted" style="cursor:pointer">
+                        <a><span class="dot_unChecked" ng-click="payDeposit()"></span></a>
+                    </div>
+                    <div class="connectLines">
+                        <hr>
+                    </div>
+                </span>
+        </div>
+        <div class="col-md-1" style="cursor:pointer;margin-left: 25px">
+                <span>
+                    <div class="doted">
+                        <a><span class="dot_unChecked" ng-click="Alicence()"></span></a>
+                    </div>
+                    <div class="connectLines">
+                        <hr>
+                    </div>
+                </span>
+        </div>
+        <div class="col-md-1" style="cursor:pointer;margin-left: 25px">
+                <span>
+                    <div class="doted">
+                        <a><span class="dot_unChecked" ng-click="workProgress()"></span></a>
+                    </div>
+                    <div class="connectLines">
+                        <hr>
+                    </div>
+                </span>
+        </div>
+        <div class="col-md-1" style="cursor:pointer;margin-left: 25px">
+                <span>
+                    <div class="doted">
+                        <a><span class="dot_unChecked" ng-click="acceptance()"></span></a>
+                    </div>
+                    <div class="connectLines">
+                        <hr>
+                    </div>
+                </span>
+        </div>
+        <div class="col-md-1" style="margin-left: 25px">
+                <span>
+                    <div class="doted">
+                        <a><span class="dot_unChecked" ng-click="costClearing()"></span></a>
+                    </div>
+                </span>
+        </div>
+    </div>
+    <div class="clear"></div>
+</div>
+<div class="row" ng-show="show1">
+    <div class="row">
+        <div class="complaint_user rightpadding">
+            <!--业主信息-->
+            <div class="architecture_table_padding">
+                <div class="row padding_lease"  >
+                    <div class="lease_search_height overflow_y">
+                        <div class="info_lista" ng-repeat="item in HouseNew">
+                            <div class="media-left">
+                                <a href="#">
+                                    <img src="images/propertyService/choiceHousing/u81.jpg" width="50px;" height="50px" style="margin-top: 5px;">
+                                </a>
+                            </div>
+                            <div class="media-body" >
+                                <div class="row">
+                                    <div class="col-md-6">房屋地址：{{item.houseAddress}}</div>
+                                    <div class="col-md-3">业主姓名：{{user.name}}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-3">房屋编码：{{item.houseNum}}</div>
+                                    <div class="col-md-3"  ng-switch on="item.joinGangState">入伙状态：
+                                        <span ng-switch-when="0">已入伙</span>
+                                        <span ng-switch-when="1">没入伙</span>
+                                    </div>
+                                    <div class="col-md-3">竣工面积:{{item.houseArea}}</div>
+                                    <div class="col-md-3">房屋户型:{{item.houseName}}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--业主信息 结束-->
+
+            <!--下一步按钮-->
+            <div class="save_concel_botton contract_detail_botton">
+                <a href="" class="radius_all button_bule">取消</a>
+                <a href="" class="radius_all button_bule">下一步</a>
+                <div class="clear"></div>
+            </div>
+            <!--下一步按钮 结束-->
+
+        </div>
+    </div>
+</div>
+<div class="row" ng-show="show2">
+    <div class="row">
+        <div  class="complaint_user rightpadding"  >
+            <!--房屋地址表格-->
+            <div class="row">
+                <div class="col-md-6">
+                    <span>房屋地址：</span>
+                </div>
+                <div class="col-md-6">
+                    <span>可加建范围：无</span>
+                </div>
+            </div>
+            <div class="table">
+                <table width="100%" >
+                    <tr class="table_nav">
+                        <td>装修图纸管理</td>
+                        <td>户型图</td>
+                        <td>水路图</td>
+                        <td>电路图</td>
+                    </tr>
+                    <tr>
+                        <td>原图</td>
+                        <td><span class="glyphicon glyphicon-plus" data-toggle="modal" data-target="#ddd" style="cursor:pointer"  ng-click="QuoteOrdersfile()"></span></td>
+                        <td><span class="glyphicon glyphicon-plus" data-toggle="modal" data-target="#ddd" style="cursor:pointer"  ng-click="QuoteOrdersfile()"></span></td>
+                        <td><span class="glyphicon glyphicon-plus" data-toggle="modal" data-target="#ddd" style="cursor:pointer"  ng-click="QuoteOrdersfile()"></span></td>
+                    </tr>
+                    <tr>
+                        <td>设计图</td>
+                        <td><span class="glyphicon glyphicon-plus" data-toggle="modal" data-target="#ddd" style="cursor:pointer"  ng-click="QuoteOrdersfile()"></span></td>
+                        <td><span class="glyphicon glyphicon-plus" data-toggle="modal" data-target="#ddd" style="cursor:pointer"  ng-click="QuoteOrdersfile()"></span></td>
+                        <td><span class="glyphicon glyphicon-plus" data-toggle="modal" data-target="#ddd" style="cursor:pointer"  ng-click="QuoteOrdersfile()"></span></td>
+                    </tr>
+                </table>
+            </div>
+            <!--房屋地址表格 结束-->
+
+            <!--装修对象表格-->
+            <span>装修对象选择：</span>
+            <div class="table">
+                <table width="100%">
+                    <tr class="table_nav">
+                        <td>建筑组建名称</td>
+                        <td>建筑组建编号</td>
+                        <td>选择</td>
+
+                    </tr>
+                    <tr>
+                        <td>获取组建名称(客厅)</td>
+                        <td></td>
+                        <td>
+                            <input type="checkbox" style="width:15px;height: 15px;">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">全部装修</td>
+                    </tr>
+                </table>
+            </div>
+            <!--装修对象表格 结束-->
+
+            <!--条件搜索-->
+            <div class="row">
+                <div class="row form_list_three clear">
+                    <ul>
+                        <li>
+                            <div class="col-lg-4 col-md-4 col-sm-4">装修类型：</div>
+                            <div class="col-lg-3 col-md-3 col-sm-3">
+                                <input type="radio" name="1" class="checkboxa" value="0">
+                                <span>自装</span>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3">
+                                <input type="radio" name="1" class="checkboxa" value="1">
+                                <span>工装</span>
+                            </div>
+                            <div class="clear"></div>
+                        </li>
+                        <li>
+                            <span>拆墙面积：</span>
+                            <input>m2
+                        </li>
+                    </ul>
+                </div>
+                <div class="form_list_three clear">
+                    <ul>
+                        <li>
+                            <span>选择装修单位：</span>
+                            <select>
+                                <option>中国电信</option>
+                                <option>中国联通</option>
+                                <option>中国移动</option>
+                            </select>
+                        </li>
+                        <li>
+                            <span>现场负责人：</span>
+                            <select>
+                                <option>脑残</option>
+                                <option>脑抽</option>
+                                <option>脑缺</option>
+                            </select>
+                        </li>
+                        <li>
+                            <span>公式法人：脑残</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!--条件搜索 结束-->
+
+            <!--装修人员-->
+            <div class="table">
+                <span>现场装修人员：</span>
+                <table width="100%">
+                    <tr class="table_nav">
+                        <td>装修人员姓名</td>
+                        <td>装修人员电话</td>
+                    </tr>
+                    <tr>
+                        <td>脑残</td>
+                        <td>1311111111</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <span class="glyphicon glyphicon-plus"  data-toggle="modal" data-target="#free" style="cursor:pointer"></span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <!--装修人员 结束-->
+
+            <!--装修单位-->
+            <div class="table">
+                <span>装修单位提交资料：</span>
+                <table width="100%">
+                    <tr class="table_nav">
+                        <td></td>
+                        <td>消防批文</td>
+                        <td>装修图纸</td>
+                        <td>动火协议</td>
+                        <td>合同文件</td>
+                        <td>其他</td>
+                    </tr>
+                    <tr>
+                        <td>文件</td>
+                        <td><span class="glyphicon glyphicon-plus" data-toggle="modal" data-target="#ddd" style="cursor:pointer"  ng-click="QuoteOrdersfile()"></span></td>
+                        <td><span class="glyphicon glyphicon-plus" data-toggle="modal" data-target="#ddd" style="cursor:pointer"  ng-click="QuoteOrdersfile()"></span></td>
+                        <td><span class="glyphicon glyphicon-plus" data-toggle="modal" data-target="#ddd" style="cursor:pointer"  ng-click="QuoteOrdersfile()"></span></td>
+                        <td><span class="glyphicon glyphicon-plus" data-toggle="modal" data-target="#ddd" style="cursor:pointer"  ng-click="QuoteOrdersfile()"></span></td>
+                        <td><span class="glyphicon glyphicon-plus" data-toggle="modal" data-target="#ddd" style="cursor:pointer"  ng-click="QuoteOrdersfile()"></span></td>
+                    </tr>
+                </table>
+            </div>
+            <!--装修单位  结束-->
+            <div class="form_list_three clear">
+                <ul>
+                    <li>
+                        <span>装修预计开始时间：</span>
+                        <input type="datetime-local" >
+                    </li>
+                    <li>
+                        <span>装修预计结束时间：</span>
+                        <input type="datetime-local" >
+                    </li>
+
+                </ul>
+            </div>
+            <!--下一步按钮-->
+            <div class="save_concel_botton contract_detail_botton">
+                <a href="" class="radius_all button_bule">取消</a>
+                <a href="" class="radius_all button_bule">下一步</a>
+                <div class="clear"></div>
+            </div>
+            <!--下一步按钮  结束-->
+        </div>
+    </div>
+    <!--附件-->
+    <div class="modal fade" id="ddd" tabindex="-1" role="dialog"
+         aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width: 80%">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close"
+                            data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title">
+                        上传
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <div id="zyupload" class="zyupload"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default" data-dismiss="modal"  ng-click="updateRollOut()">提交</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                    </button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+    <!--添加装修人员-->
+    <div class="modal fade" id="free" tabindex="-1" role="dialog"
+         aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close"
+                            data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title">
+                        添加装修人员
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+
+                        <div  col-md-4>
+                            <div>装修人员姓名：<input placeholder="请输入内容"></div>
+                            <label></label>
+                        </div>
+                        <div  col-md-4>
+                            <div>装修人员电话：<input placeholder="请输入内容"></div>
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default" data-dismiss="modal"  ng-click="updateRollOut()">提交</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                    </button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+</div>
+<div class="row" ng-show="show3">
+    <div class="row">
+        <div class="complaint_user">
+            <div class="complaint_user_list check_box"data-toggle="tab" href="#">
+
+                <div class="text_top">
+                    <span>等待核查任务完成</span>
+                </div>
+
+            </div>
+            <div class="complaint_user_list check_box" data-toggle="tab" href="#">
+                <div class="text_top">
+                    <a data-target="#addProject"  data-toggle="modal" style="cursor:pointer">填写核查结果</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--填写结果模态框-->
+    <div class="modal fade" id="addProject" role="dialog" aria-label="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width: 700px">
+            <div class="modal-content">
+                <div class="modal-header" style="height: 50px">
+                    填写结果
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-6">
+                            <div class="row form_list_three clear ">
+                                <ul>
+                                    <li>
+                                        <span class="text_mid">工单号：29887654</span>
+                                        <div class="clear"></div>
+                                    </li>
+                                    <li>
+                                        <span>负责人：脑残</span>
+                                        <div class="clear"></div>
+                                    </li>
+                                    <li>
+                                        <span>预约时间：2015/5/5</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="table">
+                                <table width="100%">
+                                    <tr class="table_nav">
+                                        <td>核查编号</td>
+                                        <td>核查事项</td>
+                                        <td>核查结果</td>
+                                    </tr>
+                                    <tr>
+                                        <td>001</td>
+                                        <td>
+                                            <div class="col-md-4">
+                                                <span>拆墙面积：</span>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <input>
+                                            </div>
+                                        </td>
+                                        <td><input></td>
+                                    </tr>
+                                    <tr>
+                                        <td>002</td>
+                                        <td>
+                                            <div class="col-md-4">
+                                                <span>拆墙面积：</span>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <input>
+                                            </div>
+                                        </td>
+                                        <td><input></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <button>上传修改图纸</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="save_concel_botton" style="float:right">
+                        <a href="" class="radius_all button_bule" data-target="#addProjectOne"  data-toggle="modal" style="cursor:pointer">确定</a>
+                        <a href="" class="radius_all button_bule">取消</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--填写结果模态框结束-->
+    <!--填写结果确定模态框-->
+    <div class="modal fade" id="addProjectOne" role="dialog" aria-label="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width: 700px">
+            <div class="modal-content">
+                <div class="modal-header" style="height: 50px">
+                    结果
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-6">
+                            <div class="row form_list_three clear ">
+                                <ul>
+                                    <li>
+                                        <span class="text_mid">工单号：29887654</span>
+                                        <div class="clear"></div>
+                                    </li>
+                                    <li>
+                                        <span>负责人：脑残</span>
+                                        <div class="clear"></div>
+                                    </li>
+                                    <li>
+                                        <span>预约时间：2015/5/5</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="table">
+                                <table width="100%">
+                                    <tr class="table_nav">
+                                        <td>核查编号</td>
+                                        <td>核查事项</td>
+                                        <td>核查结果</td>
+                                    </tr>
+                                    <tr>
+                                        <td>001</td>
+                                        <td>
+                                            <span>拆墙面积：1m</span>
+                                        </td>
+                                        <td><span>正常</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>002</td>
+                                        <td>
+                                            <span>拆墙面积：5</span>
+                                        </td>
+                                        <td><span>正常</span></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <span>上传修改图纸</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="save_concel_botton" style="float:right">
+                        <a href="" class="radius_all button_bule">上一步</a>
+                        <a href="" class="radius_all button_bule">取消</a>
+                        <a href="" class="radius_all button_bule">下一步</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--填写结果确定模态框结束-->
+</div>
+<div class="row" ng-show="show4">
+    <div class="row">
+        <div class="complaint_user_list building_padding">
+            <!--收费表格-->
+            <div class="table">
+                <table width="100%">
+                    <tr class="table_nav">
+                        <td>收费编码</td>
+                        <td>收费名称</td>
+                        <td>收费金额</td>
+                    </tr>
+                    <tr>
+                        <td>sz001</td>
+                        <td>临时水表押金</td>
+                        <td>200元</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3"><span class="glyphicon glyphicon-plus"></span></td>
+                    </tr>
+                </table>
+            </div>
+            <!--收费表格 结束-->
+
+            <!--备注说明-->
+            <div class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-8">
+                    <div class="row">
+                        <span>备注说明：</span>
+                    </div>
+                    <div class="row">
+                        <textarea placeholder="备注说明" class="textarea_width"></textarea>
+                    </div>
+                </div>
+            </div>
+            <span class="icon_float">共计：4000元</span>
+            <!--备注说明 结束-->
+
+            <!--收费信息-->
+            <div class="form_list_three clear">
+                <ul>
+                    <li><span>收费人：范冰冰</span> </li>
+                    <li><span>收费时间：2015年4月8日</span></li>
+                </ul>
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-default"  ui-sref="index.propertyService.staffHome.decorate.decoration.Alicence">确认收费并打印</button>
+            </div>
+            <!--收费信息 结束-->
+        </div>
+    </div>
+</div>
+<div class="row" ng-show="show5">
+    <div class="row">
+        <div class="complaint_user">
+            <div class="building_padding">
+                <div class="text_center">
+                    <span><strong class="font_20">施工备案证</strong></span>
+                </div>
+                <div>
+                    <div class="col-lg-4 col-md-4 col-sm-4">
+                        <div class="row print_left">
+                            <div class="text_title">
+                                <span class="text_center">管理处存根</span>
+                            </div>
+                            <div class="form_list">
+                                <ul>
+                                    <li><span>施工单位：</span><input placeholder="施工单位"></li>
+                                    <li><span>备案证号：</span><input placeholder="备案证号"></li>
+                                    <li><span>办证人：</span><input placeholder="办证人"></li>
+                                    <li><span>办证日期：</span><input type="datetime-local"></li>
+                                    <li><span>有效期</span><input type="datetime-local"></li>
+                                    <li><span></span><span class="text_right">----</span></li>
+                                    <li><span></span><input type="datetime-local"></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-8 col-md-8 col-sm-8">
+                        <div class="print_left building_padding"">
+                        <div>
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                <span>物业公司名称：</span>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                <span>证件号：</span>
+                            </div>
+                        </div>
+                        <div class="print_table building_padding">
+                            <table width="100%" class="text_center">
+                                <tr>
+                                    <td>业主名称：</td>
+                                    <td>赵脑残</td>
+                                    <td>装修地址：</td>
+                                    <td>武汉市武昌区</td>
+                                    <td>开工日期：</td>
+                                    <td>2015.05.05</td>
+                                </tr>
+                                <tr>
+                                    <td>装修单位：</td>
+                                    <td>软件园</td>
+                                    <td>现场负责人：</td>
+                                    <td>钱脑残</td>
+                                    <td>消防批文号：</td>
+                                    <td>NC_941</td>
+                                </tr>
+                                <tr>
+                                    <td>环保批文号：</td>
+                                    <td colspan="5"></td>
+                                </tr>
+                                <tr>
+                                    <td>装修项目：</td>
+                                    <td colspan="5"></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="6">。。。。。。。。。。。。。。。</td>
+                                </tr>
+                                <tr>
+                                    <td>签发人：</td>
+                                    <td colspan="2"></td>
+                                    <td>客户服务签章</td>
+                                    <td colspan="2">&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td>备注：</td>
+                                    <td colspan="5"></td>
+                                </tr>
+                            </table>
+                            <span class="center">注： 此证须规范张贴在施工现场。此证的发出，并不代表贵户可豁免相关的法律责任。</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center;margin-top: 30px">
+                <button type="button" class="btn btn-default">打印</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row" ng-show="show6">
+    <div class="row">
+        <div class="complaint_user">
+            <div class="building_padding">
+                <!--装修过程巡检表-->
+                <div class="table">
+                    <table width="100%">
+                        <tr class="table_nav">
+                            <td>巡检人</td>
+                            <td>巡检时间</td>
+                            <td>业主</td>
+                            <td>巡检地址</td>
+                            <td>巡检结果</td>
+                        </tr>
+                        <tr>
+                            <td>何大义</td>
+                            <td>2015-08-0112:00</td>
+                            <td>周润发</td>
+                            <td>桃源居一区一栋101</td>
+                            <td><a href="#" ng-click="addCheck()">正常</a></td>
+                        </tr>
+                        <tr>
+                            <td>何大义</td>
+                            <td>2015-08-0112:00</td>
+                            <td>周润发</td>
+                            <td>桃源居一区一栋102</td>
+                            <td><a href="#">异常</a></td>
+                        </tr>
+                    </table>
+                </div>
+                <!--装修过程巡检表  结束-->
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row" ng-show="show7">
+    <div class="row">
+        <div class="complaint_user">
+            <div class="building_padding">
+                <!--检查项表   radio 样式需修改-->
+                <div class="table">
+                    <table width="100%">
+                        <tr class="table_nav">
+                            <td>检查项</td>
+                            <td>是否进行</td>
+                            <td>是否异常</td>
+                        </tr>
+                        <tr>
+                            <td>1、拆墙</td>
+                            <td><input type="radio" style="width:15px;height:15px"><span>进行</span></td>
+                            <td><input type="radio"style="width:15px;height:15px"><span>异常</span></td>
+                        </tr>
+                        <tr>
+                            <td>2、电路安装、改造</td>
+                            <td><input type="radio"style="width:15px;height:15px"><span>进行</span></td>
+                            <td><input type="radio"style="width:15px;height:15px"><span>异常</span></td>
+                        </tr>
+                        <tr>
+                            <td>3、给水管安装、改造</td>
+                            <td><input type="radio"style="width:15px;height:15px"><span>进行</span></td>
+                            <td><input type="radio"style="width:15px;height:15px"><span>异常</span></td>
+                        </tr>
+                        <tr>
+                            <td>4、排水管安装、改造</td>
+                            <td><input type="radio"style="width:15px;height:15px"><span>进行</span></td>
+                            <td><input type="radio"style="width:15px;height:15px"><span>异常</span></td>
+                        </tr>
+                        <tr>
+                            <td>5、防水处理</td>
+                            <td><input type="radio"style="width:15px;height:15px"><span>进行</span></td>
+                            <td><input type="radio"style="width:15px;height:15px"><span>异常</span></td>
+                        </tr>
+                        <tr>
+                            <td>6、泥水施工</td>
+                            <td><input type="radio"style="width:15px;height:15px"><span>进行</span></td>
+                            <td><input type="radio"style="width:15px;height:15px"><span>异常</span></td>
+                        </tr>
+                        <tr>
+                            <td>7、阳台封闭施工</td>
+                            <td><input type="radio"style="width:15px;height:15px"><span>进行</span></td>
+                            <td><input type="radio"style="width:15px;height:15px"><span>异常</span></td>
+                        </tr>
+                        <tr>
+                            <td>8、竣工泡水情况</td>
+                            <td><input type="radio"style="width:15px;height:15px"><span>进行</span></td>
+                            <td><input type="radio"style="width:15px;height:15px"><span>异常</span></td>
+                        </tr>
+                        <tr>
+                            <td>9、木工施工</td>
+                            <td><input type="radio"style="width:15px;height:15px"><span>进行</span></td>
+                            <td><input type="radio"style="width:15px;height:15px"><span>异常</span></td>
+                        </tr>
+                        <tr><td colspan="3"><span class="glyphicon glyphicon-plus"></span></td></tr>
+                    </table>
+                </div>
+                <!--检查项表  结束-->
+
+                <!--建议函-->
+                <span>是否建议发函</span>
+                <div class="table">
+                    <table width="100%">
+                        <tr class="table_nav">
+                            <td>函件名</td>
+                            <td>是否建议发函</td>
+                        </tr>
+                        <tr>
+                            <td>《装修整改通知》</td>
+                            <td><input type="radio"style="width:15px;height:15px"><span>建议发函</span></td>
+                        </tr>
+                        <tr>
+                            <td>《装修违约通知书》</td>
+                            <td><input type="radio"style="width:15px;height:15px"><span>建议发函</span></td>
+                        </tr>
+                        <tr>
+                            <td>《装修违约罚款通知》</td>
+                            <td><input type="radio"style="width:15px;height:15px"><span>建议发函</span></td>
+                        </tr>
+                        <tr>
+                            <td>《装修停工通知》</td>
+                            <td><input type="radio"style="width:15px;height:15px"><span>建议发函</span></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="row">
+                    <div class="col-lg-2 col-md-2 col-sm-2">
+                        <span>巡检结果是否正常</span>
+                    </div>
+                    <div class="col-lg-1 col-md-1 col-sm-1">
+                        <input type="radio" name="1" class="checkboxa"><span>正常</span>
+                    </div>
+                    <div class="col-lg-1 col-md-1 col-sm-1">
+                        <input type="radio" name="1" class="checkboxa"><span>异常</span>
+                    </div>
+                </div>
+                <!--建议函  结束-->
+
+                <!--备注-->
+                <div class="row">
+                    <div class="col-md-4"></div>
+                    <div class="col-md-8">
+                        <div class="row">
+                            <span>备注说明：</span>
+                        </div>
+                        <div class="row">
+                            <textarea placeholder="备注说明" class="textarea_width"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <!--备注结束-->
+
+                <span>附件：</span>
+
+                <div class="row save_concel_botton">
+                    <a class="radius_all button_bule cursor:pointer">确定</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row" ng-show="show8">
+    <div class="row">
+        <div class="complaint_user">
+            <div class="complaint_user_list check_box"data-toggle="tab" href="#">
+
+                <div class="text_top">
+                    <span>等待验收任务完成</span>
+                </div>
+
+            </div>
+            <div class="complaint_user_list check_box" data-toggle="tab" href="#">
+                <div class="text_top">
+                    <a data-target="#addProject"  data-toggle="modal" style="cursor:pointer">填写验收结果</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--填写结果模态框-->
+    <div class="modal fade" id="addProject" role="dialog" aria-label="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width: 700px">
+            <div class="modal-content">
+                <div class="modal-header" style="height: 50px">
+                    填写结果
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-6">
+                            <div class="row form_list_three clear ">
+                                <ul>
+                                    <li>
+                                        <span class="text_mid">工单号：29887654</span>
+                                        <div class="clear"></div>
+                                    </li>
+                                    <li>
+                                        <span>负责人：脑残</span>
+                                        <div class="clear"></div>
+                                    </li>
+                                    <li>
+                                        <span>预约时间：2015/5/5</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="table">
+                                <table width="100%">
+                                    <tr class="table_nav">
+                                        <td>核查编号</td>
+                                        <td>核查事项</td>
+                                        <td>核查结果</td>
+                                    </tr>
+                                    <tr>
+                                        <td>001</td>
+                                        <td>
+                                            <div class="col-md-4">
+                                                <span>拆墙面积：</span>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <input>
+                                            </div>
+                                        </td>
+                                        <td><input></td>
+                                    </tr>
+                                    <tr>
+                                        <td>002</td>
+                                        <td>
+                                            <div class="col-md-4">
+                                                <span>拆墙面积：</span>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <input>
+                                            </div>
+                                        </td>
+                                        <td><input></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <button>上传修改图纸</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="save_concel_botton" style="float:right">
+                        <a href="" class="radius_all button_bule" data-target="#addProjectOne"  data-toggle="modal" style="cursor:pointer">确定</a>
+                        <a href="" class="radius_all button_bule">取消</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--填写结果模态框结束-->
+    <!--填写结果确定模态框-->
+    <div class="modal fade" id="addProjectOne" role="dialog" aria-label="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width: 700px">
+            <div class="modal-content">
+                <div class="modal-header" style="height: 50px">
+                    结果
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-6">
+                            <div class="row form_list_three clear ">
+                                <ul>
+                                    <li>
+                                        <span class="text_mid">工单号：29887654</span>
+                                        <div class="clear"></div>
+                                    </li>
+                                    <li>
+                                        <span>负责人：脑残</span>
+                                        <div class="clear"></div>
+                                    </li>
+                                    <li>
+                                        <span>预约时间：2015/5/5</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="table">
+                                <table width="100%">
+                                    <tr class="table_nav">
+                                        <td>核查编号</td>
+                                        <td>核查事项</td>
+                                        <td>核查结果</td>
+                                    </tr>
+                                    <tr>
+                                        <td>001</td>
+                                        <td>
+                                            <span>拆墙面积：1m</span>
+                                        </td>
+                                        <td><span>正常</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>002</td>
+                                        <td>
+                                            <span>拆墙面积：5</span>
+                                        </td>
+                                        <td><span>正常</span></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <span>上传修改图纸</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="save_concel_botton" style="float:right">
+                        <a href="" class="radius_all button_bule">上一步</a>
+                        <a href="" class="radius_all button_bule">取消</a>
+                        <a href="" class="radius_all button_bule">下一步</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--填写结果确定模态框结束-->
+</div>
+<div class="row" ng-show="show9">
+    <div class="row">
+        <div class="complaint_user">
+            <div class="building_padding">
+                <div class="col-md-6">
+                    <div class="table">
+                        <table width="100%">
+                            <tr class="table_nav">
+                                <td>收费编码</td>
+                                <td>收费名称</td>
+                                <td>收费金额</td>
+                            </tr>
+
+                            <tr ng-repeat="items in Charge">
+                                <td class="col-md-4">{{items.chargeCode}}</td>
+                                <td class="col-md-4">{{items.chargeName}}</td>
+                                <td class="col-md-4">{{items.chargeamount}}</td>
+                            </tr>
+                            <tr>
+                                <td>实收费用合计</td>
+                                <td></td>
+                                <td>1900元</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="table">
+                        <table width="100%">
+                            <tr  class="table_nav">
+                                <td colspan="2">扣款金额</td>
+                            </tr>
+                            <tr ng-repeat="items5 in Charge">
+                                <!--<td class="col-md-4">{{items5.paymentId}}</td>-->
+                                <td>{{items5.paymentName}}</td>
+                                <td>{{items5.paymentamount}}</td>
+                            </tr>
+
+                            <tr>
+                                <td>扣款金额合计</td>
+                                <td>1300元</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="col-md-2" style="margin-left: 30px"> <span >应收金额：1300元 </span></div>
+                    <div class="col-md-2" style="margin-left: 30px"> <span >应退押金：4000元 </span></div>
+                    <div class="col-md-2">  <span >实退金额：<input style="width: 50px;height: 25px"></span></div>
+                    <div class="col-md-3">    <span>结算时间：2015年4月8日</span></div>
+                    <div class="col-md-2"> <span >结算人：范冰冰 </span></div>
+
+
+                </div>
+                <div class="col-md-offset-10" style="margin-top: 10px;margin-bottom: 10px"><button type="submit" class="btn btn-default">提交并打印</button></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--<div class="row">-->
+    <!--<div style="padding:0px 30px 0;">-->
+        <!--<div ui-view></div>-->
+    <!--</div>-->
+</div>
+</body>
+</html>

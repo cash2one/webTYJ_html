@@ -1,0 +1,1190 @@
+<!--作者：陶勇超
+名称：质检管理-全部部门质检服务请求
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        .littleTitle{width: 200px; background-color: rgb(2,159,240);color: #fff;border-radius: 4px;}
+        .departmentAddShow{margin:50px 10px;border-top:2px solid rgb(2,159,240);border-bottom: 2px solid rgb(2,159,240);width: 97%;;background-color: #fff;}
+    </style>
+</head>
+<body>
+
+    <div id="content-first">
+        <!--tab页切换开始-->
+        <div id="tab">
+            <a ng-click="showClean()">清洁</a>
+            <a  ng-click="showGarden()">园林</a>
+            <a ng-click="showSecurity()">安保</a>
+            <a ng-click="showMaintenance()">维修</a>
+            <a href="# " lang="no">客服</a>
+        </div>
+        <div class="padding">
+            <div class="search-padding-10">
+                <a ui-sref="index.serviceRequest.departmentOfQualityManagement.createDepartmentInspectionServiceRequests">
+                    <button type="button" class="btn btn-default btn-primary tab-btn">
+                        <span class="glyphicon glyphicon-plus btn_icon"></span>
+                        新建部门质检服务请求
+                    </button>
+                </a>
+            </div>
+            <div ng-show="maintenances">
+            <div class="contract_panner">
+                <div class="contract_detail_nav">
+                    <a>维修日检</a>
+                    <div class="clear"></div>
+                </div>
+                <div class="row rightpadding">
+                    <div class="col-lg-4 col-md-6 col-sm-6" ng-repeat="maintain3 in maintenanceDayCheck"  ng-click="clickCheck(maintain3.serviceRequestId)">
+                        <div id="pannel">
+                            <div class="title">
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 " >
+                                    <h3>维修日检</h3>
+                                </div>
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                    <span class="glyphicon glyphicon-chevron-down"></span>
+                                </div>
+                            </div>
+                            <div class="pannel_content">
+                                <div class="dot">
+                                    <div class="clear"></div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <img style="width: 80px;height: 80px" src="images/img/img_04.png">
+                                </div>
+                                <div class="col-lg-8 col-md-8 col-sm-8">
+                                    <ul>
+                                        <li>名称：{{maintain3.serviceRequestName}}</li>
+                                        <li>状态：有效</li>
+                                        <li>创建人：老王</li>
+                                        <li>创建时间：{{maintain3.requestTime}}</li>
+                                        <li>备注：{{maintain3.remarks}}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="contract_panner">
+                <div class="contract_detail_nav">
+                    <a>维修周检</a>
+                    <div class="clear"></div>
+                </div>
+                <div class="row rightpadding">
+                    <div class="col-lg-4 col-md-6 col-sm-6" ng-repeat="maintain2 in maintenanceWeekCheck"  ng-click="clickCheck(maintain2.serviceRequestId)">
+                        <div id="pannel">
+                            <div class="title">
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                    <h3>项目信息</h3>
+                                </div>
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                    <span class="glyphicon glyphicon-chevron-down"></span>
+                                </div>
+                            </div>
+                            <div class="pannel_content">
+                                <div class="dot">
+                                    <div class="clear"></div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <img style="width: 80px;height: 80px" src="images/img/img_04.png">
+                                </div>
+                                <div class="col-lg-8 col-md-8 col-sm-8">
+                                    <ul>
+                                        <li>名称：{{maintain2.serviceRequestName}}</li>
+                                        <li>状态：有效</li>
+                                        <li>创建人：老王</li>
+                                        <li>创建时间：{{maintain2.requestTime}}</li>
+                                        <li>备注：{{maintain2.remarks}}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="contract_panner">
+                <div class="contract_detail_nav">
+                    <a>维修双周检</a>
+                    <div class="clear"></div>
+                </div>
+                <div class="row rightpadding">
+                    <div class="col-lg-4 col-md-6 col-sm-6" ng-repeat="maintain1 in maintenanceHalfMonthCheck"  ng-click="clickCheck(maintain1.serviceRequestId)">
+                        <div id="pannel">
+                            <div class="title">
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                    <h3>项目信息</h3>
+                                </div>
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                    <span class="glyphicon glyphicon-chevron-down"></span>
+                                </div>
+                            </div>
+                            <div class="pannel_content">
+                                <div class="dot">
+                                    <div class="clear"></div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <<img style="width: 80px;height: 80px" src="images/img/img_04.png">
+                                </div>
+                                <div class="col-lg-8 col-md-8 col-sm-8">
+                                    <ul>
+                                        <li>名称：{{maintain1.serviceRequestName}}</li>
+                                        <li>状态：有效</li>
+                                        <li>创建人：老王</li>
+                                        <li>创建时间：{{maintain1.requestTime}}</li>
+                                        <li>备注：{{maintain1.remarks}}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="contract_panner">
+                <div class="contract_detail_nav">
+                    <a>维修月检</a>
+                    <div class="clear"></div>
+                </div>
+                <div class="row rightpadding">
+                    <div class="col-lg-4 col-md-6 col-sm-6" ng-repeat="maintain in maintenanceMonthCheck"  ng-click="clickCheck(maintain.serviceRequestId)">
+                        <div id="pannel">
+                            <div class="title">
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                    <h3>维修月检</h3>
+                                </div>
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                    <span class="glyphicon glyphicon-chevron-down"></span>
+                                </div>
+                            </div>
+                            <div class="pannel_content">
+                                <div class="dot">
+                                    <div class="clear"></div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <img style="width: 80px;height: 80px" src="images/img/img_04.png">
+                                </div>
+                                <div class="col-lg-8 col-md-8 col-sm-8">
+                                    <ul>
+                                        <li>名称：{{maintain.serviceRequestName}}</li>
+                                        <li>状态：有效</li>
+                                        <li>创建人：老王</li>
+                                        <li>创建时间：{{maintain.requestTime}}</li>
+                                        <li>备注：{{maintain.remarks}}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            </div>
+            <div ng-show="cleans">
+                <div class="contract_panner">
+                    <div class="contract_detail_nav">
+                        <a>清洁日检</a>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="row rightpadding">
+                        <div class="col-lg-4 col-md-6 col-sm-6" ng-repeat="clean3 in cleanDayCheck"  ng-click="clickCheck(clean3.serviceRequestId)">
+                            <div id="pannel">
+                                <div class="title">
+                                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 " >
+                                        <h3>清洁日检</h3>
+                                    </div>
+                                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                        <span class="glyphicon glyphicon-chevron-down"></span>
+                                    </div>
+                                </div>
+                                <div class="pannel_content">
+                                    <div class="dot">
+                                        <div class="clear"></div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-4">
+                                        <img style="width: 80px;height: 80px" src="images/img/img_04.png">
+                                    </div>
+                                    <div class="col-lg-8 col-md-8 col-sm-8">
+                                        <ul>
+                                            <li>名称：{{clean3.serviceRequestName}}</li>
+                                            <li>状态：有效</li>
+                                            <li>创建人：老王</li>
+                                            <li>创建时间：{{clean3.requestTime}}</li>
+                                            <li>备注：{{clean3.remarks}}</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="contract_panner">
+                    <div class="contract_detail_nav">
+                        <a>清洁周检</a>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="row rightpadding">
+                        <div class="col-lg-4 col-md-6 col-sm-6" ng-repeat="clean2 in cleanWeekCheck" ng-click="clickCheck(clean2.serviceRequestId)">
+                            <div id="pannel">
+                                <div class="title">
+                                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                        <h3>清洁周检</h3>
+                                    </div>
+                                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                        <span class="glyphicon glyphicon-chevron-down"></span>
+                                    </div>
+                                </div>
+                                <div class="pannel_content">
+                                    <div class="dot">
+                                        <div class="clear"></div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-4">
+                                        <img style="width: 80px;height: 80px" src="images/img/img_04.png">
+                                    </div>
+                                    <div class="col-lg-8 col-md-8 col-sm-8">
+                                        <ul>
+                                            <li>名称：{{clean2.serviceRequestName}}</li>
+                                            <li>状态：有效</li>
+                                            <li>创建人：老王</li>
+                                            <li>创建时间：{{clean2.requestTime}}</li>
+                                            <li>备注：{{clean2.remarks}}</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="contract_panner">
+                    <div class="contract_detail_nav">
+                        <a>清洁双周检</a>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="row rightpadding">
+                        <div class="col-lg-4 col-md-6 col-sm-6" ng-repeat="clean1 in cleanHalfMonthCheck"  ng-click="clickCheck(clean1.serviceRequestId)">
+                            <div id="pannel">
+                                <div class="title">
+                                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                        <h3>清洁双周检</h3>
+                                    </div>
+                                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                        <span class="glyphicon glyphicon-chevron-down"></span>
+                                    </div>
+                                </div>
+                                <div class="pannel_content">
+                                    <div class="dot">
+                                        <div class="clear"></div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-4">
+                                        <img style="width: 80px;height: 80px" src="images/img/img_04.png">
+                                    </div>
+                                    <div class="col-lg-8 col-md-8 col-sm-8">
+                                        <ul>
+                                            <li>名称：{{clean1.serviceRequestName}}</li>
+                                            <li>状态：有效</li>
+                                            <li>创建人：老王</li>
+                                            <li>创建时间：{{clean1.requestTime}}</li>
+                                            <li>备注：{{clean1.remarks}}</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="contract_panner">
+                    <div class="contract_detail_nav">
+                        <a>清洁月检</a>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="row rightpadding">
+                        <div class="col-lg-4 col-md-6 col-sm-6"  ng-repeat="clean in cleanMonthCheck"  ng-click="clickCheck(clean.serviceRequestId)">
+                            <div id="pannel">
+                                <div class="title">
+                                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                        <h3>清洁月检</h3>
+                                    </div>
+                                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                        <span class="glyphicon glyphicon-chevron-down"></span>
+                                    </div>
+                                </div>
+                                <div class="pannel_content">
+                                    <div class="dot">
+                                        <div class="clear"></div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-4">
+                                        <img style="width: 80px;height: 80px" src="images/img/img_04.png">
+                                    </div>
+                                    <div class="col-lg-8 col-md-8 col-sm-8">
+                                        <ul>
+                                            <li>名称：{{clean.serviceRequestName}}</li>
+                                            <li>状态：有效</li>
+                                            <li>创建人：老王</li>
+                                            <li>创建时间：{{clean.requestTime}}</li>
+                                            <li>备注：{{clean.remarks}}</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div ng-show="securities">
+                <div class="contract_panner">
+                    <div class="contract_detail_nav">
+                        <a>安保日检</a>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="row rightpadding">
+                        <div class="col-lg-4 col-md-6 col-sm-6" ng-repeat="security3 in securityDayCheck" ng-click="clickCheck(security3.serviceRequestId)">
+                            <div id="pannel">
+                                <div class="title">
+                                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 " >
+                                        <h3>安保日检</h3>
+                                    </div>
+                                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                        <span class="glyphicon glyphicon-chevron-down"></span>
+                                    </div>
+                                </div>
+                                <div class="pannel_content">
+                                    <div class="dot">
+                                        <div class="clear"></div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-4">
+                                        <img style="width: 80px;height: 80px" src="images/img/img_04.png">
+                                    </div>
+                                    <div class="col-lg-8 col-md-8 col-sm-8">
+                                        <ul>
+                                            <li>名称：{{security3.serviceRequestName}}</li>
+                                            <li>状态：有效</li>
+                                            <li>创建人：老王</li>
+                                            <li>创建时间：{{security3.requestTime}}</li>
+                                            <li>备注：{{security3.remarks}}</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="contract_panner">
+                    <div class="contract_detail_nav">
+                        <a>安保周检</a>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="row rightpadding">
+                        <div class="col-lg-4 col-md-6 col-sm-6"  ng-repeat="security2 in securityWeekCheck" ng-click="clickCheck(security2.serviceRequestId)">
+                            <div id="pannel">
+                                <div class="title">
+                                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                        <h3>安保周检</h3>
+                                    </div>
+                                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                        <span class="glyphicon glyphicon-chevron-down"></span>
+                                    </div>
+                                </div>
+                                <div class="pannel_content">
+                                    <div class="dot">
+                                        <div class="clear"></div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-4">
+                                        <img style="width: 80px;height: 80px" src="images/img/img_04.png">
+                                    </div>
+                                    <div class="col-lg-8 col-md-8 col-sm-8">
+                                        <ul>
+                                            <li>名称：{{security2.serviceRequestName}}</li>
+                                            <li>状态：有效</li>
+                                            <li>创建人：老王</li>
+                                            <li>创建时间：{{security2.requestTime}}</li>
+                                            <li>备注：{{security2.remarks}}</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="contract_panner">
+                    <div class="contract_detail_nav">
+                        <a>安保双周检</a>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="row rightpadding">
+                        <div class="col-lg-4 col-md-6 col-sm-6" ng-repeat="security1 in securityHalfMonthCheck" ng-click="clickCheck(security1.serviceRequestId)">
+                            <div id="pannel">
+                                <div class="title">
+                                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                        <h3>安保双周检</h3>
+                                    </div>
+                                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                        <span class="glyphicon glyphicon-chevron-down"></span>
+                                    </div>
+                                </div>
+                                <div class="pannel_content">
+                                    <div class="dot">
+                                        <div class="clear"></div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-4">
+                                        <img style="width: 80px;height: 80px" src="images/img/img_04.png">
+                                    </div>
+                                    <div class="col-lg-8 col-md-8 col-sm-8">
+                                        <ul>
+                                            <li>名称：{{security1.serviceRequestName}}</li>
+                                            <li>状态：有效</li>
+                                            <li>创建人：老王</li>
+                                            <li>创建时间：{{security1.requestTime}}</li>
+                                            <li>备注：{{security1.remarks}}</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="contract_panner">
+                    <div class="contract_detail_nav">
+                        <a>安保月检</a>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="row rightpadding">
+                        <div class="col-lg-4 col-md-6 col-sm-6"  ng-repeat="security in securityMonthCheck" ng-click="clickCheck(security.serviceRequestId)">
+                            <div id="pannel">
+                                <div class="title">
+                                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                        <h3>安保月检</h3>
+                                    </div>
+                                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                        <span class="glyphicon glyphicon-chevron-down"></span>
+                                    </div>
+                                </div>
+                                <div class="pannel_content">
+                                    <div class="dot">
+                                        <div class="clear"></div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-4">
+                                        <img style="width: 80px;height: 80px" src="images/img/img_04.png">
+                                    </div>
+                                    <div class="col-lg-8 col-md-8 col-sm-8">
+                                        <ul>
+                                            <li>名称：{{security.serviceRequestName}}</li>
+                                            <li>状态：有效</li>
+                                            <li>创建人：老王</li>
+                                            <li>创建时间：{{security.requestTime}}</li>
+                                            <li>备注：{{security.remarks}}</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div ng-show="gardens">
+                <div class="contract_panner">
+                    <div class="contract_detail_nav">
+                        <a>园林日检</a>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="row rightpadding">
+                        <div class="col-lg-4 col-md-6 col-sm-6" ng-repeat="garden0 in gardenDayCheck" ng-click="clickCheck(garden0.serviceRequestId)">
+                            <div id="pannel">
+                                <div class="title">
+                                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 " >
+                                        <h3>园林日检</h3>
+                                    </div>
+                                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                        <span class="glyphicon glyphicon-chevron-down"></span>
+                                    </div>
+                                </div>
+                                <div class="pannel_content">
+                                    <div class="dot">
+                                        <div class="clear"></div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-4">
+                                        <img style="width: 80px;height: 80px" src="images/img/img_04.png">
+                                    </div>
+                                    <div class="col-lg-8 col-md-8 col-sm-8">
+                                        <ul>
+                                            <li>名称：{{garden0.serviceRequestName}}</li>
+                                            <li>状态：有效</li>
+                                            <li>创建人：老王</li>
+                                            <li>创建时间：{{garden0.requestTime}}</li>
+                                            <li>备注：{{garden0.remarks}}</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="contract_panner">
+                    <div class="contract_detail_nav">
+                        <a>园林周检</a>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="row rightpadding">
+                        <div class="col-lg-4 col-md-6 col-sm-6"  ng-repeat="garden in gardenWeekCheck" ng-click="clickCheck(garden.serviceRequestId)">
+                            <div id="pannel">
+                                <div class="title">
+                                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                        <h3>园林周检</h3>
+                                    </div>
+                                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                        <span class="glyphicon glyphicon-chevron-down"></span>
+                                    </div>
+                                </div>
+                                <div class="pannel_content">
+                                    <div class="dot">
+                                        <div class="clear"></div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-4">
+                                        <img style="width: 80px;height: 80px" src="images/img/img_04.png">
+                                    </div>
+                                    <div class="col-lg-8 col-md-8 col-sm-8">
+                                        <ul>
+                                            <li>名称：{{garden.serviceRequestName}}</li>
+                                            <li>状态：有效</li>
+                                            <li>创建人：老王</li>
+                                            <li>创建时间：{{garden.requestTime}}</li>
+                                            <li>备注：{{garden.remarks}}</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="contract_panner">
+                    <div class="contract_detail_nav">
+                        <a>园林双周检</a>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="row rightpadding">
+                        <div class="col-lg-4 col-md-6 col-sm-6" ng-repeat="garden1 in gardenHalfMonthCheck"  ng-click="clickCheck(garden1.serviceRequestId)">
+                            <div id="pannel">
+                                <div class="title">
+                                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                        <h3>园林双周检</h3>
+                                    </div>
+                                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                        <span class="glyphicon glyphicon-chevron-down"></span>
+                                    </div>
+                                </div>
+                                <div class="pannel_content">
+                                    <div class="dot">
+                                        <div class="clear"></div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-4">
+                                        <img style="width: 80px;height: 80px" src="images/img/img_04.png">
+                                    </div>
+                                    <div class="col-lg-8 col-md-8 col-sm-8">
+                                        <ul>
+                                            <li>名称：{{garden1.serviceRequestName}}</li>
+                                            <li>状态：有效</li>
+                                            <li>创建人：老王</li>
+                                            <li>创建时间：{{garden1.requestTime}}</li>
+                                            <li>备注：{{garden1.remarks}}</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="contract_panner">
+                    <div class="contract_detail_nav">
+                        <a>园林月检</a>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="row rightpadding">
+                        <div class="col-lg-4 col-md-6 col-sm-6"  ng-repeat="garden2 in gardenMonthCheck" ng-click="clickCheck(garden2.serviceRequestId)">
+                            <div id="pannel">
+                                <div class="title">
+                                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                        <h3>园林月检</h3>
+                                    </div>
+                                    <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                        <span class="glyphicon glyphicon-chevron-down"></span>
+                                    </div>
+                                </div>
+                                <div class="pannel_content">
+                                    <div class="dot">
+                                        <div class="clear"></div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-4 col-sm-4">
+                                        <img style="width: 80px;height: 80px" src="images/img/img_04.png">
+                                    </div>
+                                    <div class="col-lg-8 col-md-8 col-sm-8">
+                                        <ul>
+                                            <li>名称：{{garden2.serviceRequestName}}</li>
+                                            <li>状态：有效</li>
+                                            <li>创建人：老王</li>
+                                            <li>创建时间：{{garden2.requestTime}}</li>
+                                            <li>备注：{{garden2.remarks}}</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<div>
+<!--    <div>
+        <div class="architecturepadding">
+            <div class="contract_panner charge_project">
+                <div class="contract_detail_nav">
+                    <a  ng-click="showGarden()">园林</a>
+                    <a ng-click="showClean()">清洁</a>
+                    <a ng-click="showSecurity()">安保</a>
+                    <a ng-click="showMaintenance()" >维修</a>
+                    <a lang="no">客服</a>
+                    <div class="clear"></div>
+                </div>
+                <div class="row rightpadding">
+                <button ui-sref="index.internalProfession.departmentOfQualityManagement.createDepartmentInspectionServiceRequests" class="btn btn-md pull-right littleTitle" style="width: 160px;margin:0 20px 0 0;">创建部门质检服务请求</button>
+               </div>
+
+    &lt;!&ndash;维修服务请求&ndash;&gt;
+    <div ng-show="maintenances">
+        <div class="rightpadding">
+        <div class="contract_panner charge_project">
+            <div  class="contract_detail_nav">
+                <a>维修日检</a>
+                <div class="clear"></div>
+            </div>
+            <div class="row rightpadding">
+                <div class="col-lg-4 col-md-4 col-sm-6" ng-repeat="maintain3 in maintenanceDayCheck"  ng-click="clickCheck(maintain3.serviceRequestId)">
+                    <div class="program_panel">
+                        <div class="program_panel_people_title">
+                            <span class="panel_title_left">维修日检</span>
+                        </div>
+                        <div class="program_panel_info">
+                            <div class="col-md-3">
+                                <div style="width: 80px;height: 80px;background-color: #ffffff;margin-top: 10px;padding: 5px">
+                                    <a ui-sref="index.externalProfession.departmentServiceRequestForDetails">
+                                        <p style="font-size: 18px;margin-left: 15px">质检</p>
+                                        <p style="font-size: 18px;margin-left: 15px">请求</p>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-md-offset-4">
+                                <p>创建时间：{{maintain3.requestTime}}</p>
+                                <p>服务请求名称：{{maintain3.serviceRequestName}}</p>
+                                <p>备注：{{maintain3.remarks}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+        <div class="rightpadding">
+                    <div class="contract_panner charge_project">
+                        <div  class="contract_detail_nav">
+                            <a>维修周检</a>
+                            <div class="clear"></div>
+                        </div>
+                        <div class="row rightpadding">
+                            <div class="col-lg-4 col-md-4 col-sm-6" ng-repeat="maintain2 in maintenanceWeekCheck"  ng-click="clickCheck(maintain2.serviceRequestId)">
+                                <div class="program_panel">
+                                    <div class="program_panel_people_title">
+                                        <span class="panel_title_left">维修周检</span>
+                                    </div>
+                                    <div class="program_panel_info">
+                                        <div class="col-md-3" style="margin-left: -10px" >
+                                            <div style="width: 80px;height: 80px;background-color: #ffffff;margin-top: 10px;padding: 5px">
+                                                <a ui-sref="index.externalProfession.departmentServiceRequestForDetails">
+                                                    <p style="font-size: 18px;margin-left: 15px">质检</p>
+                                                    <p style="font-size: 18px;margin-left: 15px">请求</p>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-offset-4">
+                                            <p>创建时间：{{maintain2.requestTime}}</p>
+                                            <p>服务请求名称：{{maintain2.serviceRequestName}}</p>
+                                            <p>备注：{{maintain2.remarks}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        <div class="rightpadding">
+                    <div class="contract_panner charge_project">
+                        <div  class="contract_detail_nav">
+                            <a>维修半月检</a>
+                            <div class="clear"></div>
+                        </div>
+                        <div class="row rightpadding">
+                            <div class="col-lg-4 col-md-4 col-sm-6" ng-repeat="maintain1 in maintenanceHalfMonthCheck"  ng-click="clickCheck(maintain1.serviceRequestId)">
+                                <div class="program_panel">
+                                    <div class="program_panel_people_title">
+                                        <span class="panel_title_left">维修周检</span>
+                                    </div>
+                                    <div class="program_panel_info">
+                                        <div class="col-md-3" style="margin-left: -10px" >
+                                            <div style="width: 80px;height: 80px;background-color: #ffffff;margin-top: 10px;padding: 5px">
+                                                <a ui-sref="index.externalProfession.departmentServiceRequestForDetails">
+                                                    <p style="font-size: 18px;margin-left: 15px">质检</p>
+                                                    <p style="font-size: 18px;margin-left: 15px">请求</p>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-offset-4">
+                                            <p>创建时间：{{maintain1.requestTime}}</p>
+                                            <p>服务请求名称：{{maintain1.serviceRequestName}}</p>
+                                            <p>备注：{{maintain1.remarks}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        <div class="rightpadding">
+                    <div class="contract_panner charge_project">
+                        <div  class="contract_detail_nav">
+                            <a>维修月检</a>
+                            <div class="clear"></div>
+                        </div>
+                        <div class="row rightpadding">
+                            <div class="col-lg-4 col-md-4 col-sm-6" ng-repeat="maintain in maintenanceMonthCheck"  ng-click="clickCheck(maintain.serviceRequestId)">
+                                <div class="program_panel">
+                                    <div class="program_panel_people_title">
+                                        <span class="panel_title_left">维修月检</span>
+                                    </div>
+                                    <div class="program_panel_info">
+                                        <div class="col-md-3" style="margin-left: -10px" >
+                                            <div style="width: 80px;height: 80px;background-color: #ffffff;margin-top: 10px;padding: 5px">
+                                                <a ui-sref="index.externalProfession.departmentServiceRequestForDetails">
+                                                    <p style="font-size: 18px;margin-left: 15px">质检</p>
+                                                    <p style="font-size: 18px;margin-left: 15px">请求</p>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-offset-4">
+                                            <p>创建时间：{{maintain.requestTime}}</p>
+                                            <p>服务请求名称：{{maintain.serviceRequestName}}</p>
+                                            <p>备注：{{maintain.remarks}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    </div>
+    &lt;!&ndash;清洁服务请求&ndash;&gt;
+    <div ng-show="cleans">
+        <div class="rightpadding">
+        <div class="contract_panner charge_project">
+            <div  class="contract_detail_nav" >
+                <a>清洁日检</a>
+                <div class="clear"></div>
+            </div>
+            <div class="row rightpadding">
+                <div class="col-lg-4 col-md-4 col-sm-6" ng-repeat="clean3 in cleanDayCheck"  ng-click="clickCheck(clean3.serviceRequestId)">
+                             <div class="program_panel">
+                                 <div class="program_panel_people_title">
+                                     <span class="panel_title_left">清洁日检</span>
+                                 </div>
+                                 <div class="program_panel_info">
+                                     <div class="col-md-3" style="margin-left: -10px" >
+                                         <div style="width: 80px;height: 80px;background-color: #ffffff;margin-top: 10px;padding: 5px">
+                                             <a ui-sref="index.externalProfession.departmentServiceRequestForDetails">
+                                                 <p style="font-size: 18px;margin-left: 15px">质检</p>
+                                                 <p style="font-size: 18px;margin-left: 15px">请求</p>
+                                             </a>
+                                         </div>
+                                     </div>
+                                     <div class="col-md-offset-4">
+                                         <p>创建时间：{{clean3.requestTime}}</p>
+                                         <p>服务请求名称：{{clean3.serviceRequestName}}</p>
+                                         <p>备注：{{clean3.remarks}}</p>
+                                     </div>
+                                 </div>
+                             </div>
+                         </div>
+            </div>
+         </div>
+         </div>
+        <div class="rightpadding">
+         <div class="contract_panner charge_project">
+            <div  class="contract_detail_nav">
+                <a>清洁周检</a>
+                <div class="clear"></div>
+            </div>
+            <div class=" row rightpadding">
+                <div class="col-lg-4 col-md-4 col-sm-6" ng-repeat="clean2 in cleanWeekCheck" ng-click="clickCheck(clean2.serviceRequestId)">
+                    <div class="program_panel">
+                        <div class="program_panel_people_title">
+                            <span class="panel_title_left">清洁周检</span>
+                        </div>
+                        <div class="program_panel_info">
+                            <div class="col-md-3" style="margin-left: -10px" >
+                                <div style="width: 80px;height: 80px;background-color: #ffffff;margin-top: 10px;padding: 5px">
+                                    <a ui-sref="index.externalProfession.departmentServiceRequestForDetails">
+                                        <p style="font-size: 18px;margin-left: 15px">质检</p>
+                                        <p style="font-size: 18px;margin-left: 15px">请求</p>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-md-offset-4">
+                                <p>创建时间：{{clean2.requestTime}}</p>
+                                <p>服务请求名称：{{clean2.serviceRequestName}}</p>
+                                <p>备注：{{clean2.remarks}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+        <div class="rightpadding">
+        <div class="contract_panner charge_project">
+            <div  class="contract_detail_nav">
+                <a>清洁半月检</a>
+                <div class="clear"></div>
+            </div>
+            <div class="row rightpadding">
+                <div class="col-lg-4 col-md-4 col-sm-6" ng-repeat="clean1 in cleanHalfMonthCheck"  ng-click="clickCheck(clean1.serviceRequestId)">
+                    <div class="program_panel">
+                        <div class="program_panel_people_title">
+                            <span class="panel_title_left">清洁半月检</span>
+                        </div>
+                        <div class="program_panel_info">
+                            <div class="col-md-3" style="margin-left: -10px" >
+                                <div style="width: 80px;height: 80px;background-color: #ffffff;margin-top: 10px;padding: 5px">
+                                    <a ui-sref="index.externalProfession.departmentServiceRequestForDetails">
+                                        <p style="font-size: 18px;margin-left: 15px">质检</p>
+                                        <p style="font-size: 18px;margin-left: 15px">请求</p>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-md-offset-4">
+                                <p>创建时间：{{clean1.requestTime}}</p>
+                                <p>服务请求名称：{{clean1.serviceRequestName}}</p>
+                                <p>备注：{{clean1.remarks}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+        <div class="rightpadding">
+        <div class="contract_panner charge_project">
+            <div  class="contract_detail_nav">
+                <a>清洁月检</a>
+                <div class="clear"></div>
+            </div>
+            <div class="row rightpadding">
+                <div class="col-lg-4 col-md-4 col-sm-6" ng-repeat="clean in cleanMonthCheck"  ng-click="clickCheck(clean.serviceRequestId)">
+                    <div class="program_panel">
+                        <div class="program_panel_people_title">
+                            <span class="panel_title_left">清洁月检</span>
+                        </div>
+                        <div class="program_panel_info">
+                            <div class="col-md-3" style="margin-left: -10px" >
+                                <div style="width: 80px;height: 80px;background-color: #ffffff;margin-top: 10px;padding: 5px">
+                                    <a ui-sref="index.externalProfession.departmentServiceRequestForDetails">
+                                        <p style="font-size: 18px;margin-left: 15px">质检</p>
+                                        <p style="font-size: 18px;margin-left: 15px">请求</p>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-md-offset-4">
+                                <p>创建时间：{{clean.requestTime}}</p>
+                                <p>服务请求名称：{{clean.serviceRequestName}}</p>
+                                <p>备注：{{clean.remarks}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+         </div>
+    </div>
+    &lt;!&ndash;安保服务请求&ndash;&gt;
+    <div ng-show="securities">
+        <div class="rightpadding">
+        <div class="contract_panner charge_project">
+            <div  class="contract_detail_nav" >
+                <a>安保日检</a>
+                <div class="clear"></div>
+            </div>
+            <div class="row rightpadding">
+                <div class="col-lg-4 col-md-4 col-sm-6" ng-repeat="security3 in securityDayCheck" ng-click="clickCheck(security3.serviceRequestId)">
+                    <div class="program_panel">
+                        <div class="program_panel_people_title">
+                            <span class="panel_title_left">安保日检</span>
+                        </div>
+                        <div class="program_panel_info">
+                            <div class="col-md-3" style="margin-left: -10px" >
+                                <div style="width: 80px;height: 80px;background-color: #ffffff;margin-top: 10px;padding: 5px">
+                                    <a ui-sref="index.externalProfession.departmentServiceRequestForDetails">
+                                        <p style="font-size: 18px;margin-left: 15px">质检</p>
+                                        <p style="font-size: 18px;margin-left: 15px">请求</p>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-md-offset-4">
+                                <p>创建时间：{{security3.requestTime}}</p>
+                                <p>服务请求名称：{{security3.serviceRequestName}}</p>
+                                <p>备注：{{security3.remarks}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+        <div class="rightpadding">
+        <div class="contract_panner charge_project">
+            <div class="contract_detail_nav">
+                <a>安保周检</a>
+                <div class="clear"></div>
+            </div>
+            <div class="row rightpadding">
+                <div class="col-lg-4 col-md-4 col-sm-6" ng-repeat="security2 in securityWeekCheck" ng-click="clickCheck(security2.serviceRequestId)">
+                    <div class="program_panel">
+                        <div class="program_panel_people_title">
+                            <span class="panel_title_left">安保周检</span>
+                        </div>
+                        <div class="program_panel_info">
+                            <div class="col-md-3" style="margin-left: -10px" >
+                                <div style="width: 80px;height: 80px;background-color: #ffffff;margin-top: 10px;padding: 5px">
+                                    <a ui-sref="index.externalProfession.departmentServiceRequestForDetails">
+                                        <p style="font-size: 18px;margin-left: 15px">质检</p>
+                                        <p style="font-size: 18px;margin-left: 15px">请求</p>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-md-offset-4">
+                                <p>创建时间：{{security2.requestTime}}</p>
+                                <p>服务请求名称：{{security2.serviceRequestName}}</p>
+                                <p>备注：{{security2.remarks}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+        <div class="rightpadding">
+        <div class="contract_panner charge_project">
+            <div class="contract_detail_nav">
+                <a>安保半月检</a>
+                <div class="clear"></div>
+            </div>
+            <div class="row rightpadding">
+                <div class="col-lg-4 col-md-4 col-sm-6" ng-repeat="security1 in securityHalfMonthCheck" ng-click="clickCheck(security1.serviceRequestId)">
+                    <div class="program_panel">
+                        <div class="program_panel_people_title">
+                            <span class="panel_title_left">安保半月检</span>
+                        </div>
+                        <div class="program_panel_info">
+                            <div class="col-md-3" style="margin-left: -10px" >
+                                <div style="width: 80px;height: 80px;background-color: #ffffff;margin-top: 10px;padding: 5px">
+                                    <a ui-sref="index.externalProfession.departmentServiceRequestForDetails">
+                                        <p style="font-size: 18px;margin-left: 15px">质检</p>
+                                        <p style="font-size: 18px;margin-left: 15px">请求</p>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-md-offset-4">
+                                <p>创建时间：{{security1.requestTime}}</p>
+                                <p>服务请求名称：{{security1.serviceRequestName}}</p>
+                                <p>备注：{{security1.remarks}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+        <div class="rightpadding">
+        <div class="contract_panner charge_project">
+            <div  class="contract_detail_nav">
+                <a>安保月检</a>
+                <div class="clear"></div>
+            </div>
+            <div class="row rightpadding">
+                <div class="col-lg-4 col-md-4 col-sm-6" ng-repeat="security in securityMonthCheck" ng-click="clickCheck(security.serviceRequestId)">
+                    <div class="program_panel">
+                        <div class="program_panel_people_title">
+                            <span class="panel_title_left">安保月检</span>
+                        </div>
+                        <div class="program_panel_info">
+                            <div class="col-md-3" style="margin-left: -10px" >
+                                <div style="width: 80px;height: 80px;background-color: #ffffff;margin-top: 10px;padding: 5px">
+                                    <a ui-sref="index.externalProfession.departmentServiceRequestForDetails">
+                                        <p style="font-size: 18px;margin-left: 15px">质检</p>
+                                        <p style="font-size: 18px;margin-left: 15px">请求</p>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-md-offset-4">
+                                <p>创建时间：{{security.requestTime}}</p>
+                                <p>服务请求名称：{{security.serviceRequestName}}</p>
+                                <p>备注：{{security.remarks}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+    &lt;!&ndash;园林服务请求&ndash;&gt;
+    <div ng-show="gardens">
+        <div class="rightpadding">
+        <div class="contract_panner charge_project">
+            <div class="contract_detail_nav" >
+                <a>园林日检</a>
+                <div class="clear"></div>
+            </div>
+            <div class="row rightpadding">
+                <div class="col-lg-4 col-md-4 col-sm-6" ng-repeat="garden0 in gardenDayCheck" ng-click="clickCheck(garden0.serviceRequestId)">
+                    <div class="program_panel">
+                        <div class="program_panel_people_title">
+                            <span class="panel_title_left">园林日检</span>
+                        </div>
+                        <div class="program_panel_info">
+                            <div class="col-md-3" style="margin-left: -10px" >
+                                <div style="width: 80px;height: 80px;background-color: #ffffff;margin-top: 10px;padding: 5px">
+                                    <a ui-sref="index.externalProfession.departmentServiceRequestForDetails">
+                                        <p style="font-size: 18px;margin-left: 15px">质检</p>
+                                        <p style="font-size: 18px;margin-left: 15px">请求</p>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-md-offset-4">
+                                <p>创建时间：{{garden0.requestTime}}</p>
+                                <p>服务请求名称：{{garden0.serviceRequestName}}</p>
+                                <p>备注：{{garden0.remarks}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+        <div class="rightpadding">
+        <div class="contract_panner charge_project">
+            <div  class="contract_detail_nav">
+                <a>园林周检</a>
+                <div class="clear"></div>
+            </div>
+            <div class="row rightpadding">
+                <div class="col-lg-4 col-md-4 col-sm-6" ng-repeat="garden in gardenWeekCheck" ng-click="clickCheck(garden.serviceRequestId)">
+                    <div class="program_panel">
+                        <div class="program_panel_people_title">
+                            <span class="panel_title_left">园林周检</span>
+                        </div>
+                        <div class="program_panel_info">
+                            <div class="col-md-3" style="margin-left: -10px" >
+                                <div style="width: 80px;height: 80px;background-color: #ffffff;margin-top: 10px;padding: 5px">
+                                    <a ui-sref="index.externalProfession.departmentServiceRequestForDetails">
+                                        <p style="font-size: 18px;margin-left: 15px">质检</p>
+                                        <p style="font-size: 18px;margin-left: 15px">请求</p>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-md-offset-4">
+                                <p>创建时间：{{garden.requestTime}}</p>
+                                <p>服务请求名称：{{garden.serviceRequestName}}</p>
+                                <p>备注：{{garden.remarks}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+        <div class="rightpadding">
+        <div class="contract_panner charge_project">
+            <div  class="contract_detail_nav">
+                <a>园林半月检</a>
+                <div class="clear"></div>
+            </div>
+            <div class="row rightpadding">
+                <div class="col-lg-4 col-md-4 col-sm-6" ng-repeat="garden1 in gardenHalfMonthCheck"  ng-click="clickCheck(garden1.serviceRequestId)">
+                    <div class="program_panel">
+                        <div class="program_panel_people_title">
+                            <span class="panel_title_left">园林半月检</span>
+                        </div>
+                        <div class="program_panel_info">
+                            <div class="col-md-3" style="margin-left: -10px" >
+                                <div style="width: 80px;height: 80px;background-color: #ffffff;margin-top: 10px;padding: 5px">
+                                    <a ui-sref="index.externalProfession.departmentServiceRequestForDetails">
+                                        <p style="font-size: 18px;margin-left: 15px">质检</p>
+                                        <p style="font-size: 18px;margin-left: 15px">请求</p>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-md-offset-4">
+                                <p>创建时间：{{garden1.requestTime}}</p>
+                                <p>服务请求名称：{{garden1.serviceRequestName}}</p>
+                                <p>备注：{{garden1.remarks}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+        <div class="rightpadding">
+        <div class="contract_panner charge_project">
+            <div  class="contract_detail_nav">
+                <a>园林月检</a>
+                <div class="clear"></div>
+            </div>
+            <div class="row rightpadding">
+                <div class="col-lg-4 col-md-4 col-sm-6" ng-repeat="garden2 in gardenMonthCheck" ng-click="clickCheck(garden2.serviceRequestId)">
+                    <div class="program_panel">
+                        <div class="program_panel_people_title">
+                            <span class="panel_title_left">园林月检</span>
+                        </div>
+                        <div class="program_panel_info">
+                            <div class="col-md-3" style="margin-left: -10px" >
+                                <div style="width: 80px;height: 80px;background-color: #ffffff;margin-top: 10px;padding: 5px">
+                                    <a ui-sref="index.externalProfession.departmentServiceRequestForDetails">
+                                        <p style="font-size: 18px;margin-left: 15px">质检</p>
+                                        <p style="font-size: 18px;margin-left: 15px">请求</p>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-md-offset-4">
+                                <p>创建时间：{{garden2.requestTime}}</p>
+                                <p>服务请求名称：{{garden2.serviceRequestName}}</p>
+                                <p>备注：{{garden2.remarks}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+    </div>-->
+</div>
+</body>
+</html>

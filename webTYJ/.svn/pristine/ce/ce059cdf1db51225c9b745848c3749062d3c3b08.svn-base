@@ -1,0 +1,206 @@
+<!--
+    创建人：李斌
+    页面名称：物业服务的人员主页的产权变更的添加房屋信息
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>房屋产权变更</title>
+    <!--模态框中资产和人员的切换显示   目前人员禁用,资产默认显示-->
+    <script language="javascript">
+        function show(obj){
+            if(obj.value=='ck'){
+                document.getElementById('ck').style.display = "block";
+                document.getElementById('cl').style.display = "none";
+            }else{
+                document.getElementById('ck').style.display = "none";
+                document.getElementById('cl').style.display = "block";
+            }
+        }
+    </script>
+<body>
+    <div class="complaint_user_list" style="height: auto;">
+        <div class="row">
+            <div class="col-md-4">
+                <!--添加房屋信息的表格开始-->
+            <table class="table table-bordered" style="width: 350px;margin: 20px">
+                <tr>
+                    <td>房屋编号：</td>
+                    <td>{{changeTitle1.houseId}}</td>
+                </tr>
+                <tr>
+                    <td>合同编号：</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>房产证号：</td>
+                    <td>{{changeTitle1.houseProprietaryCertificate}}</td>
+                </tr>
+                <tr>
+                    <td>认购日期</td>
+                    <td><label><input type="date" class="form-control input-sm"></label></td>
+                </tr>
+                <tr>
+                    <td>签约日期</td>
+                    <td><label><input type="date" class="form-control input-sm"></label></td>
+                </tr>
+                <tr>
+                    <td>旧产权归属人：</td>
+                    <td>{{changeTitle1.custId}}</td>
+                </tr>
+                <tr>
+                    <td>新产权归属人：</td>
+                    <td>
+                        <input type="text" name="{{addOwner.custId}}" ng-model="addOwner.name"/>
+                        <a href="#" ng-click="listAllPersonCustRestfulone()" data-toggle="modal" data-target="#myModal">
+                        <img src="images/internalManage/u133.png" style="width:20px;height: 20px;">
+                    </a></td>
+                </tr>
+               <!-- <tr>
+                    <td>登记价：</td>
+                    <td>{{changeTitle1.price}}</td>
+                </tr>
+                <tr>
+                    <td>房屋折后实价：</td>
+                    <td>{{changeTitle1.lastTranscationPrice}}</td>
+                </tr>
+                <tr>
+                    <td>建筑面积单价：</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>套内面积单价：</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>交易类型：</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>付款方式：</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>首付金额：</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>按揭金额：</td>
+                    <td>0</td>
+                </tr>-->
+                <tr>
+                    <td>产权类型：</td>
+                    <td>{{changeTitle1.capitalType}}</td>
+                </tr>
+                <tr>
+                    <td>上传合同扫描</td>
+                    <td><input type="file" class="form-control input-sm"></td>
+                </tr>
+                <tr>
+                    <td>上传房产证扫描</td>
+                    <td><input type="file" class="form-control input-sm"></td>
+                </tr>
+            </table>
+                <!--添加房屋信息的表格结束-->
+            <button class="btn btn-sm" style="margin-left: 300px" ng-click="insertChangeTitleRestful()">确认提交</button>
+            </div>
+            <!--模态框开始-->
+            <div class="modal fade" id="myModal" role="dialog" aria-label="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog"  style="width: 1000px;height:auto">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+
+                        <div class="modal-body">
+                                <table>
+                                    <tr>
+                                        <td>姓名：</td>
+                                        <td><label><input type="text" class="form-control input-sm toutou" ng-model="PersonCust.name"></label></td>
+                                        <td>客户编号：</td>
+                                        <td><label><input type="text" class="form-control input-sm toutou" ng-model="PersonCust.custCode"></label></td>
+                                        <td>身份证号：</td>
+                                        <td><label><input type="text" class="form-control input-sm toutou" ng-model="PersonCust.cardNum"></label></td>
+                                        <td style="padding-left: 10px">筛选条件：
+                                            <button class="btn-default" ng-click="listAllPersonCustRestfulone()">搜索</button>
+                                        </td>
+                                    </tr>
+                                </table>
+
+                            <div id="ck" style="display:block;margin-top: 30px;margin-left: 30px">
+                                <div class="media-right">
+                                    <div class="row" ng-repeat="items2 in personCust1" ng-show="items2.custId!=null">
+                                        <div class="media">
+                                            <div class="media-left">
+                                                <a href="#" ng-click="getPersonBycustId(items2.custId)">
+                                                    <img src="images/staffHome/u116.jpg" width="50px;" height="50px" style="margin-top: 5px;">
+                                                </a>
+                                            </div>
+                                            <div class="media-body">
+                                                <div class="row">
+                                                    <div class="col-md-2">客户姓名:{{items2.name}}</div>
+                                                    <div class="col-md-3">身份证:{{items2.cardNum}}</div>
+                                                    <div class="col-md-2">年龄:18</div>
+                                                    <div class="col-md-3">联系电话:{{items2.phoneNum}}</div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-2">客户编号：{{items2.custCode}}</div>
+                                                    <div class="col-md-3">家家号：{{items2.jiajiaNum}}</div>
+                                                    <div class="col-md-2">性别:{{items2.sex}}</div>
+                                                    <div class="col-md-3">QQ号码:{{items2.qqNum}}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!---->
+                            <div id="cl" style="display:none">
+                                <div class="row" ng-repeat="asset in assets">
+                                    <div class="media">
+                                        <div class="media-left">
+                                            <a href="#">
+                                                <img src="images/propertyService/choiceHousing/u81.jpg" width="50px;" height="50px" style="margin-top: 5px;">
+                                            </a>
+                                        </div>
+                                        <div class="media-body">
+                                            <div class="row">
+                                                <div class="col-md-4">房屋地址：{{asset.houseAddress}}</div>
+                                                <div class="col-md-offset-9">
+                                                    <a href="#">
+                                                        <span class="glyphicon glyphicon-search btn" aria-hidden="true"></span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-2">房屋编码：{{asset.houseId}}</div>
+                                                <div class="col-md-2">入伙状态：{{asset.joinState}}</div>
+                                                <div class="col-md-2">销售状态:{{asset.marketState}}</div>
+                                                <div class="col-md-2">竣工面积:{{asset.completeArea}}</div>
+                                                <div class="col-md-3">房屋户型:{{asset.houseTypeName}}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default"
+                                    data-dismiss="modal">关闭
+                            </button>
+                            <button type="button" data-dismiss="modal" class="btn btn-primary">
+                                确认
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--模态框结束-->
+            </div>
+        </div>
+</body>
+</html>

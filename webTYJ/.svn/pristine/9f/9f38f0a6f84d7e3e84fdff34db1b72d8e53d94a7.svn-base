@@ -1,0 +1,211 @@
+<!--
+    前端负责人：倪明
+    页面名称：物业服务-人员主页-常用
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>用户</title>
+</head>
+<body>
+
+<div class="" id="sever">
+
+    <div class="col-lg-4 col-md-4 col-sm-4">
+        <div id="pannel">
+            <div class="title">
+                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                    <a ui-sref="index.propertyService.staffHome.accountManagement" style="cursor: pointer">我的收费信息</a>
+                </div>
+                <!--<div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 text-right">
+                    <span class="glyphicon glyphicon-chevron-down" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">办理放行条</a></li>
+                        <li><a href="#">办理门禁卡</a></li>
+                        <li><a href="#">宠物登记</a></li>
+                        <li><a href="#">缴纳物业费</a></li>
+                    </ul>
+                </div>-->
+            </div>
+            <div class="pannel_content">
+                <ul>
+                    <li><a>收费编号：<span class="pull-right">10001</span></a></li>
+                    <li><a>收费项目：<span class="pull-right">物业费缴纳</span></a></li>
+                    <li><a>计量单位：<span class="pull-right">RMB</span></a></li>
+                    <li><a>项目单价：<span class="pull-right">元</span></a></li>
+                    <li><a>收费金额：<span class="pull-right">200</span></a></li>
+                    <li><a>收款方式：<span class="pull-right">现金</span></a></li>
+                    <li><a>经办日期：<span class="pull-right">2015-05-21</span></a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4 col-md-4 col-sm-4">
+        <div id="pannel">
+            <div class="title">
+                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                    <a style="cursor: pointer" ng-click="GetUser(personCust.custId)">我的服务请求</a>
+                </div>
+                <!--<div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 text-right">
+                    <span class="glyphicon glyphicon-chevron-down" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">办理放行条</a></li>
+                        <li><a href="#">办理门禁卡</a></li>
+                        <li><a href="#">宠物登记</a></li>
+                        <li><a href="#">缴纳物业费</a></li>
+                    </ul>
+                </div>-->
+            </div>
+            <div class="pannel_content">
+                <ul>
+                    <li><a>服务编号：<span class="pull-right">1001</span></a></li>
+                    <li><a>服务类型：<span class="pull-right">前台</span></a></li>
+                    <li><a>请求类型：<span class="pull-right">清洁</span></a></li>
+                    <li><a>分类：<span class="pull-right">清洁</span></a></li>
+                    <li><a>专业：<span class="pull-right">水暖</span></a></li>
+                    <li><a>重要程度：<span class="pull-right">一般</span></a></li>
+                </ul>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4 col-md-4 col-sm-4">
+        <div id="pannel">
+            <div class="title">
+                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                    <a ui-sref="index.propertyService.staffHome.changeTitle" style="cursor: pointer">我的车位</a>
+                </div>
+                <!--<div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 text-right">
+                    <span class="glyphicon glyphicon-chevron-down" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">产权变更</a></li>
+                        <li><a href="#">缴费</a></li>
+                    </ul>
+                </div>-->
+            </div>
+            <div class="pannel_content">
+                <div class="row">
+                    <div class="col-xs-3 col-lg-3 col-md-3">
+                        <a style="cursor:pointer" ui-sref="index.propertyService.staffHome.commonUser" ng-click="switch(person)">
+                            <img src="images/project/car/c_01.png" width="100%" height="75px">
+                        </a>
+                    </div>
+                    <div class="col-xs-9 col-lg-9 col-md-9">
+                        <ul>
+                            <li>资产类型：<span class="pull-right">车位</span></li>
+                            <li>车位类型：<span class="pull-right">{{stall.stallType}}</span></li>
+                            <li>车位属性：<span class="pull-right">{{stall.stallProperty}}</span></li>
+                            <li>车位编号：<span class="pull-right">{{stall.stallNumber}}</span></li>
+                            <li>车位位置：<nobr><span class="pull-right">{{stall.garagePosition}}</span></nobr></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4 col-md-4 col-sm-4">
+        <div id="pannel">
+            <div class="title">
+                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                    <a ui-sref="index.propertyService.staffHome.entranceGuard.checkEntranceGuard" style="cursor: pointer">我的门禁卡</a>
+                </div>
+                <!--<div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 text-right">
+                    <span class="glyphicon glyphicon-chevron-down" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">新办门禁卡</a></li>
+                        <li><a href="#">更换门禁卡</a></li>
+                        <li><a href="#">退卡</a></li>
+                        <li><a href="#">挂失</a></li>
+                    </ul>
+                </div>-->
+            </div>
+            <div class="pannel_content">
+                <li><a>门禁卡编号：<span class="pull-right">{{entrance.cardNum}}</span></a></li>
+                <li><a>办卡时间：<span class="pull-right">{{entrance.cardDate| date:'yy-MM-dd'}}</span></a></li>
+                <!--<li><a>ID卡卡号<span class="pull-right">{{entrance.idcardNum}}</span></a></li>-->
+                <li><a>办卡人：<span class="pull-right">{{entrance.personCustNew.name}}</span></a></li>
+                <li><a>业主编号：<span class="pull-right">{{entrance.personCustNew.name}}</span></a></li>
+                <!--<li><a>卡片状态<span class="pull-right"ng-switch on="entrance.cardState"><span ng-switch-when="1">正常</span><span ng-switch-when="3">禁用</span></span></a></li>-->
+                <li><a>联系电话：<span class="pull-right">{{entrance.personCustNew.phoneNum}}</span></a></li>
+                <li><a>启用日期：<span class="pull-right">{{entrance.startDate|date:'yyyy-MM-dd'}}</span></a></li>
+                <!--<li><a>办卡人身份证号<span class="pull-right">{{entrance.personCustNew.cardNum}}</span></a></li>-->
+                <li><a>截止日期：<span class="pull-right">{{entrance.endDate|date:'yyyy-MM-dd'}}</span></a></li>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4 col-md-4 col-sm-4">
+        <div id="pannel">
+            <div class="title">
+                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                    <a ui-sref="index.propertyService.staffHome.parkingCard.historyRecord" style="cursor: pointer">我的停车卡</a>
+                </div>
+                <!--<div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 text-right">
+                    <span class="glyphicon glyphicon-chevron-down" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">新办停车卡</a></li>
+                        <li><a href="#">更换停车卡</a></li>
+                        <li><a href="#">缴费</a></li>
+                        <li><a href="#">挂失</a></li>
+                        <li><a href="#">退费</a></li>
+                    </ul>
+                </div>-->
+            </div>
+            <div class="pannel_content">
+                <ul>
+                    <li><a>停车卡数量：<span class="pull-right">2张</span></a></li>
+                    <li><a>出入次数：<span class="pull-right">1362次</span></a></li>
+                    <li><a>累计充值：<span class="pull-right">5000元</span></a></li>
+                    <li><a>卡片更换：<span class="pull-right">5000元</span></a></li>
+                    <li><a>缴费次数：<span class="pull-right">12次</span></a></li>
+                    <li><a>车损次数：<span class="pull-right">无记录</span></a></li>
+                    <li><a>违停次数：<span class="pull-right">7次</span></a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4 col-md-4 col-sm-4">
+        <div id="pannel">
+            <div class="title">
+                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                    <a ui-sref="index.propertyService.staffHome.vehicleManagement.vehicleManagementCheck" style="cursor: pointer">我的车辆</a>
+                </div>
+                <!--<div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 text-right">
+                    <span class="glyphicon glyphicon-chevron-down" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">历史记录</a></li>
+                        <li><a href="#">车辆移除</a></li>
+                        <li><a href="#">信息编辑</a></li>
+                    </ul>
+                </div>-->
+            </div>
+            <div class="pannel_content">
+                <div class="row">
+                    <div class="col-xs-3 col-lg-3 col-md-3">
+                        <a style="cursor:pointer">
+                            <img src="images/project/car/c_04.png" width="100%" height="75px">
+                        </a>
+                    </div>
+                    <div class="col-xs-9 col-lg-9 col-md-9">
+                        <ul>
+                            <li>车牌号码：<span class="pull-right">{{carInfo.carNum}}</span></li>
+                            <li>车辆颜色：<span class="pull-right">{{carInfo.carColor}}</span></li>
+                            <li>车辆型号：<span class="pull-right">{{carInfo.carStyle}}</span></li>
+                            <li>车辆所有人：<span class="pull-right">{{carInfo.personCustNew.name}}</span></li>
+                            <li>行驶证号：<span class="pull-right">{{carInfo.drivingLicense}}</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

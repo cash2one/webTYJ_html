@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>工作流</title>
+</head>
+<body>
+<!--{{text}}-->
+<div id="content-first">
+    <!--tab页切换开始-->
+    <!--<div id="tab">-->
+    <!--<a lang="no">物业项目收费模块启用管理</a>-->
+    <!--</div>-->
+    <!-- <div id="tab">
+         <a ng-class="{'this_action ':btnIndex==1}" ng-click="doClick(1)" ui-sref="index.accountManagement.productAndProperty.product">产品初始化</a>
+         <a ng-class="{'this_action ':btnIndex==2}" ng-click="doClick(2)" ui-sref="index.accountManagement.productAndProperty.product.propertyProject" lang="no">计费模板初始化</a>
+     </div>-->
+    <div class="sel">
+        <div class="row search-padding-10">
+
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                <!--<button type="button" class="btn btn-default btn-primary ng-binding" align="right" ui-sref="/index.systemSettings.subCompany.subCompanyProject">
+                    返回
+                </button>-->
+
+                <input type="button" class="btn btn-default btn-primary ng-binding" align="right" name="Submit" onclick="javascript:history.back(-1);" value="返回">
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-4">
+                <select class="form-control" ng-model="searchWorkFlow.status">
+                    <option value="">请选择流程类型</option>
+                    <option value="0">不可配置</option>
+                    <option value="1">可配置</option>
+                </select>
+            </div>
+            <div class="col-lg-1 col-md-4 col-sm-4 text-right">
+                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="currentWorkFlow._load();">
+                    <span class="glyphicon glyphicon-search btn_icon"></span>
+                    搜索
+                </button>
+            </div>
+            <div class="col-lg-5 col-md-4 col-sm-4 text-right">
+                <button type="button" class="btn btn-default btn-primary ng-binding" align="right" ui-sref="index.systemSettings.subCompany">
+                    {{subCompanyName}} / {{projectName}}
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="row padding">
+        <div class="col-lg-12">
+            <div class="search-padding-10">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>流程名称</th>
+                        <th>流程类型</th>
+                        <th>解释</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!--| orderBy:'-sortDate'-->
+                    <tr ng-repeat="item in currentWorkFlow.object.workFlows" ng-show="item.workflowId != null" ng-click="goToAccountForApproval(item)">
+                        <td>{{$index+(currentWorkFlow.page.currentPage-1)*6}}</td>
+                        <td>{{item.workflowName}}</td>
+                        <td ng-switch on="item.status">
+                            <span ng-switch-when="0">不可配置</span>
+                            <span ng-switch-when="1">可配置</span>
+                        </td>
+                        <td>{{item.comments}}</td>
+                    </tr>
+                    <tr ng-show="currentWorkFlow.object.workFlows.length == null">
+                        <td colspan="15">暂无数据！</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="padding">
+                <div class="bill_paging">
+                    <span>共{{currentWorkFlow.object.page.totalResult}}条</span>
+                    <ul class="pagination">
+                        <li ng-class="{true:'disabled'}[currentWorkFlow.page.currentPage==1]">
+                            <a href="javascript:void(0)" ng-click="currentWorkFlow.go(1)">首页</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[currentWorkFlow.page.currentPage==1]">
+                            <a href="javascript:void(0)" ng-show="currentWorkFlow.hasPrevious()"
+                               ng-click="currentWorkFlow.previous()">上一页</a>
+                        </li>
+                        <li ng-class="{true:'active'}[currentWorkFlow.page.currentPage==i]"
+                            ng-repeat="i in currentWorkFlow.pages">
+                            <a href="javascript:void(0)" ng-click="currentWorkFlow.go(i)">{{i}}</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[currentWorkFlow.page.currentPage==currentWorkFlow.page.totalPage]">
+                            <a href="javascript:void(0)" ng-show="currentWorkFlow.hasNext()"
+                               ng-click="currentWorkFlow.next()">下一页</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[currentWorkFlow.page.currentPage==currentWorkFlow.page.totalPage]">
+                            <a href="javascript:void(0)"
+                               ng-click="currentWorkFlow.go(currentWorkFlow.page.totalPage)">尾页</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

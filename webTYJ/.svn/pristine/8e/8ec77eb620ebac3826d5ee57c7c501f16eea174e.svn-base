@@ -1,0 +1,306 @@
+/**
+ * Created by Administrator on 2015/12/15.
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../app');
+    app.controller('auditCtrl', ['$scope', '$http', '$rootScope', '$location', function ($scope, $http, $rootScope, $location) {
+        var url = $rootScope.url;
+        var fileUrl = $rootScope.fileUrl;
+        $scope.doClick(4);
+        $scope.show1 = false;
+        $scope.show2 = false;
+        $scope.show3 = true;
+        $scope.show4 = true;
+        //显示详情
+        $scope.item2 = {};
+        $scope.showList = function (item) {
+            $scope.show1 = true;
+            $scope.show2 = true;
+            $scope.show3 = false;
+            $scope.show4 = false;
+            $scope.item2 = item;
+            //显示计划下抄表数据
+            $scope.searchMeter1 = {page: {}};
+            $scope.load1 = function () {
+                var checkWaters = function (page, callback) {
+                    $scope.searchMeter1.page = page;
+                    $scope.searchMeter1.meterReadingProgramId = item.meterReadingProgramId;
+                    //$http.post(url + '/MeterReadingProgram/listPageMeterReadingProgramById', {MeterReadingProgram: $scope.searchMeter1}).success(callback);
+                    $http.post(url + '/MeterReadingData/listPageMeterRecoedDateList',
+                        {MeterReadingData: $scope.searchMeter1}).success(callback);
+                };
+                $scope.currentWaters = app.get('Paginator').list(checkWaters, 5);
+            };
+            $scope.load1();
+        };
+        $scope.back = function(){
+            $scope.show1 = false;
+            $scope.show2 = false;
+            $scope.show3 = true;
+            $scope.show4 = true;
+            $scope.load();
+        };
+
+        /**
+         * 获取选中的对象
+         * @param id
+         */
+        $scope.leasesArray = '';//选中项id集合
+        var getAllChechedLeases = function () {
+            $scope.leasesArray = '';//清空
+            $("input[name='things']:checked").each(function () {
+                $scope.leasesArray+=$(this).val()+',';
+            });
+            $scope.leasesArray=$scope.leasesArray.substr(0,$scope.leasesArray.length-1);
+        };
+        $scope.addLeases = function () {
+            getAllChechedLeases();
+            if ($scope.leasesArray.length > 0) {
+                layer.confirm("您确定审核通过吗？",
+                    {btn: ['确定', '取消']}, function () {
+                        $scope.check();
+                        $scope.load1();
+                    }
+                );
+                $("input[name='things']:checked").each(function () {//取消选中项
+                    $(this).attr("checked", false);
+                })
+            } else {
+                layer.msg('您未选择核实项！', {icon: 0});
+            }
+
+        };
+        $scope.addLeases1 = function () {
+            //alert("winPhone");
+            getAllChechedLeases();
+            if ($scope.leasesArray.length > 0) {
+                layer.confirm("您确定添加到重抄任务？",
+                    {btn: ['确定', '取消']}, function () {
+                        $scope.addVerification();
+                        $scope.load1();
+                    }
+                );
+                $("input[name='things']:checked").each(function () {//取消选中项
+                    $(this).attr("checked", false);
+                })
+            } else {
+                layer.msg('您未选择重抄项！', {icon: 0});
+            }
+
+        };
+        /**
+         * 修改读数
+         * @type {{}}
+         */
+        $scope.leasesToModify = {};
+        $scope.annex = {annexAddress:{},annexName:''}
+        $scope.annexs = [];
+        $scope.getModifyLease = function () {
+            var filePath ='';
+            getAllChechedLeases();
+            if ($scope.leasesArray.split(',').length > 1) {
+                layer.msg('修改时只能选择一项', {icon: 0});
+                $scope.leasesToModify = {};
+                $("input[name='things']:checked").each(function () {//取消选中项
+                    $(this).attr("checked", false);
+                });
+            } else if ($scope.leasesArray.split(',').length == 1 && $scope.leasesArray.split(',')[0]!='') {
+                $scope.changeReading = '1';
+                $('#changeReading2').find('input[type=text]').attr('disabled','disabled');
+                $('#changeReading3').find('input[type=text],textarea').attr('disabled','disabled');
+                $scope.correct ={};
+
+                $("#myModal1").modal("show");
+                $scope.leasesToModify = $scope.leasesArray;
+
+                $("#zyupload").remove();
+                $("#remove").append("<div id='zyupload' class='zyupload'></div>");
+                $(function(){
+                    // 初始化插件
+                    $("#zyupload").zyUpload({
+                        //width            :   "900px",                 // 宽度
+                        //height           :   "400px",                 // 宽度
+                        itemWidth        :   "140px",                 // 文件项的宽度
+                        itemHeight       :   "115px",                 // 文件项的高度
+                        url              :   fileUrl+"/FileService",  // 上传文件的路径
+                        fileType         :   ["jpg","png","jpeg","gif"],// 上传文件的类型
+                        fileSize         :   51200000,                // 上传文件的大小
+                        multiple         :   true,                    // 是否可以多个文件上传
+                        dragDrop         :   true,                    // 是否可以拖动上传文件
+                        tailor           :   true,                    // 是否可以裁剪图片
+                        del              :   true,                    // 是否可以删除文件
+                        finishDel        :   false,  				  // 是否在上传文件完成后删除预览
+                        /* 外部获得的回调接口 */
+                        onSelect: function(selectFiles, allFiles){    // 选择文件的回调方法  selectFile:当前选中的文件  allFiles:还没上传的全部文件
+                        },
+                        onDelete: function(file, files){
+                        },
+                        onSuccess: function(file, response){          // 文件上传成功的回调方法
+                            filePath=response;
+                            $scope.annex.annexAddress=response;
+                            $scope.annex.annexName=file.name;
+                            $scope.annexs.push($.extend({},{},$scope.annex));
+                        },
+                        onFailure: function(file, response){          // 文件上传失败的回调方法
+                        },
+                        onComplete: function(response){           	  // 上传完成的回调方法
+                        }
+                    });
+                });
+            } else {
+                layer.msg('您未选择修改项！', {icon: 0});
+            }
+        };
+
+        $scope.changeState = function(){
+          if ($scope.changeReading=='1'){
+              $('#changeReading1').find('input[type=text]').removeAttr('disabled');
+              $('#changeReading2').find('input[type=text]').attr('disabled','disabled');
+              $('#changeReading3').find('input[type=text],textarea').attr('disabled','disabled');
+          }else if ($scope.changeReading=='2'){
+              $('#changeReading2').find('input[type=text]').removeAttr('disabled');
+              $('#changeReading1').find('input[type=text]').attr('disabled','disabled');
+              $('#changeReading3').find('input[type=text],textarea').attr('disabled','disabled');
+
+              var array=$scope.currentWaters.object.meterReadingData;
+              if(array.length!=null){
+                  for(var i = 0 ; i<array.length;i++){
+                      if(array[i].meterReadingDataId == $scope.leasesToModify){
+                          $http.get(url+'/WaterMeter/getWaterMeterbyWaterMeterRecordId/'+array[i].waterMeterRecordId).success(function(data){
+                              $scope.loopNum = data.WaterMeter.max;
+                          })
+                      }
+                  }
+              }
+          }else if ($scope.changeReading=='3'){
+              $('#changeReading1').find('input[type=text]').attr('disabled','disabled');
+              $('#changeReading2').find('input[type=text]').attr('disabled','disabled');
+              $('#changeReading3').find('input[type=text],textarea').removeAttr('disabled');
+
+              var array=$scope.currentWaters.object.meterReadingData;
+              if(array.length!=null){
+                  for(var i = 0 ; i<array.length;i++){
+                      if(array[i].meterReadingDataId == $scope.leasesToModify){
+                          $scope.correct = array[i];
+                      }
+                  }
+              }
+          }
+
+        };
+
+        //核实
+        $scope.check = function () {
+            $http.post(url + '/MeterReadingData/updateMeterChecked',$scope.leasesArray).success(function () {
+                layer.msg('核实成功！', {icon: 1});
+            }).error(function () {
+                layer.msg('核实失败！', {icon: 2});
+            });
+        };
+        //重抄任务
+        $scope.addVerification = function () {
+            //if ($scope.leasesArray != null && $scope.leasesArray.length > 0) {
+            //    for (var i = 0; i < $scope.leasesArray.length; i++) {
+            //        var id = $scope.leasesArray[i].meterReadingDataId;
+            //        if (id != null && id != '') {
+                        $http.post(url + '/MeterReadingData/updateMeterRecoed',$scope.leasesArray).success(function () {
+                            $scope.load1();
+                            layer.msg('成功！', {icon: 1});
+                        }).error(function () {
+                            $scope.load1();
+                            layer.msg('失败！', {icon: 2});
+                        });
+                    //}
+                //}
+            //}
+        };
+        /**
+         * 全选
+         */
+        $scope.executeAll = function(){
+            var inputs = $('#executeInput').find('input[type=checkbox]');
+            if(inputs.length>getSelect().length){
+                $(inputs).each(function(index,element){
+                    element.checked = true;
+                }).parent().parent().each(function(){
+                    $(this).addClass('this_info');
+                });
+                $('#executeAll')[0].checked = true ;
+            }else if((inputs.length=getSelect().length)){
+                $(inputs).each(function(index,element){
+                    element.checked = false;
+                }).parent().parent().each(function(){
+                    $(this).removeClass('this_info');
+                });
+                $('#executeAll')[0].checked = false ;
+            }
+        };
+        /**
+         * 选中一条数据事件
+         * @param index  水表抄表计划数据id
+         */
+        $scope.checks = function (index) {
+            var checkbox = $('#'+index.meterReadingDataId)[0];
+            var tr = $(checkbox).parent().parent()[0];
+            $(tr).toggleClass('this_info');
+            checkbox.checked = $(tr).hasClass('this_info');
+            $scope.item2 = index;
+        };
+        /**
+         * 获取选中数据
+         */
+        function getSelect (){
+            var executeInput = $('#executeInput').find('input[type=checkbox]');
+            var meterReadingDataIds = [];
+            for(var i= 0;i<executeInput.length;i++){
+                if(executeInput[i].checked){
+                    meterReadingDataIds.push(executeInput[i].id);
+                }
+            }
+            return meterReadingDataIds;
+        }
+
+
+        //修正读数
+        $scope.updateWaterRead = function () {
+            if($scope.changeReading==1) {
+                var item ={meterReadingDataId:$scope.leasesToModify,reading:$scope.reading};
+                $http.post(url + '/MeterReadingData/setMeterReadingData', {MeterReadingData: item}).success(function (data) {
+                    $scope.load1()
+                })
+            }else if($scope.changeReading==2){
+                var item ={meterReadingDataId:$scope.leasesToModify,loopNum:$scope.loopNum};
+                $http.post(url + '/MeterReadingData/setLoopNum', {MeterReadingData: item}).success(function (data) {
+                    $scope.load1()
+                })
+            }else if($scope.changeReading==3){
+                $scope.correct.annexs=$scope.annexs;
+                $http.post(url+'/CorrectedReading/addCorrectRead',{CorrectedReading:$scope.correct}).success(function(data){
+
+                })
+
+            }
+            /*$http.put(url + '/MeterReadingData/updateMeter/' + $scope.item2.meterReadingDataId).success(function () {
+                layer.msg('成功！', {icon: 1});
+
+            }).error(function () {
+                layer.msg('失败！', {icon: 2});
+            });*/
+        };
+        //******************审核计划**************************//
+        $scope.searchMeter = {page: {}};
+        $scope.load = function () {
+            var checkWater = function (page, callback) {
+                $scope.searchMeter.page = page;
+                //$http.post(url + '/MeterReadingProgram/listPageMeterReadingProgramAll', {MeterReadingProgram: $scope.searchMeter}).success(callback);
+                $http.post(url + '/MeterReadingProgram/listMeterReadingResult',
+                    {SearchMeter:$scope.searchMeter}).success(callback);
+            };
+            $scope.currentWater = app.get('Paginator').list(checkWater, 5);
+        };
+        $scope.load();
+    }]);
+});

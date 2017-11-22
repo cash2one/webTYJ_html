@@ -1,0 +1,325 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 系统管理员设置
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../app');
+
+    app.controller('systemAdministratorCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        /*****************     参数start       **************************/
+        var url = $rootScope.url;
+        $scope.Staff = {page:{}};               //员工表查询条件
+        $scope.tuserList = [];                  //管理员列表数组
+        $scope.staffList = [];                  //员工列表数组
+        $scope.HrPermissions = [];              //功能权限列表数组
+        $scope.CorePosition = [];               //核心岗位列表数组
+        $scope.tUserPermissions = {};           //用户功能权限关联对象
+        $scope.hrAuthoritys = {};               //用户核心团队关联对象
+        $scope.tUserPermissionList = [];        //管理员绑定的功能权限数组
+        $scope.hrAuthorityList = [];            //管理员绑定的核心团队数组
+        $scope.TUserRole = {page:{}};
+        //$scope.Staffs = {};                     //新增员工时使用
+
+        /*****************     参数end         **************************/
+
+        /*****************     载入方法start       **************************/
+
+        //查询hr管理员
+        /*$scope.getHrAdmin = function(){
+         $scope.tuserList = [];
+         $http.get(url + "/Admin/getTUserAsHrAdmin").success(function(data){
+         $scope.tuserList = data.TUser;
+         console.log($scope.tuserList);
+         }).error(function(data){
+         alert("查询失败！");
+         });
+         };*/
+        //$scope.getHrAdmin();
+
+        /**
+         * 查询系统管理员
+         * @type {{page: {}}}
+         */
+        var currentAdmin = function(page, callback){
+            $scope.TUserRole.roleType='3';
+            $scope.TUserRole.page = page;
+            $http.post(url + '/Admin/listPageAdmin',{TUserRole : $scope.TUserRole}).success(callback);
+        };
+        $scope.searchAdmin = app.get('Paginator').list(currentAdmin, 5);
+        console.log($scope.searchAdmin);
+
+        ///**
+        // * 项目初始化
+        // */
+        //$scope.load=function(){
+        //    //默认查询系统设置
+        //    currentAdmin(1);
+        //};
+        //
+        //$scope.load();
+
+
+        /**
+         * 查询功能权限数据
+         */
+        $scope.getPermissions = function(){
+            $scope.HrPermissions = [];
+            $http.get(url + '/Admin/listHrPermissions').success(function(data){
+                //console.log(data.HrPermissions);
+                $scope.HrPermissoions = data.HrPermissions;
+            }).error(function(data){
+                layer.alert('查询功能权限失败',{icon : 2});
+            });
+        };
+        $scope.getPermissions();
+
+        //查询项目信息
+        $scope.getCorePosition = function(){
+            $scope.Teamwork = [];
+            $http.get(url + '/Project/listAllProject').success(function(data){
+                $scope.Teamwork = data.Project;
+                console.log($scope.Teamwork);
+            }).error(function(data){
+                layer.alert('查询项目失败',{icon : 2});
+            });
+        };
+        $scope.getCorePosition();
+
+        /*****************     载入方法end         **************************/
+
+        /*****************     方法start       **************************/
+
+        //查询员工
+        /*$scope.liststaff = function(){
+         $http.get(url + '/staff/listAllStaffRestful', {Staff : $scope.Staff}).success(function(data){
+         console.log(data);
+         var len = data.Staff.length;
+         if(len == 0){
+         $("#new").modal("show");
+         }else{
+         $scope.staffList = [];
+         $scope.staffList = data.Staff;
+         $("#new2").modal("show");
+         }
+         }).error(function(data){
+         alert("查询失败！");
+         });
+         };*/
+
+        var currentStaff = function(page, callback){
+            $scope.Staff.page = page;
+            $scope.Staff.roleType='1';
+            $http.post(url + '/staff/listPageStaffForUser', {Staff : $scope.Staff}).success(callback);
+        };
+        $scope.getStaffNotAdmin = app.get('Paginator').list(currentStaff, 5);
+        console.log($scope.getStaffNotAdmin);
+
+        //新增员工并设置为管理员
+        $scope.addStaff = function(){
+            $http.post(url + '/Admin/insertAdminByStaffone', {Staff : $scope.Staff}).success(function(data){
+                layer.alert('新增成功',{icon : 2});
+                $("#new1").modal("hide");
+                $scope.getHrAdmin();
+            }).error(function(data){
+                layer.alert('新增失败，请确认数据',{icon : 2});
+            });
+        };
+
+        /**
+         * 选择将成为管理员的员工
+         * @type {{}}
+         */
+        $scope.user_permisson={};
+        $scope.addTUser = function(item){
+            console.log(item);
+            $scope.user_permisson=item;
+            $scope.btnIndex=item.staffId;
+        };
+
+        /**
+         * 将选择的员工添加为管理员
+         * @param userId
+         */
+        $scope.addTUser_permission = function(){
+            if($scope.user_permisson.staffId==undefined){
+                layer.alert('请选择员工',{icon : 2});
+                return;
+            }
+            $scope.user_permisson.roleType='projectAdmin';
+            $http.post(url + '/Admin/insertAdminByStaffone', {Staff : $scope.user_permisson}).success(function(data){
+                layer.alert('添加成功',{icon : 1});
+                $("#new2").modal("hide");
+                // $scope.getHrAdmin();
+                $scope.searchAdmin = app.get('Paginator').list(currentAdmin, 5);
+            }).error(function(data){
+                layer.alert('添加失败，请重新操作',{icon : 2});
+            });
+        };
+
+        //选择管理员时将用户id存入数组
+        $scope.getPremission = function(userId,id){
+            $scope.btnIndex_permission=id;
+            var percheckbox = document.getElementsByName("permissionIds");
+            for(var i = 0; i < percheckbox.length; i ++){
+                percheckbox[i].checked = false;
+            }
+            var authcheckbox = document.getElementsByName("authorityIds");
+            for(var j = 0; j < authcheckbox.length; j ++){
+                authcheckbox[j].checked = false;
+            }
+            $scope.tUserPermissionList = [];
+            $scope.hrAuthorityList = [];
+            // $scope.tUserPermissions = {};
+            $scope.tUserPermissions.userId = userId;
+            $scope.hrAuthoritys = {};
+            $scope.hrAuthoritys.tUserId = userId;
+            //console.log($scope.tUserPermissions);
+            //查询关联的功能权限
+            $http.get(url + '/Admin/listAuthorityForPower/' + $scope.hrAuthoritys.tUserId).success(function(data){
+                console.log(data);
+                $scope.tUserPermissionList = data.HrAuthority;
+                for(var i = 0; i < $scope.tUserPermissionList.length; i ++){
+                    document.getElementById($scope.tUserPermissionList[i].permissionsId).checked = true;
+                }
+            }).error(function(){
+                layer.alert('无有效数据',{icon : 2});
+            });
+            //查询关联的核心团队
+            $http.get(url + '/Admin/listAuthorityForProject/' + $scope.hrAuthoritys.tUserId).success(function(data){
+                $scope.hrAuthorityList = data.HrAuthority;
+                console.log($scope.hrAuthorityList);
+                for(var i = 0; i < $scope.hrAuthorityList.length; i ++){
+                    document.getElementById($scope.hrAuthorityList[i].corePositionId).checked = true;
+                }
+            }).error(function(data){
+                layer.alert('无有效数据',{icon : 2});
+            });
+        };
+
+        //勾选功能全选多选框时执行新增或删除操作
+        $scope.setPermission = function(permissionsId,powerName){
+            if(angular.isUndefined($scope.hrAuthoritys.tUserId)){
+                layer.alert('请先选择管理员',{icon : 2});
+                document.getElementById(permissionsId).checked = false;
+            }else {
+                $scope.hrAuthoritys.powerName=powerName;
+                $scope.hrAuthoritys.permissionsId=permissionsId;
+                console.log($scope.hrAuthoritys);
+                if (document.getElementById(permissionsId).checked == true) {
+                    layer.confirm("您确定要赋予该管理员本权限？",
+                        {btn : ['是','否']},function(){
+                            $http.post(url + '/Admin/insertAuthority',{HrAuthority:$scope.hrAuthoritys} ).success(function (data) {
+                                //alert("绑定成功！");
+                                //layer.alert('绑定成功！',{icon : 6});
+                                layer.msg('绑定成功',{icon : 6});
+                                $scope.getPremission($scope.hrAuthoritys.tUserId,$scope.btnIndex_permission);
+                            }).error(function (data) {
+                                //alert("绑定失败，请重新选择！");
+                                layer.msg('绑定失败，请重新选择',{icon : 5});
+                            });
+                        },function(){
+                            var percheckbox = document.getElementsByName("permissionIds");
+                            for(var i = 0; i < percheckbox.length; i ++){
+                                percheckbox[i].checked = false;
+                            }
+                            for(var i = 0; i < $scope.tUserPermissionList.length; i ++){
+                                document.getElementById($scope.tUserPermissionList[i].permissionsId).checked = true;
+                            }
+                        });
+
+
+                }else{
+                    layer.confirm("您确定要解除该管理员本权限？",
+                        {btn : ['是','否']},function(){
+                            $scope.hrAuthoritys.type=1;
+                            $http.post(url + '/Admin/deleteAuthority' ,{HrAuthority:$scope.hrAuthoritys}).success(function(data){
+                                layer.msg('取消绑定成功！',{icon : 6});
+                                $scope.getPremission($scope.hrAuthoritys.tUserId,$scope.btnIndex_permission);
+                            }).error(function(data){
+                                //alert("取消绑定失败，请重新选择！");
+                                layer.msg('取消绑定失败，请重新选择',{icon : 5});
+                            });
+                        },function(){
+                            var percheckbox = document.getElementsByName("permissionIds");
+                            for(var i = 0; i < percheckbox.length; i ++){
+                                percheckbox[i].checked = false;
+                            }
+                            for(var i = 0; i < $scope.tUserPermissionList.length; i ++){
+                                document.getElementById($scope.tUserPermissionList[i].permissionsId).checked = true;
+                            }
+                        })
+
+                }
+            }
+        };
+
+        //勾选项目时执行新增或删除操作
+        $scope.setAuthority = function(corePositionId){
+            $scope.hrAuthoritys.corePositionId = corePositionId;
+            if(angular.isUndefined($scope.hrAuthoritys.tUserId)){
+                layer.alert('请先选择管理员',{icon : 2});
+                document.getElementById(permissionsId).checked = false;
+            }else{
+                $http.get(url + '/Admin/ifOderToAuthorityByuserId/' + $scope.hrAuthoritys.tUserId).success(function(data){
+                    console.log(data);
+                    if(data == 1){
+                        if(document.getElementById(corePositionId).checked == true){
+                            layer.confirm("您确定赋予该管理员对本项目操作？",
+                                {btn : ['是','否']},function(){
+                                    $scope.hrAuthoritys.type=1;
+                                    $http.post(url + '/Admin/insertAuthority',{HrAuthority:$scope.hrAuthoritys} ).success(function(data){
+                                        layer.alert('绑定成功',{icon : 1});
+                                        $scope.getPremission($scope.hrAuthoritys.tUserId,$scope.btnIndex_permission);
+                                    }).error(function(data){
+                                        layer.alert('绑定失败，请重新选择',{icon : 2});
+                                    });
+                                },
+                                function(){
+                                    var authcheckbox = document.getElementsByName("authorityIds");
+                                    for(var j = 0; j < authcheckbox.length; j ++){
+                                        authcheckbox[j].checked = false;
+                                    }
+                                    for(var i = 0; i < $scope.hrAuthorityList.length; i ++){
+                                        document.getElementById($scope.hrAuthorityList[i].corePositionId).checked = true;
+                                    }
+                                })
+
+                        }else{
+                            layer.confirm("您确定要要解除该管理员与本项目的关系？",
+                                {btn : ['是','否']},function(){
+                                    $http.post(url + '/Admin/deleteAuthority' , {HrAuthority:$scope.hrAuthoritys}).success(function(data){
+                                        layer.alert('取消绑定成功',{icon : 1});
+                                        $scope.getPremission($scope.hrAuthoritys.tUserId,$scope.btnIndex_permission);
+                                    }).error(function(data){
+                                        layer.alert('取消绑定失败，请重新选择',{icon : 1});
+                                    });
+                                },
+                                function(){
+                                    var authcheckbox = document.getElementsByName("authorityIds");
+                                    for(var j = 0; j < authcheckbox.length; j ++){
+                                        authcheckbox[j].checked = false;
+                                    }
+                                    for(var i = 0; i < $scope.hrAuthorityList.length; i ++){
+                                        document.getElementById($scope.hrAuthorityList[i].corePositionId).checked = true;
+                                    }
+                                })
+
+                        }
+                    }else{
+                        layer.alert('此管理员没有团队管理权限，请先分配项目团队管理权限',{icon : 1});
+                        $scope.getPremission($scope.hrAuthoritys.tUserId,$scope.btnIndex_permission);
+                    }
+                }).error(function(data){
+                    layer.alert('权限查询失败',{icon : 2});
+                });
+            }
+        };
+        /*****************     方法end         **************************/
+
+    }]);
+
+});

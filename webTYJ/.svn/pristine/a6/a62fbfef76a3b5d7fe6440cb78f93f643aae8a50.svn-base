@@ -1,0 +1,1043 @@
+<!--
+    创建人：李斌
+    页面名称：物业服务的人员主页的产权变更
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>产权变更</title>
+</head>
+<body>
+<div class="padding_info">
+<div id="content-first">
+    <!--tab页切换开始-->
+    <div id="tab">
+        <a ng-class="{'this_action':btnIndex==1}" ng-click="doClick(1)" style="cursor: pointer">资产列表</a>
+        <a ng-class="{'this_action':btnIndex==2}" ng-click="doClick(2)" style="cursor:pointer">变更详情</a>
+        <a ng-class="{'this_action':btnIndex==3}" lang="no" ng-click="doClick(3)" style="cursor:pointer">历史记录</a>
+    </div>
+<div class="row padding" >
+    <div class="col-lg-12">
+    <div ng-show="showAssets">
+        <!--产权变更的房屋信息-->
+        <div class="contract_panner">
+            <div class="contract_detail_nav">
+                <a>房屋信息</a>
+                <div class="clear"></div>
+            </div>
+            <div class="row rightpadding">
+                <div class="col-lg-4 col-md-6 col-sm-6"  ng-repeat="items in houseInfo" ng-show="items.id!=null">
+                    <div id="pannel">
+                        <div class="title">
+                            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                <h3>住宅</h3>
+                            </div>
+                        </div>
+                        <div class="pannel_content height" title="{{items.fullName}}">
+                            <div class="col-lg-4 col-md-4 col-sm-4" ng-click="switchHouseProperty(items)" style="cursor: pointer">
+                                <img style="width: 80px;height: 80px"  src="images/project/bud/b_01.png">
+                            </div>
+                            <div class="col-lg-8 col-md-8 col-sm-8">
+                                <ul>
+                                    <li>房屋编码：{{items.houseNum}}</li>
+                                    <li>建筑面积：{{items.houseArea}}</li>
+                                    <li ng-switch on="items.joinGangState">入伙状态： <span ng-switch-when="1">入伙</span>
+                                        <span ng-switch-when="0">未入伙</span></li>
+                                    <li><nobr>房屋地址：{{items.fullName}}</nobr></li>
+                                    <li></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--<div class="bill_paging">-->
+                    <!--<ul class="pagination">-->
+                        <!--<li><a>首页</a></li>-->
+                        <!--<li><a>上一页</a></li>-->
+                        <!--<li><a>1</a></li>-->
+                        <!--<li><a>2</a></li>-->
+                        <!--<li><a>3</a></li>-->
+                        <!--<li><a>4</a></li>-->
+                        <!--<li><a>5</a></li>-->
+                        <!--<li><a>下一页</a></li>-->
+                        <!--<li><a>尾页</a></li>-->
+                    <!--</ul>-->
+                <!--</div>-->
+            </div>
+
+        </div>
+        <!--产权变更的房屋信息end-->
+        <!--产权变更的商铺信息-->
+        <div class="contract_panner">
+            <div class="contract_detail_nav">
+                <a>商铺信息</a>
+                <div class="clear"></div>
+            </div>
+            <div class="row rightpadding">
+                <div class="col-lg-4 col-md-6 col-sm-6"   ng-repeat="items in storeInfo" ng-show="items.storeId!=null">
+                    <div id="pannel">
+                        <div class="title">
+                            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                <h3>商铺</h3>
+                            </div>
+                            <!--<div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">-->
+                                <!--<span class="glyphicon glyphicon-chevron-down"></span>-->
+                            <!--</div>-->
+                        </div>
+                        <div class="pannel_content height">
+                            <div class="col-lg-4 col-md-4 col-sm-4" ng-click="switchStoreProperty(items)" style="cursor: pointer">
+                                <img style="width: 80px;height: 80px"  src="images/project/bud/b_05.png">
+                            </div>
+                            <div class="col-lg-8 col-md-8 col-sm-8" title="{{items.fullName}}">
+                                <ul>
+                                    <li>商铺编码：{{items.storeNumber}}</li>
+                                    <li>建筑面积：{{items.commonalityArea}}</li>
+                                    <li ng-switch on="items.intakeState">入伙状态： <span ng-switch-when="1">入伙</span>
+                                        <span ng-switch-when="0">未入伙</span></li>
+                                    <li><nobr>商铺地址：{{items.fullName}}</nobr></li>
+                                    <li></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--<div class="bill_paging">-->
+                    <!--<ul class="pagination">-->
+                        <!--<li><a>首页</a></li>-->
+                        <!--<li><a>上一页</a></li>-->
+                        <!--<li><a>1</a></li>-->
+                        <!--<li><a>2</a></li>-->
+                        <!--<li><a>3</a></li>-->
+                        <!--<li><a>4</a></li>-->
+                        <!--<li><a>5</a></li>-->
+                        <!--<li><a>下一页</a></li>-->
+                        <!--<li><a>尾页</a></li>-->
+                    <!--</ul>-->
+                <!--</div>-->
+            </div>
+
+        </div>
+        <!--产权变更的商铺信息end-->
+        <!--产权变更的车位信息-->
+        <div class="contract_panner">
+            <div class="contract_detail_nav">
+                <a>车位信息</a>
+                <div class="clear"></div>
+            </div>
+            <div class="row rightpadding">
+                <div class="col-lg-4 col-md-6 col-sm-6" ng-repeat="items in stallInfo" ng-show="items.stallId!=null&&items.stallType=='私人'">
+                    <div id="pannel">
+                        <div class="title">
+                            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                <h3>车位</h3>
+                            </div>
+                            <!--<div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">-->
+                                <!--<span class="glyphicon glyphicon-chevron-down"></span>-->
+                            <!--</div>-->
+                        </div>
+                        <div class="pannel_content height">
+                            <div class="col-lg-4 col-md-4 col-sm-4" ng-click="switchStallProperty(items)" style="cursor: pointer">
+                                <img style="width: 80px;height: 80px"  src="images/project/car/c_01.png">
+                            </div>
+                            <div class="col-lg-8 col-md-8 col-sm-8" title="{{items.stallPosition}}">
+                                <ul>
+                                    <li>车位编码：{{items.stallCoding}}</li>
+                                    <li>车位属性：{{items.stallType}}</li>
+                                    <li ng-switch on="items.intakeState">入伙状态： <span ng-switch-when="1">入伙</span>
+                                        <span ng-switch-when="0">未入伙</span></li>
+                                    <li><nobr>车位地址：{{items.stallPosition}}</nobr></li>
+                                    <li></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--<div class="bill_paging">-->
+                    <!--<ul class="pagination">-->
+                        <!--<li><a>首页</a></li>-->
+                        <!--<li><a>上一页</a></li>-->
+                        <!--<li><a>1</a></li>-->
+                        <!--<li><a>2</a></li>-->
+                        <!--<li><a>3</a></li>-->
+                        <!--<li><a>4</a></li>-->
+                        <!--<li><a>5</a></li>-->
+                        <!--<li><a>下一页</a></li>-->
+                        <!--<li><a>尾页</a></li>-->
+                    <!--</ul>-->
+                <!--</div>-->
+            </div>
+
+        </div>
+        <!--产权变更的车位信息end-->
+    </div>
+    <div ng-show="showHistory">
+        <!--产权变更的历史房屋信息-->
+        <div class="contract_panner">
+            <div class="contract_detail_nav">
+                <a>房屋历史信息</a>
+                <div class="clear"></div>
+            </div>
+            <div class="row rightpadding">
+                <div class="col-lg-4 col-md-6 col-sm-6"  ng-repeat="history in _ChangeTitleHistory" ng-show="history.buildingType =='住宅'">
+                    <div id="pannel">
+                        <div class="title">
+                            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                <h3>住宅</h3>
+                            </div>
+                        </div>
+                        <div class="pannel_content height">
+                            <div class="col-lg-4 col-md-4 col-sm-4" style="cursor: pointer" ng-click="switchHistorHose(history)">
+                                <img style="width: 80px;height: 80px"  src="images/project/bud/b_01.png">
+                            </div>
+                            <div class="col-lg-8 col-md-8 col-sm-8" title="{{history.fullName}}">
+                                <ul>
+                                    <li>房屋编码：{{history.houseNum}}</li>
+                                    <li>建筑面积：{{history.buildingArea}}</li>
+                                    <li ng-switch on="history.joinGangState">入伙状态： <span ng-switch-when="1">入伙</span>
+                                        <span ng-switch-when="0">未入伙</span></li>
+                                    <li><nobr>房屋地址：{{history.fullName}}</nobr></li>
+                                    <li></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--产权变更的历史房屋信息end-->
+        <!--产权变更的商铺历史信息-->
+        <div class="contract_panner">
+            <div class="contract_detail_nav">
+                <a>商铺历史信息</a>
+                <div class="clear"></div>
+            </div>
+            <div class="row rightpadding">
+                <div class="col-lg-4 col-md-6 col-sm-6"   ng-repeat="history in _ChangeTitleHistory" ng-show="history.buildingType =='商铺'">
+                    <div id="pannel">
+                        <div class="title">
+                            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                <h3>商铺</h3>
+                            </div>
+                            <!--<div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">-->
+                            <!--<span class="glyphicon glyphicon-chevron-down"></span>-->
+                            <!--</div>-->
+                        </div>
+                        <div class="pannel_content height">
+                            <div class="col-lg-4 col-md-4 col-sm-4" style="cursor: pointer" ng-click="switchHistorStore(history)">
+                                <img style="width: 80px;height: 80px"  src="images/project/bud/b_05.png">
+                            </div>
+                            <div class="col-lg-8 col-md-8 col-sm-8" title="{{history.fullName}}">
+                                <ul>
+                                    <li>商铺编码：{{history.storeNumber}}</li>
+                                    <li>建筑面积：{{history.buildingArea}}</li>
+                                    <li ng-switch on="history.storeIntakeState">入伙状态：
+                                        <span ng-switch-when="1">入伙</span>
+                                        <span ng-switch-when="0">未入伙</span>
+                                    </li>
+                                    <li><nobr>商铺地址：{{history.fullName}}</nobr></li>
+                                    <li></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!--产权变更的商铺历史信息end-->
+        <!--产权变更的车位历史信息-->
+        <div class="contract_panner">
+            <div class="contract_detail_nav">
+                <a>车位历史信息</a>
+                <div class="clear"></div>
+            </div>
+            <div class="row rightpadding">
+                <div class="col-lg-4 col-md-6 col-sm-6" ng-repeat="history in _ChangeTitleHistory" ng-show="history.buildingType =='车位' && history.stallType=='私人'">
+                    <div id="pannel">
+                        <div class="title">
+                            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                <h3>车位</h3>
+                            </div>
+                        </div>
+                        <div class="pannel_content height">
+                            <div class="col-lg-4 col-md-4 col-sm-4" style="cursor: pointer" ng-click="switchHistorStall(history)">
+                                <img style="width: 80px;height: 80px"  src="images/project/car/c_01.png" >
+                            </div>
+                            <div class="col-lg-8 col-md-8 col-sm-8" title="{{history.fullName}}">
+                                <ul>
+                                    <li>车位编号：{{history.stallCoding}}</li>
+                                    <li>车位属性：{{history.stallType}}</li>
+                                    <li ng-switch on="history.stallIntakeState">入伙状态： <span ng-switch-when="1">入伙</span>
+                                        <span ng-switch-when="0">未入伙</span></li>
+                                    <li><nobr>车位地址：{{history.fullName}}</nobr></li>
+                                    <li></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!--产权变更的车位历史信息end-->
+    </div>
+
+        <div ng-show="showProperty">
+            <div class="production_height_two">
+                <div class="col-lg-6 col-md-6 col-sm-6" ng-show="showHouse">
+                    <div class="sel1">
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                房屋编号：
+                            </div>
+                            <div class="col-lg-5 col-md-4 col-sm-4">
+                                {{houseone.houseNum}}
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                房屋地址：
+                            </div>
+                            <div class="col-lg-6 col-md-4 col-sm-4">
+                                {{houseone.fullName}}
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                合同编号：
+                            </div>
+                            <div class="col-lg-5 col-md-4 col-sm-4">
+                                <input class="form-control" ng-model="addChange.pactId">
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 search-padding-10 ">
+                                <span style="color: red">*</span>
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                认购日期：
+                            </div>
+                            <div class="col-lg-5 col-md-4 col-sm-4">
+                                <input class="form-control" type="date" ng-model="addChange.buyDate">
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 search-padding-10 ">
+                                <span style="color: red">*</span>
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                签约日期：
+                            </div>
+                            <div class="col-lg-5 col-md-4 col-sm-4">
+                                <input class="form-control" type="date" ng-model="addChange.signContractDate">
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 search-padding-10 ">
+                                <span style="color: red">*</span>
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                旧产权人：
+                            </div>
+                            <div class="col-lg-5 col-md-4 col-sm-4">
+                                {{name}}
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                新产权人：
+                            </div>
+                            <div class="col-lg-5 col-md-4 col-sm-4">
+                            <input class="form-control" ng-model="person2.name" disabled="disabled">
+                        </div>
+                        <div class="col-lg-1 col-md-2 col-sm-2 search-padding-10 ">
+                            <span style="color: red">*</span>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-4">
+                            <button data-toggle="modal" data-target="#myModal_zuping"  class="btn btn-default btn-primary" ng-click="arrearagePayAdd()">
+                                <span class="glyphicon glyphicon-plus btn_icon"></span>新增
+                            </button>
+                        </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                欠费承担人：
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-sm-4">
+                                <label class="radio inline">
+                                    <input value="0" ng-model="property.arrearagePay" type="radio">
+                                    <span>旧产权人</span>
+                                </label>
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-sm-4">
+                                <label class="radio inline">
+                                    <input value="1" ng-model="property.arrearagePay" type="radio">
+                                    <span>新产权人</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6" ng-show="showStore">
+                    <div class="sel1">
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                商铺编号：
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-sm-4">
+                                {{storeone.storeNumber}}
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                商铺地址：
+                            </div>
+                            <div class="col-lg-6 col-md-4 col-sm-4">
+                                {{storeone.fullName}}
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                合同编号：
+                            </div>
+                            <div class="col-lg-5 col-md-4 col-sm-4">
+                                <input class="form-control" ng-model="addChange.pactId">
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 search-padding-10 ">
+                                <span style="color: red">*</span>
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                认购日期：
+                            </div>
+                            <div class="col-lg-5 col-md-4 col-sm-4">
+                                <input class="form-control" type="date" ng-model="addChange.buyDate">
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 search-padding-10 ">
+                                <span style="color: red">*</span>
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                签约日期：
+                            </div>
+                            <div class="col-lg-5 col-md-4 col-sm-4">
+                                <input class="form-control" type="date" ng-model="addChange.signContractDate">
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 search-padding-10 ">
+                                <span style="color: red">*</span>
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                旧产权人：
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-sm-4">
+                                {{name}}
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                新产权人：
+                            </div>
+                            <div class="col-lg-5 col-md-4 col-sm-4">
+                                <input class="form-control" ng-model="person2.name" disabled="disabled">
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 search-padding-10 ">
+                                <span style="color: red">*</span>
+                            </div>
+                            <div class="col-lg-2 col-md-4 col-sm-4">
+                                <button data-toggle="modal" data-target="#myModal_zuping"  class="btn btn-default btn-primary" ng-click="arrearagePayAdd()">
+                                    <span class="glyphicon glyphicon-plus btn_icon"></span>新增
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                欠费承担人：
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-sm-4">
+                                <label class="radio inline">
+                                    <input value="0" ng-model="property.arrearagePay" type="radio">
+                                    <span>旧产权人</span>
+                                </label>
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-sm-4">
+                                <label class="radio inline">
+                                    <input value="1" ng-model="property.arrearagePay" type="radio">
+                                    <span>新产权人</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6" ng-show="showStall">
+                    <div class="sel1">
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                车位编号：
+                            </div>
+                            <div class="col-lg-5 col-md-4 col-sm-4">
+                                {{stallone.stallCoding}}
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                车位地址：
+                            </div>
+                            <div class="col-lg-6 col-md-4 col-sm-4">
+                                {{stallone.fullName}}
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                合同编号：
+                            </div>
+                            <div class="col-lg-5 col-md-4 col-sm-4">
+                                <input class="form-control" ng-model="addChange.pactId">
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 search-padding-10 ">
+                                <span style="color: red">*</span>
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                认购日期：
+                            </div>
+                            <div class="col-lg-5 col-md-4 col-sm-4">
+                                <input class="form-control" type="date" ng-model="addChange.buyDate">
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 search-padding-10 ">
+                                <span style="color: red">*</span>
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                签约日期：
+                            </div>
+                            <div class="col-lg-5 col-md-4 col-sm-4">
+                                <input class="form-control" type="date" ng-model="addChange.signContractDate">
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 search-padding-10 ">
+                                <span style="color: red">*</span>
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                旧产权人：
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-sm-4">
+                                {{name}}
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                新产权人：
+                            </div>
+                            <div class="col-lg-5 col-md-4 col-sm-4">
+                                <input class="form-control" ng-model="person2.name" disabled="disabled">
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2 search-padding-10 ">
+                                <span style="color: red">*</span>
+                            </div>
+                            <div class="col-lg-2 col-md-4 col-sm-4">
+                                <button data-toggle="modal" data-target="#myModal_zuping"  class="btn btn-default btn-primary" ng-click="arrearagePayAdd()">
+                                    <span class="glyphicon glyphicon-plus btn_icon"></span>新增
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                欠费承担人：
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-sm-4">
+                                <label class="radio inline">
+                                    <input value="0" ng-model="property.arrearagePay" type="radio">
+                                    <span>旧产权人</span>
+                                </label>
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-sm-4">
+                                <label class="radio inline">
+                                    <input value="1" ng-model="property.arrearagePay" type="radio">
+                                    <span>新产权人</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6">
+                        <div >
+                            <span class="architecture_span_left">欠费情况：</span>
+                        </div>
+                            <table >
+                                <thead>
+                                <tr>
+                                    <th  >
+                                      计费项目
+                                    </th>
+                                    <th  >
+                                      欠费金额
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td >物业管理费</td>
+                                    <td >
+                                        200.0
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>停车卡</td>
+                                    <td  >
+                                        20.0
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td >车位管理费</td>
+                                    <td   >
+                                        100.0
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td >水费</td>
+                                    <td   >
+                                        300.0
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td >电费</td>
+                                    <td >
+                                       600.0
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td >合计</td>
+                                    <td  >
+                                        <span class="red"> 1220.0</span>
+                                    </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                </div>
+                <div class="clear"></div >
+                <div class="text-center">
+                    <input type="button"  class="btn btn-default btn-primary tab-btn" value="确认提交" ng-click="addChangeTitle()" >
+                </div>
+            </div>
+        </div>
+        <!-- 产权变更历史详情 -->
+        <div ng-show="showHistoryDetail">
+            <div class="production_height_two">
+                <!-- 历史房屋详情 -->
+                <div class="col-lg-6 col-md-6 col-sm-6" ng-show="showHistoryHouse">
+                    <div class="sel1">
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                房屋编号：
+                            </div>
+                            <div class="col-lg-5 col-md-4 col-sm-4">
+                                {{houseHistory.houseNum}}
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                房屋地址：
+                            </div>
+                            <div class="col-lg-6 col-md-4 col-sm-4">
+                                {{houseHistory.fullName}}
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                合同编号：
+                            </div>
+                            <div class="col-lg-5 col-md-4 col-sm-4">
+                                {{houseHistory.pactId}}
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                认购日期：
+                            </div>
+                            <div class="col-lg-5 col-md-4 col-sm-4">
+                                {{houseHistory.buyDate | date:"yyyy-MM-dd"}}
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                签约日期：
+                            </div>
+                            <div class="col-lg-5 col-md-4 col-sm-4">
+                                {{houseHistory.signContractDate | date:"yyyy-MM-dd"}}
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                旧产权人：
+                            </div>
+                            <div class="col-lg-5 col-md-4 col-sm-4">
+                                {{houseHistory.custName}}
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                新产权人：
+                            </div>
+                            <div class="col-lg-5 col-md-4 col-sm-4">
+                                {{houseHistory.newCustName}}
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                欠费承担人：
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-sm-4">
+                                <label class="radio inline">
+                                    <input value="0" ng-model="houseHistory.arrearagePay" type="radio" disabled>
+                                    <span>旧产权人</span>
+                                </label>
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-sm-4">
+                                <label class="radio inline">
+                                    <input value="1" ng-model="houseHistory.arrearagePay" type="radio" disabled>
+                                    <span>新产权人</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 历史商铺详情 -->
+                <div class="col-lg-6 col-md-6 col-sm-6" ng-show="showHistoryStore">
+                    <div class="sel1">
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                商铺编号：
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-sm-4">
+                                {{storeHistory.storeNumber}}
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                商铺地址：
+                            </div>
+                            <div class="col-lg-6 col-md-4 col-sm-4">
+                                {{storeHistory.fullName}}
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                合同编号：
+                            </div>
+                            <div class="col-lg-5 col-md-4 col-sm-4">
+                                {{storeHistory.pactId}}
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                认购日期：
+                            </div>
+                            <div class="col-lg-5 col-md-4 col-sm-4">
+                                {{storeHistory.buyDate | date:"yyyy-MM-dd"}}
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                签约日期：
+                            </div>
+                            <div class="col-lg-5 col-md-4 col-sm-4">
+                                {{storeHistory.signContractDate | date:"yyyy-MM-dd"}}
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                旧产权人：
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-sm-4">
+                                {{storeHistory.custName}}
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                新产权人：
+                            </div>
+                            <div class="col-lg-5 col-md-4 col-sm-4">
+                                {{storeHistory.newCustName}}
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                欠费承担人：
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-sm-4">
+                                <label class="radio inline">
+                                    <input value="0" ng-model="storeHistory.arrearagePay" type="radio" disabled>
+                                    <span>旧产权人</span>
+                                </label>
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-sm-4">
+                                <label class="radio inline">
+                                    <input value="1" ng-model="storeHistory.arrearagePay" type="radio" disabled>
+                                    <span>新产权人</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 历史车位详情 -->
+                <div class="col-lg-6 col-md-6 col-sm-6" ng-show="showHistoryStall">
+                    <div class="sel1">
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                车位编号：
+                            </div>
+                            <div class="col-lg-5 col-md-4 col-sm-4">
+                                {{stallHistory.stallCoding}}
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                车位地址：
+                            </div>
+                            <div class="col-lg-6 col-md-4 col-sm-4">
+                                {{stallHistory.fullName}}
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                合同编号：
+                            </div>
+                            <div class="col-lg-5 col-md-4 col-sm-4">
+                                {{stallHistory.pactId}}
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                认购日期：
+                            </div>
+                            <div class="col-lg-5 col-md-4 col-sm-4">
+                                {{stallHistory.buyDate | date:"yyyy-MM-dd"}}
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                签约日期：
+                            </div>
+                            <div class="col-lg-5 col-md-4 col-sm-4">
+                                {{stallHistory.signContractDate | date:"yyyy-MM-dd"}}
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                旧产权人：
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-sm-4">
+                                {{stallHistory.custName}}
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                新产权人：
+                            </div>
+                            <div class="col-lg-5 col-md-4 col-sm-4">
+                               {{stallHistory.newCustName}}
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                欠费承担人：
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-sm-4">
+                                <label class="radio inline">
+                                    <input value="0" ng-model="stallHistory.arrearagePay" type="radio" disabled>
+                                    <span>旧产权人</span>
+                                </label>
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-sm-4">
+                                <label class="radio inline">
+                                    <input value="1" ng-model="stallHistory.arrearagePay" type="radio" disabled>
+                                    <span>新产权人</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6">
+                    <div >
+                        <span class="architecture_span_left">欠费情况：</span>
+                    </div>
+                    <table >
+                        <thead>
+                        <tr>
+                            <th  >
+                                计费项目
+                            </th>
+                            <th  >
+                                欠费金额
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td >物业管理费</td>
+                            <td >
+                                200.0
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>停车卡</td>
+                            <td  >
+                                20.0
+                            </td>
+                        </tr>
+                        <tr>
+                            <td >车位管理费</td>
+                            <td   >
+                                100.0
+                            </td>
+                        </tr>
+                        <tr>
+                            <td >水费</td>
+                            <td   >
+                                300.0
+                            </td>
+                        </tr>
+                        <tr>
+                            <td >电费</td>
+                            <td >
+                                600.0
+                            </td>
+                        </tr>
+                        <tr>
+                            <td >合计</td>
+                            <td  >
+                                <span class="red"> 1220.0</span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="clear"></div >
+                <div class="text-center">
+                    <input type="button"  class="btn btn-default btn-primary tab-btn" value="返回" ng-click="doClick(3)" >
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+    </div>
+    <!--人员搜索模态框开始-->
+<div class="modal fade" id="myModal_zuping" tabindex="-1"
+     role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width:80%" >
+        <div class="modal-content" >
+            <div class="modal-header">
+                <span>客户信息</span>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+            </div>
+            <div class="modal-body">
+                    <div class="col-12 col-md-12 col-sm-12">
+                    <div class=" row sel">
+                            <div class="col-lg-1 col-md-1 col-sm-1 text-right">
+                                姓名：
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                <input type="text" class="form-control " ng-model="searchone.staffName">
+                            </div>
+                            <div class="col-lg-1 col-md-1 col-sm-1 text-right">
+                                联系电话：
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                <input type="text" class="form-control " ng-model="searchone.phone">
+                            </div>
+                            <div class="col-lg-1 col-md-1 col-sm-1 text-right">
+                                身份证号：
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                <input type="text" class="form-control " ng-model="searchone.idNum">
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 text-right">
+                                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="selectPerson();">
+                                    <span class="glyphicon glyphicon-search btn_icon"></span>
+                                    查询
+                                </button>
+                            </div>
+                        </div>
+                        </div>
+                    <div class="padding">
+                    <div class="row rh" ng-class="{'this_info':btnIndex==person}" ng-click="choicePerson(person)" ng-repeat="person in searchPaginator.object.personCustNew" ng-show="person.custId!=null">
+                        <div class="col-lg-1 col-md-1 col-sm-1"><img src="images/project/user/user_3.png"  width="50" height="50" ></div>
+                        <div class="col-lg-11 col-md-11 col-sm-11">
+                            <div class="row">
+                                <div class="col-lg-1 col-md-2 col-sm-2 text-right">客户姓名：</div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">{{person.name}} &nbsp;</div>
+                                <div class="col-lg-1 col-md-2 col-sm-2 text-right">客户性别：</div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">{{person.sex}} &nbsp;</div>
+                                <div class="col-lg-1 col-md-2 col-sm-2 text-right">客户编号：</div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">{{person.custCode}} &nbsp;</div>
+                                <div class="col-lg-1 col-md-2 col-sm-2 text-right">身份证：</div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">{{person.cardNum}} &nbsp;</div>
+
+                                <div class="col-lg-1 col-md-2 col-sm-2 text-right">QQ号码：</div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">{{person.weixinNum}} &nbsp;</div>
+                                <div class="col-lg-1 col-md-2 col-sm-2 text-right">客户年龄：</div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">{{person.age}} &nbsp;</div>
+                                <div class="col-lg-1 col-md-2 col-sm-2 text-right">联系电话：</div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">{{person.phoneNum}} &nbsp;</div>
+                                <div class="col-lg-1 col-md-2 col-sm-2 text-right">家家号：</div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">{{person.jiajiaNum}} &nbsp;</div>
+
+                            </div>
+                        </div>
+                    </div>
+                        <div class="bill_paging">
+                            <span>共{{searchPaginator.object.page.totalResult}}条</span>
+                            <ul class="pagination">
+                                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-click="searchPaginator.go(1)">首页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a>
+                                </li>
+                                <li ng-class="{true:'active'}[searchPaginator.page.currentPage==i]" ng-repeat="i in searchPaginator.pages">
+                                    <a href="javascript:void(0)"  ng-click="searchPaginator.go(i)">{{i}}</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn  btn-default"
+                        data-dismiss="modal">
+                    取消
+                </button>
+                <button type="button" class="btn bg-primary "
+                        aria-label="Left Align" data-dismiss="modal">
+                    确定
+                </button>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!--人员搜索模态框结束-->
+
+</body>
+</html>
+
+
+

@@ -1,0 +1,20 @@
+<!--
+    author:NM
+    pageName:企业客户管理
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>企业客户管理</title>
+</head>
+<body>
+<div id="content-first">
+    <div id="tab">
+        <a ng-class="{'this_action ':btnIndex==1}" ng-click="doClick(1)" ui-sref="index.baseManagement.enterpriseCustomer.enterpriseCustomerAdd">新建企业客户</a>
+        <a lang="no"  ng-class="{'this_action ':btnIndex==2}" ng-click="doClick(2)" ui-sref="index.baseManagement.enterpriseCustomer.enterpriseCustomerCheck">企业客户列表</a>
+    </div>
+    <div ui-view></div>
+</div>
+</body>
+</html>

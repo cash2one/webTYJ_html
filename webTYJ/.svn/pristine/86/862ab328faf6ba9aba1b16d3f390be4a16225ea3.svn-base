@@ -1,0 +1,85 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 产品初始化
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../app');
+
+    app.controller('fixedParkingSpaceCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        var url = $rootScope.url;
+        $scope.searchStallNew = {page: {}};
+        $scope.searchStallNew.productId = $rootScope.productId;    //获取传入的产品id
+        $scope.indexs='';   //序号
+        $scope.Product = {};//定义一个product对象
+
+        /**
+         * 根据项目ID查询项目车位记录（分页）
+         */
+        var checkStallNew = function (page, callback) {
+            $scope.searchStallNew.page = page;
+            $http.post(url + '/Product/listPageStallP', {StallNew: $scope.searchStallNew}).success(callback);
+        };
+        $scope.currentStallNew = app.get('Paginator').list(checkStallNew, 5);
+        $scope.indexs=$scope.currentStallNew.page.currentPage*5;
+
+        $scope.saveType=function(item){
+            $scope.Product.productType = 4;
+            $scope.Product.stallId=item.stallId;
+            if(item.stallType=="固定") {
+                $scope.Product.productName=item.stallPosition;
+                $scope.Product.price=item.price;
+                if (angular.isUndefined($scope.productId) || $scope.productId == null) {
+                    $http.post(url + '/Product/addProduct', {Product: $scope.Product}).success(function () {
+                        //alert("新增成功!");
+                        $scope.currentStallNew._load();
+                    }).error(function () {
+                        layer.alert('数据更新失败！',{icon : 2});
+                    });
+                }
+            }else{
+                $http.post(url + '/Product/deleteProductByStallId/'+$scope.Product.stallId+'/'+item.stallType).success(function () {
+                    item.price=0;
+                    //alert("删除成功!");
+                }).error(function () {
+                    //alert("数据更新失败!");
+                });
+            }
+        };
+
+        $scope.savePrice=function(item){
+            $scope.Product.productType = 4;
+            $scope.Product.productId=item.productId;
+            $scope.Product.price=item.price;
+            if(item.stallType=="固定") {
+                $scope.Product.stallId=item.stallId;
+                $scope.Product.productName=item.stallPosition;
+            }
+            $http.post(url + '/Product/updateProduct', {Product: $scope.Product}).success(function () {
+                //alert("修改成功!");
+            }).error(function () {
+                layer.alert('数据更新失败！',{icon : 2});
+            });
+        };
+
+        $scope.formatGender = function(item) {
+            var type = item.stallType;
+            var id = item.stallId;
+            console.log(type);
+            if (type == "固定") {
+                document.getElementById(id).readOnly = false;
+            }else{
+                document.getElementById(id).readOnly = true;
+            }
+        };
+
+        //返回产品列表
+        $scope.backToProduct = function(){
+            $location.path("/index/accountManagement/product");
+        };
+
+    }]);
+});

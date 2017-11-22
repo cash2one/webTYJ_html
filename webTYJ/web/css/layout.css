@@ -1,0 +1,70 @@
+/*
+
+NAME: 王双玲
+用途: 布局样式表
+创建时间：2015-07-10
+版本号：V0.1
+修改时间：2015-07-10
+
+目录列表;
+    1、头部
+    2、左侧用户列表
+
+
+
+*/
+/*======================================================================================================================
+                                                  1、头部
+======================================================================================================================*/
+.header{
+    width: 100%;
+    height:50px;
+    }
+.logo{
+    float:left;
+    margin-left:10px;
+    margin-top:3px;
+}
+.set{
+    width:120px;
+    float:right;
+    padding-top:5px;
+    margin-right:10px;
+    margin-top:5px;
+}
+.set span{
+    display: block;
+    width: 25px;
+    height: 25px;
+    padding-top: 5px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.set a{
+    margin-right: 10px;
+}
+
+.user div{
+    width: 100%;
+}
+.user .search input{
+    width: 80%;
+    height: 35px;
+    padding-left: 5px;
+    line-height: 35px;
+}
+.user .search span{
+    width: 20%;
+    text-align: center;
+    margin-top: -1px;
+    height: 35px;
+    line-height: 35px;
+    cursor: pointer;
+}
+.user .list_button span{
+    width: 50%;
+    height: 45px;
+    line-height: 45px;
+    text-align: center;
+}

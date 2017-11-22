@@ -1,0 +1,295 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 消息公告管理
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../app');
+
+    app.controller('villageNoticeCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+        $scope.doClick(2);
+        var url=$rootScope.url;
+        /**
+         * 初始化富文本编辑器
+         */
+        var ue1 = UE.getEditor('container1',{
+            elementPathEnabled:false
+            //autoHeightEnabled: true,
+            //autoFloatEnabled: true
+            //serverUrl:'http://127.0.0.1:8080/webTYJ/FileService'
+            //serverUrl:'http://127.0.0.1:8080/webTYJ/FileService'
+        });
+        var ue2 = UE.getEditor('container2',{
+            elementPathEnabled:false
+            //autoHeightEnabled: true,
+            //autoFloatEnabled: true
+            //serverUrl:'http://127.0.0.1:8080/webTYJ/FileService'
+            //serverUrl:'http://127.0.0.1:8080/webTYJ/FileService'
+        });
+        /**
+         * 点击发布
+         */
+        $scope.Communtitnotice={};
+        $scope.Communtitnotice.title="";
+        $scope.Communtitnotice.founder="";
+        $scope.Communtitnotice.department="";
+        $scope.Communtitnotice.abstracts="";
+        $scope.Communtitnotice.project="";
+        $scope.Communtitnotice.briefContent="";
+        $scope.insertVillageNotice=function(){
+            /**
+             * 调用API获取编辑器html内容
+             */
+            ue1.ready(function() {
+                var html = ue1.getContent();
+                console.log("编辑器的内容为："+html);
+                $scope.Communtitnotice.briefContent=html;
+            });
+            if(($scope.Communtitnotice.title=="")||($scope.Communtitnotice.title==undefined)){
+                layer.msg('请填写标题信息！',{icon:0,time:2000});
+                return;
+            }
+            if(($scope.Communtitnotice.project=="")||($scope.Communtitnotice.project==undefined)){
+                layer.msg('发布项目不能为空！',{icon:0,time:2000});
+                return;
+            }
+            $http.post(url+'/Communtitnotice/AddCommuntitnotice',{Communtitnotice:$scope.Communtitnotice}).success(function(){
+                layer.msg('发布成功',{icon : 1,time : 2000});
+                $scope.searchPaginator._load();
+            }).error(function(data,status,headers,config){
+                alert("发布失败！");
+            });
+
+            //清空内容
+            $scope.Communtitnotice={};
+            ue1.ready(function() {
+                ue1.setContent("");
+            });
+        };
+
+       /* /!**
+         * 显示标题信息
+         *!/
+        $scope.Communtitnotices={};
+        $http.get(url + '/Communtitnotice/listAllsCommuntitnotice').success(function(data) {
+            $scope.Communtitnotices = data.Communtitnotice;
+           /!* var a = $scope.Communtitnotices[9];
+            $('#text').html(a.briefContent);*!/
+        });*/
+
+        /**
+         * 删除小区公告
+         */
+        $scope.deleteCommunityNotice=function(){
+            var count = 0;
+            angular.forEach($scope.searchPaginator.object.communtitnotices,function(item){
+                if(item.id!=null) {
+                    console.log("item.id的值为：" + item.id);
+                    if (document.getElementById(item.id).checked) {
+                        count++;
+                    }
+                }
+            });
+            if(count==0){
+                layer.msg('请选择需要删除的行！',{icon:0,time:2000});
+                return;
+            }
+            layer.confirm('是否删除？',{
+                btn : ['确定','取消']
+            },function(){
+                var temp = [];
+                temp = $scope.searchPaginator.object.communtitnotices;
+                $scope.searchPaginator.object.communtitnotices = [];
+                for(var i = 0;i<temp.length;i++){
+                    if(temp[i].id!=null) {
+                        console.log(document.getElementById(temp[i].id).checked);
+                        if (!document.getElementById(temp[i].id).checked) {
+                            $scope.searchPaginator.object.communtitnotices.push(temp[i]);
+                        }
+                        else {
+                            $http.delete(url + '/Communtitnotice/DeleteCommuntitnoticeById/' + temp[i].id).success(function () {
+                                $scope.searchPaginator._load();
+                            });
+                        }
+                    }
+                }
+                $scope.$apply(function(){
+                    /*$scope.SumOrUpdateQuoteOrders();
+                    $scope.discountOrUpdateQuoteOrders();*/
+                });
+                layer.msg('删除成功！',{icon :1,time : 1000});
+
+
+            },function(){
+
+            });
+        };
+
+        /**
+         *编辑小区公告
+         */
+        $scope.itemCommunity="";
+        $scope.editState=0;
+        $scope.editCommunityNotice=function(){
+            $scope.editState=0;
+            /**
+             * 清空编辑器的内容
+             */
+            ue2.ready(function() {
+                ue2.setContent("");
+            });
+            var count = 0;
+            angular.forEach($scope.searchPaginator.object.communtitnotices,function(item){
+                if(item.id!=null) {
+                    console.log("item.id的值为：" + item.id);
+                    if (document.getElementById(item.id).checked) {
+                        count++;
+                        $scope.itemCommunity=item;
+                    }
+                }
+            });
+            console.log("$scope.itemCommunity.title的值为："+$scope.itemCommunity.title);
+            console.log("$scope.itemCommunity.founder的值为："+$scope.itemCommunity.founder);
+            console.log("$scope.itemCommunity.department的值为："+$scope.itemCommunity.department);
+            if(count==0){
+                layer.msg('请选择需要编辑的行！',{icon:0,time:2000});
+                return;
+            }
+            if(count>1){
+                layer.msg('最多只能编辑一个公告！',{icon:0,time:2000});
+                return;
+            }
+            //$('#container2').html($scope.itemCommunity.briefContent);
+            /**
+             * set编辑器的内容
+             */
+            ue2.ready(function() {
+                var str=$scope.itemCommunity.briefContent;
+                if(str!=null) {
+                    ue2.setContent(str);
+                }
+            });
+            $scope.editState=1;
+            $scope.newState=0;
+        };
+
+        $scope.newState=0;
+        $scope.changeNewState=function(){
+          $scope.newState=1;
+          $scope.editState=0;
+        };
+
+        /**
+         *小区公告分页
+         */
+        $scope.communityPage={page:{}};
+        var fetchFunction = function (page, callback) {
+            $scope.communityPage.page = page;
+            $http.post(url + '/Communtitnotice/listPageCommuntitnoticeRestful',{Communtitnotice:$scope.communityPage}).success(callback)
+        };
+        $scope.searchPaginator = app.get('Paginator').list(fetchFunction,6);
+        console.log("$scope.searchPaginator的内容为:"+$scope.searchPaginator);
+
+        /**
+         * 更新编辑公告的内容
+         */
+        $scope.updateVillageNotice=function(){
+            if(($scope.itemCommunity.title=="")||($scope.itemCommunity.title==undefined)){
+                layer.msg('请填写标题信息！',{icon:0,time:2000});
+                return;
+            }
+            if(($scope.itemCommunity.project=="")||($scope.itemCommunity.project==undefined)){
+                layer.msg('发布项目不能为空！',{icon:0,time:2000});
+                return;
+            }
+            ue2.ready(function() {
+                var html = ue2.getContent();
+                $scope.itemCommunity.briefContent=html;
+            });
+            $http.put(url + '/Communtitnotice/UpdateCommuntitnotice',{Communtitnotice:$scope.itemCommunity}).success(function(){
+                layer.msg('发布成功',{icon : 1,time : 2000});
+
+            }).error(function(data,status,headers,config){
+                alert("发布失败！");
+            });
+            //清空内容
+            /*$scope.itemCommunity="";
+            ue2.ready(function() {
+                ue2.setContent("");
+            });*/
+        };
+
+        /**
+         * 预览点击事件
+         */
+        $scope.showPreview=function(item,i){
+            $scope.preview=item;
+            $scope.preview.creationTime=new Date();
+            if(i==1) {
+                ue1.ready(function () {
+                    item.briefContent = ue1.getContent();
+                });
+            }
+            if(i==2) {
+                ue2.ready(function () {
+                    item.briefContent = ue2.getContent();
+                });
+            }
+            $('#editorPreview').html(item.briefContent);
+        };
+
+        //查询所有项目
+        $scope.projects = {page:{}};
+        $scope.projects.company = $scope.user.companyId;
+        var fetchFunction = function (page, callback) {
+            $scope.projects.page = page;
+            $http.post(url + '/Project/listPageProjectByCompany',{Project:$scope.projects}).success(callback)
+        };
+        $scope.projectPaginator = app.get('Paginator').list(fetchFunction,6);
+        console.log("$scope.searchPaginator的内容为:"+$scope.searchPaginator);
+
+        $scope.openProject = function () {
+            //$('#chooseProject').model('show');
+        };
+
+        $scope.btnIndex = 0;
+        $scope.chooseProjectList = function (item) {
+            $scope.btnIndex = item.projectId;
+            document.getElementById(item.projectId).checked=document.getElementById(item.projectId).checked?false:true;
+            var temp=$scope.projectPaginator.object.project;
+            for(var i=0;i<temp.length;i++){
+                if(temp[i].projectId!=null){
+                    if(temp[i].projectId!=item.projectId) {
+                        document.getElementById(temp[i].projectId).checked = false;
+                    }
+                }
+            }
+        };
+
+        $scope.submitProjectForEdit = function () {
+            var temp = $scope.projectPaginator.object.project;
+            var tag=0;
+            for(var i=0;i<temp.length;i++){
+                if(temp[i].projectId!=null){
+                    if(document.getElementById(temp[i].projectId).checked) {
+                        if($scope.editState==1) {
+                            $scope.itemCommunity.project = temp[i].projectId;
+                            $scope.itemCommunity.projects.projectName = temp[i].projectName;
+                        }
+                        if($scope.newState==1){
+                            $scope.Communtitnotice.project = temp[i].projectId;
+                            $scope.Communtitnotice.projectName = temp[i].projectName;
+                        }
+                        tag=1;
+                    }
+                }
+            }
+            if(tag==0){
+                $scope.Communtitnotice.project="";
+                $scope.itemCommunity.project="";
+            }
+        }
+    }]);
+});

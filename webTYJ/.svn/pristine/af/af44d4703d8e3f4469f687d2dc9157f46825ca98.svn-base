@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="waterMeterInfo.css">
+</head>
+<body>
+<div class="bill_paging">
+    <ul class="pagination">
+        <li><a style="cursor: pointer;"  ng-click="goPrev()">上一页</a></li>
+        <li><a style="cursor: pointer;" ng-click="go(page.pageStatus.currentPage)">{{page.pageStatus.currentPage}}</a></li>
+        <li><a style="cursor: pointer;" ng-click="goNext()">下一页</a></li>
+    </ul>
+</div>
+</body>
+</html>

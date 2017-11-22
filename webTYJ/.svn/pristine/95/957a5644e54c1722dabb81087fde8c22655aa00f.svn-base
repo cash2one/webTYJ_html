@@ -1,0 +1,355 @@
+<!--
+    页面名称：合同列表
+    创建人：彭婷婷     创建时间：2015/6/16
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>合同列表</title>
+</head>
+<body>
+
+<div class="sel">
+    <div class="row" >
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            筛选：
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            <label class="checkbox inline">
+                <input type="checkbox" ng-true-value="1" ng-false-value="0" ng-model="tenement.state">
+                <span>已投保</span>
+            </label>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            <label class="checkbox inline">
+                <input type="checkbox" ng-true-value="2" ng-false-value="0" ng-model="tenement.state">
+                <span>未投保</span>
+            </label>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2">
+            <label class="checkbox inline">
+                <input type="checkbox" ng-true-value="3" ng-false-value="0" ng-model="tenement.state">
+                <span>快过保</span>
+            </label>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            保险日期：
+        </div>
+        <div class="col-lg-7 col-md-4 col-sm-4">
+            <div class="col-lg-3">
+                <input  type="date" class="form-control" ng-model="tenement.startTime" >
+            </div>
+            <div class="col-lg-1">
+                至
+            </div>
+            <div class="col-lg-3">
+                <input type="date" class="form-control"  ng-model="tenement.endTime">
+            </div>
+        </div>
+    </div>
+    <div class="row search-padding">
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            保险公司：
+        </div>
+        <div class="col-lg-2 col-md-4 col-sm-4">
+            <input name="input" type="text" class="form-control" placeholder="请输入保险公司名称" ng-model="tenement.insuranceCompanyName">
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            物业项目：
+        </div>
+        <div class="col-lg-2 col-md-4 col-sm-4">
+            <input name="input" type="text" class="form-control" placeholder="请输入物业项目名称" ng-model="tenement.projectName">
+
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            保险类型：
+        </div>
+        <div class="col-lg-2 col-md-4 col-sm-4">
+            <select class="form-control" ng-model="tenement.insuranceType">
+                <option value="">请选择保险类型</option>
+                <option value="1">物业管理责任险</option>
+                <option value="2">公众责任险</option>
+                <option value="3">企财险</option>
+                <option value="4">办公室综合险</option>
+            </select>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-12 ">
+            <button type="button" class="btn btn-default btn-primary" ng-click="searchPaginator._load()" >
+                <span class="glyphicon glyphicon-search btn_icon"></span>查询
+            </button>
+        </div>
+    </div>
+
+</div>
+
+<div class="padding">
+    <div class="padding col-lg-2 col-md-2 col-sm-2">
+        <button type="button" class="btn btn-default btn-primary" ng-click="doClick(1)"  ui-sref="index.businessManagement.propertyInsuranceManagement.insuranceNew">
+            <span class="glyphicon glyphicon-plus btn_icon"></span>新增
+        </button>
+    </div>
+    <div class="col-lg-10 col-md-10 col-sm-10 text-right" >
+        <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="showList()">
+            <span class="glyphicon glyphicon-th-large btn_icon"></span>
+            列表
+        </button>
+        <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="showTable()">
+            <span class="glyphicon glyphicon-th-list btn_icon"></span>
+            网格
+        </button>
+    </div>
+    <div class="clear"></div>
+    <div>
+        <div class="row search-padding-10" ng-show="showStatus==1">
+            <div class="col-lg-4 col-md-6 col-sm-6" ng-repeat="item in searchPaginator.object.tenementInsurances" ng-show="item.projectName!=null" >
+                <div id="pannel">
+                    <div class="title"  ng-show="item.colors=='red'" style="background-color: red">
+                        <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                            <h3>合同信息</h3>
+                        </div>
+                        <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                        </div>
+                    </div>
+                    <div class="title"  ng-show="item.colors=='green'" style="background-color: green">
+                        <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                            <h3>合同信息</h3>
+                        </div>
+                        <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                        </div>
+                    </div>
+                    <div class="title"  ng-show="item.colors=='yellow'" style="background-color: yellow">
+                        <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                            <h3>合同信息</h3>
+                        </div>
+                        <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                        </div>
+                    </div>
+                    <div class="pannel_content">
+                        <div class="row">
+                            <div class="col-xs-4 col-lg-4 col-md-4">
+                                <a ng-click="show(item.insuranceId)">
+                                    <img src="images\upload\skins\images\fileType\doc.png" width="100%" >
+                                </a>
+                            </div>
+                            <div class="col-xs-8 col-lg-8 col-md-8">
+                                <ul>
+                                    <li> 物业项目：{{item.projectName}}</li>
+                                    <li> 开始时间：{{item.startTime| date:"yyyy-MM-dd"}}</li>
+                                    <li> 到期时间：{{item.endTime| date:"yyyy-MM-dd"}}</li>
+                                    <li> 保险公司：{{item.insuranceCompanyName}}</li>
+                                    <li>保险类型：
+                                        <span ng-switch on="item.insuranceType">
+                                            <span ng-switch-when="1">物业管理责任险</span>
+                                            <span ng-switch-when="2">公众责任险</span>
+                                            <span ng-switch-when="3">企财险</span>
+                                            <span ng-switch-when="4">办公室综合险</span>
+                                        </span>
+                                    </li>
+                                    <li> 保险金额：{{item.enterpriseMoney}}</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row search-padding-10" ng-show="showStatus==0">
+            <table>
+                <thead>
+                    <tr>
+                        <th>物业项目</th>
+                        <th>开始时间</th>
+                        <th>到期时间</th>
+                        <th>保险公司</th>
+                        <th>保险类型</th>
+                        <th>保险金额</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="item in searchPaginator.object.tenementInsurances"
+                        ng-show="item.projectName!=null"
+                            ng-dblclick="show(item.insuranceId)">
+                        <td>{{item.projectName}}</td>
+                        <td>{{item.startTime| date:"yyyy-MM-dd"}}</td>
+                        <td>{{item.endTime| date:"yyyy-MM-dd"}}</td>
+                        <td>{{item.enterpriseName}}</td>
+                        <td>
+                            <span ng-switch on="item.insuranceType">
+                                <span ng-switch-when="1">物业管理责任险</span>
+                                <span ng-switch-when="2">公众责任险</span>
+                                <span ng-switch-when="3">企财险</span>
+                                <span ng-switch-when="4">办公室综合险</span>
+                            </span>
+                        </td>
+                        <td>{{item.enterpriseMoney}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+   </div>
+    <div class="clear"></div>
+    <div class="row padding">
+        <div class="bill_paging">
+            <ul class="pagination">
+                <li><a style="cursor:pointer;" ng-click="searchPaginator.go(1)">首页</a></li>
+                <li><a style="cursor:pointer;" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a></li>
+                <li><a style="cursor:pointer;" ng-repeat="i in searchPaginator.pages"  ng-click="searchPaginator.go(i)">{{i}}</a></li>
+                <li><a style="cursor:pointer;" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a></li>
+                <li><a style="cursor:pointer;" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a></li>
+            </ul>
+        </div>
+
+
+</div>
+
+
+<!--弹出详情模态框-->
+<div class="modal fade" id="showDatil" role="dialog" aria-label="updateStaff" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                详情
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="sel1">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            保险单号：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            {{tenementInsurances.insuranceNum}}
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                            &nbsp;
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            开始时间：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            {{tenementInsurances.startTime|date:'yyyy-MM-dd'}}
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                            &nbsp;
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            物业项目：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                          {{tenementInsurances.projectName}}
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                            &nbsp;
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            结束时间：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            {{tenementInsurances.endTime|date:'yyyy-MM-dd'}}
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                            &nbsp;
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            保险公司：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            {{tenementInsurances.insuranceCompanyName}}
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                            &nbsp;
+                        </div>
+
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            保险金额：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            {{tenementInsurances.enterpriseMoney}}
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                            &nbsp;
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            区域保险公司：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            {{tenementInsurances.areaCompanyName}}
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                            &nbsp;
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            理赔金额：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            {{tenementInsurances.settlingFee}}
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                            &nbsp;
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            保险类型：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <span ng-switch on="tenementInsurances.insuranceType">
+                                <span ng-switch-when="1">物业管理责任险</span>
+                                <span ng-switch-when="2">公众责任险</span>
+                                <span ng-switch-when="3">企财险</span>
+                                <span ng-switch-when="4">办公室综合险</span>
+                            </span>
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                            &nbsp;
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            保费金额：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            {{tenementInsurances.premiumMoney}}
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                            &nbsp;
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            责任人：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            {{tenementInsurances.staffName}}
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                            &nbsp;
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            累计理赔：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            {{tenementInsurances.settlingFeeSum}}
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                            &nbsp;
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            附件列表：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4"  ng-repeat="item in tenementInsurances.annexs track by $index"  ng-show="item.annexAddress != null&&item1.annexAddress!=''">
+                            <img src={{fileUrl}}/{{item.annexAddress}} width="80px" height="80px">
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--结束-->
+
+</div>
+</body>
+</html>

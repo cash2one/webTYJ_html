@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>业务管理</title>
+</head>
+<body>
+<div class="card">
+    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a ui-sref="index.businessManagement.allVehicles">
+                        <img src="images/icon/businessManagement/cheliangchaxun.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>车辆查询</strong></h4>
+                    查询所有工单信息
+                    务时可以查询FAQ解答
+                    客户问题。
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a ui-sref="index.businessManagement.housingManagement.houseList">
+                        <img src="images/icon/businessManagement/fangwuchuyan.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>房屋初验</strong></h4>
+                    前台和CC进行咨询服
+                    务时可以查询FAQ解答
+                    客户问题。
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a ui-sref="index.businessManagement.allarticleRelease">
+                        <img src="images/icon/businessManagement/fangxingtiaochaxun.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>放行条查询</strong></h4>
+                    查询所有工单信息
+                    务时可以查询FAQ解答
+                    客户问题。
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a ui-sref="index.businessManagement.allentraceCard">
+                        <img src="images/icon/businessManagement/menjinkachaxun.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>门禁卡查询</strong></h4>
+                    查询所有工单信息
+                    务时可以查询FAQ解答
+                    客户问题。
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a ui-sref="index.businessManagement.leaseManagement.leaseContractList">
+                        <img src="images/icon/businessManagement/zuninguanli.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>租赁管理</strong></h4>
+                    租赁
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a ui-sref="index.businessManagement.customerManagement">
+                        <img src="images/icon/businessManagement/shouhouguanli.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>售后管理</strong></h4>
+                    前台和CC进行咨询服
+                    务时可以查询FAQ解答
+                    客户问题。
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <!--<a ui-sref="index.businessManagement.newWaterMeterManagement.waterMeterMaintenance.listOfWaterMeter" ng-click="doClick(1)">-->
+                    <a ng-click="doClick(1)">
+                        <img src="images/icon/businessManagement/shuibiaoguanli.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>水表管理</strong></h4>
+                    水表管理
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a ui-sref="index.businessManagement.newElectricMeterManagement.instrumentMaintenance.electricMeterList">
+                        <img src="images/icon/anbao.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>电表管理</strong></h4>
+                    电表管理
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a ui-sref="index.businessManagement.propertyManagementContract.contractList">
+                        <img src="images/icon/businessManagement/wuyehetongguanli.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>物业合同管理</strong></h4>
+                    前台和CC进行咨询服
+                    务时可以查询FAQ解答
+                    客户问题。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a ui-sref="index.businessManagement.propertyInsuranceManagement.insuranceList">
+                        <img src="images/icon/businessManagement/wuyebaoxianguanli.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>物业保险管理</strong></h4>
+                    前台和CC进行咨询服
+                    务时可以查询FAQ解答
+                    客户问题。
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a ui-sref="index.businessManagement.newsNoticeManagement.villageNotice">
+                        <img src="images/icon/businessManagement/wuyehetongguanli.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>消息公告管理</strong></h4>
+                    小区公告
+                    内部公告
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4  col-xs-4 icon_img">
+                    <a ui-sref="index.businessManagement.lostArticles">
+                        <img src="images/icon/businessManagement/yishiwupin.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>遗失物品</strong></h4>
+                    前台和CC进行咨询服
+                    务时可以查询FAQ解答
+                    客户问题。
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a ui-sref="index.businessManagement.allProfessionInquiry.parkingCardInquiry">
+                        <img src="images/icon/anbao.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>全部业务查询</strong></h4>
+                    全部业务查询
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-sm-12">
+        <div id="pannel">
+            <div class="row" style="padding: 10px">
+                <div class="col-md-4 col-xs-4 icon_img">
+                    <a ui-sref="index.businessManagement.publicNumberManagement.massInformation">
+                        <img src="images/icon/anbao.png">
+                    </a>
+                </div>
+                <div class="col-md-8 col-xs-8">
+                    <h4><strong>公众号管理</strong></h4>
+                    公众号管理
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

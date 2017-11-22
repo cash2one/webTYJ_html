@@ -1,0 +1,284 @@
+/**
+ * 计费管理route路由
+ */
+
+define(function (require) {
+    var app = require('../app');
+
+    app.run(['$state', '$stateParams', '$rootScope', function ($state, $stateParams, $rootScope) {
+        $rootScope.$state = $state;
+        $rootScope.$stateParams = $stateParams;
+    }]);
+
+    app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
+
+        $stateProvider
+            //计费管理start
+            .state('index.accountManagement', {
+                url: '/accountManagement',
+                views: {
+                    'main@index': {
+                        templateUrl: 'main/accountManagement/index.html',
+                        controllerUrl: 'main/accountManagement/accountManagement',
+                        controller: 'accountManagementCtrl'
+                    }
+                }
+            })
+            //计费管理end
+            //产品初始化start
+            //产品初始化修改后的地址，将产品初始化和计费模板合并
+            .state('index.accountManagement.productAndProperty', {
+                url: '/productAndProperty',
+                views: {
+                    'main@index': {
+                        templateUrl: 'main/accountManagement/productAndProperty/productAndProperty.html',
+                        controllerUrl: 'main/accountManagement/productAndProperty/productAndProperty',
+                        controller: 'productAndPropertyCtrl'
+                    }
+                }
+            })
+            .state('index.accountManagement.productAndProperty.product', {
+                url: '/product',
+                views: {
+                    'main@index': {
+                        templateUrl: 'main/accountManagement/productAndProperty/product/product.html',
+                        controllerUrl: 'main/accountManagement/productAndProperty/product/product',
+                        controller: 'productCtrl',
+                        dependencies: ['services/PageServices','services/valueCheck']
+                    }
+                }
+            })
+            //产品初始化页面跳转
+            .state('index.accountManagement.productAndProperty.product.productBanner',{
+                url:'/productBanner',
+                views: {
+                    'main@index': {
+                        templateUrl: 'main/accountManagement/productAndProperty/product/productBanner/productBanner.html',
+                        controllerUrl: 'main/accountManagement/productAndProperty/product/productBanner/productBanner',
+                        controller: 'productBannerCtrl'
+                    }
+                }
+            })
+            //产品初始化租赁页面
+            .state('index.accountManagement.productAndProperty.product.productBanner.buildLease', {
+                url: '/buildLease',
+                //views: {
+                //    'main@index': {
+                        templateUrl: 'main/accountManagement/productAndProperty/product/buildLease/buildLease.html',
+                        controllerUrl: 'main/accountManagement/productAndProperty/product/buildLease/buildLease',
+                        controller: 'buildLeaseCtrl',
+                        dependencies : ['services/valueCheck']
+                //    }
+                //}
+            })
+            //计费模板初始化租赁页面
+            .state('index.accountManagement.productAndProperty.product.propertyProject', {
+                url: '/propertyProject',
+                views: {
+                    'main@index': {
+                        templateUrl: 'main/accountManagement/productAndProperty/product/propertyProject/propertyProject.html',
+                        controllerUrl: 'main/accountManagement/productAndProperty/product/propertyProject/propertyProject',
+                        controller: 'propertyProjectCtrl',
+                        dependencies: ['services/PageServices']
+                   }
+                }
+            })
+            .state('index.accountManagement.productAndProperty.product.propertyProject.plan', {
+                url: '/plan',
+                views: {
+                    'main@index': {
+                        templateUrl: 'main/accountManagement/productAndProperty/product/propertyProject/plan/plan.html',
+                        controllerUrl: 'main/accountManagement/productAndProperty/product/propertyProject/plan/plan',
+                        controller: 'propertyPlanCtrl'
+                    }
+                }
+            })
+            .state('index.accountManagement.productAndProperty.product.propertyProject.plan.newPlan', {
+                url: '/newPlan',
+                templateUrl: 'main/accountManagement/productAndProperty/product/propertyProject/plan/newPlan/newPlan.html',
+                controllerUrl: 'main/accountManagement/productAndProperty/product/propertyProject/plan/newPlan/newPlan',
+                controller: 'propertyNewPlansCtrl',
+                dependencies : ['services/tyjUtil','services/newProject','services/valueCheck']
+            })
+            .state('index.accountManagement.productAndProperty.product.propertyProject.plan.detailPlan', {
+                url: '/detailPlan/:projectId',
+                templateUrl: 'main/accountManagement/productAndProperty/product/propertyProject/plan/detailPlan/detailPlan.html',
+                controllerUrl: 'main/accountManagement/productAndProperty/product/propertyProject/plan/detailPlan/detailPlan',
+                controller: 'propertyDetailPlanCtrl',
+                dependencies : ['services/tyjUtil','services/newProject','services/valueCheck']
+            })
+
+            //产品初始化门禁卡页面
+            .state('index.accountManagement.productAndProperty.product.productBanner.accessCard', {
+                url: '/accessCard',
+                templateUrl: 'main/accountManagement/productAndProperty/product/accessCard/accessCard.html',
+                controllerUrl: 'main/accountManagement/productAndProperty/product/accessCard/accessCard',
+                controller: 'accessCardCtrl',
+                dependencies : ['services/valueCheck']
+            })
+            //产品初始化普通服务页面
+            .state('index.accountManagement.productAndProperty.product.productBanner.commonServices', {
+                url: '/commonServices',
+                templateUrl: 'main/accountManagement/productAndProperty/product/commonServices/commonServices.html',
+                controllerUrl: 'main/accountManagement/productAndProperty/product/commonServices/commonServices',
+                controller: 'commonServicesCtrl',
+                dependencies : ['services/valueCheck']
+            })
+            //产品初始化装修服务页面
+            .state('index.accountManagement.productAndProperty.product.productBanner.decorationServices', {
+                url: '/decorationServices',
+                templateUrl: 'main/accountManagement/productAndProperty/product/decorationServices/decorationServices.html',
+                controllerUrl: 'main/accountManagement/productAndProperty/product/decorationServices/decorationServices',
+                controller: 'decorationServicesCtrl'
+            })
+            //产品初始化固定车位页面
+            .state('index.accountManagement.productAndProperty.product.productBanner.fixedParkingSpace', {
+                url: '/fixedParkingSpace',
+                templateUrl: 'main/accountManagement/productAndProperty/product/fixedParkingSpace/fixedParkingSpace.html',
+                controllerUrl: 'main/accountManagement/productAndProperty/product/fixedParkingSpace/fixedParkingSpace',
+                controller: 'fixedParkingSpaceCtrl',
+                dependencies: ['services/PageServices']
+            })
+            //产品初始化停车月卡页面
+            .state('index.accountManagement.productAndProperty.product.productBanner.parkingSpaces', {
+                url: '/parkingSpaces',
+                templateUrl: 'main/accountManagement/productAndProperty/product/parkingSpaces/parkingSpaces.html',
+                controllerUrl: 'main/accountManagement/productAndProperty/product/parkingSpaces/parkingSpaces',
+                controller: 'parkingSpacesCtrl',
+                dependencies: ['services/PageServices']
+            })
+            //产品初始化广告租赁页面
+            .state('index.accountManagement.productAndProperty.product.productBanner.AdvertisingLease', {
+                url: '/AdvertisingLease',
+                templateUrl: 'main/accountManagement/productAndProperty/product/AdvertisingLease/AdvertisingLease.html',
+                controllerUrl: 'main/accountManagement/productAndProperty/product/AdvertisingLease/AdvertisingLease',
+                controller: 'AdvertisingLeaseCtrl',
+                dependencies : ['services/valueCheck']
+            })
+
+            //产品初始化end
+            //金融联银行托收start
+            .state('index.accountManagement.financeCollection', {
+                url: '/financeCollection',
+                views: {
+                    'main@index': {
+                        templateUrl: 'main/accountManagement/financeCollection/financeCollection.html',
+                        controllerUrl: 'main/accountManagement/financeCollection/financeCollection',
+                        controller: 'financeCollectionCtrl',
+                        dependencies: ['services/PageServices']
+                    }
+                }
+            })
+            //金融联银行托收end
+            //银联银行托收start
+            .state('index.accountManagement.unionPayCollection', {
+                url: '/unionPayCollection',
+                views: {
+                    'main@index': {
+                        templateUrl: 'main/accountManagement/unionPayCollection/unionPayCollection.html',
+                        controllerUrl: 'main/accountManagement/unionPayCollection/unionPayCollection',
+                        controller: 'unionPayCollectionCtrl',
+                        dependencies: ['services/PageServices','services/valueCheck']
+                    }
+                }
+            })
+            //银联银行托收end
+            //物业项目计费模块start
+            //.state('index.accountManagement.propertyProject', {
+            //    url: '/propertyProject',
+            //    views: {
+            //        'main@index': {
+            //            templateUrl: 'main/accountManagement/propertyProject/propertyProject.html',
+            //            controllerUrl: 'main/accountManagement/propertyProject/propertyProject',
+            //            controller: 'propertyProjectCtrl',
+            //            dependencies: ['services/PageServices']
+            //        }
+            //    }
+            //})
+            //.state('index.accountManagement.propertyProject.plan', {
+            //    url: '/plan',
+            //    views: {
+            //        'main@index': {
+            //            templateUrl: 'main/accountManagement/propertyProject/plan/plan.html',
+            //            controllerUrl: 'main/accountManagement/propertyProject/plan/plan',
+            //            controller: 'propertyPlanCtrl'
+            //        }
+            //    }
+            //})
+            //.state('index.accountManagement.propertyProject.plan.newPlan', {
+            //    url: '/newPlan',
+            //    templateUrl: 'main/accountManagement/propertyProject/plan/newPlan/newPlan.html',
+            //    controllerUrl: 'main/accountManagement/propertyProject/plan/newPlan/newPlan',
+            //    controller: 'propertyNewPlansCtrl'
+            //})
+            //.state('index.accountManagement.propertyProject.plan.detailPlan', {
+            //    url: '/detailPlan/:projectId',
+            //    templateUrl: 'main/accountManagement/propertyProject/plan/detailPlan/detailPlan.html',
+            //    controllerUrl: 'main/accountManagement/propertyProject/plan/detailPlan/detailPlan',
+            //    controller: 'propertyDetailPlanCtrl'
+            //})
+            //物业项目计费模块end
+            //账单费模块
+            .state('index.accountManagement.chargingProgram', {
+                url: '/chargingProgram',
+                views: {
+                    'main@index': {
+                        templateUrl: 'main/accountManagement/chargingProgram/chargingProgram.html',
+                        controllerUrl: 'main/accountManagement/chargingProgram/chargingProgram',
+                        controller: 'chargingProgramCtrl',
+                        dependencies : ['services/valueCheck']
+                    }
+                }
+            })
+            .state('index.accountManagement.chargingProgram.program', {
+                url: '/program',
+                templateUrl: 'main/accountManagement/chargingProgram/program/program.html',
+                controllerUrl: 'main/accountManagement/chargingProgram/program/program',
+                controller: 'programsCtrl',
+                dependencies: ['services/PageServices','services/valueCheck']
+            })
+            .state('index.accountManagement.chargingProgram.record', {
+                url: '/record',
+                templateUrl: 'main/accountManagement/chargingProgram/record/record.html',
+                controllerUrl: 'main/accountManagement/chargingProgram/record/record',
+                controller: 'recordsCtrl',
+                dependencies: ['services/PageServices','services/valueCheck']
+            })
+            //账单模块结束
+            //收费项目开始
+            .state('index.accountManagement.payService', {
+                url: '/payService',
+                views: {
+                    'main@index': {
+                        templateUrl: 'main/accountManagement/payService/payService.html',
+                        controllerUrl: 'main/accountManagement/payService/payService',
+                        controller: 'payServiceCtrl',
+                        dependencies: ['services/PageServices']
+                    }
+                }
+            })
+            .state('index.accountManagement.payService.chargingItem', {
+                url: '/chargingItem',
+                templateUrl: 'main/accountManagement/payService/chargingItem/chargingItem.html',
+                controllerUrl: 'main/accountManagement/payService/chargingItem/chargingItem',
+                controller: 'chargingItemCtrl',
+                dependencies: ['services/PageServices']
+            })
+            .state('index.accountManagement.payService.chargingScheme', {
+                url: '/chargingScheme',
+                templateUrl: 'main/accountManagement/payService/chargingScheme/chargingScheme.html',
+                controllerUrl: 'main/accountManagement/payService/chargingScheme/chargingScheme',
+                controller: 'chargingSchemeCtrl',
+                dependencies: ['services/PageServices']
+            })
+            .state('index.accountManagement.payService.settingPlan', {
+                url: '/settingPlan',
+                templateUrl: 'main/accountManagement/payService/settingPlan/settingPlan.html',
+                controllerUrl: 'main/accountManagement/payService/settingPlan/settingPlan',
+                controller: 'settingPlanCtrl',
+                dependencies: ['services/PageServices','services/valueCheck']
+            })
+            //收费项目结束
+
+    }]);
+});

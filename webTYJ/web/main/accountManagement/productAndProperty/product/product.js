@@ -1,0 +1,356 @@
+    /**
+ * Created by NM on 2018/1/18.
+ * 产品初始化js
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../app');
+
+    app.controller('productCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        $scope.btnIndex = 1;
+        var url = $rootScope.url;
+        $scope.searchProduct = {page : {},startPrice : '', endPrice : '', productName : '', productType : ''};
+        $scope.indexs='';   //序号
+
+        $scope.productIds = [];     //存放产品id数组
+        $scope.productc={};
+        var project = sessionStorage.getItem("_project");
+        $scope.project = JSON.parse(project);
+        $scope.projectName=$scope.project.projectName;
+        /**
+         * 高亮显示
+         */
+        $http.post(url + "/Product/getBuildingListByType",{ProductCommonservice:$scope.ProductCommonservice}).success(function(data){
+            $scope.buildingStructureNews = data.BuildingStructureNew;
+            if($scope.buildingStructureNews.length!=0){
+                $http.post(url + '/ProductFixedparkingspace/checkStall').success(function(data){
+
+                }).error(function(){
+
+                });
+            }
+
+        }).error(function(){
+
+        });
+
+        $scope.doClick = function(item){
+            $scope.btnIndex = item;
+        };
+        var zTreeOnCheck=function(event, treeId, treeNode) {
+            var treeObj=$.fn.zTree.getZTreeObj("treeDemo");
+            var nodes=treeObj.getCheckedNodes(true);
+            $scope.treeResult={treeList:[]};
+            for(var i=0;i<nodes.length;i++){
+                if(nodes[i].isParent==false) {
+                    $scope.treeResult.treeList.push(nodes[i]);
+                }
+                if(nodes[i].check_Child_State == -1)
+                {
+                    $rootScope.addressIdT=nodes[i].id;
+                }
+            }
+        };
+        var setting = {
+            check:{
+                enable:false
+            },
+            view: {
+                selectedMulti: false
+            },
+            edit: {
+                enable: false,
+                editNameSelectAll: false
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            },
+            callback: {
+                onCheck:zTreeOnCheck
+            }
+        };
+
+        /**
+         * 查询所有产品记录（分页）
+         */
+        var checkProduct = function (page, callback) {
+            $scope.productIds = [];//清空
+            $scope.searchProduct.page = page;
+            var startPriceCheck = app.get('valueCheck').isOnlyNumberOrNull($scope.searchProduct.startPrice);
+            if(startPriceCheck.state == false){
+                layer.msg('起始价格' + startPriceCheck.info,{icon : 0,time : 1000});
+                return;
+            }
+            var endPriceCheck = app.get('valueCheck').isOnlyNumberOrNull($scope.searchProduct.endPrice);
+            if(endPriceCheck.state == false){
+                layer.msg('截止价格' + endPriceCheck.info,{icon : 0,time : 1000});
+                return;
+            }
+            //增加当起始价格和截止价格都不为空时，判断起始价格不大于截止价格  王洲  2016.04.22
+            if(app.get('valueCheck').isNull($scope.searchProduct.startPrice).state && app.get('valueCheck').isNull($scope.searchProduct.endPrice).state){
+                if($scope.searchProduct.startPrice > $scope.searchProduct.endPrice){
+                    layer.msg('起始价格不能大于截止价格！',{icon : 0,time : 1000});
+                    return;
+                }
+            }
+            $http.post(url + '/Product/listPageProduct', {Product: $scope.searchProduct}).success(callback);
+        };
+        $scope.currentProduct = app.get('Paginator').list(checkProduct, 6);
+        console.log($scope.currentProduct);
+        $scope.indexs=$scope.currentProduct.page.currentPage*5;
+        /**
+         * 选中一条数据
+         * @param index   一个对象
+         */
+        $scope.currentBuilding = {};
+        $scope.checkProduct = function(index){
+            $scope.btnIndex = index;
+            $scope.currentBuilding = index;
+        };
+
+        $scope.toAdd = function(){
+            $rootScope.productId = null;
+            localStorage.setItem("product_id",JSON.stringify(''));
+            sessionStorage.removeItem('itemType');
+            $location.path("/index/accountManagement/productAndProperty/product/productBanner/buildLease");
+        };
+
+        //多选框点击时选中或取消,将值存入数组
+        /**
+         * 修改点击效果为整行点击有效
+         * @param id
+         */
+        $scope.chargeItem = function(id){
+            if(document.getElementById(id).checked == true){
+                document.getElementById(id).checked = false;
+                document.getElementById(id).parentNode.parentNode.style.background = '';
+                $scope.temp = [];
+                $scope.temp = $scope.productIds;
+                $scope.productIds = [];
+                for(var i = 0; i < $scope.temp.length; i ++){
+                    if($scope.temp[i] != id){
+                        $scope.productIds.push($scope.temp[i]);
+                    }
+                }
+            }else{
+                document.getElementById(id).checked = true;
+                document.getElementById(id).parentNode.parentNode.style.background = '#f6f8fa';
+                $scope.productIds.push(id);
+            }
+        };
+
+        //查看详情
+        $scope.ServiceProjectDetailList = [];
+        $scope.detail = function()
+        {
+            console.log($scope.productids);
+            $scope.ServiceProjectList = [];                         //定义一个装修服务对象集合
+            $scope.BuildingStructureNewList = [];
+            //查看前判断是否产品是否选中，是否只选择了一条记录
+            if($scope.productIds.length == 0){
+                layer.alert('请选择需要查看的产品信息',{icon : 0});
+                return;
+            }else if($scope.productIds.length > 1){
+                layer.alert('一次只能选择一条产品信息进行查看',{icon : 0});
+                return;
+            }else{
+                $rootScope.productId = $scope.productIds[0];
+                var pcid=$scope.productIds[0];
+
+               /* $http.post(url + '/ProductCommonservice/checkProduct/'+pcid).success(function(data){
+                   // $scope.prductc=data;
+                  //  $scope.Product.productName=$scope.prductc.commonserviceName;
+                    angular.element('#personDatil').modal('show');
+                    // angular.element('#personDatil').modal('show');
+                }).error(function(data){
+                });*/
+
+                $http.post(url + '/Product/getProductByProductId/' + $scope.productIds[0]).success(function(data) {
+                    if(data==""){
+                        $http.post(url + '/ProductCommonservice/checkProduct/'+pcid).success(function(data){
+                            $scope.productc=data;
+                            console.info('data:'+$scope.productc.productCode);
+                        }).error(function(data){
+                        });
+                        angular.element('#personDatil2').modal('show');
+                    }
+
+                    else{
+                        $scope.Product = data.Product;
+                        console.log(data);
+                        if($scope.Product.productType==4){
+                            localStorage.setItem("product_id",JSON.stringify($scope.productIds[0]));
+                            localStorage.setItem("product_type",JSON.stringify($scope.productIds[0]));
+                            $location.path("/index/accountManagement/productAndProperty/product/productBanner");
+                        }
+                        else if($scope.Product.productType==3||$scope.Product.productType==1||data=="")
+                        {
+                            if($scope.Product.expiryDate==null||$scope.Product.expiryDate=="")
+                            {
+                                $scope.Product.expiryDate="无失效日期";
+                            }
+                            if(angular.isDefined($scope.Product)) {
+                                if(!angular.isDefined($scope.Product.buildingstructruenewlist))
+                                {
+                                    $scope.Product.effectDate = new Date($scope.Product.effectDate);
+
+                                    //判断装修服务表数据是对象还是数组
+                                    if (!angular.isUndefined($scope.Product.serviceprojectlist)) {
+                                        if (angular.isArray($scope.Product.serviceprojectlist)) {
+                                            $scope.ServiceProjectList = $scope.Product.serviceprojectlist;
+                                        }
+                                    }
+                                }else
+                                {
+                                    $scope.addWaterCheck = [];
+
+                                    //查询所有建筑结构信息.
+                                    $scope.zNodes =[{}];
+                                    $http.post(url+'/BuildingStructureNew/listAllByProductId/'+$scope.productId).success(function(data){
+                                        //获取json数据
+                                        $scope.buildingStructureNews = data.BuildingStructureNew;
+                                        var tasks =  $scope.buildingStructureNews;
+                                        var children =[];
+                                        if(tasks!=null){
+                                            for(var i=0;i<tasks.length;i++){
+                                                $scope.zNode ={ id:tasks[i].id, pId:tasks[i].parentId, name:tasks[i].nodeName,fullName:tasks[i].fullName,checked:tasks[i].checked};
+                                                $scope.zNodes.push($scope.zNode);
+                                                if(tasks[i].children!=null){
+                                                    if(tasks[i].children.length==null){
+                                                        children.push(tasks[i].children);
+                                                    }else{
+                                                        children = tasks[i].children;
+                                                    }
+                                                    for(var n=0;n<children.length;n++){
+                                                        $scope.zNode ={ id:children[n].id, pId:children[n].parentId, name:children[n].nodeName,fullName:children[n].fullName,checked:children[n].checked};
+                                                        $scope.zNodes.push($scope.zNode);
+                                                    }
+                                                }
+                                            }
+                                            $.fn.zTree.init($("#treeDemo"), setting, $scope.zNodes);
+                                            var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+                                            var nodes = zTree.getNodes();
+                                            nodes[0].name = "车库信息";
+                                            zTree.updateNode(nodes[0]);
+                                        }
+                                    }).error(function(data,status,headers,config){
+                                        layer.alert('建筑信息查询失败！',{icon : 0,time : 1000});
+                                    });
+                                    $scope.Product.effectDate = new Date($scope.Product.effectDate);
+                                    if(angular.isArray($scope.Product.buildingstructruenewlist)){
+                                        for(var i = 0; i < $scope.Product.buildingstructruenewlist.length; i ++){
+                                            $scope.BuildingStructureNewList.push($scope.Product.buildingstructruenewlist[i]);
+                                        }
+                                    }else{
+                                        $scope.BuildingStructureNewList.push($scope.Product.buildingstructruenewlist);
+                                    }
+                                }
+                            }
+                            angular.element('#personDatil').modal('show');
+                        }else
+                        {
+                            layer.alert('此类产品不支持查看详情！',{icon : 0});
+                            return;
+                        }
+                    }
+                });
+            }
+        };
+
+
+
+        //产品修改跳转
+        $scope.toUpdate = function(){
+            console.log($scope.productIds);
+            //修改前判断是否产品是否选中，是否只选择了一条记录
+
+            if($scope.productIds.length == 0){
+                layer.alert('请选择需要修改的产品信息',{icon : 0});
+                return;
+            }else if($scope.productIds.length > 1){
+                layer.alert('一次只能选择一条产品信息进行修改',{icon : 0});
+                return;
+            }else{
+                $rootScope.productId = $scope.productIds[0];
+                var productId=$rootScope.productId;
+                $http.post(url+'/Product/getProductByProductId/'+productId).success(function(data){
+                    if(data==""){
+                        $http.post(url + '/ProductCommonservice/checkProduct/' + productId).success(function (data) {
+                            if (data.commonserviceName != null) {
+                                var formatDate = function (date) {
+                                    var y = date.getFullYear();
+                                    var m = date.getMonth() + 1;
+                                    m = m < 10 ? '0' + m : m;
+                                    var d = date.getDate();
+                                    d = d < 10 ? ('0' + d) : d;
+                                    return y + '-' + m + '-' + d;
+                                };
+                                var date = formatDate(new Date());
+                                var a = data.commonserviceId;
+                                var time=data.productEndDate;
+                                if(time!=null&&time!=""){
+                                if(date>time){
+                                    layer.alert('不能修改已经失效的产品',{icon : 0});
+                                    return;
+                                }
+                                }
+                                localStorage.setItem("product_id",JSON.stringify($scope.productIds[0]));
+                                localStorage.setItem("product_type",JSON.stringify("6"));
+                                $location.path("/index/accountManagement/productAndProperty/product/productBanner/commonServices");
+                            }
+                        });
+                    }
+                   if(data.Product.state=="1"){
+                        layer.alert('不能修改已经失效的产品',{icon : 0});
+                        return;
+                   }
+                localStorage.setItem("product_id",JSON.stringify($scope.productIds[0]));
+                localStorage.setItem("product_type",JSON.stringify($scope.productIds[0]));
+                $location.path("/index/accountManagement/productAndProperty/product/productBanner");
+                }).error(function(data){
+                    alert('请重试！'+data.toString());
+                });
+            }
+        };
+
+        //修改产品状态为失效
+        $scope.changeState = function(){
+            //修改前判断产品是否选中
+            if($scope.productIds.length == 0){
+                layer.alert('请选择至少一条产品信息',{icon : 0});
+                return;
+            }else {
+                var num = '';
+                num = $scope.productIds.length;
+                $scope.productids = {};
+                $scope.productids = $scope.productIds.join(",");
+                layer.confirm('是否将' + num + '条数据置为失效？',{
+                        btn : ['确定','取消']
+                    },function(){
+                        $http.get(url + '/Product/changeState/'+ $scope.productids).success(function(data){
+                            $http.get(url + '/ProductBs/changeStateByProductId/'+ $scope.productids).success(function(data){
+                                layer.msg('设置成功！',{icon : 1, time : 2000});
+                                $scope.productIds = [];
+                                $scope.currentProduct._load();
+                            });
+                        }).error(function(){
+                            layer.alert('设置失败，请重新选择！',{icon : 2});
+                            $scope.productIds = [];
+                            $scope.currentProduct._load();
+                        });
+
+
+
+                    },
+                    function(){}
+                );
+            }
+        };
+
+    }]);
+});

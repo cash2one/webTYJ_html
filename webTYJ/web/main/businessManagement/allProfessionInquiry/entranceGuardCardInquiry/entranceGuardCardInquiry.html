@@ -1,0 +1,493 @@
+<!--
+    创建人：NM
+    pageName:门禁卡查询
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>门禁卡查询</title>
+</head>
+<body>
+<div class="row padding">
+    <!--第一行搜索-->
+    <div class="row search-padding-10">
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            姓名：
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-4">
+            <div class="row">
+                <div class="col-lg-12">
+                    <input class="form-control" type="text" ng-model="Entrance.name" placeholder="请输入姓名">
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            证件类型：
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-4">
+            <select ng-model="Entrance.cardType" class="form-control">
+                <option value="">请选择</option>
+                <option value="0">身份证</option>
+                <option value="1">护照</option>
+            </select>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            证件号码：
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-4">
+            <div class="row">
+                <div class="col-lg-12">
+                    <input class="form-control" type="text" ng-model="Entrance.cardNums" placeholder="请输入证件号码">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--第二行搜索与网格列表-->
+    <div class="row search-padding-10">
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            门禁卡号：
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-4">
+            <div class="row">
+                <div class="col-lg-12">
+                    <input class="form-control" ng-model="Entrance.cardNum" placeholder="请输入门禁卡号">
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-8 col-md-2 col-sm-2 text-right">
+            <button type="button" class="btn btn-default btn-primary" ng-click="searchPaginator._load()">
+                <span class="glyphicon glyphicon-search btn_icon"></span>查询
+            </button>
+            <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="showList()">
+            <span class="glyphicon glyphicon-th-large btn_icon"></span>
+            列表
+        </button>
+            <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="showTable()">
+                <span class="glyphicon glyphicon-th-list btn_icon"></span>
+                网格
+            </button>
+        </div>
+
+    </div>
+    <!--操作按钮-->
+    <div class="row search-padding-10" ng-show="showStatus==0">
+        <button type="button" data-toggle="modal" class="btn btn-default btn-primary" ng-click="choiceEntrances()"><span class=""></span>更换 </button>
+        <button type="button" data-toggle="modal" class="btn btn-default btn-primary" ng-click="openloseeEntrances()" ><span class=""></span>挂失 </button>
+        <button type="button" data-toggle="modal" class="btn btn-default btn-primary" ng-click="openreturnEntrances()" ><span class=""></span>退卡 </button>
+    </div>
+    <!--网格显示-->
+    <div class="row search-padding-10" ng-show="showStatus==1">
+        <div class="col-lg-4 col-md-6 col-sm-6 ng-scope"
+             ng-repeat="enc in searchPaginator.object.entrances"
+             ng-show="enc.cardId!=null&&enc.cardState!=3&&showStatus==1"  >
+            <div id="pannel">
+                <div class="downList">
+                    <div class="col-xs-12 col-lg-12 col-md-12 col-sm-12 text-right" style="cursor: pointer" >
+                        <b  ng-show="enc.cardState!=2">
+                            <span class="glyphicon glyphicon-chevron-down" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></span>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                <li><a data-toggle="modal" data-target="#free" style="cursor:pointer" ng-click="choiceEntrance(enc)">更换</a></li>
+                                <li><a data-toggle="modal" style="cursor:pointer" data-target="#file" ng-click="openloseeEntrance(enc)">挂失</a></li>
+                                <li><a class="program_panel_info_navigation_bottom" data-toggle="modal" style="cursor:pointer" ng-click="openreturnEntrance(enc)">退卡</a></li>
+                            </ul>
+                        </b>
+                    </div>
+                </div>
+                <div class="title">
+                    <div class="col-xs-11 col-lg-11 col-md-11 col-sm-11">
+                        <h3 class="panel_title_left">门禁卡号：{{enc.cardNum}}</h3>
+                        <h3 class="panel_title_right" ng-show="enc.cardState==2" style="color: red">已挂失</h3>
+                    </div>
+                </div>
+                <div class="pannel_content miss_height" >
+                    <div class="row">
+                        <div class="col-md-5">
+                            <span ng-click="choiceEntrance(enc)" data-toggle="modal" data-target="#modifyPete">
+                                <img src="images/project/bud/b_06.png" width="100" height="90" style="cursor: pointer">
+                            </span>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+                                启用日期：
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                {{enc.startDate|date:'yyyy-MM-dd'}}
+                            </div>
+                            <div class="clear"></div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+                                截止日期：
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                {{enc.endDate|date:'yyyy-MM-dd'}}
+                            </div>
+                            <div class="clear"></div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+                                客户姓名：
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                {{enc.user.name}}
+                            </div>
+                            <div class="clear"></div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+                                客户编号：
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                {{enc.user.custCode}}
+                            </div>
+                            <div class="clear"></div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+                                办卡日期：
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                {{enc.cardDate|date:'yyyy-MM-dd'}}
+                            </div>
+                            <div class="clear"></div>
+                            <div class="row" ng-show="enc.cardState!=2">
+                                    &nbsp;
+                            </div>
+                            <div class="row" ng-show="enc.cardState==2">
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+                                    挂失日期：
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-6">
+                                    {{enc.operateDate|date:'yyyy-MM-dd'}}
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="clear"></div>
+    </div>
+    <!--列表显示-->
+    <div class="row search-padding-10" ng-show="showStatus==0">
+        <table ng-show="showStatus==0">
+            <thead>
+            <tr>
+                <th>门禁卡号</th>
+                <th>启用日期</th>
+                <th>截至日期</th>
+                <th>客户姓名</th>
+                <th>客户编号</th>
+                <th>办卡日期</th>
+                <th>状态</th>
+                <th>挂失时间</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="enc in searchPaginator.object.entrances"
+                ng-show="enc.cardId!=null&&enc.cardState!=3"
+                ng-click="selected(enc)" ng-dblclick="showInfo()" id="{{enc.cardId}}">
+                <td>{{enc.cardNum}}</td>
+                <td>{{enc.startDate|date:'yyyy-MM-dd'}}</td>
+                <td>{{enc.endDate|date:'yyyy-MM-dd'}}</td>
+                <td>{{enc.user.name}}</td>
+                <td>{{enc.user.custCode}}</td>
+                <td>{{enc.cardDate|date:'yyyy-MM-dd'}}</td>
+                <td ng-show="enc.cardState==2">已挂失</td>
+                <td ng-show="enc.cardState==1">正常</td>
+                <td>{{enc.operateDate|date:'yyyy-MM-dd'}}</td>
+            </tr>
+            <tr ng-if="searchPaginator.object.entrances.length==0">
+                <td colspan="6">暂无数据！</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <!--分页-->
+    <div class="row search-padding-10">
+        <div class="bill_paging">
+            <ul class="pagination">
+                <li><a style="cursor:pointer;" ng-click="searchPaginator.go(1)">首页</a></li>
+                <li><a style="cursor:pointer;" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a></li>
+                <li><a style="cursor:pointer;" ng-repeat="i in searchPaginator.pages"  ng-click="searchPaginator.go(i)">{{i}}</a></li>
+                <li><a style="cursor:pointer;" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a></li>
+                <li><a style="cursor:pointer;" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!--详情-->
+<div class="modal fade" id="modifyPete" role="dialog" aria-label="myModalLabel" aria-hidden="true" >
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                门禁卡详情
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="padding15">
+                    <div class="col-xs-2 col-lg-3 col-md-3 search-padding-10 text-right">
+                        门禁卡号：
+                    </div>
+                    <div class="col-xs-10 col-lg-9 col-md-9 search-padding-10">
+                        {{entranceone.cardNum}}
+                    </div>
+                    <div class="col-xs-2 col-lg-3 col-md-3 search-padding-10 text-right">
+                        持卡人：
+                    </div>
+                    <div class="col-xs-10 col-lg-9 col-md-9 search-padding-10">
+                        {{entranceone.user.name}}
+                    </div>
+                    <div class="col-xs-2 col-lg-3 col-md-3 search-padding-10 text-right">
+                        证件类型：
+                    </div>
+                    <div class="col-xs-10 col-lg-9 col-md-9 search-padding-10">
+                        <span ng-show="entranceone.user.cardType==0">身份证</span>
+                        <span ng-show="entranceone.user.cardType==1">护照</span>
+                    </div>
+                    <div class="col-xs-2 col-lg-3 col-md-3 search-padding-10 text-right">
+                        证件号：
+                    </div>
+                    <div class="col-xs-10 col-lg-9 col-md-9 search-padding-10">
+                        {{entranceone.user.cardNum}}
+                    </div>
+                    <div class="col-xs-2 col-lg-3 col-md-3 search-padding-10 text-right">
+                        卡状态：
+                    </div>
+                    <div class="col-xs-10 col-lg-9 col-md-9 search-padding-10">
+                                <span ng-switch on="entranceone.cardState">
+                                                        <span ng-switch-when="1">正常</span>
+                                                        <span ng-switch-when="2">挂失</span>
+                                                        <span ng-switch-when="3">禁用</span>
+                                                        <span ng-switch-when="4">退卡</span>
+                                 </span>
+                    </div>
+                    <div class="col-xs-2 col-lg-3 col-md-3 search-padding-10 text-right">
+                        办卡日期：
+                    </div>
+                    <div class="col-xs-10 col-lg-9 col-md-9 search-padding-10">
+                        {{entranceone.cardDate|date:'yyyy-MM-dd'}}
+                    </div>
+                    <div class="col-xs-2 col-lg-3 col-md-3 search-padding-10 text-right">
+                        启用日期：
+                    </div>
+                    <div class="col-xs-10 col-lg-9 col-md-9 search-padding-10">
+                        {{entranceone. startDate|date:'yyyy-MM-dd'}}
+                    </div>
+                    <div class="col-xs-2 col-lg-3 col-md-3 search-padding-10 text-right">
+                        截止日期：
+                    </div>
+                    <div class="col-xs-10 col-lg-9 col-md-9 search-padding-10">
+                        {{entranceone.endDate|date:'yyyy-MM-dd'}}
+                    </div>
+                    <div class="clear"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭 </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<!--更换模态框开始-->
+<div class="modal fade" id="free" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 40%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    更换
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="sel1">
+                    <form id="css_form" name="mainForm" novalidate>
+                        <div class="row sel1">
+                            <div class="row search-padding-10">
+                                <div class="col-md-2 text-right">旧门禁卡号:</div>
+                                <div class="col-md-4"><span ng-model="entranceone.cardNum">{{entranceone.cardNum}}</span></div>
+                                <div class="col-md-2 text-right">新门禁卡号:</div>
+                                <div class="col-md-3"><input type="text" class="form-control" ng-model="newCardNum" name="cardnum" required placeholder="请输入新门禁卡号">
+                                        <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.cardnum.$dirty && mainForm.cardnum.$invalid">
+                                            <p class="alter" ng-show="mainForm.cardnum.$error.required">
+                                                不能为空
+                                            </p>
+                                        <p class="alter" ng-show="mainForm.cardnum.defined ">
+                                            正确
+                                        </p>
+                                        </span>
+                                </div>
+                                <div class="col-lg-1 col-md-2 col-sm-2">
+                                    <span style="color: red">*</span>
+                                </div>
+                            </div>
+                            <div class="row search-padding-10">
+                                <div class="col-md-2 text-right">使用人姓名:</div>
+                                <div class="col-md-4">{{entranceone.user.name}}</div>
+                                <div class="col-md-2 text-right">门禁卡状态:</div>
+                                <div class="col-md-4">
+                                        <span ng-switch on="entranceone.cardState">
+                                            <span ng-switch-when="1">正常</span>
+                                            <span ng-switch-when="2">挂失</span>
+                                            <span ng-switch-when="3">禁用</span>
+                                            <span ng-switch-when="4">退卡</span>
+                                        </span>
+                                </div>
+                            </div>
+                            <div class="row search-padding-10">
+                                <div class="col-md-2 text-right">办卡日期:</div>
+                                <div class="col-md-4">{{entranceone.cardDate|date:'yyyy-MM-dd'}}</div>
+                                <div class="col-md-2 text-right">启用日期:</div>
+                                <div class="col-md-4">{{entranceone.startDate|date:'yyyy-MM-dd'}}</div>
+                            </div>
+                            <div class="row search-padding-10">
+                                <div class="col-md-2 text-right">截止日期:</div>
+                                <div class="col-md-4">{{entranceone.endDate|date:'yyyy-MM-dd'}}</div>
+                                <div class="col-md-2 text-right">工本费:</div>
+                                <div class="col-md-4">{{Product.price | number : 2}}元</div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal" ng-click="clearModel()">取消</button>
+                <button class="btn btn-default btn-primary" ng-click="changeEntrance()">提交</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!--更换模态框结束-->
+<!--挂失模态框开始-->
+<div class="modal fade" id="file" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 30%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    挂失
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                    <div class="row sel1">
+                        <div class="row search-padding-10">
+                            <div class="col-md-4 text-right">门禁卡号:</div>
+                            <div class="col-md-8"><span ng-model="entranceone.cardNum">{{entranceone.cardNum}}</span></div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-md-4 text-right">使用人姓名:</div>
+                            <div class="col-md-8"><span ng-model="entranceone.user.name">{{entranceone.user.name}}</span></div>
+
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-md-4 text-right">门禁卡状态:</div>
+                            <div class="col-md-8">
+                                    <span ng-switch on="entranceone.cardState">
+                                        <span ng-switch-when="1">正常</span>
+                                        <span ng-switch-when="2">挂失</span>
+                                        <span ng-switch-when="3">禁用</span>
+                                        <span ng-switch-when="4">退卡</span>
+                                    </span>
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-md-4 text-right">办卡日期:</div>
+                            <div class="col-md-8"><span ng-model="entranceone.cardDate">{{entranceone.cardDate|date:'yyyy-MM-dd'}}</span></div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-md-4 text-right">启用日期:</div>
+                            <div class="col-md-8"><span ng-model="entranceone.startDate">{{entranceone.startDate|date:'yyyy-MM-dd'}}</span></div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-md-4 text-right">截止日期:</div>
+                            <div class="col-md-8"><span ng-model="entranceone.endDate">{{entranceone.endDate|date:'yyyy-MM-dd'}}</span></div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-md-4 text-right">工本费:</div>
+                            <div class="col-md-8">{{Product.price | number : 2}}元</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" ng-click="closeloseeEntrance()">取消</button>
+                <button class="btn btn-default btn-primary" ng-click="loseeEntrance(entranceone)">提交</button>
+                <!--<button class="btn btn-default">打印</button>-->
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!--挂失模态框结束-->
+<!--退费模态框开始-->
+<div class="modal fade" id="freedom" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 30%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    退卡
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                    <div class="row sel1">
+                        <div class="row search-padding-10">
+                            <div class="col-md-4 text-right">门禁卡号:</div>
+                            <div class="col-md-8"><span ng-model="Entrances.cardNum">{{Entrances.cardNum}}</span></div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-md-4 text-right">使用人姓名:</div>
+                            <div class="col-md-8">{{Entrances.user.name}}</div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-md-4 text-right">门禁卡状态:</div>
+                            <div class="col-md-8">
+                                    <span ng-switch on="Entrances.cardState">
+                                        <span ng-switch-when="1">正常</span>
+                                        <span ng-switch-when="2">挂失</span>
+                                        <span ng-switch-when="3">禁用</span>
+                                        <span ng-switch-when="4">退卡</span>
+                                    </span>
+                            </div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-md-4 text-right">办卡日期:</div>
+                            <div class="col-md-8"><span ng-model="Entrances.cardDate">{{Entrances.cardDate|date:'yyyy-MM-dd'}}</span></div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-md-4 text-right">启用日期:</div>
+                            <div class="col-md-8"><span ng-model="Entrances.startDate">{{Entrances.startDate|date:'yyyy-MM-dd'}}</span></div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-md-4 text-right">截止日期:</div>
+                            <div class="col-md-8"><span ng-model="Entrances.endDate">{{Entrances.endDate|date:'yyyy-MM-dd'}}</span></div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-md-4 text-right">工本费:</div>
+                            <div class="col-md-8">{{Product.price | number : 2}}元</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" ng-click="closereturnEntrance()">取消</button>
+                <button class="btn btn-default btn-primary" ng-click="returnEntrance(Entrances)">确认</button>
+                <!--<button class="btn btn-default">打印</button>-->
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
+</body>
+</html>

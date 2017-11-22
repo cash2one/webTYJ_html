@@ -1,0 +1,85 @@
+<!--
+    创建人：彭婷婷
+    创建时间：2015-10-10
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>历史记录</title>
+
+</head>
+<body>
+<div class="sel">
+    <div class="row search-padding-10">
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            交易单号：
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-4">
+            <input type="text" class="form-control" placeholder="请输入交易单号" ng-model="searchPaymentDetails.paymentNum">
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            批次号：
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-4">
+            <input type="text" class="form-control" placeholder="请输入批次号" ng-model="searchPaymentDetails.batchNum">
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-6">
+            <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="currentMeter._load()">
+                <span class="glyphicon glyphicon-search btn_icon" ></span>
+                搜索
+            </button>
+        </div>
+    </div>
+</div>
+<div class="row padding">
+    <div class="col-lg-12">
+        <div class="col-lg-12 text-right">单位：元</div>
+        <table>
+            <thead>
+            <tr>
+                <th>序号</th>
+                <th>时间</th>
+                <th>操作人</th>
+                <th>工号</th>
+                <th>交易单号</th>
+                <th>现金</th>
+                <th>刷卡</th>
+                <th>微信</th>
+                <th>总额</th>
+                <th>备注</th>
+                <th>批次</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="item in currentMeter.object.paymentDetail" ng-show="item['paymentDetailsId'] != null">
+                <td>{{$index}}</td>
+                <td>{{item['transactionDate']| date: 'yyyy-MM-dd'}}</td>
+                <td>{{item['financialStaffName']}}</td>
+                <td>{{item['staffNumber']}}</td>
+                <td>{{item['paymentNum']}}</td>
+                <td>{{item['cashSum']}}</td>
+                <td>{{item['creditCardSum']}}</td>
+                <td>{{item['wechatSum']}}</td>
+                <td>{{item['transactionAmount']}}</td>
+                <td>{{item['note']}}</td>
+                <td>{{item['batchNum']}}</td>
+            </tr>
+
+            </tbody>
+        </table>
+        <div class="bill_paging">
+            <ul class="pagination">
+                <li><a style="cursor:pointer;" ng-click="currentMeter.go(1)">首页</a></li>
+                <li><a style="cursor:pointer;" ng-show="currentMeter.hasPrevious()" ng-click="currentMeter.previous()">上一页</a></li>
+                <li><a style="cursor:pointer;" ng-repeat="i in currentMeter.pages"  ng-click="currentMeter.go(i)">{{i}}</a></li>
+                <li><a style="cursor:pointer;" ng-show="currentMeter.hasNext()" ng-click="currentMeter.next()">下一页</a></li>
+                <li><a style="cursor:pointer;" ng-click="currentMeter.go(currentMeter.page.totalPage)">尾页</a></li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

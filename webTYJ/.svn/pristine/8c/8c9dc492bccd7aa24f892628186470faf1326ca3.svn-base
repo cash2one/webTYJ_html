@@ -1,0 +1,13 @@
+
+.col-md-4 img{
+    width: 60px;
+    height: 60px;
+}
+
+.col-md-8{
+    font-size: 1px;
+    line-height: 15px;
+}
+.pagination{
+    margin-left: 400px;
+}

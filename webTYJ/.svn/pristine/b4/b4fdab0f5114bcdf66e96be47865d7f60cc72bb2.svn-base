@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div class="row pannel-padding">
+<div class="col-lg-12">
+<div id="content-first">
+    <!--tab页切换开始-->
+    <div id="tab">
+        <a ui-sref="index.businessManagement.newWaterMeterManagement.waterMeterMaintenance.listOfWaterMeter" ng-class="{'this_action':btnIndex==1}" ng-click="doClick(1)">水表列表</a>
+        <a ui-sref="index.businessManagement.newWaterMeterManagement.waterMeterMaintenance.analysisOfWaterDamage" ng-class="{'this_action':btnIndex==2}" ng-click="doClick(2)">水损分析</a>
+        <a ui-sref="index.businessManagement.newWaterMeterManagement.waterMeterMaintenance.meterReadingReport" ng-class="{'this_action':btnIndex==3}" ng-click="doClick(3)">抄表报表</a>
+        <a ui-sref="index.businessManagement.newWaterMeterManagement.waterMeterMaintenance.waterMeterDataReport" ng-class="{'this_action':btnIndex==4}" ng-click="doClick(4)">水表数据报表</a>
+        <a lang="no" ui-sref="index.businessManagement.newWaterMeterManagement.waterMeterMaintenance.logStatements" ng-class="{'this_action':btnIndex==5}" ng-click="doClick(5)">日志报表</a>
+    </div>
+    <!--tab页切换结束-->
+    <!--视图加载-->
+    <div ui-view></div>
+    <!--视图加载结束-->
+</div>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,22 @@
+<!--
+    作者:彭婷婷
+    页面名称:入伙初始化
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>入伙初始化</title>
+</head>
+<body>
+<div id="content-first">
+    <!--tab页切换开始-->
+    <div id="tab">
+        <a ui-sref="index.baseManagement.joinGangInstitution.newActivity" ng-class="{'this_action':btnIndex==1}" ng-click="doClick(1)">新增活动</a>
+        <a ui-sref="index.baseManagement.joinGangInstitution.historyActivity" ng-class="{'this_action':btnIndex==2}" ng-click="doClick(2)" lang="no">历始活动</a>
+    </div>
+    <!--视图加载开始-->
+    <div ui-view></div>
+</div>
+</body>
+</html>

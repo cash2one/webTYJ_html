@@ -1,0 +1,271 @@
+/**
+ * Created by Fansensen on 2015/10/27.
+ */
+/*'use strict';
+
+define(['tyjApp'],function(module){
+    module.controller("newSubCompanyController",function($scope,$http,$cookieStore,$rootScope,$location){*/
+        'use strict';
+
+        define(function (require) {
+            var app = require('../../../../app');
+            app.controller('newSubCompanyCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+        var url = $rootScope.url;
+        /**
+         * BUG 427 陶勇超 2016年1月20日 09:40:17
+         */
+        $scope.doClick(2);
+        //$scope.test="新建组织结构";
+        /**
+         * 获取当前登录人信息
+         * 禅道BUG 165
+         * 修改人:陶勇超
+         * 2016年1月6日 10:17:16
+         */
+        var userId ;
+        $scope.user={};
+        var companyId;
+        $scope.subcomProjectList=[];;
+        $scope.user= JSON.parse(sessionStorage.getItem('USER_LOGIN'));
+        userId= $scope.user.loginName;
+                companyId= $scope.user.companyId;
+        /**
+         * 获取项目、区结构树
+         */
+        $scope.getTree=function(){
+            $http.get(url+'/Project/getAllProjectWithRegion/'+companyId).success(function(data){
+                $scope.zNodes =[{}];
+                var tasks = data.Project;
+                console.log(tasks);
+                if(tasks!=null){
+                    for(var i=0;i<tasks.length;i++){
+                        $scope.zNode ={ id:tasks[i].projectId,name:tasks[i].projectName,isParent:false,checked:tasks[i].checked,company:tasks[i].company};
+                        /*  $scope.childrens=[{}];*/
+                        /*               if(tasks[i].regionNews!=null && tasks[i].regionNews !='undefined'){
+                         var childs = tasks[i].regionNews;
+                         for(var j=0;j<childs.length;j++){
+                         $scope.child=childs[j];
+                         if($scope.child!=null && $scope.child!='undefined'){
+                         $scope.childNode={id:$scope.child.id,name:$scope.child.regionName,chkDisabled:true};
+                         $scope.childrens.push($scope.childNode);
+                         }
+                         }
+                         $scope.zNode.children=$scope.childrens;
+                         }*/
+                        $scope.zNodes.push($scope.zNode);
+                    }
+
+                    $.fn.zTree.init($("#treeDemo"), setting, $scope.zNodes);
+
+                    var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+                    var nodes = zTree.getNodes();
+                    nodes[0].name = "项目列表";
+                    nodes[0].id='-1';
+                    //zTree.hideNode(nodes[0]);
+                    zTree.updateNode(nodes[0]);
+                }
+                if(tasks.length==0)
+                {
+                    var treeObj=$.fn.zTree.getZTreeObj("treeDemo");
+                    var nodes = treeObj.getNodes(),disabled = true;
+                    treeObj.setChkDisabled(nodes[0], disabled);
+                }
+            }).error(function(data,status,headers,config){
+                layer.alert("获取项目及分区出错,请重试！",{icon:2});
+            });
+        }
+        $scope.getTree();
+
+        var zTreeOnCheck=function(event, treeId, treeNode) {
+
+            var treeObj=$.fn.zTree.getZTreeObj("treeDemo");
+            var nodes=treeObj.getCheckedNodes(true);
+            //  console.log(nodes);
+            $scope.treeResult={treeList:[]};
+            for(var i=0;i<nodes.length;i++){
+                if(nodes[i].isParent==false && nodes[i].parentTId!=null) {
+                    $scope.treeResult.treeList.push(nodes[i]);
+                }
+                if(nodes[i].check_Child_State == -1)
+                {
+                    $rootScope.addressIdT=nodes[i].id;
+                    //    console.log($rootScope.addressIdT);
+                }
+            }
+            //console.log($scope.treeResult.treeList);
+            $scope.bslist=$scope.treeResult.treeList;
+
+        };
+
+        /**
+         * 显示选中的树状数据
+         */
+        $scope.addWaterReading = function(){
+            if($scope.treeResult==null||$scope.treeResult==undefined||$scope.treeResult==""){
+                layer.alert('请选择项目！',{icon : 0});
+                return;
+            }
+            $scope.addWaterCheck = $scope.treeResult.treeList;
+            var treeObj=$.fn.zTree.getZTreeObj("treeDemo");
+            var node;
+            for(var i=0;i<$scope.addWaterCheck.length;i++){
+                node=treeObj.getNodeByParam("id",$scope.addWaterCheck[i].id,null);
+                treeObj.removeNode(node);
+                var subcomProject={id:$scope.addWaterCheck[i].id,name:$scope.addWaterCheck[i].name,company:$scope.addWaterCheck[i].company};
+				//增加重复数据判断  王洲  2016.03.07
+                var count = 0;
+                for(var i = 0,temp = $scope.subcomProjectList.length; i < temp; i ++){
+                    if(subcomProject.id == $scope.subcomProjectList[i].id){
+                        count ++;
+                    }
+                }
+                if(count == 0){
+                    $scope.subcomProjectList.push(subcomProject);
+                }
+            }
+            //console.log($scope.addWaterCheck);
+        };
+        var setting = {
+            check:{
+                enable:true
+            },
+            view: {
+                addDiyDom: addDiyDom,
+                selectedMulti: false,
+                nameIsHTML: true
+            },
+            edit: {
+                enable: false,
+                editNameSelectAll: false
+                //showRemoveBtn: showRemoveBtn,
+                //showRenameBtn: showRenameBtn
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            },
+            callback: {
+                onCheck:zTreeOnCheck
+            },
+            async: {
+                enable: false
+            }
+        };
+                /* 增加根节点不能选中 朱琪 2016-2-3  start*/
+        function addDiyDom (treeId, treeNode){
+            var treeObj=$.fn.zTree.getZTreeObj("treeDemo");
+            var nodes=treeObj.getCheckedNodes(true);
+            console.log(nodes);
+            for (var i=0, l=nodes.length; i < l; i++) {
+                if(treeNode.id == 'root'){
+                    treeObj.setChkDisabled(nodes[i], true);
+                }
+            }
+        };
+                /* 增加根节点不能选中 朱琪 2016-2-3 end */
+
+        /**
+         * 删除已选中的项目
+         */
+        $scope.removeItem=function(index,item){
+            //alert(index);
+            var treeObj=$.fn.zTree.getZTreeObj("treeDemo");
+            var node={ id:item.id,name:item.name,isParent:false,checked:false,company:item.company};
+            var parentNode=treeObj.getNodeByParam("id","-1",null);
+            console.log(parentNode);
+            treeObj.addNodes(parentNode,node,true);
+            $scope.subcomProjectList.splice(index,1);
+            //  console.log($scope.addWaterCheck);
+            //console.log($scope.addWaterCheck.splice(index,1));
+        };
+        /**
+         * 查询所有组织结构
+         */
+        $scope.compey;
+        $http.get(url+'/SubCompany/getAllSubCompany').success(function(data){
+            $scope.compey=data.SubCompany
+            //console.log(data.SubCompany)
+        }).error(function(data,status,headers,config){
+            layer.alert("获取所有组织结构出错,请重试！",{icon:2});
+        });
+        /**
+         * 新建组织结构
+         */
+        $scope.subCompanyForAdd={projectIds:[],createPersonId:userId,companyIds:[]};
+        $scope.addSubCompany=function(){
+
+            /**
+             * 禅道BUG 185
+             * 修改人：陶勇超
+             * 2016年1月6日 10:07:29
+             */
+            if($scope.subCompanyForAdd.subCompanyName==undefined ||$scope.subCompanyForAdd.subCompanyName.replace(/\s+/g,"")=="" ||$scope.subCompanyForAdd.subCompanyName == null){
+                layer.alert('组织结构名称不能为空！',{icon : 0});
+                return;
+            }
+            /**
+             * 禅道BUG 67
+             * 修改人：陶勇超
+             * 2016年1月7日 17:01:09
+             */
+            console.log($scope.compey);
+            if($scope.compey.length>0){
+                for(var i=0;i<$scope.compey.length;i++){
+                    if(($scope.subCompanyForAdd.subCompanyName==$scope.compey[i].subCompanyName)&&$scope.compey.companyId==companyId){
+                        layer.alert('组织结构名称已存在！',{icon : 0});
+                        return;
+                    }
+                }
+            }
+            if($scope.treeResult==null||$scope.treeResult==undefined||$scope.treeResult==""){
+                layer.alert('请选择项目！',{icon : 0});
+                return;
+            }
+
+            /* 修复选择可选项目后提交没有提示的Bug 朱琪 2016-2-3 11:07:26 start */
+            if($scope.subcomProjectList.length == 0){
+                layer.alert('请选择项目！',{icon :0});
+                return;
+            }
+            /* 修复选择可选项目后提交没有提示的Bug 朱琪 2016-2-3 11:07:26 end */
+
+            //获取关联的项目id
+            if($scope.subCompanyForAdd.subCompanyName!=null && $scope.subCompanyForAdd.subCompanyName!=''){
+                for(var i=0;i<$scope.subcomProjectList.length;i++){
+                    var project = $scope.subcomProjectList[i];
+                    if(project!=null && project.id!=null){
+                        $scope.subCompanyForAdd.projectIds.push(project.id);
+                    }
+                    if(project!=null && project.company!=null){
+                        $scope.subCompanyForAdd.companyIds.push(project.company);
+                    }
+                }
+
+                $http.post(url+'/SubCompany/insertSubCompany',{SubCompany:$scope.subCompanyForAdd}).success(function(data){
+                    layer.msg("添加组织结构成功！",{icon:1});
+                    //刷新
+                    $scope.getTree();
+                    $location.path("/index/baseManagement/subCompanyManagement/subCompanyList")
+                    $scope.btnIndex=1;
+                }).error(function(data,status,headers,config){
+                    layer.msg("添加组织结构失败,请重试！",{icon:2});
+                });
+            }else{
+                layer.alert("组织结构名称不能为空，请重新填写！",{icon:2});
+                $scope.getTree();
+            }
+
+        }
+
+        /**
+         * 取消
+         */
+        $scope.clearInfo=function(){
+            $scope.subCompanyForAdd.subCompanyName=null;
+            $scope.getTree();
+            $location.path("/index/baseManagement/subCompanyManagement/subCompanyList")
+            $scope.doClick(1);
+        }
+    }]);
+});

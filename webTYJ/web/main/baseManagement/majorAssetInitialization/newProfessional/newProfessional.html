@@ -1,0 +1,506 @@
+<!--
+    页面名称：【专业资产初始化】新增专业
+    前端负责人：刘洋
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>新增专业(专业资产初始化)</title>
+    <script>
+        function check(obj) {
+            $(':checkbox').each(function () {
+                if (this != obj)
+                    $(this).attr("checked", false);
+                else {
+                    if ($(this).prop("checked")){
+                        $(this).attr("checked", true);
+                    }
+                    else
+                        $(this).attr("checked", false);
+                }
+            });
+        }
+    </script>
+</head>
+<body ng-controller="newProfessionalCtrl">
+<!--    Bug838 修改人;陈浪 2016年3月3日     -->
+    <div class="padding">
+        <div class=" row search-padding-10">
+            <div class="col-lg-3 col-md-4 col-sm-4 "></div>
+            <div class="col-lg-7 col-md-4 col-sm-4 ">
+                <!--   版本 001 BUG 112 陶勇超 2016年1月18日 17:13:59-->
+                <div class="col-lg-2 col-md-4 col-sm-4 text-right">专业编号：</div>
+                <div class="col-lg-2 col-md-4 col-sm-4"><input class="form-control" ng-model="propertyType.propertyTypeNumber"></div>
+                <div class="col-lg-2 col-md-4 col-sm-4 text-right">专业名称：</div>
+                <div class="col-lg-2 col-md-4 col-sm-4"><input class="form-control" ng-model="propertyType.propertyTypeName"></div>
+                <div class="col-lg-2 col-md-4 col-sm-4">
+                    <button type="button" class="btn btn-default btn-primary" ng-click="currentParentProperty._load()">
+                        <span class="glyphicon glyphicon-search  btn_icon"></span>
+                        搜索
+                    </button>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-4 text-right">
+                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="listview()">
+                    <span class="glyphicon glyphicon-th-large btn_icon"></span>
+                    列表
+                </button>
+                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="tabview()">
+                    <span class="glyphicon glyphicon-th-list btn_icon"></span>
+                    网格
+                </button>
+            </div>
+        </div>
+        <div class=" row search-padding-10">
+            <div class="col-lg-5 col-md-4 col-sm-4">
+                <button type="button" class="btn btn-default btn-primary" data-toggle="modal" data-target="#new">
+                    <span class="glyphicon glyphicon-plus btn_icon"></span>
+                    新增专业
+                </button>
+                <button type="button" class="btn btn-default btn-primary" ng-click="updateData1()" ng-show="showStatus==1">
+                    <span class="glyphicon glyphicon-edit btn_icon"></span>
+                    编辑
+                </button>
+
+                <button type="button" class="btn btn-default btn-primary" ng-click="deleteData1()" ng-show="showStatus==1">
+                    <span class="glyphicon glyphicon-remove btn_icon"></span>
+                    删除
+                </button>
+            </div>
+            
+        </div>
+        <table ng-show="showStatus==1">
+            <thead>
+            <tr>
+                <th>
+                    <input type="checkbox" id="allchose" ng-true-value="1" ng-false-value="0" ng-click="allchose()" style="vertical-align: -4px;">
+                </th>
+                <th>专业编号</th>
+                <th>专业名称</th>
+                <th>创建人</th>
+                <th>创建时间</th>
+                <th>修改人</th>
+                <th>修改时间</th>
+            </tr>
+            </thead>
+            <tbody id="propertyType">
+            <!--  修改样式，当创建人、修改人过长时不破版  王洲  2016.04.12  -->
+                <tr ng-click="checkShow(item)"
+                        ng-repeat="item in currentParentProperty.object.propertyTypes | orderBy:'founderTime'"
+                        ng-show="item['propertyTypeId']!=null" id="{{item.propertyTypeId}}"
+                        ng-init="firstShow($index,item)">
+                        <td>
+                            <input name="scId"  value="item" type="checkbox" class="checkbox_info" id="{{item.propertyTypeId}}">
+                        </td>
+                        <td>{{item['propertyTypeNumber']}}</td>
+                        <td>{{item['propertyTypeName']}}</td>
+                        <td>
+                            <span ng-if="item.founder.length <= 20">{{item.founder}}</span>
+                            <span ng-if="item.founder.length > 20" title="{{item.founder}}">{{item.founder | limitTo : 20}}...</span>
+                        </td>
+                        <td>{{item['founderTime'] | date:"yyyy-MM-dd HH:mm:ss" }}</td>
+                        <td>
+                            <span ng-if="item.modifier.length <= 20">{{item.modifier}}</span>
+                            <span ng-if="item.modifier.length > 20" title="{{item.modifier}}">{{item.modifier | limitTo : 20}}...</span>
+                        </td>
+                        <td>{{item['modifyTime']| date:"yyyy-MM-dd"}}</td>
+                    </tr>
+                    <tr ng-if="currentParentProperty.object.propertyTypes.length == null">
+                        <td colspan="7">没有数据！</td>
+                    </tr>
+                </tbody>
+        </table>
+        <div class="row search-padding-10"  ng-show="showStatus==0">
+            <div class="col-lg-4 col-md-6 col-sm-6"  ng-click="checkShow(item)" ng-show="item.propertyTypeNumber!=null"
+                 ng-repeat="item in currentParentProperty.object.propertyTypes | orderBy:'propertyTypeNumber'">
+                <div id="pannel" onclick="choose(this)">
+                    <div class="title">
+                        <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                            <h3 class="text-left">专业信息</h3>
+                        </div>
+                        <div class="downList">
+                            <div class="col-xs-12 col-lg-12 col-md-12 col-sm-12 text-right">
+                                <span class="glyphicon glyphicon-chevron-down" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                    <li><a style="cursor: pointer" ng-click="updateMajor(item)">编辑</a></li>
+                                    <li><a style="cursor: pointer" ng-click="deletePropertyType(item)">删除</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pannel_content">
+                        <div class="row">
+                            <div class="col-xs-4 col-lg-4 col-md-4">
+                                <a style="cursor: pointer" data-toggle="modal" data-target="#personDatil" ng-click="">
+                                    <img src="images/project/user/user_3.png" width="100%" ng-click="checkShow(item)">
+                                </a>
+                            </div>
+                            <div class="col-xs-8 col-lg-8 col-md-8">
+                                <div class="row search-padding">
+                                    <!--  修改样式，当创建人、修改人过长时不破版  王洲  2016.04.12  -->
+                                    <div class="col-lg-4 col-md-4 col-sm-4 text-right">专业编号：</div>
+                                    <div class="col-lg-8 col-md-8 col-sm-8">{{item['propertyTypeNumber']}}</div>
+                                    <div class="clear"></div>
+                                    <div class="col-lg-4 col-md-4 col-sm-4 text-right">专业名称：</div>
+                                    <div class="col-lg-8 col-md-8 col-sm-8">{{item['propertyTypeName']}}</div>
+                                    <div class="clear"></div>
+                                    <div class="col-lg-4 col-md-4 col-sm-4 text-right">创建人：</div>
+                                    <div class="col-lg-8 col-md-8 col-sm-8" ng-if="item.founder.length <=12">{{item.founder}}</div>
+                                    <div class="col-lg-8 col-md-8 col-sm-8" ng-if="item.founder.length > 12" title="{{item.founder}}">{{item.founder | limitTo : 12}}...</div>
+                                    <div class="clear"></div>
+                                    <div class="col-lg-4 col-md-4 col-sm-4 text-right">创建时间：</div>
+                                    <div class="col-lg-8 col-md-8 col-sm-8">{{item.founderTime | date:"yyyy-MM-dd HH:mm:ss"}}</div>
+                                    <div class="clear"></div>
+                                    <div class="col-lg-4 col-md-4 col-sm-4 text-right">修改人：</div>
+                                    <div class="col-lg-8 col-md-8 col-sm-8" ng-if="item.modifier.length <= 12">{{item.modifier}}</div>
+                                    <div class="col-lg-8 col-md-8 col-sm-8" ng-if="item.modifier.length > 12" title="{{item.modifier}}">{{item.modifier | limitTo : 12}}...</div>
+                                    <div class="clear"></div>
+                                    <div class="col-lg-4 col-md-4 col-sm-4 text-right">修改时间：</div>
+                                    <div class="col-lg-8 col-md-8 col-sm-8">{{item.modifyTime | date:"yyyy-MM-dd HH:mm:ss"}}</div>
+                                    <div class="clear"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-6" ng-show="currentParentProperty.object.propertyTypes.length == null && showStatus==0 ">
+                <div id="pannel">
+                    <div class="title">
+                        <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                            <h3>专业信息</h3>
+                        </div>
+                        <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                            <!-- <span class="glyphicon glyphicon-search"></span>-->
+                        </div>
+                    </div>
+                    <div class="pannel_content">
+                        <div class="row">
+                            <div class="col-xs-8 col-lg-8 col-md-8">
+                                <div class="row search-padding 10">
+                                    暂无数据！
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="padding">
+            <div class="bill_paging">
+                <span>共{{currentParentProperty.object.page.totalResult}}条</span>
+                <ul class="pagination">
+                    <li ng-class="{true:'disabled'}[currentParentProperty.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-click="currentParentProperty.go(1)">首页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[currentParentProperty.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-show="currentParentProperty.hasPrevious()" ng-click="currentParentProperty.previous()">上一页</a>
+                    </li>
+                    <li ng-class="{true:'active'}[currentParentProperty.page.currentPage==i]" ng-repeat="i in currentParentProperty.pages">
+                        <a href="javascript:void(0)"  ng-click="currentParentProperty.go(i)">{{i}}</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[currentParentProperty.page.currentPage==currentParentProperty.page.totalPage]">
+                        <a href="javascript:void(0)" ng-show="currentParentProperty.hasNext()" ng-click="currentParentProperty.next()">下一页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[currentParentProperty.page.currentPage==currentParentProperty.page.totalPage]">
+                        <a href="javascript:void(0)" ng-click="currentParentProperty.go(currentParentProperty.page.totalPage)">尾页</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="clear"></div>
+
+    </div>
+
+
+
+    <div class="padding" ng-show="show1">
+        <div class=" row search-padding-10">
+            <div class="col-lg-3 col-md-4 col-sm-4 "></div>
+            <div class="col-lg-7 col-md-4 col-sm-4 ">
+                <div class="col-lg-2 col-md-4 col-sm-4 text-right">分类编号：</div>
+                <div class="col-lg-2 col-md-4 col-sm-4"><input class="form-control" ng-model="propertyTypeSearchNumber"></div>
+                <div class="col-lg-2 col-md-4 col-sm-4 text-right">分类名称：</div>
+                <div class="col-lg-2 col-md-4 col-sm-4"><input class="form-control" ng-model="propertyTypeSearchName"></div>
+                <div class="col-lg-2 col-md-4 col-sm-4">
+                    <button type="button" class="btn btn-default btn-primary" ng-click="currentPropertyType._load()">
+                        <span class="glyphicon glyphicon-search  btn_icon"></span>
+                        搜索
+                    </button>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-4 text-right">
+            </div>
+        </div>
+
+        <div class="search-padding-10">
+            <button type="button" class="btn btn-default btn-primary" data-toggle="modal" data-target="#new1">
+                <span class="glyphicon glyphicon-plus btn_icon"></span>
+                新增分类
+            </button>
+            <button type="button" class="btn btn-default btn-primary" ng-click="updateData()" ng-show="showStatus==1">
+                <span class="glyphicon glyphicon-edit btn_icon"></span>
+                编辑
+            </button>
+            <!--    <button type="button" class="btn btn-default btn-primary" ng-click="changeMasterStatus()">
+                    <span class="glyphicon glyphicon-trash btn_icon"></span>
+                    删除
+                </button>-->
+            <button type="button" class="btn btn-default btn-primary" ng-click="deleteData()" ng-show="showStatus==1">
+                <span class="glyphicon glyphicon-remove btn_icon"></span>
+                删除
+            </button>
+        </div>
+        <table ng-show="showStatus==1">
+            <thead>
+                <tr>
+                    <th>
+                        <input type="checkbox" id="allchose1" ng-true-value="1" ng-false-value="0" ng-click="allchose1()" style="vertical-align: -4px;">
+                    </th>
+                    <th>分类编号</th>
+                    <th>分类名称</th>
+                    <th>所属专业</th>
+                    <th>创建人</th>
+                    <th>创建时间</th>
+                    <th>修改人</th>
+                    <th>修改时间</th>
+                </tr>
+            </thead>
+            <tbody id="propertyTypes">
+            <!-- Bug832 陈浪 2016.3.7 -->
+            <!--  修改样式，创建人、修改人过长时不破版  王洲  2016.04.12  -->
+                <tr ng-repeat="item1 in currentPropertyType.object.propertyTypes |orderBy:'founderTime'" ng-if="item1.propertyTypeId != null"
+                    id="{{item1.propertyTypeId}}"  ng-click="getdata(item1)">
+                    <td><input type="checkbox" name="aaa" value="items" id="{{item1.propertyTypeId}}"></td>
+                    <td>{{item1.propertyTypeNumber}}</td>
+                    <td>{{item1['propertyTypeName']}}</td>
+                    <td>{{node}}</td>
+                    <td>
+                        <span ng-if="item1.founder.length <= 20">{{item1.founder}}</span>
+                        <span ng-if="item1.founder.length > 20" title="{{item1.founder}}">{{item1.founder | limitTo : 20}}...</span>
+                    </td>
+                    <td>{{item1.founderTime | date:"yyyy-MM-dd HH:mm:ss" }}</td>
+                    <td>
+                        <span ng-if="item1.modifier.length <= 20">{{item1.modifier}}</span>
+                        <span ng-if="item1.modifier.length > 20" title="{{item1.modifier}}">{{item1.modifier | limitTo : 20}}...</span>
+                    </td>
+                    <td>{{item1.modifyTime | date:"yyyy-MM-dd"}}</td>
+                </tr>
+                <tr ng-show="currentPropertyType.object.propertyTypes.length == null"><td colspan="8">暂无数据！</td></tr>
+            </tbody>
+        </table>
+
+
+        <div class="row search-padding-10"  ng-show="showStatus==0">
+            <div class="col-lg-4 col-md-6 col-sm-6" ng-show="currentPropertyType!=null"
+                 ng-repeat="item1 in currentPropertyType.object.propertyTypes |orderBy:'founderTime'" ng-if="item1.propertyTypeId != null">
+                <div id="pannel">
+                    <div class="title">
+                        <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                            <h3 class="text-left">分类信息</h3>
+                        </div>
+                        <div class="downList">
+                            <div class="col-xs-12 col-lg-12 col-md-12 col-sm-12 text-right">
+                                <span class="glyphicon glyphicon-chevron-down" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                    <li><a style="cursor: pointer" ng-click="updateMajor1(item1)">编辑</a></li>
+                                    <li><a style="cursor: pointer" ng-click="deleteDataForTable(item1)">删除</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pannel_content">
+                        <div class="row">
+                            <div class="col-xs-4 col-lg-4 col-md-4">
+                                <a style="cursor: pointer" data-toggle="modal" data-target="#personDatil" ng-click="">
+                                    <img src="images/project/user/user_3.png" width="100%">
+                                </a>
+                            </div>
+                            <div class="col-xs-8 col-lg-8 col-md-8">
+                                <div class="row search-padding">
+                                    <!--  修改样式，创建人、修改人过长时不破版  王洲  2016.04.12  -->
+                                    <div class="col-lg-4 col-md-4 col-sm-4 text-right">分类编号：</div>
+                                    <div class="col-lg-8 col-md-8 col-sm-8">{{item1['propertyTypeNumber']}}</div>
+                                    <div class="clear"></div>
+                                    <div class="col-lg-4 col-md-4 col-sm-4 text-right">分类名称：</div>
+                                    <div class="col-lg-8 col-md-8 col-sm-8">{{item1['propertyTypeName']}}</div>
+                                    <div class="clear"></div>
+                                    <div class="col-lg-4 col-md-4 col-sm-4 text-right">创建人 :</div>
+                                    <div class="col-lg-8 col-md-8 col-sm-8" ng-if="item1.founder.length <= 12">
+                                        {{item1.founder}}
+                                    </div>
+                                    <div class="col-lg-8 col-md-8 col-sm-8" ng-if="item1.founder.length > 12"
+                                         title="{{item1.founder}}">{{item1.founder | limitTo : 12}}...
+                                    </div>
+                                    <div class="clear"></div>
+                                    <div class="col-lg-4 col-md-4 col-sm-4 text-right">创建时间：</div>
+                                    <div class="col-lg-8 col-md-8 col-sm-8">{{item1.founderTime | date : "yyyy-MM-dd
+                                        HH:mm:ss"}}
+                                    </div>
+                                    <div class="clear"></div>
+                                    <div class="col-lg-4 col-md-4 col-sm-4 text-right">修改人：</div>
+                                    <div class="col-lg-8 col-md-8 col-sm-8" ng-if="item1.modifier.length <= 12">
+                                        {{item1.modifier}}
+                                    </div>
+                                    <div class="col-lg-8 col-md-8 col-sm-8" ng-if="item1.modifier.length > 12"
+                                         title="{{item1.modifier}}">{{item1.modifier | limitTo : 12}}...
+                                    </div>
+                                    <div class="clear"></div>
+                                    <div class="col-lg-4 col-md-4 col-sm-4 text-right">修改时间：</div>
+                                    <div class="col-lg-8 col-md-8 col-sm-8">{{item1.modifyTime | date:"yyyy-MM-dd"}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-6" ng-show="currentPropertyType.object.propertyTypes.length == null">
+                <div id="pannel">
+                    <div class="title">
+                        <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                            <h3>分类信息</h3>
+                        </div>
+                        <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                            <!-- <span class="glyphicon glyphicon-search"></span>-->
+                        </div>
+                    </div>
+                    <div class="pannel_content">
+                        <div class="row">
+                            <div class="col-xs-8 col-lg-8 col-md-8">
+                                <div class="row search-padding 10">
+                                    暂无数据！
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="padding">
+            <div class="bill_paging">
+                <span>共{{currentPropertyType.object.page.totalResult}}条</span>
+                <ul class="pagination">
+                    <li ng-class="{true:'disabled'}[currentPropertyType.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-click="currentPropertyType.go(1)">首页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[currentPropertyType.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-show="currentPropertyType.hasPrevious()" ng-click="currentPropertyType.previous()">上一页</a>
+                    </li>
+                    <li ng-class="{true:'active'}[currentPropertyType.page.currentPage==i]" ng-repeat="i in currentPropertyType.pages">
+                        <a href="javascript:void(0)"  ng-click="currentPropertyType.go(i)">{{i}}</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[currentParentProperty.page.currentPage==currentPropertyType.page.totalPage]">
+                        <a href="javascript:void(0)" ng-show="currentPropertyType.hasNext()" ng-click="currentPropertyType.next()">下一页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[currentPropertyType.page.currentPage==currentPropertyType.page.totalPage]">
+                        <a href="javascript:void(0)" ng-click="currentPropertyType.go(currentPropertyType.page.totalPage)">尾页</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="clear"></div>
+
+    </div>
+    <!--新建、编辑-->
+    <div class="modal fade" id="new" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    添加专业
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row" style="padding:15px">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">专业名称：</div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <input name="propertyTypeName" class="form-control" type="text"  ng-model="parentPropertyType.propertyTypeName" required/>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" ng-click="closeAddType()">关闭</button>
+                    <button type="button" class="btn btn-primary"  ng-click="addParentPropertyType();">提交</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--新建、编辑 END-->
+    <!--新建、编辑-->
+    <div class="modal fade" id="new1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    添加分类
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row" style="padding:15px">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">分类名称：</div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <input name="propertyTypeName" class="form-control" type="text" maxlength="30" ng-model="classifyPropertyType.propertyTypeName" required/>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="newClose()">关闭</button>
+                    <button type="button" class="btn btn-primary"  data-dismiss="modal" ng-click="addclassifyPropertyType();">提交</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--新建、编辑 END-->
+    <!--新建、编辑-->
+    <div class="modal fade" id="new2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    编辑分类
+
+                </div>
+                <div class="modal-body">
+                    <div class="row" style="padding:15px">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">分类名称：</div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <input name="propertyTypeName" class="form-control" type="text" maxlength="30" ng-model="parent.propertyTypeName" required/>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancle1()">关闭</button>
+                    <button type="button" class="btn btn-primary"  ng-click="updatePropertyType();">提交</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--新建、编辑 END-->
+    <!--新建、编辑-->
+    <div class="modal fade" id="new3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    编辑专业
+
+                </div>
+                <div class="modal-body">
+                    <div class="row" style="padding:15px">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">专业名称：</div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <input name="propertyTypeName" class="form-control" type="text" ng-model="parentPropertyType1.propertyTypeName" required/>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancle()">关闭</button>
+                    <button type="button" class="btn btn-primary"   ng-click="updatePropertyType1();">提交</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--新建、编辑 END-->
+</body>
+</html>

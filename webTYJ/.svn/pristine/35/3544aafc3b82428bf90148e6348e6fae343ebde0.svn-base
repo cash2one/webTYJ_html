@@ -1,0 +1,26 @@
+/**
+ * Created by NM on 2016/1/21.
+ *
+ */
+'use strict';
+
+define(function (require) {
+    var app = require('../../app');
+
+    app.controller('leftCtrl', ['$scope', function ($scope) {
+        //屏幕适配
+        $scope.loadDefault=function(){
+            var wWidth = $(window).width();
+            var wHeight = $(window).height();
+            $(".left").height(wHeight-70);
+            $(".content").height(wHeight-100);
+        };
+        $scope.loadDefault();
+
+        //修改资料
+        $scope.changeData = function()
+        {
+            layer.msg('此功能还未开放，敬请期待!',{icon:0});
+        };
+    }]);
+});

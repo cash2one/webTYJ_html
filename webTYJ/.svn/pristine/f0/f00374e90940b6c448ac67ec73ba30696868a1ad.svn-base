@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div class="padding">
+    <div id="content-first">
+        <!--tab页切换开始-->
+        <div id="tab">
+            <a ng-class="{'this_action ':btnIndex==1}" ng-click="doClick(1)">收款记录</a>
+            <a lang="no" ng-class="{'this_action ':btnIndex==2}" ng-click="doClick(2)">交账中</a>
+        </div>
+        <!--tab页切换结束-->
+    </div>
+    <div ng-show="show1">
+        <div class="col-lg-6"  id="div1">
+        </div>
+        <div class="row padding">
+        <div class="col-lg-12">
+            <table>
+                <thead>
+                <tr>
+                    <th colspan="9">收款记录</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td colspan="3">现金(单位：元)</th>
+                    <td colspan="3">微信(单位：元)</th>
+                    <td colspan="3">刷卡(单位：元)</th>
+                </tr>
+                <tr>
+                    <td>总金额</td>
+                    <td>已交金额</td>
+                    <td>未交金额</td>
+                    <td>总金额</td>
+                    <td>已交金额</td>
+                    <td>未交金额</td>
+                    <td>总金额</td>
+                    <td>已交金额</td>
+                    <td>未交金额</td>
+                </tr>
+                <tr>
+                    <td>{{totals.cashTotal|number:2}}</td>
+                    <td>{{totals.handedSum|number:2}}</td>
+                    <td>{{totals.cashTotal-totals.handedSum|number:2}}</td>
+                    <td>{{totals.wechatTotal|number:2}}</td>
+                    <td>0</td>
+                    <td>{{totals.wechatTotal|number:2}}</td>
+                    <td>{{totals.creditTotal|number:2}}</td>
+                    <td>0</td>
+                    <td>{{totals.creditTotal|number:2}}</td>
+                </tr>
+                <tr>
+                    <td colspan="9">总计：{{totals.totalSum|number:2}}</th>
+                </tr>
+                </tbody>
+            </table>
+            <div class="search-padding-10">
+                <div class="col-lg-6 text-right">
+                    <button type="button" class="btn btn-default btn-primary" ng-click="cashHand()">现金交款</button>
+                    <button type="button" class="btn btn-default btn-primary" ng-click="toAccount()">结算</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <!--交账中的列表-->
+    <div ng-show="show2">
+        <div class="row padding">
+        <div class="col-lg-12">
+            <div class="search-padding-10">
+                收银组长：{{financialStaff.parentName2}}
+                <button type="button" class="btn btn-default btn-primary" ng-click="withDraw()">撤回</button>
+            </div>
+            <table>
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>序号</th>
+                    <th>时间</th>
+                    <th>交账总金额</th>
+                    <th>现金</th>
+                    <th>微信</th>
+                    <th>刷卡</th>
+                    <th>交账类型</th>
+                    <th>状态</th>
+                    <th>批次</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="item in searchPaginator1.object.accountRecords" ng-show="item.accountRecordId!=null">
+                    <td><input type="checkbox" id="{{item.accountRecordId}}" ng-click="getData(item)"></td>
+                    <td>{{$index}}</td>
+                    <td>{{item.accountTime |date:'yyyy-MM-dd'}}</td>
+                    <td>{{item.totalSum|number:2}}</td>
+                    <td>{{item.cashSum|number:2}}</td>
+                    <td>{{item.wechatSum|number:2}}</td>
+                    <td>{{item.creditCardSum|number:2}}</td>
+                    <td ng-switch on="item.accountType">
+                        <span ng-switch-when="0">现金交账</span>
+                        <span ng-switch-when="1">结算</span>
+                    </td>
+                    <td ng-switch on="item.accountState">
+                        <span ng-switch-when="0">待收账</span>
+                        <span ng-switch-when="1">交账中</span>
+                        <span ng-switch-when="2">已完成</span>
+                        <span ng-switch-when="3">已退回</span>
+                    </td>
+                    <td>{{item.batchNum}}</td>
+                </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+</div>
+<!--结算模态框-->
+<div class="modal fade" id="account" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                结算
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                    <div class="col-lg-12">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>本次交账总金额</th>
+                                <th>现金总额</th>
+                                <th>刷卡总额</th>
+                                <th>微信总额</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>{{totals.totalSum|number:2}}</td>
+                                <td>{{totals.cashTotal|number:2}}</td>
+                                <td>{{totals.creditTotal|number:2}}</td>
+                                <td>{{totals.wechatTotal|number:2}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>收银员</th>
+                                <th>收银组长</th>
+                                <th>出纳</th>
+                                <th>会计</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>{{financialStaff.financialStaffName}}</td>
+                                <td>{{financialStaff.parentName2}}</td>
+                                <td>{{financialStaff.parentName1}}</td>
+                                <td>{{financialStaff.parentName}}</td>
+
+                            </tr>
+                            </tbody>
+                        </table>
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>序号</th>
+                                <th>时间</th>
+                                <th>操作人</th>
+                                <th>工号</th>
+                                <th>交易单号</th>
+                                <th>现金</th>
+                                <th>刷卡</th>
+                                <th>微信</th>
+                                <th>总额</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="item in paymentDetails" ng-show="item.paymentDetailsId!=null">
+                                <td>{{$index+1}}</td>
+                                <td>{{item.transactionDate |date:'yyyy-MM-dd'}}</td>
+                                <td>{{financialStaff.financialStaffName}}</td>
+                                <td>{{item.staffNumber}}</td>
+                                <td>{{item.paymentNum}}</td>
+                                <td>{{item.cashSum|number:2}}</td>
+                                <td>{{item.creditCardSum|number:2}}</td>
+                                <td>{{item.wechatSum|number:2}}</td>
+                                <td>{{item.transactionAmount|number:2}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" ng-click="handAccount()">确认交账</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--现金结算模态框-->
+<div class="modal fade" id="cash" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                现金交款
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="padding20">
+                    <div class="row search-padding">
+                        <div class="col-lg-3 col-md-3 col-sm-3 text-right">
+                            未交账现金金额：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            {{totals.cashTotal-totals.handedSum|number:2}}
+                        </div>
+                        <div class="clear"></div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 text-right">
+                            交账金额：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <input type="text" class="form-control" placeholder="请输入金额" ng-model="addAccountRecord.cashSum">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" ng-click="account()">确认</button>
+            </div>
+        </div>
+ </div>
+</div>
+
+
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!--
+    作者:彭婷婷
+    页面名称:授权管理--历史记录
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>历史记录</title>
+</head>
+<body>
+    <div class="row padding">
+        <div class="col-lg-12">
+
+            <div class="">
+                <div class="row search-padding-10">
+                    <div class="col-lg-1 col-md-4 col-sm-4 text-right">
+                        搜索条件：
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4">
+                        <input type="text" class="form-control" placeholder="请输入授权人姓名" ng-model="authorization.authorizerName">
+                    </div>
+                    <div class="col-lg-7 col-md-4 col-sm-4 text-right">
+                        <button type="button" class="btn btn-default btn-primary"  ng-click="searchPaginator._load()">
+                            <span class="glyphicon glyphicon-search btn_icon"></span>查询
+                        </button>
+                    </div>
+                </div>
+                <div class="row search-padding-10">
+                    <div class="col-lg-8 col-md-6 col-sm-6">
+                        <button type="button" class="btn btn-default btn-primary" ui-sref="index.propertyService.staffHome.empowerManagement.empower" ng-click="addNew()">
+                            <span class="glyphicon glyphicon-plus btn_icon"></span>
+                            新建授权信息
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <table >
+                <thead>
+                <tr >
+                    <th>授权人</th>
+                    <th>授权类型</th>
+                    <th ng-repeat="item in authorizationProjectType" ng-show="item.authorizationProjectId!=null">
+                        {{item.authorizationProjectName}}
+                    </th>
+                    <th>房屋编号</th>
+                    <th>房屋地址</th>
+                    <th>授权时间</th>
+                    <th>截止时间</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="authorization in searchPaginator.object.authorizations" ng-show="authorization.authorizationId!=null" on-finish-render-filters>
+                    <td>{{authorization.personCustNew.name}}</td>
+                    <td>
+                        <ul  ng-switch on="authorization.authorizationType">
+                            <li ng-switch-when="1">委托书</li>
+                            <li ng-switch-when="2">电话</li>
+                            <li ng-switch-when="3">电子授权</li>
+                        </ul>
+                    </td>
+                    <td  ng-repeat="itel in authorization.typeList track by $index">
+                        <ul ng-switch on="itel">
+                              <li ng-switch-when="y">√</li>
+                              <li ng-switch-when="n">×</li>
+                        </ul>
+                    </td>
+                    <td>{{authorization.house.houseNum}}</td>
+                    <td>{{authorization.house.fullName}}</td>
+                    <td>{{authorization.staDate|date:"yyyy-MM-dd"}}</td>
+                    <td>{{authorization.endDate|date:"yyyy-MM-dd"}}</td>
+                </tr>
+                <tr ng-show="searchPaginator.object.page.totalResult == 0">
+                    <td colspan="16">暂无数据！</td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="padding">
+                <div class="bill_paging">
+                    <span>共{{searchPaginator.object.page.totalResult}}条</span>
+                    <ul class="pagination">
+                        <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                            <a href="javascript:void(0)" ng-click="searchPaginator.go(1)">首页</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                            <a href="javascript:void(0)" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a>
+                        </li>
+                        <li ng-class="{true:'active'}[searchPaginator.page.currentPage==i]" ng-repeat="i in searchPaginator.pages">
+                            <a href="javascript:void(0)"  ng-click="searchPaginator.go(i)">{{i}}</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                            <a href="javascript:void(0)" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                            <a href="javascript:void(0)" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+</div>
+</body>
+</html>

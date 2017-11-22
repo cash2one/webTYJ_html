@@ -1,0 +1,46 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 物业保险管理
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../app');
+
+    app.controller('insuranceListCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        var url = $rootScope.url;
+        $scope.tenement={page:{}};
+        $scope.load=function(){
+            var fetchFunction = function(page, callback){
+                $scope.tenement.page = page;
+                $http.post(url + '/TenementInsurance/listPageTenementInsurance', {TenementInsurance : $scope.tenement}).success(callback);
+            };
+            $scope.searchPaginator = app.get('Paginator').list(fetchFunction, 5);
+        };
+        $scope.load();
+
+        //根据id查询详情
+        $scope.show=function(id){
+            if(id==undefined){
+                layer.alert("该项目还未投保", {icon: 0});
+            }else{
+                $('#showDatil').modal({backdrop: 'static', keyboard: false});
+                $http.get(url + '/TenementInsurance/getTenementInsuranceByIds/' +id).success(function(data){
+                    $scope.tenementInsurances = data.TenementInsurance;
+                    if ($scope.tenementInsurances.annexs != null) {
+                        if (angular.isArray($scope.tenementInsurances.annexs)) {
+                        } else {
+                            $scope.annexList = [];
+                            $scope.annexList.push($scope.tenementInsurances.annexs);
+                            $scope.tenementInsurances.annexs = $scope.annexList;
+                        }
+                    }
+                });
+            }
+
+        }
+
+    }]);
+});

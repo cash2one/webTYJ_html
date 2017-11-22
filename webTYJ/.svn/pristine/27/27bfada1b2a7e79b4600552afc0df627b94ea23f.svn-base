@@ -1,0 +1,26 @@
+<!--
+    撰写人：朱伟
+    创建日期：2015/6/29
+    页面名称：建筑组件初始化
+-->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>建筑组件初始化</title>
+</head>
+<body>
+<div id="content-first">
+    <!--tab页切换开始-->
+    <div id="tab">
+        <a href="#" ng-class="{'this_action ':btnIndex==2}" ng-click="doClick(2)" ui-sref="index.baseManagement.buildingInitialization.functionals">功能区间</a>
+        <a href="#" ng-class="{'this_action ':btnIndex==1}" ng-click="doClick(1)" ui-sref="index.baseManagement.buildingInitialization.buildingDetails">组件新增</a>
+        <a lang="no" href="#" ng-class="{'this_action ':btnIndex==3}" ng-click="doClick(3)" ui-sref="index.baseManagement.buildingInitialization.buildingList">组件列表</a>
+    </div>
+    <!--tab页切换结束-->
+    <!--视图加载-->
+    <div ui-view></div>
+    <!--视图加载开始-->
+</div>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!--
+    创建人:彭婷婷  创建时间：2015/06/08
+    页面名称:专业线管理
+    js路径:js/controllers/systemSettings/professionallinemanagement.js
+    修改人：倪明   修改时间:2015/9/7
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>物业模块</title>
+</head>
+<body>
+<div id="content-first">
+    <!--tab页切换开始-->
+    <div id="tab">
+        <a lang="no" class="this_action">物业模块选择</a>
+    </div>
+    <!--tab页切换结束-->
+    <!--视图加载-->
+    <div class="search-padding-10 line_a_1">
+        <!--<div class="row text-right">
+            <button type="button" class="btn btn-primary" ng-click="initProfessionalLine()">初始化已存在项目的专业线</button>
+        </div>-->
+        <h4>请选择物业模块：</h4>
+        <ul>
+            <li ng-repeat="item in specialtyList" ng-model="specialtyList" ng-show="item.specialtyId!=null" ng-class="{'this_info':btnIndexs==item.specialtyId}" style="cursor: pointer" ng-click="details(item)">
+                <input type="checkbox" class="checkboxa" name="checkbox" id={{item.specialtyId}} ng-true-value="1" ng-false-value="0" ng-model="item.state"  ng-click="chazhao(item)">
+                <span class="span1">{{item.specialtyName}}</span>
+            </li>
+            <div class="clear"></div>
+        </ul>
+    </div>
+    <div class="padding">
+        <div class="rh">
+        <div class="row padding" style="min-height: 200px">
+        <p>{{datas.specialtyDescrible}}</p>
+        </div>
+        </div>
+    </div>
+    <!--<div class="search-padding-10 text-center">-->
+        <!--<button type="button" class="btn btn-default btn-primary" ng-click="cancle()">-->
+            <!--取消-->
+        <!--</button>-->
+        <!--<button type="button" class="btn btn-default btn-primary" ng-click="insert()">-->
+            <!--提交-->
+        <!--</button>-->
+    <!--</div>-->
+    <!--视图加载结束-->
+</div>
+<!--录入公司银行信息模态框-->
+<div class="modal fade" id="loadBankInfoModal" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" >
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" ng-if="companyBankInfo.id == null">
+                    录入公司银行信息
+                </h4>
+                <h4 class="modal-title" ng-if="companyBankInfo.id != null">
+                    编辑公司银行信息
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="" style="height:200px;padding:20px">
+                    <div class="col-lg-2 col-md-2 col-sm-2  text-right">
+                        户主姓名：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4 ">
+                        <input type="text" class="form-control" ng-model="companyBankInfo.ownerName">
+                    </div>
+                    <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                        <span style="color: red">*</span>
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2  text-right">
+                        银行卡号：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4 ">
+                        <input type="text" class="form-control" ng-model="companyBankInfo.bankAccount">
+                    </div>
+                    <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                        <span style="color: red">*</span>
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2  text-right">
+                        存折号：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4 ">
+                        <input type="text" class="form-control" ng-model="companyBankInfo.bankbookNum">
+                    </div>
+                    <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2  text-right">
+                        开户银行：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4 ">
+                        <select class="form-control" ng-model="companyBankInfo.bankName"
+                        >
+                            <option value="">请选择</option>
+                            <option value="中国工商银行">中国工商银行</option>
+                            <option value="中国建设银行">中国建设银行</option>
+                            <option value="中国农业银行">中国农业银行</option>
+                            <option value="中国招商银行">中国招商银行</option>
+                            <option value="中国银行">中国银行</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                        <span style="color: red">*</span>
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2  text-right">
+                        开户省：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4 ">
+                        <select class="form-control" ng-model="companyBankInfo.province" ng-options="key as key for (key,value) in division"
+                                ng-change="companyBankInfo.city=''">
+                            <option value="">省</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                        <span style="color: red">*</span>
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2  text-right">
+                        启用时间：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4 ">
+                        <input type="text" onclick="WdatePicker({readOnly:true})"  class="Wdate form-control" ng-model="companyBankInfo.startTime" onchange=""  ng-blur="checkDates()" ng-change="getStall(stallss.id,false)">
+                    </div>
+                    <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                        <span style="color: red">*</span>
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2  text-right">
+                        开户市：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4 ">
+                        <select class="form-control" ng-model="companyBankInfo.city" ng-options="key as key for (key,value) in division[companyBankInfo.province]"
+                        >
+                            <option value="">市</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-1 col-md-6 col-sm-6 blankSpace">
+                        <span style="color: red">*</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn bg-primary" data-dismiss="" ng-click="insertCompanyBankInfo()" ng-if="companyBankInfo.id==null">提交</button>
+                    <button type="button" class="btn bg-primary" data-dismiss="" ng-click="updateCompanyBankInfo()" ng-if="companyBankInfo.id!=null">提交</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

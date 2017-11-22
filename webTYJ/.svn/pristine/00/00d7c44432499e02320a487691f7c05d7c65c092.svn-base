@@ -1,0 +1,149 @@
+<!--
+    页面名称：物业合同管理的新增合同
+    创建人：彭婷婷     创建时间：2015/6/16
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>新增合同</title>
+    <link rel="stylesheet" href="bower_components/skins/zyupload-1.0.0.min.css " type="text/css">
+</head>
+<body>
+<div class="padding">
+    <form id="css_form" name="mainForm" novalidate>
+        <div class="sel">
+            <div class="row search-padding">
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    合同编号：
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-3">
+                    <input type="text" class="form-control" ng-model="addTenementPact.pactCode" name="pactCode" placeholder="请输入合同编号" required>
+                    <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.pactCode.$dirty && mainForm.pactCode.$invalid">
+                        <p class="alter" ng-show="mainForm.pactCode.$error.required">
+                            不能为空
+                        </p>
+                        <p class="alter" ng-show="mainForm.cardnum.defined ">
+                            正确
+                        </p>
+                    </span>
+                </div>
+                <div class="col-lg-1 col-md-1 col-sm-1">
+                    <span style="color: #ee0000">*</span>
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    合同名称：
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-3">
+                    <input type="text" class="form-control" ng-model="addTenementPact.pactName" name="pactName" placeholder="请输入合同名称" required>
+                    <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.pactName.$dirty && mainForm.pactName.$invalid">
+                        <p class="alter" ng-show="mainForm.pactName.$error.required">
+                            不能为空
+                        </p>
+                        <p class="alter" ng-show="mainForm.pactName.defined ">
+                            正确
+                        </p>
+                    </span>
+                </div>
+                <div class="col-lg-1 col-md-1 col-sm-1">
+                    <span style="color: #ee0000">*</span>
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    物业项目：
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-3">
+                    <input class="form-control" ng-model="addTenementPact.propertyProject" name="property" placeholder="请输入物业项目名称" required>
+                    <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.property.$dirty && mainForm.property.$invalid">
+                        <p class="alter" ng-show="mainForm.property.$error.required">
+                            不能为空
+                        </p>
+                        <p class="alter" ng-show="mainForm.property.defined ">
+                            正确
+                        </p>
+                    </span>
+                </div>
+                <div class="col-lg-1 col-md-1 col-sm-1">
+                    <span style="color: #ee0000">*</span>
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    开始时间：
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-3">
+                    <input id="staTime" name="input" type="date" class="form-control"  ng-model="addTenementPact.staTime">
+                </div>
+                <div class="col-lg-1 col-md-1 col-sm-1">
+                    <span style="color: #ee0000">*</span>
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    结束日期：
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-3">
+                    <input id="endTime" name="input" type="date" class="form-control"  ng-model="addTenementPact.endTime" ng-blur="checkDate()">
+                </div>
+                <div class="col-lg-1 col-md-1 col-sm-1">
+                    <span style="color: #ee0000">*</span>
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    合同类型：
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-3">
+                    <select class="form-control" ng-model="addTenementPact.pactType">
+                        <option value="">请选择合同类型</option>
+                        <option value="0">佣金合同</option>
+                        <option value="1">全包合同</option>
+                        <option value="2">固定金额</option>
+                    </select>
+                </div>
+                <div class="col-lg-1 col-md-1 col-sm-1">
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    签订甲方：
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-3">
+                    <input class="form-control" ng-model="addTenementPact.preEnterprise" placeholder="请输入甲方公司名称">
+                </div>
+                <div class="col-lg-1 col-md-1 col-sm-1">
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    签订乙方：
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-3">
+                    <input class="form-control" ng-model="company.companyName" id="aftEnterprise" readonly>
+                </div>
+                <div class="col-lg-1 col-md-1 col-sm-1">
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    合同金额：
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2">
+                    <select class="form-control" ng-model="addTenementPact.totalPriceType">
+                        <option value="">请选择合同金额</option>
+                        <option value="0">收入</option>
+                        <option value="1">支出</option>
+                    </select>
+                </div>
+                <div class="col-lg-1 col-md-1 col-sm-1">
+                    <input class="form-control" ng-model="addTenementPact.totalPrice" placeholder="请输入合同金额">
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="col-lg-2 col-md-2 col-sm-3 text-right">
+        上传合同:
+    </div>
+    <div class="col-lg-10 col-md-10 col-sm-9">
+        <div id="zyupload" class="zyupload"></div>
+    </div>
+
+    <div class="text-center">
+        <button type="button" class="btn btn-default" ng-click="cleanAll()">
+            取消
+        </button>
+        <button type="button" class="btn btn-default btn-primary" ng-click="saveAll()">
+            提交
+        </button>
+    </div>
+</div>
+</body>
+</html>

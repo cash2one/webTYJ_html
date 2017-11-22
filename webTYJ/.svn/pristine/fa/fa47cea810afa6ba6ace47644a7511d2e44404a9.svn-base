@@ -1,0 +1,41 @@
+/**
+ * Created by Administrator on 2016-01-25.
+ */
+define(function (require) {
+    var app = require('../../../app');
+
+    app.controller('appPersonManagementCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+        /**
+         * 选中样式
+         * @type {number}
+         */
+        $scope.btnIndex = 0;
+        $scope.secondViewIndex = 3;
+        $scope.doChange = function(index){
+            $scope.secondViewIndex = index;
+
+            switch (index) {
+                /*
+                case 1 :
+                    $location.path("/index/personnelManagement/appPersonManagement/appUserCheck");
+                    break;
+                case 2 :
+                    $location.path("/index/personnelManagement/appPersonManagement/appUserAdd");
+                    break;
+                    */
+                case 3 :
+                    $location.path("/index/personnelManagement/appPersonManagement/appWorkingStaff");
+                    break;
+                case 4 :
+                    $location.path("/index/personnelManagement/appPersonManagement/appStaffEmployed");
+                    break;
+                case 5 :
+                    $location.path("/index/personnelManagement/appPersonManagement/appOffStaff");
+                    break;
+            }
+        };
+
+        $scope.doChange(3);
+
+    }]);
+});

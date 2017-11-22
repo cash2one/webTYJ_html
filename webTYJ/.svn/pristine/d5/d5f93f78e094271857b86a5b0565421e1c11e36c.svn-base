@@ -1,0 +1,802 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 收款台js
+ */
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../../app');
+    app.controller('cashiersCtrl', ['$scope', '$http', '$rootScope', '$location', function ($scope, $http, $rootScope, $location) {
+        $scope.doClickForAccount(6);
+
+        //定义全局变量url,访问数据库接口路径
+        var url = $rootScope.url;
+        $scope.paymentDetails = {};
+        $scope.advancePaymentsDetails = {};
+        var user = {employId: ''};
+        var userCookie = JSON.parse(sessionStorage.getItem("USER_LOGIN"));
+        // var financialInfo = JSON.parse(sessionStorage.getItem("financialInfo"));
+        $scope.user = userCookie ? userCookie : user;
+        $scope.staffid = $scope.user.staff.staffId;
+        //得到收银员id
+        // $scope.id = 'd6e9cf52-3735-11e5-b859-74d4359b657c';
+
+        //收账
+        $scope.collectSum = function () {
+            //得到从账单查询 购物车传过来的数据
+            $scope.data1 = {list: []};
+            var data1 = sessionStorage.getItem("data1");
+            $scope.data1 = JSON.parse(data1);
+            $scope.totals = 0.0;
+            $scope.totalsData = 0.0;
+            $scope.totalsAsset= 0.0;
+            if ($scope.data1 == null) {
+                return;/**
+                 * Created by NM on 2018/1/18.
+                 * 收款台js
+                 */
+                'use strict';
+
+                define(function (require) {
+                    var app = require('../../../../../app');
+                    app.controller('cashiersCtrl', ['$scope', '$http', '$rootScope', '$location', function ($scope, $http, $rootScope, $location) {
+                        $scope.doClickForAccount(6);
+
+                        //定义全局变量url,访问数据库接口路径
+                        var url = $rootScope.url;
+                        $scope.paymentDetails = {};
+                        $scope.advancePaymentsDetails = {};
+                        var user = {employId: ''};
+                        var userCookie = JSON.parse(sessionStorage.getItem("USER_LOGIN"));
+                        // var financialInfo = JSON.parse(sessionStorage.getItem("financialInfo"));
+                        $scope.user = userCookie ? userCookie : user;
+                        $scope.staffid = $scope.user.staff.staffId;
+                        //得到收银员id
+                        // $scope.id = 'd6e9cf52-3735-11e5-b859-74d4359b657c';
+
+                        //收账
+                        $scope.collectSum = function () {
+                            //得到从账单查询 购物车传过来的数据
+                            $scope.data1 = {list: []};
+                            var data1 = sessionStorage.getItem("data1");
+                            $scope.data1 = JSON.parse(data1);
+                            $scope.totals = 0.0;
+                            $scope.totalsData = 0.0;
+                            $scope.totalsAsset= 0.0;
+                            if ($scope.data1 == null) {
+                                return;
+                            }
+                            for (var j = 0; j < $scope.data1.list.length; j++) {
+                                //$scope.totals = $scope.totals + $scope.data1.list[j].currentOweSum + $scope.data1.list[j].overdue + $scope.data1.list[j].lastOweSum;
+                                //$scope.totalsData  =$scope.totalsData + $scope.data1.list[j].currentOweSum + $scope.data1.list[j].overdue + $scope.data1.list[j].lastOweSum;
+                                $scope.totals = $scope.totals + $scope.data1.list[j].totalCurrentOweSum + $scope.data1.list[j].totalOverdue + $scope.data1.list[j].totalLastOweSum;
+                                $scope.totalsData  =$scope.totalsData + $scope.data1.list[j].totalCurrentOweSum + $scope.data1.list[j].totalOverdue + $scope.data1.list[j].totalLastOweSum;
+                            }
+                            $scope.custId = $scope.data1.custId;
+                            $scope.assetAccountId = $scope.data1.assetAccountId;
+                        }
+                        $scope.collectSum();
+                        //充值
+                        $scope.assetSum = function () {
+                            $scope.assetAccount1 = {};
+                            var assetAccount1 = sessionStorage.getItem("AssetAccount");
+                            $scope.assetAccount1 = JSON.parse(assetAccount1);
+                            if ($scope.assetAccount1 == null) {
+                                return;
+                            }
+                            $scope.totals = $scope.totals + $scope.assetAccount1.addPrice;
+                            $scope.totalsAsset = $scope.totalsAsset + $scope.assetAccount1.addPrice;
+                            /*if($scope.assetAccount1.chargeItem != null){
+                             $scope.custId = $scope.assetAccount1.chargeItem.ciId;
+                             }*/
+                        }
+                        $scope.assetSum();
+                        //获取当前时间戳
+                        $scope.timestamp = (new Date()).valueOf();
+                        //获取当前时间
+                        $scope.timeDate = new Date();
+
+                        //得到收银员信息
+                        $http.get(url + '/staff/getStaffById/' + $scope.staffid).success(function (data) {
+                            $scope.financial = data.Staff;
+                        });
+                        $scope.chkDataTmp = [];
+                        $scope.chkData = function (item) {
+                            var chk = document.getElementById(item.billNum);
+                            if (chk.checked == true) {
+                                //item.money = item.noCollectSum;
+                                item.money=item.totalCurrentOweSum + item.totalOverdue + item.totalLastOweSum;
+                                $scope.chkDataTmp.push(item);
+                            } else {
+                                for (var i = 0; i < $scope.chkDataTmp.length; i++) {
+                                    if ($scope.chkDataTmp[i] == item) {
+                                        $scope.chkDataTmp.splice(i, 1);
+                                    }
+                                }
+                            }
+                        };
+                        $scope.chkAssetTmp = [];
+                        $scope.chkAsset = function (index) {
+                            var chk = document.getElementById(index);
+                            if (chk.checked == true) {
+                                $scope.chkAssetTmp.push(index);
+                            } else {
+                                for (var i = 0; i < $scope.chkAssetTmp.length; i++) {
+                                    if ($scope.chkAssetTmp[i] == index) {
+                                        $scope.chkAssetTmp.splice(i, 1);
+                                    }
+                                }
+                            }
+                        };
+
+                        //得到结算的数据
+                        $scope.toDelete = function () {
+                            var arrDel = new Array();
+                            var pos = 0;
+                            if ($scope.chkDataTmp.length == 0 && $scope.chkAssetTmp.length == 0) {
+                                layer.alert("请选择需要删除的数据！", {icon: 0});
+                                return;
+                            }
+                            /*if (!layer.confirm("您确定要删除选中的数据？"))
+                             return;*/
+                            layer.confirm('您确定要删除选中的数据？', {btn: ['是', '否']}, function () {
+                                $scope.$apply(function(){
+                                    for (var i = 0; i < $scope.chkDataTmp.length; i++) {
+                                        for (var j = 0; j < $scope.data1.list.length; j++) {
+                                            if ($scope.chkDataTmp[i].billNum == $scope.data1.list[j].billNum) {
+                                                //$scope.totalsData  -= $scope.data1.list[j].totalCurrentOweSum + $scope.data1.list[j].totalOverdue + $scope.data1.list[j].totalLastOweSum;
+                                                $scope.data1.list.splice(j, 1);
+                                                $scope.chkDataTmp.splice(i, 1);
+                                                i--;
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                });
+                                layer.msg("删除成功！",{icon:0});
+                                $scope.location.reload();
+                                var data1 = JSON.stringify($scope.data1);
+                                sessionStorage.setItem("data1", data1);
+                                if ($scope.assetAccount1 != null && $scope.chkAssetTmp[0] == $scope.assetAccount1.transactionNum) {
+                                    $scope.$apply(function(){
+                                        $scope.assetAccount1 = {};
+                                    });
+                                }
+                                var assetAccount2 = JSON.stringify($scope.assetAccount1);
+                                sessionStorage.setItem("AssetAccount", assetAccount2);
+                                if($scope.assetAccount1!=null) {
+                                    if ($scope.assetAccount1.addPrice == null) {
+                                        //var totalsAssetTmp = app.get('valueCheck').isObjNull(assetAccount2);
+                                        $scope.totalsAsset = 0.0;
+                                    }
+                                }
+                                var data1 = sessionStorage.getItem("data1");
+                                $scope.totalsData = 0.0;
+                                alert("dddd");
+                                console.info($scope.data1.list.length);
+                                //alert($scope.data1.list.length);
+                                for (var j = 0; j < $scope.data1.list.length; j++) {
+
+                                    $scope.totalsData  =$scope.totalsData + $scope.data1.list[j].totalCurrentOweSum + $scope.data1.list[j].totalOverdue + $scope.data1.list[j].totalLastOweSum;
+                                }
+                                if($scope.data1.list == 0){
+                                    $scope.totalsData = 0.0;
+                                }
+                                $scope.$apply(function() {
+                                    $scope.totalsData;
+                                });
+                                //layer.msg("删除成功！",{icon: 1,time:1000});
+                            }, function () {
+                            });
+                        }
+                        //结算
+                        $scope.show1 = false;
+                        $scope.paymentDetails = {};
+                        $scope.count = function () {
+                            if ($scope.chkDataTmp.length == 0 && $scope.chkAssetTmp.length == 0) {
+                                layer.alert("未选择结算类型！", {icon: 0});
+                                return;
+                            }
+                            if ($scope.chkDataTmp.length != 0 && $scope.chkAssetTmp.length != 0) {
+                                layer.alert("只能选择一种收费类型！", {icon: 0});
+                                return;
+                            }
+                            $scope.paymentDetails.cashSum = null;
+                            $scope.paymentDetails.creditCardSum = null;
+                            //$scope.advancePaymentsDetails.transactionAmount = null;
+                            $scope.paymentDetails.wechatSum = null;
+                            if ($scope.data1 !=null || $scope.assetAccount1 != null) {
+                                $scope.paymentDetails = {};
+                                $('#showAccount').modal({backdrop: 'static', keyboard: false});
+                                $scope.$watch('paymentDetails.wechatSum', function () {
+                                    if ($scope.paymentDetails.wechatSum > 0) {
+                                        $scope.show1 = true;
+                                    } else {
+                                        $scope.show1 = false;
+                                    }
+                                });
+                            } else {
+                                layer.alert("无结算的数据！", {icon: 0});
+                            }
+                        };
+                        //确认
+                        $scope.sum1 = 0.0;
+                        $scope.insertAccount = function () {
+                            $scope.s1 = document.getElementById("money").value;
+                            $scope.s2 = document.getElementById("credit").value;
+                            $scope.s3 = document.getElementById("wechat").value;
+                            /*if($scope.chkAssetTmp.length == 0){
+                                $scope.s4 = document.getElementById("transaction").value;
+                            }else{
+                                $scope.s4 = "";
+                            }*/
+
+                            var s1Tmp = app.get('valueCheck').isNumberOrNull( $scope.s1);
+                            if(s1Tmp.state == false){
+                                layer.msg(s1Tmp.info,{icon : 0,time : 2000});
+                                return;
+                            }
+                            var s2Tmp = app.get('valueCheck').isNumberOrNull( $scope.s2);
+                            if(s2Tmp.state == false){
+                                layer.msg(s2Tmp.info,{icon : 0,time : 2000});
+                                return;
+                            }
+                            var s3Tmp = app.get('valueCheck').isNumberOrNull( $scope.s3);
+                            if(s3Tmp.state == false){
+                                layer.msg(s3Tmp.info,{icon : 0,time : 2000});
+                                return;
+                            }
+                           /* var s4Tmp = app.get('valueCheck').isNumberOrNull( $scope.s4);
+                            if(s4Tmp.state == false){
+                                layer.msg(s4Tmp.info,{icon : 0,time : 2000});
+                                return;
+                            }*/
+
+                            $scope.toatl = $scope.s1 * 1 + $scope.s2 * 1 + $scope.s3 * 1 ;//得到所有交账金额的值
+
+                            if ($scope.s1 == "" && $scope.s2 == "" && $scope.s3 == "") {
+                                layer.alert("请输入结算金额！", {icon: 0});
+                                return;
+                            } else {
+                                if($scope.s1+$scope.s2+$scope.s3 == 0){
+                                    layer.alert("结算金额总和不能为0！", {icon: 0});
+                                    return;
+                                }
+                                $scope.chkDataSum = 0.0;
+                                $scope.assetAccountSum = 0.0;
+                                if($scope.assetAccount1 != null){
+                                    $scope.assetAccountSum = $scope.assetAccount1.addPrice;
+                                }
+                                if($scope.chkDataTmp !=null){
+                                    for(var i=0; i<$scope.chkDataTmp.length; i++){
+                                        //$scope.chkDataSum += $scope.chkDataTmp[i].currentOweSum+$scope.chkDataTmp[i].overdue+$scope.chkDataTmp[i].lastOweSum;
+                                        $scope.chkDataSum += $scope.chkDataTmp[i].totalCurrentOweSum+$scope.chkDataTmp[i].totalOverdue+$scope.chkDataTmp[i].totalLastOweSum;
+                                    }
+                                }
+                                //预付款付款
+                               /* if ($scope.s4 != "") {
+                                    /!*$scope.chkDataTmpSum = 0;
+                                     for(var i = 0; i<$scope.chkDataTmp.length; i++){
+                                     $scope.chkDataTmpSum += $scope.chkDataTmp[i].noCollectSum;
+                                     }*!/
+                                    if($scope.s4 > $scope.chkDataSum){
+                                        layer.alert("预付款余额不能大于合计！", {icon: 0});
+                                        return;
+                                    }
+                                    $scope.buildingId = $scope.chkDataTmp[0].buildingId;
+                                    //根据客户id查询账户信息
+                                    $http.get(url + '/AssetAccount/seletctAssetAccountByCustId/' + $scope.custId + "/" + $scope.buildingId).success(function (data) {
+                                        $scope.assetAccount = data.AssetAccount;
+                                        if (($scope.s4 * 1) >= $scope.advancePaymentsDetails.transactionAmount) {
+                                            $scope.advancePaymentsDetails.assetAccountId = $scope.assetAccount.assetAccountId;
+                                            $scope.advancePaymentsDetails.chargeItem = $scope.chkDataTmp;
+                                            $scope.advancePaymentsDetails.bills = $scope.chkDataTmp;
+                                            $http.post(url + '/AdvancePaymentsDetails/insertAdvancePaymentsDetails', {AdvancePaymentsDetails: $scope.advancePaymentsDetails}).success(function (data) {
+                                                if(data !=0){
+                                                    layer.alert("余额不足！", {icon: 0});
+                                                    return;
+                                                }
+                                                for (var i = 0; i < $scope.chkDataTmp.length; i++) {
+                                                    for (var j = 0; j < $scope.data1.list.length; j++) {
+                                                        if ($scope.chkDataTmp[i].billNum == $scope.data1.list[j].billNum) {
+                                                            $scope.data1.list.splice(j, 1);
+                                                            $scope.chkDataTmp.splice(i, 1);
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+                                                var data1 = JSON.stringify($scope.data1);
+                                                sessionStorage.setItem("data1", data1);
+                                                $scope.showChange();
+                                            }).error(function (data, status, headers, config) {
+                                                layer.msg("付款失败！", {icon: 3, time: 2000});
+                                            });
+                                        } else {
+                                            layer.alert("余额不足！", {icon: 0});
+                                            return;
+                                        }
+                                    });
+                                }*/
+                                if ($scope.s1 != "" || $scope.s2 != "" || $scope.s3 != "") {
+                                    if ($scope.chkAssetTmp.length != 0) {
+                                        var tmp = false;
+                                        $scope.assetAccount1.paymentType = null;
+                                        if($scope.s1 != "" || $scope.s1!=0){
+                                            $scope.assetAccount1.paymentType = 0;
+                                        }
+                                        if($scope.s2 != "" || $scope.s2!=0){
+                                            if($scope.assetAccount1.paymentType != null){
+                                                tmp = true;
+                                            }else{
+                                                $scope.assetAccount1.paymentType = 1;
+                                            }
+                                        }
+                                        if($scope.s3 != ""|| $scope.s3!=0){
+                                            if($scope.assetAccount1.paymentType != null){
+                                                tmp = true;
+                                            }else{
+                                                $scope.assetAccount1.paymentType = 2;
+                                            }
+                                        }
+                                        if(tmp){
+                                            $scope.assetAccount1.paymentType = {};
+                                        }
+                                        $scope.paymentDetails.financialStaffId = $scope.staffid;//操作人 员工id
+                                        $scope.paymentDetails.financialStaffName = $scope.financial.staffName;//操作人姓名
+                                        $scope.paymentDetails.custId = $scope.custId;//客户id
+                                        $scope.assetAccount1.paymentDetails = $scope.paymentDetails;
+                                        //充值
+                                        $http.put(url + '/AssetAccount/topUP', {AssetAccount: $scope.assetAccount1}).success(function (data) {
+                                            $scope.assetAccount1 = {};
+                                            $scope.totalsAsset = 0.0;
+                                            $scope.$apply(function() {
+                                                $scope.totalsAsset;
+                                            });
+                                            var assetAccount1 = JSON.stringify($scope.assetAccount1);
+                                            sessionStorage.setItem("AssetAccount", assetAccount1);
+                                            $scope.chkAssetTmp = [];
+                                            $scope.showChange();
+                                        }).error(function (data) {
+                                            layer.msg('充值失败，请重试！', {icon: 2, time: 1000});
+                                        });
+                                    }
+
+                                    if ($scope.chkDataTmp.length != 0) {
+                                        //其他方式付款
+                                        $scope.paymentDetails.financialStaffId = $scope.staffid;//操作人 员工id
+                                        $scope.paymentDetails.financialStaffName = $scope.financial.staffName;//操作人姓名
+                                        $scope.paymentDetails.custId = $scope.custId;//客户id
+                                        $scope.paymentDetails.bills = $scope.chkDataTmp;
+                                        $scope.paymentDetails.assetAccountId = $scope.assetAccountId;
+                                        $scope.paymentDetails.paymentNum=$scope.timestamp;
+                                        $http.post(url + '/PaymentDetails/insertPaymentDetails', {PaymentDetails: $scope.paymentDetails}).success(function () {
+                                            /*for (var i = 0; i < $scope.chkDataTmp.length; i++) {
+                                             for (var j = 0; j < $scope.data1.list.length; j++) {
+                                             if ($scope.chkDataTmp[i].billNum == $scope.data1.list[j].billNum) {
+                                             $scope.data1.list.splice(j, 1);
+                                             break;
+                                             }
+                                             }
+                                             }*/
+                                            for (var i = 0; i < $scope.chkDataTmp.length; i++) {
+                                                for (var j = 0; j < $scope.data1.list.length; j++) {
+                                                    if ($scope.chkDataTmp[i].billNum == $scope.data1.list[j].billNum) {
+                                                        $scope.data1.list.splice(j, 1);
+                                                        $scope.chkDataTmp.splice(i, 1);
+                                                        i--;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                            $scope.totalsData = 0.0;
+                                            for (var j = 0; j < $scope.data1.list.length; j++) {
+                                                // $scope.totalsData = $scope.totalsData + $scope.data1.list[j].currentOweSum + $scope.data1.list[j].overdue + $scope.data1.list[j].lastOweSum;
+                                                $scope.totalsData = $scope.totalsData + $scope.data1.list[j].totalCurrentOweSum + $scope.data1.list[j].totalOverdue + $scope.data1.list[j].totalLastOweSum;
+                                            }
+                                            if ($scope.data1.list == 0) {
+                                                $scope.totalsData = 0.0;
+                                            }
+                                            $scope.$apply(function() {
+                                                $scope.totalsData;
+                                            });
+                                            var data1 = JSON.stringify($scope.data1);
+                                            sessionStorage.setItem("data1", data1);
+                                            $scope.showChange();
+                                        }).error(function (data, status, headers, config) {
+                                            layer.msg("付款失败", {icon: 3, time: 1000});
+                                        });
+                                    }
+
+                                }
+
+
+
+                            }
+                        }
+                        $scope.showChange = function(){
+                            //将模态框隐藏
+                            $("#showAccount").modal("hide");
+
+                            if($scope.chkDataSum != 0.0){
+                                $scope.money = $scope.toatl - $scope.chkDataSum ;
+                            }else{
+                                $scope.money = $scope.toatl - $scope.assetAccountSum;
+                            }
+                            if($scope.money > 0){
+                                layer.alert("找零金额为" + $scope.money.toFixed(2) + "元", {icon: 1});
+                            }else{
+                                layer.alert("支付成功，无需找零！", {icon: 1});
+                            }
+                        }
+
+                    }]);
+
+                    var app = require('../../../../../app');
+                });
+            }
+            for (var j = 0; j < $scope.data1.list.length; j++) {
+                // $scope.totals = $scope.totals + $scope.data1.list[j].currentOweSum + $scope.data1.list[j].overdue + $scope.data1.list[j].lastOweSum;
+                // $scope.totalsData  =$scope.totalsData + $scope.data1.list[j].currentOweSum + $scope.data1.list[j].overdue + $scope.data1.list[j].lastOweSum;
+                $scope.totals = $scope.totals + $scope.data1.list[j].totalCurrentOweSum + $scope.data1.list[j].totalOverdue + $scope.data1.list[j].totalLastOweSum;
+                $scope.totalsData  =$scope.totalsData + $scope.data1.list[j].totalCurrentOweSum + $scope.data1.list[j].totalOverdue + $scope.data1.list[j].totalLastOweSum;
+            }
+            $scope.custId = $scope.data1.custId;
+            $scope.assetAccountId = $scope.data1.assetAccountId;
+        }
+        $scope.collectSum();
+        //充值
+        $scope.assetSum = function () {
+            $scope.assetAccount1 = {};
+            var assetAccount1 = sessionStorage.getItem("AssetAccount");
+            $scope.assetAccount1 = JSON.parse(assetAccount1);
+            if ($scope.assetAccount1 == null) {
+                return;
+            }
+            $scope.totals = $scope.totals + $scope.assetAccount1.addPrice;
+            $scope.totalsAsset = $scope.totalsAsset + $scope.assetAccount1.addPrice;
+            /*if($scope.assetAccount1.chargeItem != null){
+             $scope.custId = $scope.assetAccount1.chargeItem.ciId;
+             }*/
+        }
+        $scope.assetSum();
+
+        //获取当前时间戳
+        $scope.timestamp = (new Date()).valueOf();
+        //获取当前时间
+        $scope.timeDate = new Date();
+
+        //得到收银员信息
+        $http.get(url + '/staff/getStaffById/' + $scope.staffid).success(function (data) {
+            $scope.financial = data.Staff;
+        });
+
+        $scope.chkDataTmp = [];
+        $scope.chkData = function (item) {
+            var chk = document.getElementById(item.billNum);
+            if (chk.checked == true) {
+                item.money = item.noCollectSum;
+                $scope.chkDataTmp.push(item);
+            } else {
+                for (var i = 0; i < $scope.chkDataTmp.length; i++) {
+                    if ($scope.chkDataTmp[i] == item) {
+                        $scope.chkDataTmp.splice(i, 1);
+                    }
+                }
+            }
+        };
+        $scope.chkAssetTmp = [];
+        $scope.chkAsset = function (index) {
+            var chk = document.getElementById(index);
+            if (chk.checked == true) {
+                $scope.chkAssetTmp.push(index);
+            } else {
+                for (var i = 0; i < $scope.chkAssetTmp.length; i++) {
+                    if ($scope.chkAssetTmp[i] == index) {
+                        $scope.chkAssetTmp.splice(i, 1);
+                    }
+                }
+            }
+        };
+
+        //得到结算的数据
+        $scope.toDelete = function () {
+            var arrDel = new Array();
+            var pos = 0;
+            if ($scope.chkDataTmp.length == 0 && $scope.chkAssetTmp.length == 0) {
+                layer.alert("请选择需要删除的数据！", {icon: 0});
+                return;
+            }
+            /*if (!layer.confirm("您确定要删除选中的数据？"))
+             return;*/
+            layer.confirm('您确定要删除选中的数据？', {btn: ['是', '否']}, function () {
+                $scope.$apply(function(){
+                    for (var i = 0; i < $scope.chkDataTmp.length; i++) {
+                        for (var j = 0; j < $scope.data1.list.length; j++) {
+                            if ($scope.chkDataTmp[i].billNum == $scope.data1.list[j].billNum) {
+                                $scope.data1.list.splice(j, 1);
+                                $scope.chkDataTmp.splice(i, 1);
+                                i--;
+                                break;
+                            }
+                        }
+                    }
+                });
+                var data1 = JSON.stringify($scope.data1);
+                sessionStorage.setItem("data1", data1);
+
+                if ($scope.assetAccount1 != null && $scope.chkAssetTmp[0] == $scope.assetAccount1.transactionNum) {
+                    $scope.$apply(function(){
+                        $scope.assetAccount1 = {};
+                    });
+                }
+                var assetAccount2 = JSON.stringify($scope.assetAccount1);
+                sessionStorage.setItem("AssetAccount", assetAccount2);
+                //var totalsAssetTmp = app.get('valueCheck').isObjNull(assetAccount2);
+                $scope.assetAccount1 = {};
+                if($scope.assetAccount1.addPrice==null){
+                    $scope.totalsAsset = 0.0;
+                }
+
+                $scope.totalsData = 0.0;
+                for (var j = 0; j < $scope.data1.list.length; j++) {
+                    $scope.totalsData  =$scope.totalsData + $scope.data1.list[j].currentOweSum + $scope.data1.list[j].overdue + $scope.data1.list[j].lastOweSum;
+                }
+                if($scope.data1.list == 0){
+                    $scope.totalsData = 0.0;
+                }
+                $scope.$apply(function() {
+                    $scope.totalsData;
+                });
+                // }
+
+                layer.msg("删除成功！",{icon: 1,time:1000});
+            }, function () {
+            });
+        }
+        //结算
+        $scope.show1 = false;
+        $scope.paymentDetails = {};
+        $scope.count = function () {
+            if ($scope.chkDataTmp.length == 0 && $scope.chkAssetTmp.length == 0) {
+                layer.alert("未选择结算类型！", {icon: 0});
+                return;
+            }
+            if ($scope.chkDataTmp.length != 0 && $scope.chkAssetTmp.length != 0) {
+                layer.alert("只能选择一种收费类型！", {icon: 0});
+                return;
+            }
+            $scope.paymentDetails.cashSum = null;
+            $scope.paymentDetails.creditCardSum = null;
+
+            $scope.advancePaymentsDetails.transactionAmount = null;
+            $scope.paymentDetails.wechatSum = null;
+            if ($scope.data1 !=null || $scope.assetAccount1 != null) {
+                $scope.paymentDetails = {};
+                $('#showAccount').modal({backdrop: 'static', keyboard: false});
+                $scope.$watch('paymentDetails.wechatSum', function () {
+                    if ($scope.paymentDetails.wechatSum > 0) {
+                        $scope.show1 = true;
+                    } else {
+                        $scope.show1 = false;
+                    }
+
+                });
+            } else {
+                layer.alert("无结算的数据！", {icon: 0});
+            }
+        };
+
+
+        //确认
+        $scope.sum1 = 0.0;
+        $scope.insertAccount = function () {
+            $scope.s1 = document.getElementById("money").value;
+            $scope.s2 = document.getElementById("credit").value;
+            $scope.s3 = document.getElementById("wechat").value;
+           /* if($scope.chkAssetTmp.length == 0){
+                $scope.s4 = document.getElementById("transaction").value;
+            }else{
+                $scope.s4 = "";
+            }
+*/
+            var s1Tmp = app.get('valueCheck').isNumberOrNull( $scope.s1);
+            if(s1Tmp.state == false){
+                layer.msg(s1Tmp.info,{icon : 0,time : 2000});
+                return;
+            }
+            var s2Tmp = app.get('valueCheck').isNumberOrNull( $scope.s2);
+            if(s2Tmp.state == false){
+                layer.msg(s2Tmp.info,{icon : 0,time : 2000});
+                return;
+            }
+            var s3Tmp = app.get('valueCheck').isNumberOrNull( $scope.s3);
+            if(s3Tmp.state == false){
+                layer.msg(s3Tmp.info,{icon : 0,time : 2000});
+                return;
+            }
+            var s4Tmp = app.get('valueCheck').isNumberOrNull( $scope.s4);
+            if(s4Tmp.state == false){
+                layer.msg(s4Tmp.info,{icon : 0,time : 2000});
+                return;
+            }
+
+            $scope.toatl = $scope.s1 * 1 + $scope.s2 * 1 + $scope.s3 * 1 ;//得到所有交账金额的值
+
+            if ($scope.s1 == "" && $scope.s2 == "" && $scope.s3 == "" ) {
+                layer.alert("请输入结算金额！", {icon: 0});
+                return;
+            } else {
+                if($scope.s1+$scope.s2+$scope.s3 == 0){
+                    layer.alert("结算金额总和不能为0！", {icon: 0});
+                    return;
+                }
+                $scope.chkDataSum = 0.0;
+                $scope.assetAccountSum = 0.0;
+                if($scope.assetAccount1 != null){
+                    $scope.assetAccountSum = $scope.assetAccount1.addPrice;
+                }
+                if($scope.chkDataTmp !=null){
+                    for(var i=0; i<$scope.chkDataTmp.length; i++){
+                        $scope.chkDataSum += $scope.chkDataTmp[i].currentOweSum+$scope.chkDataTmp[i].overdue+$scope.chkDataTmp[i].lastOweSum;
+                    }
+                }
+                //预付款付款
+                /*if ($scope.s4 != "") {
+                    /!*$scope.chkDataTmpSum = 0;
+                     for(var i = 0; i<$scope.chkDataTmp.length; i++){
+                     $scope.chkDataTmpSum += $scope.chkDataTmp[i].noCollectSum;
+                     }*!/
+                    if($scope.s4 > $scope.chkDataSum){
+                        layer.alert("预付款余额不能大于合计！", {icon: 0});
+                        return;
+                    }
+                    $scope.buildingId = $scope.chkDataTmp[0].buildingId;
+                    //根据客户id查询账户信息
+                    $http.get(url + '/AssetAccount/seletctAssetAccountByCustId/' + $scope.custId + "/" + $scope.buildingId).success(function (data) {
+                        $scope.assetAccount = data.AssetAccount;
+                        if (($scope.s4 * 1) >= $scope.advancePaymentsDetails.transactionAmount) {
+                            $scope.advancePaymentsDetails.assetAccountId = $scope.assetAccount.assetAccountId;
+                            $scope.advancePaymentsDetails.chargeItem = $scope.chkDataTmp;
+                            $scope.advancePaymentsDetails.bills = $scope.chkDataTmp;
+                            $http.post(url + '/AdvancePaymentsDetails/insertAdvancePaymentsDetails', {AdvancePaymentsDetails: $scope.advancePaymentsDetails}).success(function (data) {
+                                if(data !=0){
+                                    layer.alert("余额不足！", {icon: 0});
+                                    return;
+                                }
+                                for (var i = 0; i < $scope.chkDataTmp.length; i++) {
+                                    for (var j = 0; j < $scope.data1.list.length; j++) {
+                                        if ($scope.chkDataTmp[i].billNum == $scope.data1.list[j].billNum) {
+                                            $scope.data1.list.splice(j, 1);
+                                            $scope.chkDataTmp.splice(i, 1);
+                                            break;
+                                        }
+                                    }
+                                }
+                                var data1 = JSON.stringify($scope.data1);
+                                sessionStorage.setItem("data1", data1);
+                                $scope.showChange();
+                            }).error(function (data, status, headers, config) {
+                                layer.msg("付款失败！", {icon: 3, time: 2000});
+                            });
+                        } else {
+                            layer.alert("余额不足！", {icon: 0});
+                            return;
+                        }
+                    });
+                }*/
+                if ($scope.s1 != "" || $scope.s2 != "" || $scope.s3 != "") {
+                    if ($scope.chkAssetTmp.length != 0) {
+                        var tmp = false;
+                        $scope.assetAccount1.paymentType = null;
+                        if($scope.s1 != "" || $scope.s1!=0){
+                            $scope.assetAccount1.paymentType = 0;
+                        }
+                        if($scope.s2 != "" || $scope.s2!=0){
+                            if($scope.assetAccount1.paymentType != null){
+                                tmp = true;
+                            }else{
+                                $scope.assetAccount1.paymentType = 1;
+                            }
+                        }
+                        if($scope.s3 != ""|| $scope.s3!=0){
+                            if($scope.assetAccount1.paymentType != null){
+                                tmp = true;
+                            }else{
+                                $scope.assetAccount1.paymentType = 2;
+                            }
+                        }
+                        if(tmp){
+                            $scope.assetAccount1.paymentType = {};
+                        }
+                        $scope.paymentDetails.financialStaffId = $scope.staffid;//操作人 员工id
+                        $scope.paymentDetails.financialStaffName = $scope.financial.staffName;//操作人姓名
+                        $scope.paymentDetails.custId = $scope.custId;//客户id
+                        $scope.assetAccount1.paymentDetails = $scope.paymentDetails;
+                        //充值
+                        $http.put(url + '/AssetAccount/topUP', {AssetAccount: $scope.assetAccount1}).success(function (data) {
+                            $scope.assetAccount1 = {};
+                            $scope.totalsAsset = 0.0;
+                            $scope.$apply(function() {
+                                $scope.totalsAsset;
+                            });
+                            var assetAccount1 = JSON.stringify($scope.assetAccount1);
+                            sessionStorage.setItem("AssetAccount", assetAccount1);
+                            $scope.chkAssetTmp = [];
+                            $scope.showChange();
+                        }).error(function (data) {
+                            layer.msg('充值失败，请重试！', {icon: 2, time: 1000});
+                        });
+                    }
+
+                    if ($scope.chkDataTmp.length != 0) {
+                        //其他方式付款
+                        $scope.paymentDetails.financialStaffId = $scope.staffid;//操作人 员工id
+                        $scope.paymentDetails.financialStaffName = $scope.financial.staffName;//操作人姓名
+                        $scope.paymentDetails.custId = $scope.custId;//客户id
+                        $scope.paymentDetails.bills = $scope.chkDataTmp;
+                        $scope.paymentDetails.assetAccountId = $scope.assetAccountId;
+                        $scope.paymentDetails.paymentNum=$scope.timestamp;
+                        $http.post(url + '/PaymentDetails/insertPaymentDetails', {PaymentDetails: $scope.paymentDetails}).success(function () {
+                            /*for (var i = 0; i < $scope.chkDataTmp.length; i++) {
+                             for (var j = 0; j < $scope.data1.list.length; j++) {
+                             if ($scope.chkDataTmp[i].billNum == $scope.data1.list[j].billNum) {
+                             $scope.data1.list.splice(j, 1);
+                             break;
+                             }
+                             }
+                             }*/
+                            for (var i = 0; i < $scope.chkDataTmp.length; i++) {
+                                for (var j = 0; j < $scope.data1.list.length; j++) {
+                                    if ($scope.chkDataTmp[i].billNum == $scope.data1.list[j].billNum) {
+                                        $scope.data1.list.splice(j, 1);
+                                        $scope.chkDataTmp.splice(i, 1);
+                                        i--;
+                                        break;
+                                    }
+                                }
+                            }
+                            $scope.totalsData = 0.0;
+                            for (var j = 0; j < $scope.data1.list.length; j++) {
+                                $scope.totalsData = $scope.totalsData + $scope.data1.list[j].currentOweSum + $scope.data1.list[j].overdue + $scope.data1.list[j].lastOweSum;
+                            }
+                            if ($scope.data1.list == 0) {
+                                $scope.totalsData = 0.0;
+                            }
+                            $scope.$apply(function() {
+                                $scope.totalsData;
+                            });
+                            var data1 = JSON.stringify($scope.data1);
+                            sessionStorage.setItem("data1", data1);
+                            $scope.showChange();
+                        }).error(function (data, status, headers, config) {
+                            layer.msg("付款失败", {icon: 3, time: 1000});
+                        });
+                    }
+
+                }
+
+
+
+            }
+        }
+        $scope.showChange = function(){
+            //将模态框隐藏
+            $("#showAccount").modal("hide");
+
+            if($scope.chkDataSum != 0.0){
+                $scope.money = $scope.toatl - $scope.chkDataSum ;
+            }else{
+                $scope.money = $scope.toatl - $scope.assetAccountSum;
+            }
+            if($scope.money > 0){
+                layer.alert("找零金额为" + $scope.money.toFixed(2) + "元", {icon: 1});
+            }else{
+                layer.alert("支付成功，无需找零！", {icon: 1});
+            }
+        }
+
+    }]);
+
+    var app = require('../../../../../app');
+});

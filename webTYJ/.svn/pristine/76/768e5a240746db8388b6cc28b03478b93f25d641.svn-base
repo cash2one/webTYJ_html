@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<script>
+    function check(obj) {
+        $(':checkbox').each(function () {
+            if (this != obj)
+                $(this).attr("checked", false);
+            else {
+                if ($(this).prop("checked")){
+                    $(this).attr("checked", true);
+                }
+                else
+                    $(this).attr("checked", false);
+            }
+        });
+    }
+</script>
+<body>
+<div class="row padding">
+    <form id="css_form" name="mainForm" novalidate>
+        <div class="col-lg-12">
+            <div class="row search-padding-10">
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    任务类型：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <select  class="form-control" ng-model="Tasks.taskType" name="taskType" required ng-options="a.id as a.name for a in Datil.taskType" >
+                        <option value="" >请选择任务类型</option>
+                    </select>
+                <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.taskType.$dirty && mainForm.taskType.$invalid">
+                    <p class="alter" ng-show="mainForm.taskType.$error.required">
+                        不能为空
+                    </p>
+                     <p class="alter" ng-show="mainForm.taskType.defined ">
+                         正确
+                     </p>
+                </span>
+                </div>
+                <div class="col-lg-1 col-md-6 col-sm-6 ">
+                    <span style="color: red">*</span>
+                </div>
+
+            </div>
+            <div class="row search-padding-10">
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    分类：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <select class="form-control">
+                        <option>请选择</option>
+                    </select>
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <select class="form-control">
+                        <option>请选择</option>
+                    </select>
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <select class="form-control">
+                        <option>请选择</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row search-padding-10">
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    负责人：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <input class="form-control" readonly="readonly" ng-click="addPerson()" name="staffName"  required ng-model="chooseData.staff.staffName"/>
+                <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.staffName.$dirty && mainForm.staffName.$invalid">
+                    <p class="alter" ng-show="mainForm.staffName.$error.required">
+                        不能为空
+                    </p>
+                     <p class="alter" ng-show="mainForm.staffName.defined ">
+                         正确
+                     </p>
+                </span>
+                </div>
+                <div class="col-lg-1 col-md-6 col-sm-6 ">
+                    <span style="color: red">*</span>
+                </div>
+            </div>
+            <div class="row search-padding-10">
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    预计完成时间：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <input class="form-control" type="datetime-local" ng-model="Tasks.estimatedTime"/>
+                </div>
+            </div>
+
+            <div class="row search-padding-10">
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    任务描述：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <textarea class="form-control" rows="5" placeholder="请输入内容" required name="taskDescription" ng-model="Tasks.taskDescription"></textarea>
+                 <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.taskDescription.$dirty && mainForm.taskDescription.$invalid">
+                    <p class="alter" ng-show="mainForm.taskDescription.$error.required">
+                        不能为空
+                    </p>
+                     <p class="alter" ng-show="mainForm.taskDescription.defined ">
+                         正确
+                     </p>
+                </span>
+                </div>
+                <div class="col-lg-1 col-md-6 col-sm-6 ">
+                    <span style="color: red">*</span>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <button type="button" class="btn btn-default btn-primary tab-btn"  ng-click="cancleTask()">
+                    取消
+                </button>
+                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="addTask()">
+                    提交
+                </button>
+            </div>
+        </div>
+    </form>
+
+</div>
+
+<!--负责人员-->
+<div class="modal fade" id="newPerson" role="dialog" aria-label="personDatil" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>人员</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                    <div class="sel1">
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                姓名：
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input class="form-control"  placeholder="请输入员工姓名" ng-model="Teamworkstaff.staffName"/>
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                电话：
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input class="form-control" placeholder="请输入员工电话号码" ng-model="Teamworkstaff.telphone" />
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                部门：
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <select class="form-control"  ng-model="Teamworkstaff.professionalLineId" ng-options="a.specialtyId as a.specialtyName for a in SpecialtyInfo" >
+                                    <option value="" >选择部门</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+                                <button type="button" class="btn btn-default btn-primary" ng-click="searchPaginator2._load()">
+                                    <span class="glyphicon glyphicon-search btn_icon"></span>搜索
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="search-padding-10">
+                        <table>
+                            <thead>
+                            <th></th>
+                            <th>姓名</th>
+                            <th>部门</th>
+                            <th>电话</th>
+                            <th>状态</th>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="item in searchPaginator2.object.teamworkStaffs" ng-show="item.id != null" ng-class="{'this_info':btnIndex==items.staffId}">
+                                <td><input type="checkbox"  name="aaa" ng-click="getdata(item)" onclick="check(this)"></td>
+                                <td>{{item.staff.staffName}}</td>
+                                <td>{{item.specialtyInfo.specialtyName}}</td>
+                                <td>{{item.staff.telphone}}</td>
+                                <td>{{}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="bill_paging">
+                            <span>共{{searchPaginator2.object.page.totalResult}}条</span>
+                            <ul class="pagination">
+                                <li ng-class="{true:'disabled'}[searchPaginator2.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-click="searchPaginator2.go(1)">首页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchPaginator2.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-show="searchPaginator2.hasPrevious()" ng-click="searchPaginator2.previous()">上一页</a>
+                                </li>
+                                <li ng-class="{true:'active'}[searchPaginator2.page.currentPage==i]" ng-repeat="i in searchPaginator2.pages">
+                                    <a href="javascript:void(0)"  ng-click="searchPaginator2.go(i)">{{i}}</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchPaginator2.page.currentPage==searchPaginator2.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-show="searchPaginator2.hasNext()" ng-click="searchPaginator2.next()">下一页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchPaginator2.page.currentPage==searchPaginator2.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-click="searchPaginator2.go(searchPaginator2.page.totalPage)">尾页</a>
+                                </li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="canclePerson()">取消</button>
+                <button type="button" class="btn bg-primary" data-dismiss="modal" ng-click="savePerson()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--负责人员 END-->
+</body>
+</html>

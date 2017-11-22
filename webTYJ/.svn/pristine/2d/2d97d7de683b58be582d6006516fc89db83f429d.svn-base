@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html ng-app="firstApp" lang="zh-CN">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>设备申请列表</title>
+</head>
+<body>
+
+<div class="row padding">
+
+
+        <div class="row sel">
+            <div class="sel-position col-md-3">
+                <span class="text-right">返修单号：</span>
+                <input class="form-control" ng-model="repairOrderQuery.repairNum">
+            </div>
+            <div class="sel-position col-md-3">
+                <span class="text-right">申请单位：</span>
+                <input class="form-control" ng-model="repairOrderQuery.company">
+            </div>
+            <div class="sel-position col-md-3">
+                <span class="text-right">申请人：</span>
+                <input class="form-control" ng-model="repairOrderQuery.proposer">
+            </div>
+            <div class="col-md-3 text-right">
+                <button class="btn btn-primary" ng-click="load()">
+                    <span class="glyphicon glyphicon-search btn_icon"></span>
+                    搜索
+                </button>
+            </div>
+            <div class="col-md-12">
+                <button class="btn btn-primary">撤销申请</button>
+            </div>
+        </div>
+        <div class="padding">
+            <p>申请列表</p>
+            <table>
+                <thead>
+                <th>返修单号</th>
+                <th>申请人</th>
+                <th>联系方式</th>
+                <th>申请单位</th>
+                <th>申请理由</th>
+                <th>申请时间</th>
+                </thead>
+                <tbody>
+                <tr ng-repeat="item in repairOrderList" ng-click="getDetails(item)">
+                    <td>{{item.repairNum}}</td>
+                    <td>{{item.proposer}}</td>
+                    <td>{{item.phone}}</td>
+                    <td>{{item.company}}</td>
+                    <td>{{item.reason}}</td>
+                    <td>{{item.creatTime}}</td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="text-right">
+                <ul class="pagination">
+                    <span>共{{repairOrder.length}}条</span>
+                    <li ng-class="{true:'disabled'}[currentPage==1]"><a href="javascript:void(0)"
+                                                                        ng-click="currentPage=1;loadPage(currentPage)">首页</a></li>
+                    <li ng-class="{true:'disabled'}[currentPage==1]"><a href="javascript:void(0);" ng-click="prev()">上一页</a></li>
+                    <li ng-repeat="page in pages" ng-class="{true:'active'}[currentPage==page]"><a href="javascript:void(0);" ng-click="loadPage(page)">{{ page }}</a></li>
+                    <li ng-class="{true:'disabled'}[currentPage==totalPage]"><a href="javascript:void(0);" ng-click="next()">下一页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[currentPage==totalPage]"><a href="javascript:void(0)" ng-click="currentPage=totalPage;loadPage(currentPage)">末页</a></li>
+                </ul>
+            </div>
+            <div id="content-first" ng-show="detailsShow">
+                <div id="tab">
+                    <a href="#" ng-class="{true: 'this_action'}[show]" ng-click="show = true">设备退换货列表详情</a>
+                    <a href="#" ng-class="{false: 'this_action'}[show]" ng-click="show = false">物流详情</a>
+                </div>
+                <div class="padding" ng-show="show">
+                    <table>
+                        <thead>
+                        <th>设备名称</th>
+                        <th>设备型号</th>
+                        <th>芯片号</th>
+                        <th>质保开始日期</th>
+                        <th>质保结束日期</th>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="item in orderDetails">
+                            <td>{{item.eqName}}</td>
+                            <td>{{item.eqModel}}</td>
+                            <td>{{item.snCode}}</td>
+                            <td>{{item.startDate}}</td>
+                            <td>{{item.endDate}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="text-right">
+                        <ul class="pagination">
+                            <span>共{{orderDetailsList.length}}条</span>
+                            <li ng-class="{true:'disabled'}[currentPage1==1]"><a href="javascript:void(0)"
+                                                                                 ng-click="currentPage1=1;loadPage1(currentPage1)">首页</a></li>
+                            <li ng-class="{true:'disabled'}[currentPage1==1]"><a href="javascript:void(0);" ng-click="prev1()">上一页</a></li>
+                            <li ng-repeat="page in pages1" ng-class="{true:'active'}[currentPage1==page]"><a href="javascript:void(0);" ng-click="loadPage1(page)">{{ page }}</a></li>
+                            <li ng-class="{true:'disabled'}[currentPage1==totalPage1]"><a href="javascript:void(0);" ng-click="next1()">下一页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[currentPage1==totalPage1]"><a href="javascript:void(0)" ng-click="currentPage1=totalPage1;loadPage1(currentPage1)">末页</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="padding" ng-hide="show">
+                    <div class="search-padding-10">
+                        <div class="sel-position col-md-4">
+                            <span class="text-right">物流公司：</span>深圳顺丰速递有限公司
+                        </div>
+                        <div class="sel-position col-md-4">
+                            <span class="text-right">物流编号：</span>LP00025291750839
+                        </div>
+                        <div class="sel-position col-md-4">
+                            <span class="text-right">运货单号：</span>5743534582
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                        <th>时间</th>
+                        <th>明细</th>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>2014-04-12 15:30</td>
+                            <td>广东深圳顺丰已收件</td>
+                        </tr>
+                        <tr>
+                            <td>2014-04-11 13:30</td>
+                            <td>广东深圳顺丰已打包</td>
+                        </tr>
+                        <tr>
+                            <td>2014-04-10 10:30</td>
+                            <td>广东深圳顺丰已发出</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+
+            </div>
+        </div>
+</div>
+<!--正文结束-->
+</div>
+<script>
+    $(function () {
+        var wWidth = $(window).width();
+        var wHeight = $(window).height();
+        $(".container-fluid .left").height(wHeight - 75);
+        $(".container-fluid .right").height(wHeight - 105);
+        $(".container-fluid .rightheight").height(wHeight - 105);
+    });
+</script>
+</body>
+</html>

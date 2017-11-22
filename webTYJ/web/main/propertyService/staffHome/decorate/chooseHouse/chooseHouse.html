@@ -1,0 +1,171 @@
+<!--author:王志刚-->
+<!--页面名称：物业服务装修办理流程中选择房屋-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>选择房屋</title>
+</head>
+<body>
+<div class="row">
+<div class="complaint_user rightpadding">
+    <!--业主信息-->
+<div class="architecture_table_padding">
+<div class="row padding_lease"  >
+    <div class="lease_search_height overflow_y">
+            <div class="info_lista" ng-repeat="item in HouseNew">
+                <div class="media-left">
+                    <a href="#">
+                        <img src="images/propertyService/choiceHousing/u81.jpg" width="50px;" height="50px" style="margin-top: 5px;">
+                    </a>
+                </div>
+                <div class="media-body" >
+                    <div class="row">
+                        <div class="col-md-6">房屋地址：{{item.houseAddress}}</div>
+                        <div class="col-md-3">业主姓名：{{user.name}}</div>
+
+                        <!--<div class="col-md-3">-->
+                            <!--<a href="#" data-toggle="modal"  ng-click="getHouseId(items.houseId)"  data-target="#showModal">-->
+                                <!--<span class="icon radius back_dark_black glyphicon glyphicon-search white" aria-hidden="true"></span>-->
+                            <!--</a>-->
+                        <!--</div>-->
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">房屋编码：{{item.houseNum}}</div>
+                        <div class="col-md-3"  ng-switch on="item.joinGangState">入伙状态：
+                        <span ng-switch-when="0">已入伙</span>
+                         <span ng-switch-when="1">没入伙</span>
+                        </div>
+                        <div class="col-md-3">竣工面积:{{item.houseArea}}</div>
+                        <div class="col-md-3">房屋户型:{{item.houseName}}</div>
+                    </div>
+                </div>
+        </div>
+    </div>
+    <!--弹出模态框-->
+    <!--<div class="modal fade" id="showModal" role="dialog" aria-label="myModalLabel" aria-hidden="true">-->
+        <!--<div class="modal-dialog">-->
+            <!--<div class="modal-content">-->
+                <!--<div class="modal-header" style="background-color: #02a0e7;height: 50px">-->
+                    <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+                        <!--<span aria-hidden="true">&times;</span>-->
+                    <!--</button>-->
+                <!--</div>-->
+                <!--<div class="modal-body">-->
+                    <!--<div style="height: 220px;">-->
+                        <!--<p><strong>房屋资料</strong></p>-->
+                        <!--<table class="table-bordered" style="width: 100%;text-align: center" >-->
+                            <!--<tr >-->
+                                <!--<td>项目编号</td>-->
+                                <!--<td>{{items.project.projectId}}</td>-->
+                                <!--<td>房屋用途</td>-->
+                                <!--<td>{{items.project.houseUse}}</td>-->
+                                <!--<td>层高</td>-->
+                                <!--<td>{{items.project.floor}}</td>-->
+                            <!--</tr>-->
+                            <!--<tr>-->
+                                <!--<td>项目名称</td>-->
+                                <!--<td>{{items.projectName}}</td>-->
+                                <!--<td>竣工日期</td>-->
+                                <!--<td>{{items.completeDate|date:"yyyy-MM-dd"}}</td>-->
+                                <!--<td>楼房属性</td>-->
+                                <!--<td>{{items.buildAttribute}}</td>-->
+                            <!--</tr>-->
+                            <!--<tr>-->
+                                <!--<td>管理费单价</td>-->
+                                <!--<td>{{items.manageFee|date:"yyyy-MM-dd"}}</td>-->
+                                <!--<td>入伙日期</td>-->
+                                <!--<td>{{items.joinDate}}</td>-->
+                                <!--<td>楼房属性</td>-->
+                                <!--<td>{{items.buildAttribute}}</td>-->
+                            <!--</tr>-->
+                            <!--<tr>-->
+                                <!--<td>专项资金</td>-->
+                                <!--<td>{{items.specialFund}}</td>-->
+                                <!--<td>建筑面积</td>-->
+                                <!--<td>{{items.buildArea}}</td>-->
+                                <!--<td>竣工面积</td>-->
+                                <!--<td>{{items.completeArea}}</td>-->
+                            <!--</tr>-->
+                            <!--<tr>-->
+                                <!--<td>房屋编码</td>-->
+                                <!--<td>{{items.houseId}}</td>-->
+                                <!--<td>套内面积</td>-->
+                                <!--<td>{{items.insideArea}}</td>-->
+                                <!--<td>销售状态</td>-->
+                                <!--<td>{{items.marketState}}</td>-->
+                            <!--</tr>-->
+                            <!--<tr>-->
+                                <!--<td>房屋邮编</td>-->
+                                <!--<td>{{items.housePostcode}}</td>-->
+                                <!--<td>分摊面积</td>-->
+                                <!--<td>{{itmes.shareArea}}</td>-->
+                                <!--<td>入伙状态</td>-->
+                                <!--<td>{{items.joinState}}</td>-->
+                            <!--</tr>-->
+                            <!--<tr>-->
+                                <!--<td>房屋地址</td>-->
+                                <!--<td>{{items.houseAddress}}</td>-->
+                            <!--</tr>-->
+                        <!--</table>-->
+                    <!--</div>-->
+                    <!--<p><strong>业主资料</strong></p>-->
+                    <!--<table style="width: 100%;text-align: center" class="table-bordered">-->
+                        <!--<tr>-->
+                            <!--<td style="width:8%">客户编号</td>-->
+                            <!--<td style="width: 10%"></td>-->
+                            <!--<td style="width: 8%">证件编号</td>-->
+                            <!--<td style="width: 10%"></td>-->
+                        <!--</tr>-->
+                        <!--<tr>-->
+                            <!--<td style="width:8%">姓名</td>-->
+                            <!--<td style="width: 10%">周润发</td>-->
+                            <!--<td style="width: 8%">注册电话</td>-->
+                            <!--<td style="width: 10%">13456789098</td>-->
+                        <!--</tr>-->
+                        <!--<tr>-->
+                            <!--<td style="width:8%">性别</td>-->
+                            <!--<td style="width: 10%">男</td>-->
+                            <!--<td style="width: 8%">电子邮箱</td>-->
+                            <!--<td style="width: 10%">123456@qq.com</td>-->
+                        <!--</tr>-->
+                        <!--<tr>-->
+                            <!--<td style="width:8%">户口所在地</td>-->
+                            <!--<td style="width: 10%">湖北武汉</td>-->
+                            <!--<td style="width: 8%">QQ号码</td>-->
+                            <!--<td style="width: 10%">123467890</td>-->
+                        <!--</tr>-->
+                        <!--<tr>-->
+                            <!--<td style="width:8%">出生日期</td>-->
+                            <!--<td style="width: 10%">1990.11.11</td>-->
+                            <!--<td style="width: 8%">家家号</td>-->
+                            <!--<td style="width: 10%"></td>-->
+                        <!--</tr>-->
+                        <!--<tr>-->
+                            <!--<td style="width:8%">证件类型</td>-->
+                            <!--<td style="width: 10%">身份证</td>-->
+                            <!--<td style="width: 8%">微信账号</td>-->
+                            <!--<td style="width: 10%">xxxxx</td>-->
+                        <!--</tr>-->
+                    <!--</table>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+</div>
+</div>
+    <!--业主信息 结束-->
+
+    <!--下一步按钮-->
+    <div class="save_concel_botton contract_detail_botton">
+        <a href="" class="radius_all button_bule">取消</a>
+        <a href="" class="radius_all button_bule" ui-sref="index.propertyService.staffHome.decorate.decoration.applicationData">下一步</a>
+        <div class="clear"></div>
+    </div>
+    <!--下一步按钮 结束-->
+
+</div>
+</div>
+</div>
+</body>
+</html>

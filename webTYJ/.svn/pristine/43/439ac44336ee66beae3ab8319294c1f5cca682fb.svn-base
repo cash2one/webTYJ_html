@@ -1,0 +1,23 @@
+/**
+ * Created by NM on 2016/1/21.
+ *
+ */
+'use strict';
+
+define(function (require) {
+    var app = require('../app');
+
+    app.controller('indexCtrl', ['$scope', function ($scope) {
+
+        //屏幕适配
+        $scope.loadDefault=function(){
+
+            var wWidth = $(window).width();
+            var wHeight = $(window).height();
+            $(".left").height(wHeight-70);
+            $(".content").height(wHeight-100);
+        };
+        $scope.loadDefault();
+    }]);
+});
+    

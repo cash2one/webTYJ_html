@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>物业管理</title></head>
+<body>
+<script>
+    function check(obj) {
+        $(':checkbox').each(function () {
+            if (this != obj)
+                $(this).attr("checked", false);
+            else {
+                if ($(this).prop("checked")){
+                    $(this).attr("checked", true);
+                }
+                else
+                    $(this).attr("checked", false);
+            }
+        });
+    }
+</script>
+<!--列表页面-->
+<div ng-show="mylist">
+    <div class="sel_top">
+        <div class="row">
+            <div class="col-lg-8 col-md-6 col-sm-6">
+                <button type="button" class="btn btn-default btn-primary tab-btn"  ng-click="newmajortreatment()">
+                    <span class="glyphicon glyphicon-plus btn_icon"></span>
+                    新建重大事项类型
+                </button>
+            </div>
+
+        </div>
+    </div>
+    <div class="row padding" >
+        <div class="col-lg-12 ">
+        <div ng-repeat="its in searchPaginator.object.importantEventTypes" ng-show="its.eventTypeId!=null">
+            <div class="contract_panner" >
+                <div class="contract_detail_nav">
+                    <div class="col-lg-4 col-md-2 col-sm-2">
+                        <a>{{its.eventTypeName}}--处理机制</a>
+                    </div>
+                    <div class="col-lg-8 col-md-6 col-sm-6 text-right">
+                        <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="showHandleMechanism1(its)">
+                            查看有效处理机制
+                        </button>
+                        <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="showHandleMechanism2(its)">
+                            查看失效处理机制
+                        </button>
+                        <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="addOrUpdateHandle(its)" ng-show="its.state!=0">
+                            新建处理机制
+                        </button>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <div class="row rightpadding">
+                    <div class="col-lg-4 col-md-6 col-sm-6"  ng-repeat="ita in its.handleMechanismArr" ng-show="ita.handleId!=null" on-finish-render-filters>
+                        <div id="pannel">
+                            <div class="title">
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+
+                                </div>
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                    <span class="glyphicon glyphicon-chevron-down"id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                    </span>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                        <li  ng-show="ita.state==1"><a ng-click="addOrUpdateHandle(ita)">编辑</a></li>
+                                        <li  ng-show="ita.state==1"><a ng-click="finish(ita)">失效</a></li>
+                                        <li><a ng-click="shows(ita)">查看日志</a></li>
+                                    </ul>
+                                </div>
+
+                            </div>
+                            <div class="pannel_content">
+                                <div class="dot">
+                                    <div class="clear"></div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <img style="width: 80px;height: 80px" src="images/img/img_02.png">
+                                </div>
+                                <div class="col-lg-8 col-md-8 col-sm-8">
+                                    <ul>
+                                        <li>负责人：{{ita.staff.staffName}}</li>
+                                        <li>类型：
+                                            <span ng-switch on="ita.handleType">
+                                            <span ng-switch-when="0">园林</span>
+                                            <span ng-switch-when="1">维修</span>
+                                            <span ng-switch-when="2">护管</span>
+                                            <span ng-switch-when="9">赔偿给业主</span>
+                                            <span ng-switch-when="10">向业主索赔</span>
+                                            <span ng-switch-when="11">清洁</span>
+                                            <span ng-switch-when="12">回访</span>
+                                            <span ng-switch-when="13">投诉</span>
+                                            <span ng-switch-when="14">验房</span>
+                                            <span ng-switch-when="15">咨询</span>
+                                            <span ng-switch-when="16">抄水表</span>
+                                            <span ng-switch-when="17">抄电表</span>
+                                         </span>
+                                        </li>
+                                        <li>状态：
+                                            <span ng-switch on="ita.state">
+                                              <span ng-switch-when="0">失效</span>
+                                              <span ng-switch-when="1">有效</span>
+                                            </span>
+                                        </li>
+                                        <li>创建时间：{{ita.createTime|date:'yyyy-MM-dd'}}</li>
+                                        <li>备注：{{ita.remarks}}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="padding">
+        <div class="bill_paging" id="bill_paging">
+                <span>共{{searchPaginator.object.page.totalResult}}条</span>
+                <ul class="pagination">
+                    <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-click="searchPaginator.go(1)">首页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a>
+                    </li>
+                    <li ng-class="{true:'active'}[searchPaginator.page.currentPage==i]" ng-repeat="i in searchPaginator.pages">
+                        <a href="javascript:void(0)"  ng-click="searchPaginator.go(i)">{{i}}</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                        <a href="javascript:void(0)" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[searchPaginator.page.currentPage==searchPaginator.page.totalPage]">
+                        <a href="javascript:void(0)" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a>
+                    </li>
+                </ul>
+            </div>
+    </div>
+    </div>
+    </div>
+</div>
+
+<!--重大事项处理机制管理新增开始-->
+<div ng-show="addmajortreatment">
+    <div class="sel_top">
+        <div class="row">
+            <div class="col-lg-8 col-md-6 col-sm-6">
+                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="toBack()">
+                     返回
+                </button>
+                <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="newTasks()">
+                    <span class="glyphicon glyphicon-check btn_icon"></span>
+                    提交
+                </button>
+            </div>
+        </div>
+    </div>
+    <form name="mainForm2" novalidate>
+        <div class="row sel1">
+            <div class="col-lg-2 col-md-3 col-sm-3 text-right">
+                重大事项类型名称：
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-3 ">
+                <input type="text" placeholder="请输入重大事项名称" ng-model="newMajortreatment.eventTypeName" name="eventTypeName1" class="form-control" >
+            </div>
+            <div class="col-lg-1 col-md-6 col-sm-6 ">
+                <span style="color: red">*</span>
+            </div>
+        </div>
+    </form>
+
+    <div  class="row padding">
+        <div class="col-lg-12">
+            <div class="search-padding-10">
+                <button class="btn btn-primary" ng-click="addItem()">新增重大事项处理机制</button>
+            </div>
+            <div class="row sel1 tab_info" ng-show="showAddTask">
+                <div class="col-lg-12">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-1 col-md-2 col-sm-2">
+                            处理机制{{newMajortreatment.handleMechanismArr.length +1}}
+                        </div>
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            处理机制：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <select class="form-control" ng-model="newHandleMechanism.handleType" ng-options="a.id as a.name for a in Datil.taskType" >
+                                <option value="" >请选择处理机制类型</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 ">
+                            <span style="color: red">*</span>
+                        </div>
+
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            分类：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <select class="form-control">
+                                <option>请选择</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <select class="form-control">
+                                <option>请选择</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <select class="form-control">
+                                <option>请选择</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            负责人：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <input class="form-control" readonly="readonly" ng-click="toPerson()" name="staffName" ng-model="newHandleMechanism.staffName"/>
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 ">
+                            <span style="color: red">*</span>
+                        </div>
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            任务描述：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <textarea class="form-control" rows="5" placeholder="请输入内容" name="remarks" ng-model="newHandleMechanism.remarks"></textarea>
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 ">
+                            <span style="color: red">*</span>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <button type="button" class="btn btn-default btn-primary tab-btn"  ng-click="addCancel()">
+                            取消
+                        </button>
+                        <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="addSave()">
+                            提交
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="row sel1 tab_info" ng-repeat="itTask in newMajortreatment.handleMechanismArr  track by $index" ng-show="showTask">
+                <div class="col-lg-12" >
+                    <div class="row search-padding-10">
+                        <div class="col-lg-1 col-md-2 col-sm-2">
+                            处理机制{{$index+1}}
+                        </div>
+                        <div class="col-lg-11 col-md-10 col-sm-10 text-right">
+                            <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="deleteArea($index)">
+                                删除
+                            </button>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                处理机制：
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-sm-4" ng-switch on="itTask.handleType">
+                                <span ng-switch-when="0">园林</span>
+                                <span ng-switch-when="1">维修</span>
+                                <span ng-switch-when="2">护管</span>
+                                <span ng-switch-when="3">部门质检</span>
+                                <span ng-switch-when="4">装修巡检</span>
+                                <span ng-switch-when="5">装修验收</span>
+                                <span ng-switch-when="6">施工巡检</span>
+                                <span ng-switch-when="7">施工核查</span>
+                                <span ng-switch-when="8">施工验收</span>
+                                <span ng-switch-when="9">赔偿给业主</span>
+                                <span ng-switch-when="10">向业主索赔</span>
+                                <span ng-switch-when="11">清洁</span>
+                                <span ng-switch-when="12">回访</span>
+                                <span ng-switch-when="13">投诉</span>
+                                <span ng-switch-when="14">验房</span>
+                                <span ng-switch-when="15">咨询</span>
+                                <span ng-switch-when="16">抄水表</span>
+                                <span ng-switch-when="17">抄电表</span>
+                                <span ng-switch-when="18">装修核查</span>
+                                <span ng-switch-when="19">固定车位</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            分类：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+
+                        </div>
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            负责人：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            {{itTask.staffName}}
+                        </div>
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            任务描述：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            {{itTask.remarks}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!--右侧正文内容 END-->
+<!--失效模态框-->
+<div class="modal fade" id="new1" role="dialog" aria-label="personDatil" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>失效</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div style="padding: 30px">
+                    <div class="row">
+                        <div class="col-lg-3 col-md-3 col-sm-3"></div>
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            失效原因
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <input class="form-control"/>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" >取消</button>
+                <button type="button" class="btn bg-primary" data-dismiss="modal">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--失效模态框 END-->
+<!--新建模态框-->
+<div class="modal fade" id="new" role="dialog" aria-label="personDatil" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>新建</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="css_form" name="mainForm" novalidate>
+                    <div style="padding: 30px">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-3 col-md-3 col-sm-3 text-right">
+                            处理机制类型：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <select required class="form-control" name="handleType"  ng-model="addHandles.handleType" >
+                                <option value="" >请选择机制类型</option>
+                                <option value="0">园林</option>
+                                <option value="1">维修</option>
+                                <option value="2">护管</option>
+                                <option value="9">赔偿给业主</option>
+                                <option value="10">向业主索赔</option>
+                                <option value="11">清洁</option>
+                                <option value="12">回访</option>
+                                <option value="13">投诉</option>
+                                <option value="14">验房</option>
+                                <option value="15">咨询</option>
+                                <option value="16">抄水表</option>
+                                <option value="17">抄电表</option>
+                            </select>
+                            <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.handleType.$dirty && mainForm.handleType.$invalid">
+                                <p class="alter" ng-show="mainForm.handleType.$error.required">
+                                    不能为空
+                                </p>
+                                 <p class="alter" ng-show="mainForm.handleType.defined ">
+                                     正确
+                                 </p>
+                            </span>
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 ">
+                            <span style="color: red">*</span>
+                        </div>
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-3 col-md-2 col-sm-2 text-right">
+                            分类：
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <select class="form-control">
+                                <option>请选择</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <select class="form-control">
+                                <option>请选择</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <select class="form-control">
+                                <option>请选择</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-3 col-md-3 col-sm-3 text-right">
+                            负责人：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <input class="form-control" ng-model="addHandles.staff.staffName" ng-click="toPerson()" readonly />
+                            <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.staffName.$dirty && mainForm.staffName.$invalid">
+                                <p class="alter" ng-show="mainForm.staffName.$error.required">
+                                    不能为空
+                                </p>
+                                 <p class="alter" ng-show="mainForm.staffName.defined ">
+                                     正确
+                                 </p>
+                            </span>
+                        </div>
+                        <div class="col-lg-1 col-md-6 col-sm-6 ">
+                            <span style="color: red">*</span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3 col-md-3 col-sm-3 text-right">
+                            处理说明：
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <textarea class="form-control" rows="5" placeholder="请输入内容" ng-model="addHandles.remarks"></textarea>
+                        </div>
+                    </div>
+                </div>
+                 </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancleAll()">取消</button>
+                <button type="button" class="btn bg-primary" ng-click="saveAll()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--新建模态框 END-->
+<!--有效机制模态框-->
+<div class="modal fade" id="vaild" role="dialog" aria-label="personDatil" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                    <div class="modal-header">
+                        <span>有效机制</span>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="contract_panner" >
+                            <div class="row rightpadding">
+                                <div class="col-lg-6 col-md-6 col-sm-6"  ng-repeat="itc in handleMechanisms.data" ng-show="itc.state==1">
+                                    <div id="pannel" >
+                                        <div class="title">
+                                            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                            </div>
+                                        </div>
+                                        <div class="pannel_content">
+                                            <div class="dot">
+                                                <div class="clear"></div>
+                                            </div>
+                                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                                <img style="width: 80px;height: 80px" src="images/img/img_02.png">
+                                            </div>
+                                            <div class="col-lg-8 col-md-8 col-sm-8">
+                                                <ul>
+                                                    <li>类型：
+                                                        <span ng-switch on="itc.handleType">
+                                                        <span ng-switch-when="0">园林</span>
+                                                        <span ng-switch-when="1">维修</span>
+                                                        <span ng-switch-when="2">护管</span>
+                                                        <span ng-switch-when="9">赔偿给业主</span>
+                                                        <span ng-switch-when="10">向业主索赔</span>
+                                                        <span ng-switch-when="11">清洁</span>
+                                                        <span ng-switch-when="12">回访</span>
+                                                        <span ng-switch-when="13">投诉</span>
+                                                        <span ng-switch-when="14">验房</span>
+                                                        <span ng-switch-when="15">咨询</span>
+                                                        <span ng-switch-when="16">抄水表</span>
+                                                        <span ng-switch-when="17">抄电表</span>
+                                                     </span>
+                                                    </li>
+                                                    <li>状态：
+                                                        <span ng-switch on="itc.state">
+                                                          <span ng-switch-when="0">失效</span>
+                                                          <span ng-switch-when="1">有效</span>
+                                                        </span>
+                                                    </li>
+                                                    <li>创建时间：{{itc.createTime|date:'yyyy-MM-dd'}}</li>
+                                                    <li>备注：{{itc.remarks}}</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div ng-repeat="itc in handleMechanisms.data" ng-show="itc.state==1" ng-if="itc==null">
+                                    <span>暂无数据</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal" >关闭</button>
+                    </div>
+                </div>
+                    </div>
+                </div>
+<!--无效机制模态框-->
+<div class="modal fade" id="novaild" role="dialog" aria-label="personDatil" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <span>失效机制</span>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="contract_panner" >
+                                <div class="row rightpadding">
+                                    <div class="col-lg-6 col-md-6 col-sm-6"  ng-repeat="ite in handleMechanisms.data" ng-show="ite.state==0">
+                                        <div id="pannel">
+                                            <div class="title">
+                                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                                </div>
+                                            </div>
+                                            <div class="pannel_content">
+                                                <div class="dot">
+                                                    <div class="clear"></div>
+                                                </div>
+                                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                                    <img style="width: 80px;height: 80px" src="images/img/img_02.png">
+                                                </div>
+                                                <div class="col-lg-8 col-md-8 col-sm-8">
+                                                    <ul>
+                                                        <li>类型：
+                                                        <span ng-switch on="ite.handleType">
+                                                        <span ng-switch-when="0">园林</span>
+                                                        <span ng-switch-when="1">维修</span>
+                                                        <span ng-switch-when="2">护管</span>
+                                                        <span ng-switch-when="9">赔偿给业主</span>
+                                                        <span ng-switch-when="10">向业主索赔</span>
+                                                        <span ng-switch-when="11">清洁</span>
+                                                        <span ng-switch-when="12">回访</span>
+                                                        <span ng-switch-when="13">投诉</span>
+                                                        <span ng-switch-when="14">验房</span>
+                                                        <span ng-switch-when="15">咨询</span>
+                                                        <span ng-switch-when="16">抄水表</span>
+                                                        <span ng-switch-when="17">抄电表</span>
+                                                     </span>
+                                                        </li>
+                                                        <li>状态：
+                                                        <span ng-switch on="ite.state">
+                                                          <span ng-switch-when="0">失效</span>
+                                                          <span ng-switch-when="1">有效</span>
+                                                        </span>
+                                                        </li>
+                                                        <li>创建时间：{{ite.createTime|date:'yyyy-MM-dd'}}</li>
+                                                        <li>备注：{{ite.remarks}}</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal" >关闭</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+<!--负责人员-->
+<div class="modal fade" id="newPerson" role="dialog" aria-label="personDatil" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>人员</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                    <div class="sel1">
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                姓名：
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input class="form-control"  placeholder="请输入员工姓名" ng-model="Teamworkstaff.staffName"/>
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                电话：
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input class="form-control" placeholder="请输入员工电话号码" ng-model="Teamworkstaff.telphone" />
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                部门：
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <select class="form-control"  placeholder="请输入部门" ng-model="Teamworkstaff.professionalLineId" ng-options="a.specialtyId as a.specialtyName for a in SpecialtyInfo" >
+                                    <option value="" >选择部门</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+                                <button type="button" class="btn btn-default btn-primary" ng-click="searchPaginator2._load()">
+                                    <span class="glyphicon glyphicon-search btn_icon"></span>搜索
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="search-padding-10">
+                        <table>
+                            <thead>
+                            <th></th>
+                            <th>姓名</th>
+                            <th>部门</th>
+                            <th>电话</th>
+                            <th>状态</th>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="item in searchPaginator2.object.teamworkStaffs" ng-show="item.id != null" ng-class="{'this_info':btnIndex==items.staffId}">
+                                <td><input type="checkbox"  name="aaa" ng-click="getdata(item)" onclick="check(this)"></td>
+                                <td>{{item.staff.staffName}}</td>
+                                <td>{{item.specialtyInfo.specialtyName}}</td>
+                                <td>{{item.staff.telphone}}</td>
+                                <td>{{}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="bill_paging">
+                            <span>共{{searchPaginator2.object.page.totalResult}}条</span>
+                            <ul class="pagination">
+                                <li ng-class="{true:'disabled'}[searchPaginator2.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-click="searchPaginator2.go(1)">首页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchPaginator2.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-show="searchPaginator2.hasPrevious()" ng-click="searchPaginator2.previous()">上一页</a>
+                                </li>
+                                <li ng-class="{true:'active'}[searchPaginator2.page.currentPage==i]" ng-repeat="i in searchPaginator2.pages">
+                                    <a href="javascript:void(0)"  ng-click="searchPaginator2.go(i)">{{i}}</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchPaginator2.page.currentPage==searchPaginator2.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-show="searchPaginator2.hasNext()" ng-click="searchPaginator2.next()">下一页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[searchPaginator2.page.currentPage==searchPaginator2.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-click="searchPaginator2.go(searchPaginator2.page.totalPage)">尾页</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="canclePerson()">取消</button>
+                <button type="button" class="btn bg-primary" data-dismiss="modal" ng-click="addPerson()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--负责人员 END-->
+
+<!--修改-->
+<div class="modal fade" id="update" role="dialog" aria-label="personDatil" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>新建</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div style="padding: 30px">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            处理机制类型
+                        </div>
+                        <div class="col-lg-9 col-md-9 col-sm-9">
+                            <select class="form-control" ng-model="updateData.handleType">
+                                <option value="0">园林</option>
+                                <option value="1">维修</option>
+                                <option value="2">护管</option>
+                                <option value="9">赔偿给业主</option>
+                                <option value="10">向业主索赔</option>
+                                <option value="11">清洁</option>
+                                <option value="12">回访</option>
+                                <option value="13">投诉</option>
+                                <option value="14">验房</option>
+                                <option value="15">咨询</option>
+                                <option value="16">抄水表</option>
+                                <option value="17">抄电表</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            负责人
+                        </div>
+                        <div class="col-lg-9 col-md-9 col-sm-9">
+                            <input class="form-control" ng-model="person.staff.staffName" data-toggle="modal" data-target="#newPerson" readonly />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            处理说明
+                        </div>
+                        <div class="col-lg-9 col-md-9 col-sm-9">
+                            <textarea class="form-control" ng-model="updateData.remarks"></textarea>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" >取消</button>
+                <button type="button" class="btn bg-primary" data-dismiss="modal" ng-click="updateSave()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--查看日志-->
+<div class="modal fade" id="datails" role="dialog" aria-label="personDatil" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span></span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div style="padding: 30px">
+                    <div class="col-lg-2 col-md-2 col-sm-2">{{importantEventTypeJournal.operatorTime|date:'yyyy-MM-dd'}}</div>
+                    <div class="col-lg-10 col-md-10 col-sm-10">{{importantEventTypeJournal.remarks}}</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" >取消</button>
+                <button type="button" class="btn bg-primary" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>

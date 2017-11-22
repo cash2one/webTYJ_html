@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>物业项目管理</title>
+    <script type="text/javascript">
+        /**
+         * BUG  259  陶勇超 2016年1月14日 15:34:27
+         * @returns {boolean}
+         */
+        function kp(){
+
+            if (event.keyCode == 8) return true
+            if(event.keyCode==16){  event.returnValue=false}
+            if (event.keyCode >= 96 &&event. keyCode <= 105) return true
+            if(event.keyCode<=47 || event.keyCode>=65) {
+                event.returnValue=false;
+
+            }
+        }
+        function kpd() {
+
+
+            if (event.keyCode == 8) return true  //backspace按钮允许
+            if (event.keyCode >= 96 && event.keyCode <= 105) return true //数字小键盘
+            if (event.keyCode==16||event.keyCode <= 47 || (event.keyCode >= 65 && event.keyCode != 190)) {
+                event.returnValue = false;
+            }
+        }
+        function check(obj) {
+            $(':checkbox').each(function () {
+                if (this != obj)
+                    $(this).attr("checked", false);
+                else {
+                    if ($(this).prop("checked")){
+                        $(this).attr("checked", true);
+                    }
+                    else
+                        $(this).attr("checked", false);
+                }
+            });
+        }
+        document.getElementById("ceshi").focus();
+        document.getElementById('ceshi1').focus();
+        document.getElementById('fosuce').focus();
+    </script>
+</head>
+<body>
+<div id="content-first">
+    <div id="tab">
+        <a class="this_action" lang="no">物业项目管理</a>
+    </div>
+    <div ng-show="show1">
+        <div class="row">
+            <div class="col-lg-12">
+                <!--人员主页客户详细信息开始-->
+                <div class="col-lg-3 col-md-3 col-sm-3">公司名称：{{company.companyName}}</div>
+                <div class="col-lg-1 col-md-1 col-sm-1"></div>
+                <div class="col-lg-3 col-md-3 col-sm-3">所在地：{{company.city}}</div>
+                <div class="col-lg-1 col-md-1 col-sm-1"></div>
+                <div class="col-lg-3 col-md-3 col-sm-3">地址：{{company.address}}</div>
+                <div class="col-lg-1 col-md-1 col-sm-1"></div>
+                <div class="col-lg-3 col-md-3 col-sm-3">项目数量：{{company.projectNum}}个</div>
+                <div class="col-lg-1 col-md-1 col-sm-1"></div>
+                <div class="col-lg-3 col-md-3 col-sm-3">项目总面积：{{company.projectArea}}㎡</div>
+                <div class="col-lg-1 col-md-1 col-sm-1"></div>
+                <div class="col-lg-3 col-md-3 col-sm-3">员工数量：{{company.staffNum}}人</div>
+                <div class="col-lg-1 col-md-1 col-sm-1"></div>
+            </div>
+        </div>
+        <!--人员主页客户详细信息结束-->
+        <div class="sel_top">
+            <div class="row">
+                <div class="col-lg-7 col-md-6 col-sm-6">
+                    <button type="button" class="btn btn-default btn-primary" ng-click="detail()">
+                        <span class="glyphicon glyphicon-plus btn_icon"></span>
+                        新建
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary" ng-click="getSubCompany(-1)" ng-show="grid == false">
+                        <span class="glyphicon glyphicon-edit btn_icon"></span>
+                        编辑
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary"  ng-click="deleteSubCompany(-1,1)" ng-show="grid == false">
+                        <span class="glyphicon glyphicon-remove btn_icon"></span>
+                        停用
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary"  ng-click="deleteSubCompany(-1,0)" ng-show="grid == false">
+                        <span class="glyphicon glyphicon-ok btn_icon"></span>
+                        启用
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary"  ng-click="merge()" ng-show="grid == false">
+                        合并
+                    </button>
+                </div>
+
+                <div class="col-lg-2 col-md-4 col-sm-4">
+                    <input class="form-control" placeholder="请输入要查询项目名称" ng-model="projectList.projectName" id="fosuce" ng-keydown="clickSearch()" />
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2">
+                    <button type="button" class="btn btn-default btn-primary" data-target="#new" data-toggle="modal" ng-click="projectItem._load()"  >
+                        搜索
+                    </button>
+                </div>
+                <div class="col-lg-2 col-md-6 col-sm-6 text-right">
+                    <button type="button" class="btn btn-default btn-primary" ng-click="showGrid(1)" >
+                        <span class="glyphicon glyphicon-th-large btn_icon"></span>
+                        网格
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary" ng-click="showGrid(2)">
+                        <span class="glyphicon glyphicon-th-list btn_icon"></span>
+                        列表
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row padding">
+            <div class="col-lg-12">
+                <!--<div class="search-padding-10">
+                        <button type="button" class="btn btn-default btn-primary" ng-click="detail()">
+                            <span class="glyphicon glyphicon-plus btn_icon"></span>
+                            新建
+                        </button>
+                  &lt;!&ndash;      <button type="button" class="btn btn-default btn-primary" ng-click="getSubCompany()">
+                            <span class="glyphicon glyphicon-edit btn_icon"></span>
+                            编辑
+                        </button>&ndash;&gt;
+                        <button type="button" class="btn btn-default btn-primary"  ng-click="deleteSubCompany()">
+                            <span class="glyphicon glyphicon-remove btn_icon"></span>
+                            删除
+                        </button>
+                    </div>-->
+                <table ng-show="grid == false"><!--增加网格切换 朱琪 2016-2-3 11:20:10--><!-- 修改项目详情字段显示  王洲  2016.2.2 -->
+                    <thead>
+                    <tr>
+                        <th>
+                            <input type="checkbox" id="allchose" ng-true-value="1" ng-false-value="0" ng-click="allchose()" style="vertical-align: -4px;">
+                        </th>
+                        <th>序号</th>
+                        <th>项目名称</th>
+                        <th>项目编号</th>
+                        <th>项目面积</th>
+                        <th>车位总数</th>
+                        <th>每月应缴管理费</th>
+                        <th>欠费总额</th>
+                        <th>项目经理</th>
+                        <th>状态</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="item in projectItem.object.project" ng-if="item.projectId != null" ng-class="{'this_info ':btnIndex==item}"   ng-click="checkShow(item)">
+
+                        <td><input name="scId"  value="item" type="checkbox" class="checkbox_info" id="{{item.projectId}}" ng-click="getData($event,item)"></td>
+                        <!--序号-->
+                        <td>{{$index+(projectItem.page.currentPage-1)*6}}</td>
+                        <!--  &lt;!&ndash;项目编号&ndash;&gt;
+                          <td>{{item.projectNumber}}</td>-->
+                        <!--项目名称-->
+                        <td>{{item.projectName}}</td>
+                        <td>{{item.projectNumber}}</td>
+                        <td>{{item.projectTotalarea}}㎡</td>
+                        <td>{{item.stallNum}}</td>
+                        <td>0.00元</td>
+                        <td>0.00元</td>
+                        <td>{{item.staff.staffName}}</td>
+                        <td ng-show="item.state == 1">已停用</td>
+                        <td ng-show="item.state == 0">已启用</td>
+                    </tr>
+                    <tr ng-if="projectItem.object.project.length == null">
+                        <td colspan="8">没有数据！</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <!-- 增加网格的显示与隐藏 朱琪 2016-2-3 11:22:58 start -->
+                <div class="col-lg-12" ng-show="grid == true">
+                    <div class="col-lg-4 col-md-4 col-sm-4 " ng-repeat="item in projectItem.object.project" ng-show="item.projectId != null">
+                        <div id="pannel">
+                            <div class="title">
+                                <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">项目信息</div>
+                                <div class="downList">
+                                    <div class="col-xs-12 col-lg-12 col-md-12 col-sm-12 text-right">
+                                        <span class="glyphicon glyphicon-chevron-down" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ></span>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                            <li><a data-toggle="modal" ng-click="getSubCompany(item.projectId)">编辑</a></li>
+                                            <li><a data-toggle="modal" ng-click="deleteSubCompany(item.projectId,0)">启用</a></li>
+                                            <li><a data-toggle="modal" ng-click="deleteSubCompany(item.projectId,1)">停用</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pannel_content">
+                                <ul ng-click="projectCheck(item.projectId)" style="cursor:pointer">
+                                    <div class="col-lg-12">
+                                        <div class="col-lg-6 col-md-6 col-sm-6 text-right">序号：</div>
+                                        <div class="col-lg-6 col-md-6 col-sm-6">{{$index+(projectItem.page.currentPage-1)*10}}</div>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <div class="col-lg-6 col-md-6 col-sm-6 text-right">项目名称：</div>
+                                        <div class="col-lg-6 col-md-6 col-sm-6"><li><nobr>{{item.projectName}}</nobr></li></div>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <div class="col-lg-6 col-md-6 col-sm-6 text-right">项目编号：</div>
+                                        <div class="col-lg-6 col-md-6 col-sm-6">{{item.projectNumber}}</div>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <div class="col-lg-6 col-md-6 col-sm-6 text-right">项目面积：</div>
+                                        <div class="col-lg-6 col-md-6 col-sm-6"><nobr>{{item.projectTotalarea}}㎡</nobr></div>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <div class="col-lg-6 col-md-6 col-sm-6 text-right">车位总数：</div>
+                                        <div class="col-lg-6 col-md-6 col-sm-6">{{item.stallNum}}</div>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <div class="col-lg-6 col-md-6 col-sm-6 text-right">每月应缴管理费：</div>
+                                        <div class="col-lg-6 col-md-6 col-sm-6">0.00元</div>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <div class="col-lg-6 col-md-6 col-sm-6 text-right">欠费总额：</div>
+                                        <div class="col-lg-6 col-md-6 col-sm-6">0.00元</div>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <div class="col-lg-6 col-md-6 col-sm-6 text-right">项目经理：</div>
+                                        <div class="col-lg-6 col-md-6 col-sm-6">{{item.staff.staffName}}</div>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <div class="col-lg-6 col-md-6 col-sm-6 text-right">状态：</div>
+                                        <div class="col-lg-6 col-md-6 col-sm-6" ng-show="item.state == 1">已停用</div>
+                                        <div class="col-lg-6 col-md-6 col-sm-6" ng-show="item.state == 0">已启用</div>
+                                    </div>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 增加网格的显示与隐藏 朱琪 2016-2-3 11:22:58 end -->
+
+                <!-- 增加没有数据时网格的显示 朱琪 2016-2-3 11:22:58 start -->
+                <div class="col-lg-4 col-md-6 col-sm-6" ng-show="projectItem.object.project.length == null && grid == true">
+                    <div id="pannel">
+                        <div class="title">
+                            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                                <h3>物业项目</h3>
+                            </div>
+                            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                <!-- <span class="glyphicon glyphicon-search"></span>-->
+                            </div>
+                        </div>
+                        <div class="pannel_content">
+                            <div class="row">
+                                <div class="col-xs-8 col-lg-8 col-md-8">
+                                    <div class="row search-padding 10">
+                                        暂无数据！
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 增加没有数据时网格的显示 朱琪 2016-2-3 11:22:58 end -->
+            <div class="padding">
+                <div class="bill_paging">
+                    <span>共{{projectItem.object.page.totalResult}}条</span>
+                    <ul class="pagination">
+                        <li ng-class="{true:'disabled'}[projectItem.page.currentPage==1]">
+                            <a href="javascript:void(0)" ng-click="projectItem.go(1)">首页</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[projectItem.page.currentPage==1]">
+                            <a href="javascript:void(0)" ng-show="projectItem.hasPrevious()" ng-click="projectItem.previous()">上一页</a>
+                        </li>
+                        <li ng-class="{true:'active'}[projectItem.page.currentPage==i]" ng-repeat="i in projectItem.pages">
+                            <a href="javascript:void(0)"  ng-click="projectItem.go(i)">{{i}}</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[projectItem.page.currentPage==projectItem.page.totalPage]">
+                            <a href="javascript:void(0)" ng-show="projectItem.hasNext()" ng-click="projectItem.next()">下一页</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[projectItem.page.currentPage==projectItem.page.totalPage]">
+                            <a href="javascript:void(0)" ng-click="projectItem.go(projectItem.page.totalPage)">尾页</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div ng-show="show2">
+    <div class="padding">
+        <form id="css_form" name="mainForm" novalidate>
+            <div class="sol-lg-12">
+                <div class="search-padding-10">
+                    项目基本信息
+                </div>
+                <div class="row search-padding-10">
+                    <!--<div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                               项目编号：
+                           </div>
+                           <div class="col-lg-3 col-md-4 col-sm-4">
+                               <input class="form-control" ng-model="addProject.projectNumber" maxlength="36" onkeyup="value=value.replace(/[\W]/g,'') "onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[\W]/g,''))" name="projectNumber" required  placeholder="请输入项目编号"/>
+
+                           </div>
+                           <div class="col-lg-1 col-md-2 col-sm-2 ">
+                               <span style="color: red">*</span>
+                           </div>-->
+                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                        项目名称：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        <input class="form-control" ng-model="addProject.projectName"  maxlength="20"  name="projectName" required  placeholder="请输入项目名称"/>
+
+                    </div>
+                    <div class="col-lg-1 col-md-2 col-sm-2 ">
+                        <span style="color: red">*</span>
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                        车位总数：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        <input class="form-control" readonly="readonly" ng-model="addProject.stall_num"/>
+                    </div>
+                    <div class="col-lg-1 col-md-2 col-sm-2 ">
+
+                    </div>
+                </div>
+                <div class="row search-padding-10">
+                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                        项目地址：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        <input class="form-control" ng-model="addProject.address"  maxlength="20"  name="address" required  placeholder="请输入项目地址"/>
+
+                    </div>
+                    <div class="col-lg-1 col-md-2 col-sm-2 ">
+                        <span style="color: red">*</span>
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                        总建筑面积：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        <input class="form-control" readonly="readonly" ng-model="addProject.totalBuildarea"/>
+                    </div>
+                    <div class="col-lg-1 col-md-2 col-sm-2 ">
+
+                    </div>
+                </div>
+                <div class="row search-padding-10">
+                    <!--<div class="col-lg-2 col-md-2 col-sm-2 text-right">-->
+                    <!--车位配比：-->
+                    <!--</div>-->
+                    <!--<div class="col-lg-3 col-md-4 col-sm-4">-->
+                    <!--<input class="form-control"  ng-model="addProject.stallMatching" maxlength="16" onkeyup="this.value=this.value.replace(/[^\d+\.:\d+]$]/g,'') "  onkeydown="kpd()" placeholder="请输入数字" />-->
+                    <!--</div>-->
+                    <!--<div class="col-lg-1 col-md-2 col-sm-2 ">-->
+
+                    <!--</div>-->
+                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                        地下室面积：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        <input class="form-control" readonly="readonly" ng-model="addProject.basementArea"/>
+                    </div>
+                    <div class="col-lg-1 col-md-2 col-sm-2 ">
+
+                    </div>
+                </div>
+                <div class="row search-padding-10">
+
+                    <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                        人防面积：
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        <input class="form-control" readonly="readonly" ng-model="addProject.civilAirDefenceArea" />
+                    </div>
+                    <div class="col-lg-1 col-md-2 col-sm-2 ">
+                    </div>
+                </div>
+
+                <div class="search-padding-10">
+                    <div class="label_tab " >
+                        <a class="first" ng-show="maxTitleNum" ng-class="{'shownum':shownum2==true}" ng-click="titleChange(0)"><span class="glyphicon glyphicon-chevron-left"></span></a>
+                        <span ng-repeat="items in parcelList">
+                            <a ng-click="detail2($index)" ng-show="(($index+1)<=(showNum+10))&&(($index+1)>showNum)" ng-class="{'this_action':btnIndex==$index}" >宗地{{$index+1}}</a>
+                        </span>
+                        <a ng-click="detail1()" ng-class="{'this_action':mark==true}">新增宗地</a>
+                        <a class="first" ng-show="maxTitleNum1" ng-click="titleChange(1)"><span class="glyphicon glyphicon-chevron-right"></span></a>
+                    </div>
+                    <div class="label_tag">
+                        <div class="padding">
+                            <div ng-show="show3">
+                                <!--     禅道BUG 018
+                              修改人：陶勇超
+                              2016年1月5日-->
+                                <div class="row search-padding-10">
+                                    <div  class="col-lg-1 col-md-2 col-sm-2 text-right">
+                                        宗地号：
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <input class="form-control" placeholder="请输入宗地号" id="ceshi" set-Focus=""   onkeyup="value=value.replace(/[^A-Za-z0-9/-]/g,'') "onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[\W]/g,''))"  maxlength="16" ng-model="parcel.parcelNum"/>
+                                    </div>
+                                    <div class="col-lg-1 col-md-2 col-sm-2">
+                                        <span style="color: red">*</span>
+                                    </div>
+                                    <!--<div  class="col-lg-1 col-md-2 col-sm-2 text-right">
+                                        建筑面积：
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <input class="form-control"  placeholder="请输入建筑面积" onkeyup="this.value=this.value.replace(/[^\w\u4E00-\u9FA5]/g,'')"； this.value=this.value.replace(/[^\w\u4E00-\u9FA5]/g,'')  maxlength="16" ng-model="parcel.buildArea"  onkeydown="kpd()" disabled="disabled"/>
+                                    </div>
+                                    <div class="col-lg-1 col-md-2 col-sm-2 ">
+
+                                        m2
+                                    </div>
+                                    <div  class="col-lg-1 col-md-2 col-sm-2 text-right">
+                                        容积率：
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <input class="form-control"   placeholder="请输入容积率" maxlength="16"  ng-model="parcel.plotRatio" onkeydown="kpd()"/>
+                                    </div>
+                                    <div class="col-lg-1 col-md-2 col-sm-2">
+
+                                    </div>-->
+
+                                    <!--
+                                                禅道Bug593
+                                                修改人：陈浪
+                                                2016年2月18号  16:50
+                                            -->
+                                    <div  class="col-lg-1 col-md-2 col-sm-2 text-right">
+                                        建筑面积：
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <input class="form-control"  placeholder="请输入建筑面积" onkeyup="this.value=this.value.replace(/[^\w\u4E00-\u9FA5]/g,'')"； this.value=this.value.replace(/[^\w\u4E00-\u9FA5]/g,'')  maxlength="16" ng-model="parcel.buildArea"  onkeydown="kpd()" disabled="disabled"/>
+                                    </div>
+                                    <div class="col-lg-1 col-md-2 col-sm-2 ">
+                                        m2
+                                    </div>
+                                    <div  class="col-lg-1 col-md-2 col-sm-2 text-right">
+                                        容积率：
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <input class="form-control"   placeholder="请输入容积率" maxlength="16"  ng-model="parcel.plotRatio" onkeydown="kpd()" disabled="disabled"/>
+                                    </div>
+                                    <div class="col-lg-1 col-md-2 col-sm-2">
+
+                                    </div>
+                                </div>
+                                <div class="row search-padding-10">
+                                    <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                                        宗地面积：
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <input class="form-control"  placeholder="请输入宗地面积"  maxlength="16" onkeyup="this.value=this.value.replace(/[^\d.]/g,'')" this.value=this.value.replace(/[^\d.]/g,'') ng-model="parcel.parcelArea" onkeydown="this.value.replace(/\.$/g,'')"/>
+                                    </div>
+                                    <div class="col-lg-1 col-md-2 col-sm-2 ">
+                                        <span style="color: red">*</span>
+                                        m2
+                                    </div>
+                                    <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                                        道路面积：
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <input class="form-control"  placeholder="请输入道路面积" maxlength="16" onkeyup="this.value=this.value.replace(/[^\d.]/g,'')" this.value="this.value.replace(/[^\d.]/g,'')" ng-model="parcel.roadArea" onkeydown="this.value.replace(/\.$/g,'')" disabled="disabled"/>
+                                    </div>
+                                    <div class="col-lg-1 col-md-2 col-sm-2 ">
+                                        m2
+                                    </div>
+                                    <!--<div class="col-lg-1 col-md-2 col-sm-2 text-right">-->
+                                    <!--车位配比：-->
+                                    <!--</div>-->
+                                    <!--&lt;!&ndash;     禅道BUG 018-->
+                                    <!--修改人：陶勇超-->
+                                    <!--2016年1月5日&ndash;&gt;-->
+                                    <!--<div class="col-lg-2 col-md-2 col-sm-2">-->
+                                    <!--<input class="form-control"   onkeyup="this.value=this.value.replace(/[^\d+\.:\d+]$]/g,'') " placeholder="请输入数字"  maxlength="16"  onkeydown="kpd()" ng-model="parcel.stallMatching" disabled="disabled"/>-->
+                                    <!--</div>-->
+                                    <!--<div class="col-lg-1 col-md-2 col-sm-2 ">-->
+
+                                    <!--</div>-->
+                                    <div  class="col-lg-1 col-md-2 col-sm-2 text-right ">
+                                        车位数：
+                                    </div>
+                                    <!--     禅道BUG 018
+                                         修改人：陶勇超
+                                         2016年1月5日-->
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <input class="form-control" placeholder="请输入地面车位数"  maxlength="16" disabled="disabled" onkeyup="this.value=this.value.replace(/[^\w\u4E00-\u9FA5]/g,'')"； this.value=this.value.replace(/[^\w\u4E00-\u9FA5]/g,'') ng-model="parcel.groundParkingSpace"  onkeydown="kp()" disabled="disabled"/>
+                                    </div>
+                                    <div class="col-lg-1 col-md-2 col-sm-2 ">
+
+                                    </div>
+                                </div>
+                                <div class="row search-padding-10">
+                                    <!--<div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                                        人防面积：
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <input class="form-control"  placeholder="请输入人防面积"maxlength="16"  onkeyup="this.value=this.value.replace(/[^\w\u4E00-\u9FA5]/g,'')"； this.value=this.value.replace(/[^\w\u4E00-\u9FA5]/g,'') ng-model="parcel.civilAirDefenceArea"  onkeydown="kpd()"/>
+                                    </div>
+                                    <div class="col-lg-1 col-md-2 col-sm-2 ">
+                                        <span style="color: red">*</span>
+                                        m2
+                                    </div>
+                                    <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                                        绿化面积：
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <input class="form-control"  placeholder="请输入绿化面积" maxlength="16" onkeyup="this.value=this.value.replace(/[^\w\u4E00-\u9FA5]/g,'')"； this.value=this.value.replace(/[^\w\u4E00-\u9FA5]/g,'')  ng-model="parcel.greeningArea"  onkeydown="kpd()"/>
+                                    </div>
+                                    <div class="col-lg-1 col-md-2 col-sm-2 ">
+                                        <span style="color: red">*</span>
+                                        m2
+                                    </div>-->
+
+                                    <!--
+                                                禅道Bug593
+                                                修改人：陈浪
+                                                2016年2月18号  16:50
+                                            -->
+
+                                    <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                                        人防面积：
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <input class="form-control"  placeholder="请输入人防面积" maxlength="16" onkeyup="this.value=this.value.replace(/[^\d.]/g,'')" this.value="this.value.replace(/[^\d.]/g,'')" ng-model="parcel.civilAirDefenceArea" onkeydown="this.value.replace(/\.$/g,'')" disabled="disabled"/>
+                                    </div>
+                                    <div class="col-lg-1 col-md-2 col-sm-2 ">
+                                        m2
+                                    </div>
+                                    <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                                        绿化面积：
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <input class="form-control"  placeholder="请输入绿化面积" maxlength="16" onkeyup="this.value=this.value.replace(/[^\d.]/g,'')" this.value="this.value.replace(/[^\d.]/g,'')" ng-model="parcel.greeningArea" onkeydown="this.value.replace(/\.$/g,'')" disabled="disabled"/>
+                                    </div>
+                                    <div class="col-lg-1 col-md-2 col-sm-2 ">
+                                        m2
+                                    </div>
+                                </div>
+                                <div class="row search-padding-10">
+                                    <!--<div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                                        占地面积：
+                                    </div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2">
+                                            <input class="form-control" placeholder="请输入占地面积"maxlength="16" onkeyup="this.value=this.value.replace(/[^\w\u4E00-\u9FA5]/g,'')"； this.value=this.value.replace(/[^\w\u4E00-\u9FA5]/g,'')  ng-model="parcel.floorArea"  onkeydown="kpd()"/>
+                                        </div>
+                                        <div class="col-lg-1 col-md-2 col-sm-2 ">
+                                            <span style="color: red">*</span>
+                                            m2
+                                        </div>-->
+                                    <div class="col-lg-1 col-md-2 col-sm-2 text-right ">
+                                        地下室面积：
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <!--     禅道BUG 042
+                                             修改人：陶勇超
+                                             2016年1月5日 09:27:07-->
+                                        <input class="form-control" placeholder="请输入地下室面积" maxlength="16" onkeyup="this.value=this.value.replace(/[^\w\u4E00-\u9FA5]/g,'')"； this.value=this.value.replace(/[^\w\u4E00-\u9FA5]/g,'')  ng-model="parcel.basementArea"  onkeydown="kpd()" disabled="disabled"/>
+                                    </div>
+                                    <div class="col-lg-1 col-md-2 col-sm-2 ">
+                                        m2
+                                    </div>
+                                    <!-- <div  class="col-lg-1 col-md-2 col-sm-2 text-right ">
+                                               地下车位数：
+                                           </div>
+                                           <div class="col-lg-2 col-md-2 col-sm-2">
+                                               <input class="form-control"  placeholder="请输入地下车位数"  maxlength="16" onkeyup="this.value=this.value.replace(/[^\w\u4E00-\u9FA5]/g,'')"； this.value=this.value.replace(/[^\w\u4E00-\u9FA5]/g,'') ng-model="parcel.undergroundParkingSpace"  onkeydown="kp()"/>
+                                           </div>-->
+                                </div>
+                                <div class="row search-padding-10">
+                                    <div class="col-lg-12 col-md-2 col-sm-2  text-right">
+                                        <button type="button" class="btn btn-default btn-primary" ng-click="save()">
+                                            保存
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div ng-show="show4">
+                                <div class="row search-padding-10">
+                                    <div  class="col-lg-1 col-md-2 col-sm-2 text-right">
+                                        宗地号：
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <input class="form-control" onkeyup="value=value.replace(/[^A-Za-z0-9/-]/g,'') " onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[\W]/g,''))" maxlength="16" ng-model="pars.parcelNum"/>
+                                    </div>
+                                    <div class="col-lg-1 col-md-2 col-sm-2">
+
+                                    </div>
+                                    <div  class="col-lg-1 col-md-2 col-sm-2 text-right">
+                                        建筑面积：
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <input class="form-control" readonly="readonly"   ng-model="pars.buildArea"/>
+                                    </div>
+                                    <div class="col-lg-1 col-md-2 col-sm-2 ">
+                                        m2
+                                    </div>
+                                    <div  class="col-lg-1 col-md-2 col-sm-2 text-right">
+                                        容积率：
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <input class="form-control"  readonly="readonly"   ng-model="pars.plotRatio"/>
+                                    </div>
+                                    <div class="col-lg-1 col-md-2 col-sm-2">
+
+                                    </div>
+                                </div>
+                                <div class="row search-padding-10">
+                                    <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                                        宗地面积：
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <input class="form-control" maxlength="16" onkeyup="this.value=this.value.replace(/[^\d.]/g,'')" this.value="this.value.replace(/[^\d.]/g,'')" onkeydown="this.value.replace(/\.$/g,'')" ng-model="pars.parcelArea"/>
+                                    </div>
+                                    <div class="col-lg-1 col-md-2 col-sm-2 ">
+                                        m2
+                                    </div>
+                                    <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                                        道路面积：
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <input class="form-control" readonly="readonly" maxlength="16" onkeyup="this.value=this.value.replace(/[^\d.]/g,'')" this.value="this.value.replace(/[^\d.]/g,'')" onkeydown="this.value.replace(/\.$/g,'')" ng-model="pars.roadArea"/>
+                                    </div>
+                                    <div class="col-lg-1 col-md-2 col-sm-2 ">
+                                        m2
+                                    </div>
+                                    <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                                        车位配比：
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <input class="form-control"  readonly="readonly"   ng-model="pars.stallMatching"/>
+                                    </div>
+                                    <div class="col-lg-1 col-md-2 col-sm-2 ">
+
+                                    </div>
+                                </div>
+                                <div class="row search-padding-10">
+                                    <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                                        人防面积：
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <input class="form-control" maxlength="16" onkeyup="this.value=this.value.replace(/[^\d.]/g,'')" this.value="this.value.replace(/[^\d.]/g,'')" onkeydown="this.value.replace(/\.$/g,'')" ng-model="pars.civilAirDefenceArea" readonly="readonly"/>
+                                    </div>
+                                    <div class="col-lg-1 col-md-2 col-sm-2 ">
+                                        m2
+                                    </div>
+                                    <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                                        绿化面积：
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <input class="form-control" maxlength="16" onkeyup="this.value=this.value.replace(/[^\d.]/g,'')" this.value="this.value.replace(/[^\d.]/g,'')" onkeydown="this.value.replace(/\.$/g,'')" ng-model="pars.greeningArea" readonly="readonly"/>
+                                    </div>
+                                    <div class="col-lg-1 col-md-2 col-sm-2 ">
+                                        m2
+                                    </div>
+                                    <div  class="col-lg-1 col-md-2 col-sm-2 text-right ">
+                                        地面车位数：
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <input class="form-control" ng-model="pars.groundParkingSpace" readonly="readonly"/>
+                                    </div>
+                                </div>
+                                <div class="row search-padding-10">
+                                    <div class="col-lg-1 col-md-2 col-sm-2 text-right ">
+                                        地下室面积：
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <input class="form-control" readonly="readonly" ng-model="pars.basementArea"/>
+                                    </div>
+                                    <div class="col-lg-1 col-md-2 col-sm-2 ">
+                                        m2
+                                    </div>
+                                    <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                                        占地面积：
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <input class="form-control" ng-model="pars.floorArea" readonly="readonly"/>
+                                    </div>
+                                    <div class="col-lg-1 col-md-2 col-sm-2 ">
+                                        m2
+                                    </div>
+                                    <div  class="col-lg-1 col-md-2 col-sm-2 text-right ">
+                                        地下车位数：
+                                    </div>
+                                    <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <input class="form-control" ng-model="pars.undergroundParkingSpace" readonly="readonly"/>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row search-padding-10">
+                    <div class="col-lg-12">
+                        人员编制设置
+                    </div>
+                </div>
+                <div class="row search-padding-10">
+                    <div class="col-lg-2 col-md-3 col-sm-3 text-right">
+                        项目经理：
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4">
+                        <select  class="form-control"  ng-model="addProject.staffId" ng-options="option.staffId as option.staffName for option in corePosition">
+                            <option value="">请选择</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-1 col-md-4 col-sm-4">
+                        <span style="color: red">*</span>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+                        <button type="button" class="btn btn-default btn-primary" data-toggle="modal" data-target="#detail">
+                            添加编制
+                        </button>
+                    </div>
+                </div>
+                <div class="row search-padding-10 tabe"  ng-repeat="des in dataList">
+                    <div class="col-lg-2 col-md-3 col-sm-3 text-right">
+                        {{des.nameOfCustom}}：
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4">
+                        <input  class="form-control tab"  type="text" id={{des.id}} onkeyup="value=value.replace(/[^\d.]/g,'')">
+                    </div>
+                    <div class="col-lg-1 col-md-4 col-sm-4">
+                        <span style="color: red">*</span> 人
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <!--<div>-->
+                <!--<table id="tabe" style="width: 50%; ">-->
+                <!--<tbody >-->
+                <!--<tr ng-repeat="des in dataList">-->
+                <!--<td   >{{des.nameOfCustom}}</td>-->
+                <!--<td ><input  type="text"  id={{des.id}} onkeyup="value=value.replace(/[^\d+$]/g,'')"><span style="color: red">*</span>人</td>-->
+                <!--</tr>-->
+                <!--</tbody>-->
+                <!--</table>-->
+                <!--&lt;!&ndash;    <div class="col-lg-1 col-md-2 col-sm-2">-->
+                <!--{{des.nameOfCustom}}-->
+                <!--</div>-->
+                <!--<div class="col-lg-2 col-md-2 col-sm-2" id="tabe">-->
+                <!--<input class="form-control" id={{des.id}} />-->
+                <!--</div>-->
+                <!--<div class="col-lg-1 col-md-2 col-sm-2">-->
+                <!--人-->
+                <!--</div>&ndash;&gt;-->
+
+                <!--</div>-->
+                <div class="search-padding-10 text-center">
+                    <button type="button" class="btn btn-default btn-primary" ng-click="cancel()">
+                        取消
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary" ng-click="insert()">
+                        提交
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+</div>
+<!--编辑项目-->
+<div ng-show="show6">
+    <div class="padding">
+
+        <div class="sol-lg-12">
+            <div class="search-padding-10">
+                编辑项目基本信息
+            </div>
+
+            <div class="row search-padding-10">
+                <!--       <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                           项目编号：
+                       </div>
+                       <div class="col-lg-3 col-md-4 col-sm-4">
+                           <input class="form-control" ng-model="projectUpdat.projectNumber" maxlength="36" onkeyup="value=value.replace(/[\W]/g,'') "onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[\W]/g,''))" name="projectNumber" required  placeholder="请输入项目编号"/>
+
+                       </div>
+                       <div class="col-lg-1 col-md-2 col-sm-2 ">
+                           <span style="color: red">*</span>
+                       </div>-->
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    项目名称：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <input class="form-control" ng-model="projectUpdat.projectName"  maxlength="20"  name="projectName" required  placeholder="请输入项目名称"/>
+
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 ">
+                    <span style="color: red">*</span>
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    车位总数：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <input class="form-control" readonly="readonly" ng-model="projectUpdat.stallNum"/>
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 ">
+
+                </div>
+            </div>
+            <div class="row search-padding-10">
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    项目地址：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <input class="form-control" ng-model="projectUpdat.address"  maxlength="20"  name="address" required  placeholder="请输入项目地址"/>
+
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 ">
+                    <span style="color: red">*</span>
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    总建筑面积：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <input class="form-control" readonly="readonly" ng-model="projectUpdat.totalBuildarea"/>
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 ">
+
+                </div>
+            </div>
+            <div class="row search-padding-10">
+                <!--<div class="col-lg-2 col-md-2 col-sm-2 text-right">-->
+                <!--车位配比：-->
+                <!--</div>-->
+                <!--<div class="col-lg-3 col-md-4 col-sm-4">-->
+                <!--<input class="form-control"  ng-model="projectUpdat.stallMatching" maxlength="16" onkeyup="this.value=this.value.replace(/[^\d+\.:\d+]$]/g,'') "  onkeydown="kpd()" placeholder="请输入数字"/>-->
+                <!--</div>-->
+                <!--<div class="col-lg-1 col-md-2 col-sm-2 ">-->
+
+                <!--</div>-->
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    地下室面积：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <input class="form-control" readonly="readonly" ng-model="projectUpdat.basementArea"/>
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 ">
+
+                </div>
+            </div>
+            <div class="row search-padding-10">
+
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    人防面积：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <input class="form-control" readonly="readonly" ng-model="projectUpdat.civilAirDefenceArea" />
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 ">
+
+                </div>
+            </div>
+
+            <div class="search-padding-10">
+                <div class="label_tab " >
+                    <a class="first" ng-show="maxTitleNum" ng-class="{'shownum':shownum2==true}" ng-click="titleChange(0)"><span class="glyphicon glyphicon-chevron-left"></span></a>
+                            <span ng-repeat="items in parcelList ">
+                            <a ng-click="detail4($index)" ng-show="(($index+1)<=(showNum+10))&&(($index+1)>showNum)" ng-class="{'this_action':btnIndex==$index}" >宗地{{$index+1}}</a>
+                            </span>
+                    <a ng-click="detail3()" ng-class="{'this_action':mark==true}">新增宗地</a>
+                    <a class="first" ng-show="maxTitleNum1" ng-click="titleChange(1)"><span class="glyphicon glyphicon-chevron-right"></span></a>
+                </div>
+                <div class="label_tag">
+                    <div class="padding">
+                        <div ng-show="show3">
+                            <!--     禅道BUG 018
+                          修改人：陶勇超
+                          2016年1月5日-->
+                            <div class="row search-padding-10">
+                                <div  class="col-lg-1 col-md-2 col-sm-2 text-right">
+                                    宗地号：
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">
+                                    <input class="form-control" placeholder="请输入宗地号" set-Focus="" id="ceshi1"  onkeyup="value=value.replace(/[^A-Za-z0-9/-]/g,'') "onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[\W]/g,''))"  maxlength="16" ng-model="parcel.parcelNum"/>
+                                </div>
+                                <div class="col-lg-1 col-md-2 col-sm-2">
+                                    <span style="color: red">*</span>
+                                </div>
+                                <div  class="col-lg-1 col-md-2 col-sm-2 text-right">
+                                    建筑面积：
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">
+                                    <input class="form-control"  placeholder="请输入建筑面积" onkeyup="this.value=this.value.replace(/[^\w\u4E00-\u9FA5]/g,'')"； this.value=this.value.replace(/[^\w\u4E00-\u9FA5]/g,'')  maxlength="16" ng-model="parcel.buildArea"  onkeydown="kpd()" disabled="disabled"/>
+                                </div>
+                                <div class="col-lg-1 col-md-2 col-sm-2 ">
+
+                                    m2
+                                </div>
+                                <div  class="col-lg-1 col-md-2 col-sm-2 text-right">
+                                    容积率：
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">
+                                    <input class="form-control"   placeholder="请输入容积率" maxlength="16"  ng-model="parcel.plotRatio" onkeydown="kpd()" disabled="disabled"/>
+                                </div>
+                                <div class="col-lg-1 col-md-2 col-sm-2">
+
+                                </div>
+                            </div>
+                            <div class="row search-padding-10">
+                                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                                    宗地面积：
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">
+                                    <input class="form-control"  placeholder="请输入宗地面积"  maxlength="16" onkeyup="this.value=this.value.replace(/[^\d.]/g,'')" this.value="this.value.replace(/[^\d.]/g,'')" ng-model="parcel.parcelArea" onkeydown="this.value.replace(/\.$/g,'')"/>
+                                </div>
+                                <div class="col-lg-1 col-md-2 col-sm-2 ">
+                                    <span style="color: red">*</span>
+                                    m2
+                                </div>
+                                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                                    道路面积：
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">
+                                    <input class="form-control"  placeholder="请输入道路面积" maxlength="16" onkeyup="this.value=this.value.replace(/[^\d.]/g,'')" this.value="this.value.replace(/[^\d.]/g,'')" ng-model="parcel.roadArea" onkeydown="this.value.replace(/\.$/g,'')" disabled="disabled"/>
+                                </div>
+                                <div class="col-lg-1 col-md-2 col-sm-2 ">
+                                    m2
+                                </div>
+                                <div  class="col-lg-1 col-md-2 col-sm-2 text-right ">
+                                    车位数：
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">
+                                    <input class="form-control" placeholder="请输入地面车位数"  maxlength="16" disabled="disabled" onkeyup="this.value=this.value.replace(/[^\w\u4E00-\u9FA5]/g,'')"； this.value=this.value.replace(/[^\w\u4E00-\u9FA5]/g,'') ng-model="parcel.groundParkingSpace"  onkeydown="kp()" disabled="disabled"/>
+                                </div>
+                                <div class="col-lg-1 col-md-2 col-sm-2 ">
+
+                                </div>
+                                <!--<div class="col-lg-1 col-md-2 col-sm-2 text-right">-->
+                                <!--车位配比：-->
+                                <!--</div>-->
+                                <!--<div class="col-lg-2 col-md-2 col-sm-2">-->
+                                <!--<input class="form-control"  maxlength="16"  ng-model="parcel.stallMatching"  onkeyup="this.value=this.value.replace(/[^\d+\.:\d+]$]/g,'') "  onkeydown="kpd()" placeholder="请输入数字" disabled="disabled"/>-->
+                                <!--</div>-->
+                                <!--<div class="col-lg-1 col-md-2 col-sm-2 ">-->
+
+                                <!--</div>-->
+                            </div>
+                            <div class="row search-padding-10">
+                                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                                    人防面积：
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">
+                                    <input class="form-control"  placeholder="请输入人防面积" maxlength="16" onkeyup="this.value=this.value.replace(/[^\d.]/g,'')" this.value="this.value.replace(/[^\d.]/g,'')"  ng-model="parcel.civilAirDefenceArea"  onkeydown="this.value.replace(/\.$/g,'')"  disabled="disabled"/>
+                                </div>
+                                <div class="col-lg-1 col-md-2 col-sm-2 ">
+                                    m2
+                                </div>
+                                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                                    绿化面积：
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">
+                                    <input class="form-control"  placeholder="请输入绿化面积" maxlength="16" onkeyup="this.value=this.value.replace(/[^\d.]/g,'')" this.value="this.value.replace(/[^\d.]/g,'')" ng-model="parcel.greeningArea" onkeydown="this.value.replace(/\.$/g,'')" disabled="disabled"/>
+                                </div>
+                                <div class="col-lg-1 col-md-2 col-sm-2 ">
+                                    m2
+                                </div>
+                            </div>
+                            <div class="row search-padding-10">
+                                <div class="col-lg-1 col-md-2 col-sm-2 text-right ">
+                                    地下室面积：
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">
+                                    <input class="form-control" placeholder="请输入地下室面积" maxlength="16" onkeyup="this.value=this.value.replace(/[^\d.]/g,'')" this.value="this.value.replace(/[^\d.]/g,'')" ng-model="parcel.basementArea" onkeydown="this.value.replace(/\.$/g,'')" disabled="disabled"/>
+                                </div>
+                                <div class="col-lg-1 col-md-2 col-sm-2 ">
+                                    m2
+                                </div>
+                            </div>
+                            <div class="row search-padding-10">
+                                <div class="col-lg-12 col-md-2 col-sm-2  text-right">
+                                    <button type="button" class="btn btn-default btn-primary" ng-click="save()">
+                                        保存
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div ng-show="show4">
+                            <div class="row search-padding-10">
+                                <div  class="col-lg-1 col-md-2 col-sm-2 text-right">
+                                    宗地号：
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">
+                                    <input class="form-control" onkeyup="value=value.replace(/[^A-Za-z0-9/-]/g,'') " onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[\W]/g,''))" maxlength="16" ng-model="pars.parcelNum" />
+                                </div>
+                                <div class="col-lg-1 col-md-2 col-sm-2">
+
+                                </div>
+                                <div  class="col-lg-1 col-md-2 col-sm-2 text-right">
+                                    建筑面积：
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">
+                                    <input class="form-control" readonly="readonly" ng-model="pars.buildArea"/>
+                                </div>
+                                <div class="col-lg-1 col-md-2 col-sm-2 ">
+                                    m2
+                                </div>
+                                <div  class="col-lg-1 col-md-2 col-sm-2 text-right">
+                                    容积率：
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">
+                                    <input class="form-control"  ng-model="pars.plotRatio" disabled="disabled"/>
+                                </div>
+                                <div class="col-lg-1 col-md-2 col-sm-2">
+
+                                </div>
+                            </div>
+                            <div class="row search-padding-10">
+                                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                                    宗地面积：
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">
+                                    <input class="form-control" maxlength="16" onkeyup="this.value=this.value.replace(/[^\d.]/g,'')" this.value="this.value.replace(/[^\d.]/g,'')" onkeydown="this.value.replace(/\.$/g,'')" ng-model="pars.parcelArea"/>
+                                </div>
+                                <div class="col-lg-1 col-md-2 col-sm-2 ">
+                                    m2
+                                </div>
+                                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                                    道路面积：
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">
+                                    <input class="form-control" maxlength="16" onkeyup="this.value=this.value.replace(/[^\d.]/g,'')" this.value="this.value.replace(/[^\d.]/g,'')" onkeydown="this.value.replace(/\.$/g,'')" ng-model="pars.roadArea" disabled="disabled"/>
+                                </div>
+                                <div class="col-lg-1 col-md-2 col-sm-2 ">
+                                    m2
+                                </div>
+                                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                                    车位配比：
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">
+                                    <input class="form-control"    ng-model="pars.stallMatching" disabled="disabled"/>
+                                </div>
+                                <div class="col-lg-1 col-md-2 col-sm-2 ">
+
+                                </div>
+                            </div>
+                            <div class="row search-padding-10">
+                                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                                    人防面积：
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">
+                                    <input class="form-control" maxlength="16" onkeyup="this.value=this.value.replace(/[^\d.]/g,'')" this.value="this.value.replace(/[^\d.]/g,'')" onkeydown="this.value.replace(/\.$/g,'')" ng-model="pars.civilAirDefenceArea" disabled="disabled"/>
+                                </div>
+                                <div class="col-lg-1 col-md-2 col-sm-2 ">
+                                    m2
+                                </div>
+                                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                                    绿化面积：
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">
+                                    <input class="form-control" maxlength="16" onkeyup="this.value=this.value.replace(/[^\d.]/g,'')" this.value="this.value.replace(/[^\d.]/g,'')" onkeydown="this.value.replace(/\.$/g,'')" ng-model="pars.greeningArea" disabled="disabled"/>
+                                </div>
+                                <div class="col-lg-1 col-md-2 col-sm-2 ">
+                                    m2
+                                </div>
+                                <div  class="col-lg-1 col-md-2 col-sm-2 text-right ">
+                                    车位数：
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">
+                                    <input class="form-control" ng-model="pars.groundParkingSpace" readonly="readonly"/>
+                                </div>
+                            </div>
+                            <div class="row search-padding-10">
+
+                                <div class="col-lg-1 col-md-2 col-sm-2 text-right ">
+                                    地下室面积：
+                                </div>
+                                <div class="col-lg-2 col-md-2 col-sm-2">
+                                    <input class="form-control"  ng-model="pars.basementArea" disabled="disabled"/>
+                                </div>
+                                <div class="col-lg-1 col-md-2 col-sm-2 ">
+                                    m2
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row search-padding-10">
+                <div class="col-lg-12">
+                    人员编制设置
+                </div>
+            </div>
+            <div class="row search-padding-10">
+                <div class="col-lg-2 col-md-3 col-sm-3 text-right">
+                    项目经理：
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4">
+                    <select  class="form-control"  ng-model="projectUpdat.staffId" ng-options="option.staffId as option.staffName for option in corePosition">
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+                <div class="col-lg-1 col-md-4 col-sm-4">
+                    <span style="color: red">*</span>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+                    <button type="button" class="btn btn-default btn-primary" data-toggle="modal" ng-click="showDeil()" >
+                        添加编制
+                    </button>
+                </div>
+            </div>
+            <div class="row search-padding-10 tabes" ng-repeat="des in dataList">
+                <div class="col-lg-2 col-md-3 col-sm-3 text-right">
+                    {{des.nameOfCustom}}：
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4">
+                    <input  class="form-control tab"  type="text" id={{des.id}} onkeyup="value=value.replace(/[^\d+$]/g,'')" ng-model="des.prepareNumber">
+                </div>
+                <div class="col-lg-1 col-md-4 col-sm-4">
+                    人 <span style="color: red">*</span>
+                </div>
+            </div>
+            <!--<div class="row search-padding-10 tabes" ng-repeat="dess in parper">-->
+            <!--<div class="col-lg-1 col-md-2 col-sm-2 text-right">-->
+            <!--{{dess.post.nameOfCustom}}：-->
+            <!--</div>-->
+            <!--<div class="col-lg-4 col-md-4 col-sm-4">-->
+            <!--<input  class="form-control tab"  type="text"  id={{dess.id}}  onkeyup="value=value.replace(/[^\d.]/g,'')" ng-model="dess.prepareNumber">-->
+            <!--</div>-->
+            <!--<div class="col-lg-1 col-md-4 col-sm-4">-->
+            <!--人-->
+            <!--</div>-->
+            <!--</div>-->
+            <div class="clear"></div>
+            <!--<div>-->
+            <!--<table id="tabes" style="width: 50%;border:1px solid red ">-->
+            <!--<tbody >-->
+            <!--<tr ng-repeat="dess in parper">-->
+            <!--<td>{{dess.post.nameOfCustom}}</td>-->
+            <!--<td><input  type="text"  id={{dess.id}}  onkeyup="value=value.replace(/[^\d.]/g,'')" ng-model="dess.prepareNumber"><span style="color: red">*</span>人</td>-->
+            <!--</tr>-->
+            <!--</tbody>-->
+            <!--</table>-->
+            <!--    <div class="col-lg-1 col-md-2 col-sm-2">
+                    {{des.nameOfCustom}}
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2" id="tabe">
+                    <input class="form-control" id={{des.id}} />
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2">
+                    人
+                </div>-->
+            <!--</div>-->
+            <div class="search-padding-10 text-center">
+                <button type="button" class="btn btn-default btn-primary" ng-click="cancel()">
+                    取消
+                </button>
+                <button type="button" class="btn btn-default btn-primary" ng-click="updateProject()">
+                    提交
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--添加编制模态框-->
+<div class="modal fade" id="detail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                添加编制
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" ng-click="close()">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                    <div ng-repeat="item in specialtyInfo" ng-show="item.count > 1">
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                <strong>{{item.specialtyName}}</strong>
+                            </div>
+                        </div>
+                        <div class="row search-padding-10" >
+                            <div class="col-lg-3 col-md-3 col-sm-3" ng-repeat="items in item.posts" ng-show="(items.postId !='19')&&(items.isCorePost!=1)">
+                                <label class="checkbox inline">
+                                    <input type="checkbox" class="checkboxa" name="checkbox" id={{items.postId}} value={{items.nameOfCustom}} ng-show="items.postId!=null">
+                                    <span>{{items.nameOfCustom}}</span>
+                                </label>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="close()">关闭</button>
+                <button type="button" class="btn btn-primary"  data-dismiss="modal" aria-label="Close" ng-click="temp()">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--添加编制模态框结束-->
+</body>
+</html>

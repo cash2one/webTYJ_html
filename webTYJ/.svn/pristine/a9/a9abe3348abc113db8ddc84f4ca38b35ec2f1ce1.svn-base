@@ -1,0 +1,19 @@
+/**************************************     登录验证    ******************************/
+
+.login{
+    position: absolute;
+    top: 30%;
+    z-index:8000;
+}
+.opacity{
+    background-color: #000;
+    opacity: 0.5;
+    padding-top:80px;
+    padding-bottom: 80px
+}
+
+body{
+    background-image: url(../images/back/login.jpg);
+    background-attachment: fixed ;
+    background-size:cover
+}

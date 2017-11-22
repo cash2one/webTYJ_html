@@ -1,0 +1,310 @@
+/**
+ * Created by wuying on 16/5/4.
+ */
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../app');
+
+    app.controller('applyListCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        var url = $rootScope.saasUrl;
+
+        var userCook = JSON.parse(sessionStorage.getItem("USER_LOGIN"));   //从cook中获取用户信息
+        $scope.user = userCook?userCook:user;                      //三目运算获取用户信息
+        var companyId= $scope.user.companyId;
+
+        $scope.show = true;
+        $scope.detailsShow = false;
+
+        $scope.repairOrderQuery = {'companyId' : companyId};
+
+        $scope.repairOrder=[];
+
+        $scope.load = function () {
+            var fd = new FormData();
+            fd.append("jsonStr", JSON.stringify($scope.repairOrderQuery));
+
+            $http.post($rootScope.saasUrl+'/repairOrder/loadList', fd, {
+                transformRequest: angular.identity,
+                headers: {
+                    'Content-Type': undefined
+                }
+            }).success(function(data){
+                $scope.repairOrder=data;
+                $scope.loadPages($scope.repairOrder);
+            }).error(function(data, status, headers, config){
+            });
+        };
+
+        $scope.load();
+
+        $scope.orderDetailsList=[];
+        $scope.getDetails = function (data) {
+            $scope.index = data.id;
+            $http.get($rootScope.saasUrl + '/repairOrderDetails/getDetailsByRepairOrderId/' + data.id).success(function (data) {
+                $scope.orderDetailsList=data;
+                $scope.detailsShow = true;
+                $scope.loadPages1($scope.orderDetailsList);
+            }).error(function (data) {
+
+            });
+        };
+
+
+
+        //单选
+
+        $scope.getChecked = function(id){
+            var ids = document.getElementById(id);
+            var num = 0;
+            if(ids.checked==true){
+                ids.checked = true;
+            }else{
+                ids.checked = false;
+            }
+            for(var i=0;i<$scope.repairOrderList.length;i++){
+                if(document.getElementById($scope.repairOrderList[i].id).checked==true){
+                    num++;
+                }
+            }
+            if(num==$scope.repairOrderList.length){
+                document.getElementById('chooseed').checked = true;
+                $scope.allChoose();
+            }else{
+                document.getElementById('chooseed').checked = false;
+            }
+        };
+
+        //全选
+        $scope.allChoose = function(){
+            var choose = document.getElementsByName('choose');
+            var chooseed = document.getElementById('chooseed');
+            if(chooseed.checked==true){
+                for(var i=0;i<choose.length;i++){
+                    choose[i].checked = true;
+                }
+            }else{
+                for(var i=0;i<choose.length;i++){
+                    choose[i].checked = false;
+                }
+            }
+
+        };
+
+
+        $scope.unsubscribe = function () {
+            $scope.chooseDataId = '';
+            var data = '';
+            angular.forEach($scope.repairOrderList,function(item,key){
+                if(document.getElementById(item.id).checked==true)
+                {
+                    $scope.chooseDataId += item.id + ',';
+                }
+            });
+            var dataIndex = $scope.chooseDataId.lastIndexOf(',');
+            data = $scope.chooseDataId.substring(0,dataIndex);
+
+            if(data==''){
+                layer.msg('请选择数据！',{icon:0,time:2000});
+                return
+            }
+            layer.confirm("您确定要退订吗？", {btn: ['是', '否']}, function () {
+                $http.get(url + '/repairOrder/cancelOrder?repairOrderIds=' + data ).success(function (data) {
+                    $scope.loadOrder();
+                    document.getElementById('chooseed').checked = false;
+                    layer.msg('退订成功！',{icon:1,time:2000});
+                }).error(function (data, status, headers, config) {
+                    layer.msg('退订失败！',{icon:0,time:2000});
+                });
+            });
+        };
+
+        /****************************   分页start   ******************************/
+
+        $scope.currentPage = 1;             //分页相关参数
+        $scope.totalPage = 1;
+        $scope.pageSize = 5;
+        $scope.pages = [];
+        $scope.endPage = 1;
+
+        /**
+         * 实现分页
+         */
+        $scope.listPages=function(currentPage,pageSize,array){
+            var dataArray=[];
+            if(currentPage*pageSize>array.length){
+                for(var i=(currentPage-1)*pageSize;i<array.length;i++) {
+                    dataArray.push(array[i]);
+                }
+            }else{
+                for(var i=(currentPage-1)*pageSize;i<currentPage*pageSize;i++){
+                    dataArray.push(array[i]);
+                }
+            }
+            return dataArray;
+        };
+
+        /**
+         * 实现分页及参数改变
+         */
+        $scope.repairOrderList = [];
+        $scope.loadPages = function (array) {
+            //for(var i=0;i<$scope.checked.length;i++){
+            //    $scope.checked[i]=false;
+            //}
+            $scope.repairOrderList = $scope.listPages($scope.currentPage,$scope.pageSize,array);
+            $scope.totalPage = Math.ceil(array.length / $scope.pageSize);
+            $scope.endPage = $scope.totalPage;
+            //生成数字链接
+            if ($scope.currentPage > 1 && $scope.currentPage < $scope.totalPage) {
+                $scope.pages = [
+                    $scope.currentPage - 1,
+                    $scope.currentPage,
+                    $scope.currentPage + 1
+                ];
+            } else if ($scope.currentPage == 1 && $scope.totalPage > 1) {
+                $scope.pages = [
+                    $scope.currentPage,
+                    $scope.currentPage + 1
+                ];
+            } else if ($scope.currentPage == $scope.totalPage && $scope.totalPage > 1) {
+                $scope.pages = [
+                    $scope.currentPage - 1,
+                    $scope.currentPage
+                ];
+            }else if($scope.currentPage == 1 && $scope.totalPage == 1){
+                $scope.pages = [
+                    $scope.currentPage
+                ];
+            }
+        };
+
+        /**
+         *查询下一页
+         */
+        $scope.next = function () {
+            if ($scope.currentPage < $scope.totalPage) {
+                $scope.currentPage++;
+            }
+            $scope.loadPages($scope.repairOrder);
+        };
+
+        /**
+         *  查询前一页
+         */
+        $scope.prev = function () {
+            if ($scope.currentPage > 1) {
+                $scope.currentPage--;
+            }
+            $scope.loadPages($scope.repairOrder);
+        };
+
+        /**
+         * 查询当前页
+         */
+        $scope.loadPage = function (page) {
+            $scope.currentPage = page;
+            $scope.loadPages($scope.repairOrder);
+        };
+
+        /****************************   分页end   ******************************/
+
+        /****************************   分页start   ******************************/
+
+        $scope.currentPage1 = 1;             //分页相关参数
+        $scope.totalPage1 = 1;
+        $scope.pagesize1 = 4;
+        $scope.pages1 = [];
+        $scope.endPage1 = 1;
+
+        /**
+         * 实现分页
+         */
+        $scope.listPages1=function(currentPage1,pagesize1,array){
+            var dataArray=[];
+            if(currentPage1*pagesize1>array.length){
+                for(var i=(currentPage1-1)*pagesize1;i<array.length;i++) {
+                    dataArray.push(array[i]);
+                }
+            }else{
+                for(var i=(currentPage1-1)*pagesize1;i<currentPage1*pagesize1;i++){
+                    dataArray.push(array[i]);
+                }
+            }
+            return dataArray;
+        };
+
+        /**
+         * 实现分页及参数改变
+         */
+        $scope.orderDetails = [];
+        $scope.loadPages1 = function (array) {
+            //for(var i=0;i<$scope.checked.length;i++){
+            //    $scope.checked[i]=false;
+            //}
+            $scope.orderDetails = $scope.listPages1($scope.currentPage1,$scope.pagesize1,array);
+            $scope.totalPage1 = Math.ceil(array.length / $scope.pagesize1);
+            $scope.endPage1 = $scope.totalPage1;
+            //生成数字链接
+            $scope.pages1 = [];
+            if($scope.totalPage1<=5){
+                for(var i=1; i<=$scope.totalPage1; i++){
+                    $scope.pages1.push(i);
+                }
+            } else {
+                $scope.pages1 = [
+                    $scope.currentPage1-1,
+                    $scope.currentPage1,
+                    $scope.currentPage1+1,
+                    $scope.currentPage1+2,
+                    $scope.currentPage1+3
+                ];
+                if($scope.pages1[0]<1){
+                    $scope.pages1 = [
+                        1,2,3,4,5
+                    ];
+                }
+                if($scope.pages1[$scope.pages1.length-1] > $scope.totalPage1){
+                    $scope.pages1 = [
+                        $scope.totalPage1-4,
+                        $scope.totalPage1-3,
+                        $scope.totalPage1-2,
+                        $scope.totalPage1-1,
+                        $scope.totalPage1
+                    ];
+                }
+            }
+        };
+
+        /**
+         *查询下一页
+         */
+        $scope.next1 = function () {
+            if ($scope.currentPage1 < $scope.totalPage1) {
+                $scope.currentPage1++;
+            }
+            $scope.loadPages1($scope.orderDetailsList);
+        };
+
+        /**
+         *  查询前一页
+         */
+        $scope.prev1 = function () {
+            if ($scope.currentPage1 > 1) {
+                $scope.currentPage1--;
+            }
+            $scope.loadPages1($scope.orderDetailsList);
+        };
+
+        /**
+         * 查询当前页
+         */
+        $scope.loadPage1 = function (page) {
+            $scope.currentPage1 = page;
+            $scope.loadPages1($scope.orderDetailsList);
+        };
+
+        /****************************   分页end   ******************************/
+    }]);
+});

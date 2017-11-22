@@ -1,0 +1,172 @@
+<!--
+    创建人:彭婷婷   创建时间：2015/5/14
+    页面名称:入伙初始化--历史记录
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>入伙初始化的历史记录</title>
+</head>
+<body>
+<div id="content-first">
+    <div class="row padding">
+        <div class="col-lg-12">
+            <div class="row search-padding-10">
+                <div class="col-lg-6">
+                    <button type="button" class="btn btn-default btn-primary" ui-sref="index.baseManagement.project.projectDetails">
+                        <span class="glyphicon glyphicon-plus btn_icon"></span>
+                        新建
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary" ng-show="showStatus==1">
+                        <span class="glyphicon glyphicon-edit btn_icon"></span>
+                        编辑
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary" ng-show="showStatus==1">
+                        <span class="glyphicon glyphicon-minus-sign btn_icon"></span>
+                        停用
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary" ng-show="showStatus==1">
+                        合并
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary" ui-sref="index.baseManagement.projectManagement">
+                        返回
+                    </button>
+                </div>
+                <div class="col-lg-6 text-right">
+                        <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="listview()">
+                            <span class="glyphicon glyphicon-th-list btn_icon"></span>
+                            列表
+                        </button>
+                        <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="tabview()">
+                            <span class="glyphicon glyphicon-th-large btn_icon"></span>
+                            网格
+                        </button>
+                    </div>
+
+            </div>
+            <!--列表的显示与隐藏 songjia 2016-2-4 start-->
+            <table ng-show="showStatus==1">
+                <thead>
+                <tr><!-- 修改入伙列表显示字段  王洲  2016.2.2 -->
+                    <th>序号</th>
+                    <th>预交管理费月数</th>
+                    <th>管理费计费时间</th>
+                    <th>入伙开始时间</th>
+                    <th>入伙结束时间</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="item in checkItem.object.intakeActivity" ng-show="item.intakeActivityId != null">
+                    <td>{{$index}}</td>
+                    <td>{{item.chooseToPrepayFeesMonths}}</td>
+                    <td>{{item.managementFeeChargingTime | date : 'yyyy-MM-dd'}}</td>
+                    <td>{{item.startDate | date : 'yyyy-MM-dd'}}</td>
+                    <td>{{item.endDate | date : 'yyyy-MM-dd'}}</td>
+                </tr>
+                <tr ng-if="checkItem.object.intakeActivity.length == null">
+                    <td colspan="12">暂无数据！</td>
+                </tr>
+                </tbody>
+            </table> <!--列表的显示与隐藏 songjia 2016-2-4 end-->
+
+            <!--网格的显示与隐藏 songjia 2016-2-4 start-->
+            <div class="search-padding-10"  ng-show="showStatus==0">
+                <div class="col-lg-4 col-md-6 col-sm-6" ng-repeat="item in checkItem.object.intakeActivity" ng-show="item.intakeActivityId != null">
+                    <div id="pannel">
+                        <div class="title">
+                            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                <h3 class="text-left">入伙信息</h3>
+                            </div>
+                            <div class="downList">
+                                <div class="col-xs-12 col-lg-12 col-md-12 col-sm-12 text-right">
+                                    <span class="glyphicon glyphicon-chevron-down" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                        <li><a style="cursor: pointer" ng-click="">编辑</a></li>
+                                        <li><a style="cursor: pointer" ng-click="">停用</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pannel_content">
+                            <div class="row">
+                                <div class="col-xs-12 col-lg-12 col-md-12">
+                                    <div class="row search-padding">
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <div class="col-lg-6 col-md-6 col-sm-6 text-right">序号：</div>
+                                            <div class="col-lg-6 col-md-6 col-sm-6">{{$index}}</div>
+                                        </div>
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <div class="col-lg-6 col-md-6 col-sm-6 text-right">预交管理费月数：</div>
+                                            <div class="col-lg-6 col-md-6 col-sm-6 ">{{item.chooseToPrepayFeesMonths}}</div>
+                                        </div>
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <div class="col-lg-6 col-md-6 col-sm-6 text-right">管理费计费时间：</div>
+                                            <div class="col-lg-6 col-md-6 col-sm-6 ">{{item.managementFeeChargingTime | date : 'yyyy-MM-dd'}}</div>
+                                        </div>
+
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <div class="col-lg-6 col-md-6 col-sm-6 text-right">入伙开始时间：</div>
+                                            <div class="col-lg-6 col-md-6 col-sm-6 ">{{item.startDate | date : 'yyyy-MM-dd'}}</div>
+                                        </div>
+
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <div class="col-lg-6 col-md-6 col-sm-6 text-right">入伙结束时间：</div>
+                                            <div class="col-lg-6 col-md-6 col-sm-6 ">{{item.endDate | date : 'yyyy-MM-dd'}}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-6" ng-show="checkItem.object.intakeActivity.length == null && showStatus==0">
+                <div id="pannel">
+                    <div class="title">
+                        <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6 ">
+                            <h3>入伙信息</h3>
+                        </div>
+                        <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                            <!-- <span class="glyphicon glyphicon-search"></span>-->
+                        </div>
+                    </div>
+                    <div class="pannel_content">
+                        <div class="row">
+                            <div class="col-xs-8 col-lg-8 col-md-8">
+                                <div class="row search-padding 10">
+                                    暂无数据！
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>   <!--网格的显示与隐藏 songjia 2016-2-4 end-->
+
+
+            <div class="bill_paging">
+                <span>共{{checkItem.object.page.totalResult}}条</span>
+                <ul class="pagination">
+                    <li ng-class="{true:'disabled'}[checkItem.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-click="checkItem.go(1)">首页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[checkItem.page.currentPage==1]">
+                        <a href="javascript:void(0)" ng-show="checkItem.hasPrevious()" ng-click="checkItem.previous()">上一页</a>
+                    </li>
+                    <li ng-class="{true:'active'}[checkItem.page.currentPage==i]" ng-repeat="i in checkItem.pages">
+                        <a href="javascript:void(0)"  ng-click="checkItem.go(i)">{{i}}</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[checkItem.page.currentPage==checkItem.page.totalPage]">
+                        <a href="javascript:void(0)" ng-show="checkItem.hasNext()" ng-click="checkItem.next()">下一页</a>
+                    </li>
+                    <li ng-class="{true:'disabled'}[checkItem.page.currentPage==checkItem.page.totalPage]">
+                        <a href="javascript:void(0)" ng-click="checkItem.go(checkItem.page.totalPage)">尾页</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

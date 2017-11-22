@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>水表抄表服务请求管理</title>
+    <link rel="stylesheet" href="css/ztree/demo.css" type="text/css">
+    <link rel="stylesheet" href="css/ztree/zTreeStyle.css" type="text/css">
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.core-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.excheck-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.exedit-3.5.js"></script>
+</head>
+<body>
+<div id="content-first">
+    <!--tab页切换开始-->
+    <div id="tab">
+        <a ng-click="service()" >服务请求</a>
+        <a ng-click="datils()" ng-show="datils1">服务请求详情</a>
+        <a ng-click="tasks()" ng-show="tasks1">任务详情</a>
+        <a ng-click="addService()" ng-show="addService1">新建服务请求</a>
+        <a lang="no"  ng-click="addDatils()"  ng-show="addDatils1">新建任务</a>
+    </div>
+    <!--tab页切换结束-->
+    <div ng-show="show1">
+        <div class="sel_top">
+            <div class="row">
+                <div class="col-lg-8 col-md-6 col-sm-6">
+                    <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="allChecked()">
+                        <span class="glyphicon glyphicon-check btn_icon"></span>
+                        全选
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary tab-btn" data-target="#serviceClosedAll" data-toggle="modal" >
+                        <span class="glyphicon glyphicon-ban-circle btn_icon"></span>
+                        失效
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary tab-btn"  data-target="#serviceFinishAll" data-toggle="modal">
+                        <span class="glyphicon glyphicon-ok btn_icon"></span>
+                        完成
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="addService()" >
+                        <span class="glyphicon glyphicon-plus btn_icon"></span>
+                        新建请求
+                    </button>
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    搜索条件
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-4">
+                    <input class="form-control" ng-model="ServiceRequest.remarks"/>
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2">
+                    <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="searchPaginator._load();">
+                        <span class="glyphicon glyphicon-search btn_icon"></span>
+                        搜索
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row padding">
+            <div class="col-lg-12">
+                <div class="col-lg-4 col-md-6 col-sm-6 ng-scope" ng-repeat="item in searchPaginator.object.serviceRequests" ng-show="item.serviceRequestId != null">
+                    <div id="pannel">
+                        <div class="downList">
+                            <div class="col-xs-12 col-lg-12 col-md-12 col-sm-12 text-right" >
+                    <span class="glyphicon glyphicon-chevron-down"id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                     </span>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                    <li ><a class="program_panel_info_navigation_top" data-toggle="modal" data-target="#serviceFinish"  style="cursor:pointer"  ng-click="servicechange(item)">完成</a></li>
+                                    <li><a  data-toggle="modal" data-target="#serviceClosed" style="cursor:pointer"  ng-click="servicechange(item)">失效</a></li>
+                                    <li><a   style="cursor:pointer"  ng-click="selectTasks(item)">查看</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="title">
+                            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                                <h3>查抄水表</h3>
+                            </div>
+                        </div>
+                        <div class="pannel_content" style="cursor: pointer"  ng-click="selectTasks(item)">
+                            <div class="row search-padding-10">
+                                <div class="col-lg-6 col-md-6 col-sm-6">客户姓名：</div>
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">{{item.personCustNew.name}}</div>
+                            </div>
+                            <div class="row search-padding-10">
+                                <div class="col-lg-6 col-md-6 col-sm-6">请求类型：</div>
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">查抄水表</div>
+                            </div>
+                            <div class="row search-padding-10">
+                                <div class="col-lg-6 col-md-6 col-sm-6">状态：</div>
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right" ng-switch on="item.serviceRequestState">
+                                    <span ng-switch-when="0">关闭</span>
+                                    <span ng-switch-when="1">启用</span>
+                                    <span ng-switch-when="2">处理中</span>
+                                    <span ng-switch-when="3">完成</span>
+                                </div>
+                            </div>
+
+                            <div class="row search-padding-10">
+                                <div class="col-lg-6 col-md-6 col-sm-6">创建时间：</div>
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">{{item.requestTime|date:"yyyy-MM-dd"}}</div>
+                            </div>
+                            <div class="row search-padding-10">
+                                <div class="col-lg-6 col-md-6 col-sm-6">备注：</div>
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">{{item.remarks}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bill_paging">
+                    <ul class="pagination">
+                        <li><a style="cursor:pointer;" ng-click="searchPaginator.go(1)">首页</a></li>
+                        <li><a style="cursor:pointer;" ng-show="searchPaginator.hasPrevious()" ng-click="searchPaginator.previous()">上一页</a></li>
+                        <li><a style="cursor:pointer;" ng-repeat="i in searchPaginator.pages"  ng-click="searchPaginator.go(i)">{{i}}</a></li>
+                        <li><a style="cursor:pointer;" ng-show="searchPaginator.hasNext()" ng-click="searchPaginator.next()">下一页</a></li>
+                        <li><a style="cursor:pointer;" ng-click="searchPaginator.go(searchPaginator.page.totalPage)">尾页</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div ng-show="show2">
+        <div class="sel_top">
+            <div class="row">
+                <div class="col-lg-8 col-md-6 col-sm-6">
+                    <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="allTasksChecked()">
+                        <span class="glyphicon glyphicon-check btn_icon"></span>
+                        全选
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary tab-btn" data-target="#concentrateds" data-toggle="modal" >
+                        <span class="glyphicon glyphicon-screenshot btn_icon"></span>
+                        集中处理项
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary tab-btn"   data-target="#turns" data-toggle="modal" >
+                        <span class="glyphicon glyphicon-new-window btn_icon"></span>
+                        转专项
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary tab-btn"  data-target="#frees" data-toggle="modal"  >
+                        <span class="glyphicon glyphicon-log-out btn_icon"></span>
+                        转出
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary tab-btn"   data-target="#finishs" data-toggle="modal" >
+                        <span class="glyphicon glyphicon-ok btn_icon"></span>
+                        完成
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary tab-btn" data-target="#close" data-toggle="modal" >
+                        <span class="glyphicon glyphicon-ban-circle btn_icon"></span>
+                        失效
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="verifyAccounting()">
+                        <span class="glyphicon glyphicon-th-large btn_icon"></span>
+                        合并
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="addTasks(Service)">
+                        <span class="glyphicon glyphicon-plus btn_icon"></span>
+                        新建
+                    </button>
+
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    搜索条件
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-4">
+                    <input class="form-control" ng-model="Tasks.taskDescription"/>
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2">
+                    <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="searchPaginator1._load();">
+                        <span class="glyphicon glyphicon-search btn_icon"></span>
+                        搜索
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="sel">
+            <div class="row">
+                <div class="col-lg-1 col-md-2 col-sm-2">
+                    <img src="images/project/user/user_3.png" width="80" height="80">
+                </div>
+                <div class="col-lg-5 col-md-4 col-sm-4">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-6 col-md-6 col-sm-6">客户姓名：{{Service.personCustNew.name}}</div>
+                        <div class="col-lg-6 col-md-6 col-sm-6">创建时间：{{Service.requestTime | date:"yyyy-MM-dd"}}</div>
+                        <div class="col-lg-6 col-md-6 col-sm-6">请求类型：查抄水表</div>
+                        <div class="col-lg-6 col-md-6 col-sm-6">创建人：{{user.name}}</div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6" style="word-wrap: break-word">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            描述：{{ Service.remarks}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row padding">
+            <div class="col-lg-12">
+                <div class="col-lg-4 col-md-6 col-sm-6 ng-scope" ng-repeat="item1 in searchPaginator1.object.tasks" ng-show="item1.taskId != null">
+                    <div id="pannel">
+                        <div class="downList">
+                            <div class="col-xs-12 col-lg-12 col-md-12 col-sm-12 text-right" >
+                                <span class="glyphicon glyphicon-chevron-down"id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></span>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                    <li ><a class="program_panel_info_navigation_top" style="cursor:pointer"  ng-click="updateAccept(item1)">接受</a></li>
+                                    <li><a  data-toggle="modal" data-target="#free" style="cursor:pointer"  ng-click="change(item1)">转出</a></li>
+                                    <li> <a data-toggle="modal" data-target="#delayed" ng-click="change(item1)">延时</a></li>
+                                    <li> <a data-toggle="modal" data-target="#press" ng-click="change(item1)">催促</a></li>
+                                    <li> <a data-toggle="modal" data-target="#finish" style="cursor:pointer" ng-click="change(item1)">完成</a></li>
+                                    <li> <a data-toggle="modal" data-target="#assign" style="cursor:pointer"  ng-click="change(item1)">指派</a></li>
+                                    <li ><a  data-toggle="modal" data-target="#closed" style="cursor:pointer"ng-click="change(item1)">关闭</a></li>
+                                    <!--<li>合并</li>-->
+                                    <li><a   data-toggle="modal" data-target="#turn" style="cursor:pointer"ng-click="change(item1)">转专项</a></li>
+                                    <li><a  class="program_panel_info_navigation_bottom" data-toggle="modal" data-target="#concentrated" style="cursor:pointer" ng-click="change(item1)">集中处理</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="title">
+                            <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6"  ng-switch on="item1.taskType">
+                                <h3 ng-switch-when="0" class="text-left">园林</h3>
+                                <h3 ng-switch-when="1">维修</h3>
+                                <h3 ng-switch-when="2">护管</h3>
+                                <h3 ng-switch-when="9">赔偿给业主</h3>
+                                <h3 ng-switch-when="10">向业主索赔</h3>
+                                <h3 ng-switch-when="11">清洁</h3>
+                                <h3 ng-switch-when="12">回访</h3>
+                                <h3 ng-switch-when="13">投诉</h3>
+                                <h3 ng-switch-when="14">验房</h3>
+                                <h3 ng-switch-when="15">咨询</h3>
+                                <h3 ng-switch-when="16">抄水表</h3>
+                                <h3 ng-switch-when="17">抄电表</h3>
+                                <h3 ng-switch-when="18">装修核查任务</h3>
+                                <h3 ng-switch-when="4">装修巡检任务</h3>
+                                <h3 ng-switch-when="5">装修验收任务</h3>
+                            </div>
+                        </div>
+                        <div class="pannel_content" ng-click="taskDetailsIds(item1.taskId)"  >
+                            <div class="row search-padding-10">
+                                <div class="col-lg-6 col-md-6 col-sm-6">任务类型：</div>
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+                                    <span ng-switch on="item1.taskType">
+                                    <span ng-switch-when="0">园林</span>
+                                    <span ng-switch-when="1">维修</span>
+                                    <span ng-switch-when="2">护管</span>
+                                  <span ng-switch-when="18">装修核查任务</span>
+                                    <span ng-switch-when="4">装修巡检任务</span>
+                                    <span ng-switch-when="5">装修验收任务</span>
+                                    <!--<span ng-switch-when="6">施工巡检</span>-->
+                                    <!--<span ng-switch-when="7">施工核查</span>-->
+                                    <!--<span ng-switch-when="8">施工验收</span>-->
+                                    <span ng-switch-when="9">赔偿给业主</span>
+                                    <span ng-switch-when="10">向业主索赔</span>
+                                    <span ng-switch-when="11">清洁</span>
+                                    <span ng-switch-when="12">回访</span>
+                                    <span ng-switch-when="13">投诉</span>
+                                    <span ng-switch-when="14">验房</span>
+                                    <span ng-switch-when="15">咨询</span>
+                                    <span ng-switch-when="16">抄水表</span>
+                                    <span ng-switch-when="17">抄电表</span>
+                                        </span>
+                                </div>
+                            </div>
+                            <div class="row search-padding-10">
+                                <div class="col-lg-6 col-md-6 col-sm-6">负责人：</div>
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">{{item1.staff.staffName}}</div>
+                            </div>
+                            <div class="row search-padding-10">
+                                <div class="col-lg-6 col-md-6 col-sm-6">状态：</div>
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">  <span ng-switch on="item1.taskState">
+                                        <span ng-switch-when="0">失效</span>
+                                        <span ng-switch-when="1">重启</span>
+                                        <span ng-switch-when="2">已完成</span>
+                                        <span ng-switch-when="3">已接受</span>
+                                        <span ng-switch-when="4">未接受</span>
+                                        <span ng-switch-when="5">转出</span>
+                                        <span ng-switch-when="6">提交完成</span>
+                                        <span ng-switch-when="7">处理中</span>
+                                        <span ng-switch-when="8">合并</span>
+                                        <span ng-switch-when="9">转专项</span>
+                                        <span ng-switch-when="10">转集中处理</span>
+                                        <span ng-switch-when="11">指派</span>
+                                        </span></div>
+                            </div>
+                            <div class="row search-padding-10">
+                                <div class="col-lg-6 col-md-6 col-sm-6">创建时间：</div>
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">{{item1.createTime}}</div>
+                            </div>
+                            <div class="row search-padding-10">
+                                <div class="col-lg-6 col-md-6 col-sm-6">备注：</div>
+                                <div class="col-lg-6 col-md-6 col-sm-6 text-right">{{item1.taskDescription}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bill_paging">
+                    <ul class="pagination">
+                        <li><a style="cursor:pointer;" ng-click="searchPaginator1.go(1)">首页</a></li>
+                        <li><a style="cursor:pointer;" ng-show="searchPaginator1.hasPrevious()" ng-click="searchPaginator1.previous()">上一页</a></li>
+                        <li><a style="cursor:pointer;" ng-repeat="i in searchPaginator1.pages"  ng-click="searchPaginator1.go(i)">{{i}}</a></li>
+                        <li><a style="cursor:pointer;" ng-show="searchPaginator1.hasNext()" ng-click="searchPaginator1.next()">下一页</a></li>
+                        <li><a style="cursor:pointer;" ng-click="searchPaginator1.go(searchPaginator1.page.totalPage)">尾页</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div ng-show="show3">show3</div>
+    <div ng-show="show4">
+        <div class="sel">
+            <div class="row search-padding-10">
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    请求类型
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    查抄水表
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    请求来源
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    前台
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    客户姓名
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    {{choiceUser.name}}
+                    <button class="btn btn-default" ng-click="showPerson()" >搜索人员</button>
+                </div>
+            </div>
+            <div class="row search-padding-10">
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    联系电话
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <input class="form-control"ng-model="choiceUser.phoneNum" />
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    紧急程度
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2">
+                    <label class="checkbox inline">
+                        <input type="checkbox"  name="anxious" class="checkboxa">
+                        <span>加急</span>
+                    </label>
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2">
+                    <label class="checkbox inline">
+                        <input type="checkbox" ng-true-value="1" ng-false-value="0" ng-model="ServiceRequest.importantEvent"  class="checkboxa" name="ims" ng-click="getValue()">
+                        <span style="color: red">重大事件</span>
+                    </label>
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4" ng-show="impro">
+                    <select class="form-control" class="ss" ng-model="ServiceRequest.importantEventTypeId" ng-options="a.eventTypeId as a.eventTypeName for a in important" >
+                        <option value="" >重大事项类型</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row padding">
+            <div class="col-lg-12 col-md-12 col-sm-12">
+                <div class="search-padding-10">
+                    描述
+                </div>
+                <div class="search-padding-10">
+                    <textarea class="form-control" style="height:100px" placeholder="请输入内容" ng-model="ServiceRequest.remarks"></textarea>
+                </div>
+                <div class="row search-padding-10">
+                    <div class="col-lg-6">
+                        任务列表
+                    </div>
+                    <div class="col-lg-6 text-right">
+                        <button type="button" class="btn btn-default btn-primary tab-btn">
+                            <span class="glyphicon glyphicon-plus btn_icon"></span>
+                            新建
+                        </button>
+                    </div>
+                </div>
+                <div class="row search-padding-10">
+                    <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                        任务类型
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        抄水表
+                    </div>
+                </div>
+                <div class="row search-padding-10">
+                    <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                        分类
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        <select class="form-control">
+                            <option>请选择</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-1 col-md-2 col-sm-2">
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        <select class="form-control">
+                            <option>请选择</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-1 col-md-2 col-sm-2">
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        <select class="form-control">
+                            <option>请选择</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row search-padding-10">
+                    <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                        地址
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4" data-toggle="modal" data-target="#tree">
+
+                        <input class="form-control" readonly="readonly" ng-model="addWaterCheck[0].fullname" />
+
+                    </div>
+                    <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                        负责人
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        <input class="form-control" readonly="readonly" data-toggle="modal" data-target="#newPerson" ng-model="person.staff.staffName"/>
+                    </div>
+                    <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                        完成时间
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        <input class="form-control" type="date" ng-model="ServiceRequest_tasks.estimatedTime"/>
+                    </div>
+                </div>
+                <div class="search-padding-10">
+                    任务描述
+                </div>
+                <div class="search-padding-10">
+                    <textarea class="form-control" style="height:100px" placeholder="请输入内容"  ng-model="ServiceRequest_tasks.taskDescription"></textarea>
+                </div>
+                <div class="text-center">
+                    <button type="button" class="btn btn-default btn-primary tab-btn">
+                        取消
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="addReqService(choiceUser.custId);">
+                        提交
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div ng-show="show5">
+        <div class="row padding">
+            <div class="col-lg-12">
+                <div class="row search-padding-10">
+                    <div class="col-lg-6 col-md-6 col-sm-6">任务</div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+                        <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="add()">
+                            <span class="glyphicon glyphicon-plus btn_icon"></span>
+                            新建
+                        </button>
+                    </div>
+                </div>
+                <div class="row search-padding-10">
+                    <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                        任务类型
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                       查抄水表
+                    </div>
+                    <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2">
+                        <label class="checkbox inline">
+                            <input type="checkbox"  value="1" ng-model="search.staff">
+                            <span>公共区域</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="row search-padding-10">
+                    <div class="col-lg-1 col-md-2 col-sm-2  text-right">
+                        分类
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        <select class="form-control">
+                            <option>请选择</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-1 col-md-2 col-sm-2">
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        <select class="form-control">
+                            <option>请选择</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-1 col-md-2 col-sm-2">
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        <select class="form-control">
+                            <option>请选择</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row search-padding-10">
+                    <div class="col-lg-1 col-md-2 col-sm-2  text-right">
+                        地址
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        <input class="form-control" readonly="readonly" ng-model="addWaterCheck[0].fullname" data-toggle="modal" data-target="#tree"/>
+                    </div>
+                    <div class="col-lg-1 col-md-2 col-sm-2  text-right">
+                        负责人
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        <input class="form-control" readonly="readonly" data-toggle="modal" data-target="#newPerson" ng-model="person.staff.staffName"/>
+                    </div>
+                    <div class="col-lg-1 col-md-2 col-sm-2  text-right">
+                        完成时间
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        <input class="form-control" type="date" ng-model="Tasks_add.estimatedTime"/>
+                    </div>
+                </div>
+                <div class="search-padding-10">
+                    任务描述
+                </div>
+                <div class="search-padding-10">
+                    <textarea class="form-control" style="height:100px" placeholder="请输入内容"  ng-model="Tasks_add.taskDescription"></textarea>
+                </div>
+                <div class="text-center">
+                    <button type="button" class="btn btn-default btn-primary tab-btn">
+                        取消
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="addTask(Tasks_add)">
+                        提交
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--服务请求关闭-->
+<div class="modal fade" id="tree" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <span >
+                    地址
+                </span>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                    <div class="col-md-4">
+                        <ul id="treeDemo"  class="ztree"></ul>
+                    </div>
+
+                </div>
+                <div class="clear"></div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                    <button class="btn bg-primary" data-dismiss="modal"   ng-click="addWaterReading()">提交</button>
+
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
+<!--服务请求关闭-->
+<div class="modal fade" id="serviceClosed" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <span>
+                    服务请求失效
+                </span>
+            </div>
+            <div class="modal-body">
+                <div class="sel1">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-12 col-md-2 col-sm-2">
+                            失效原因
+                        </div>
+                        <div class="col-lg-12 col-md-4 col-sm-4">
+                            <textarea class="text_min" placeholder="请输入内容" ng-model="journal.remarks"></textarea>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button class="btn bg-primary" data-dismiss="modal"   ng-click="serviceClosed()">提交</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!--服务请求完成-->
+<div class="modal fade" id="serviceFinish" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    服务请求完成
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="sel1">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-12 col-md-2 col-sm-2">
+                            备注
+                        </div>
+                        <div class="col-lg-12 col-md-4 col-sm-4">
+                            <textarea class="text_min"  placeholder="请输入内容" ng-model="journal.remarks"></textarea>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button class="btn bg-primary" data-dismiss="modal"   ng-click="serviceFinish()">提交</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!--服务请求全部失效-->
+<div class="modal fade" id="serviceClosedAll" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <span>
+                    服务请求失效
+                </span>
+            </div>
+            <div class="modal-body">
+                <div class="sel1">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-12 col-md-2 col-sm-2">
+                            失效原因
+                        </div>
+                        <div class="col-lg-12 col-md-4 col-sm-4">
+                            <textarea class="text_min"  placeholder="请输入内容" ng-model="journal.remarks"></textarea>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button class="btn bg-primary" data-dismiss="modal"   ng-click="serviceClosedAll()">提交</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
+<!--服务请求全部完成-->
+<div class="modal fade" id="serviceFinishAll" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    服务请求完成
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="sel1">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-12 col-md-2 col-sm-2">
+                            备注
+                        </div>
+                        <div class="col-lg-12 col-md-4 col-sm-4">
+                            <textarea class="text_min"  placeholder="请输入内容" ng-model="journal.remarks"></textarea>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button class="btn bg-primary" data-dismiss="modal"   ng-click="serviceFinishAll()">提交</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!--任务接受-->
+<div class="modal fade" id="accept" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <span>
+                    接受
+                </span>>
+            </div>
+            <div class="modal-body">
+                <div class="sel1">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-12 col-md-2 col-sm-2">
+                            说明
+                        </div>
+                        <div class="col-lg-12 col-md-4 col-sm-4">
+                            <textarea class="text_min"  placeholder="请输入内容" ng-model="aaa.remarks"></textarea>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button class="btn bg-primary" data-dismiss="modal"   ng-click="UpdateAccept()">提交</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!--任务失效-->
+<div class="modal fade" id="closed" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <span>
+                    失效
+                </span>
+            </div>
+            <div class="modal-body">
+                <div class="sel1">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-12 col-md-2 col-sm-2">
+                            说明
+                        </div>
+                        <div class="col-lg-12 col-md-4 col-sm-4">
+                            <textarea class="text_min"  placeholder="请输入内容" ng-model="aaa.remarks"></textarea>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                </button>
+                <button class="btn bg-primary" data-dismiss="modal"   ng-click="updateClosed()">提交</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!--任务指派模块-->
+<div class="modal fade" id="assign" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <span>
+                    指派
+                </span>
+            </div>
+            <div class="modal-body">
+                <div class="padding15">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            选择负责人
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4 ">
+                            <input class="form-control" readonly="readonly" data-toggle="modal" data-target="#newPerson" ng-model="aaa.staff.staffName">
+                        </div>
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-12 col-md-2 col-sm-2">
+                            指派原因
+                        </div>
+                        <div class="col-lg-12 col-md-4 col-sm-4">
+                            <textarea class="text_min"  placeholder="请输入内容" ng-model="aaa.remarks"></textarea>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button class="btn bg-primary" data-dismiss="modal"   ng-click="updateAssign()">提交</button>
+
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!--任务转出-->
+<div class="modal fade" id="free" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <span>
+                    转出
+                </span>
+            </div>
+            <div class="modal-body">
+                <div class="sel1">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-12 col-md-2 col-sm-2">
+                            说明
+                        </div>
+                        <div class="col-lg-12 col-md-4 col-sm-4">
+                            <textarea class="text_min" cols="3" placeholder="请输入内容" ng-model="aaa.remarks"></textarea>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                </button>
+                <button class="btn bg-primary" data-dismiss="modal"   ng-click="updateRollOut()">提交</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!--任务专项资金处理-->
+<div class="modal fade" id="turn" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <span>
+                    转专项
+                </span>
+            </div>
+            <div class="modal-body">
+                <div class="padding15">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-3 col-md-3 col-sm-3 text-right">
+                            转入专项资金维修项目
+                        </div>
+                        <div class="col-lg-4 col-md-2 col-sm-2" style="width: 160px;">
+                            <select ng-model="aaa.turnSpecialRecordsId"  class="form-control" ng-options="temp.specialId as temp.specialName for temp in specialRepairProjects">
+                                <option value="">请选择项目类型</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row search-padding-10">
+                        <div class="col-lg-12 col-md-2 col-sm-2">
+                            说明
+                        </div>
+                        <div class="col-lg-12 col-md-4 col-sm-4">
+                            <textarea class="text_min" cols="3" placeholder="请输入内容" ng-model="aaa.remarks"></textarea>
+                        </div>
+                    </div>
+
+
+
+
+                </div>
+            </div>
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                </button>
+                <button class="btn bg-primary" data-dismiss="modal"   ng-click="updateSpecial()">提交</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!--任务集中处理-->
+<div class="modal fade" id="concentrated" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <span>
+                    集中处理
+                </span>
+            </div>
+            <div class="modal-body">
+                <div class="padding15">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-3 col-md-2 col-sm-2">
+                            选择转入集中处理项
+                        </div>
+                        <div class="col-lg-4 col-md-2 col-sm-2">
+                            <select class="form-control"ng-model="aaa.projectId" ng-options="temp.projectId as temp.projectName for temp in centralizedTreatmentProjects">
+                                <option value="">请选择集中处理类型</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row search-padding-10">
+                        <div class="col-lg-12 col-md-2 col-sm-2">
+                            说明
+                        </div>
+                        <div class="col-lg-12 col-md-4 col-sm-4">
+                            <textarea class="text_min" cols="3" placeholder="请输入内容" ng-model="aaa.remarks"></textarea>
+                        </div>
+                    </div>
+
+
+
+                </div>
+
+            </div>
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                </button>
+                <button class="btn bg-primary" data-dismiss="modal"   ng-click="updateTasks()">提交</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!--任务完成-->
+<div class="modal fade" id="finish" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <span>
+                    任务完成
+                </span>
+            </div>
+            <div class="modal-body">
+                <div class="sel1">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-12 col-md-2 col-sm-2">
+                            说明
+                        </div>
+                        <div class="col-lg-12 col-md-4 col-sm-4">
+                            <textarea class="text_min" cols="3" placeholder="请输入内容" ng-model="aaa.remarks"></textarea>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                </button>
+                <button class="btn bg-primary" data-dismiss="modal"   ng-click="updateFinish()">提交</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!--任务延时-->
+<div class="modal fade" id="delayed" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <span>
+                    延时
+                </span>
+            </div>
+            <div class="modal-body">
+                <div class="padding15">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            操作
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            延时
+                        </div>
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                            延长时间到
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <input type="datetime-local" ng-model="ApplicationDelayRecords.delayTime" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="row search-padding-10">
+                        <div class="col-lg-12 col-md-2 col-sm-2">
+                            说明
+                        </div>
+                        <div class="col-lg-12 col-md-4 col-sm-4">
+                            <textarea class="text_min" cols="3" placeholder="请输入内容" ng-model="aaa.remarks"></textarea>
+                        </div>
+                    </div>
+
+
+
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button class="btn bg-primary" data-dismiss="modal"   ng-click="delayTask()">提交</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!--任务催促-->
+<div class="modal fade" id="press" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    催促
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="padding15">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            操作:催促任务
+                        </div>
+                    </div>
+
+
+                    <div class="row search-padding-10">
+                        <div class="col-lg-12 col-md-2 col-sm-2">
+                            说明
+                        </div>
+                        <div class="col-lg-12 col-md-4 col-sm-4">
+                            <textarea class="text_min" cols="3" placeholder="请输入内容" ng-model="aaa.remarks"></textarea>
+                        </div>
+
+
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button class="btn bg-primary" data-dismiss="modal"   ng-click="urgeTask()">提交</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!--任务全部失效-->
+<div class="modal fade" id="close" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <span>
+                    失效
+                </span>
+            </div>
+            <div class="modal-body">
+                <div class="sel1">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-12 col-md-2 col-sm-2">
+                            说明
+                        </div>
+                        <div class="col-lg-12 col-md-4 col-sm-4">
+                            <textarea class="text_min" cols="3" placeholder="请输入内容" ng-model="aaa.remarks"></textarea>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                </button>
+                <button class="btn bg-primary" data-dismiss="modal"  ng-click="changeTaskState('',0)">提交</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
+<!--负责人员-->
+<div class="modal fade" id="newPerson" role="dialog" aria-label="personDatil" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>人员</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                    <div class="sel1">
+                        <div class="row search-padding-10">
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                姓名
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input class="form-control"  ng-model="Teamworkstaff.staffName"/>
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                电话
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <input class="form-control" ng-model="Teamworkstaff.telphone" />
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                部门
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <select class="form-control"  ng-model="Teamworkstaff.professionalLineId" ng-options="a.specialtyId as a.specialtyName for a in SpecialtyInfo" >
+                                    <option value="" >选择部门</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+                                <button type="button" class="btn btn-default btn-primary" ng-click="searchPaginator2._load()">
+                                    <span class="glyphicon glyphicon-search btn_icon"></span>搜索
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="search-padding-10">
+                        <table>
+                            <thead>
+                            <th width="50"></th>
+                            <th>姓名</th>
+                            <th>部门</th>
+                            <th>电话</th>
+                            <th>状态</th>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="item in searchPaginator2.object.teamworkStaffs" ng-show="item.id != null">
+                                <td><input type="checkbox"  name="aaa" ng-click="getdata(item)" onclick="check(this)"></td>
+                                <td>{{item.staff.staffName}}</td>
+                                <td>{{item.specialtyInfo.specialtyName}}</td>
+                                <td>{{item.staff.telphone}}</td>
+                                <td>{{}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="bill_paging">
+                            <ul class="pagination">
+                                <li><a style="cursor:pointer;" ng-click="searchPaginator2.go(1)">首页</a></li>
+                                <li><a style="cursor:pointer;" ng-show="searchPaginator2.hasPrevious()" ng-click="searchPaginator2.previous()">上一页</a></li>
+                                <li><a style="cursor:pointer;" ng-repeat="i in searchPaginator2.pages"  ng-click="searchPaginator2.go(i)">{{i}}</a></li>
+                                <li><a style="cursor:pointer;" ng-show="searchPaginator2.hasNext()" ng-click="searchPaginator2.next()">下一页</a></li>
+                                <li><a style="cursor:pointer;" ng-click="searchPaginator2.go(searchPaginator2.page.totalPage)">尾页</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" >取消</button>
+                <button type="button" class="btn bg-primary" data-dismiss="modal" ng-click="addPerson()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--负责人员 END-->
+
+<!--任务全部转出-->
+<div class="modal fade" id="frees" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <span>
+                    转出
+                </span>
+            </div>
+            <div class="modal-body">
+                <div class="sel1">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-12 col-md-2 col-sm-2">
+                            说明
+                        </div>
+                        <div class="col-lg-12 col-md-4 col-sm-4">
+                            <textarea class="text_min" cols="3" placeholder="请输入内容" ng-model="aaa.remarks"></textarea>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                </button>
+                <button class="btn bg-primary" data-dismiss="modal"   ng-click="updateRollOuts()">提交</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!--任务全部专项资金处理-->
+<div class="modal fade" id="turns" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <span>
+                    转专项
+                </span>
+            </div>
+            <div class="modal-body">
+                <div class="padding15">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-3 col-md-3 col-sm-3 text-right">
+                            转入专项资金维修项目
+                        </div>
+                        <div class="col-lg-4 col-md-2 col-sm-2">
+                            <select ng-model="aaa.turnSpecialRecordsId"  class="form-control" ng-options="temp.specialId as temp.specialName for temp in specialRepairProjects">
+                                <option value="">请选择项目类型</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row search-padding-10">
+                        <div class="col-lg-12 col-md-2 col-sm-2">
+                            说明
+                        </div>
+                        <div class="col-lg-12 col-md-4 col-sm-4">
+                            <textarea class="text_min" cols="3" placeholder="请输入内容" ng-model="aaa.remarks"></textarea>
+                        </div>
+                    </div>
+
+
+
+
+                </div>
+            </div>
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                </button>
+                <button class="btn bg-primary" data-dismiss="modal"   ng-click="updateSpecials()">提交</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!--任务全部集中处理-->
+<div class="modal fade" id="concentrateds" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <span>
+                    集中处理
+                </span>
+            </div>
+            <div class="modal-body">
+                <div class="padding15">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-3 col-md-2 col-sm-2 text-right">
+                            选择转入集中处理项
+                        </div>
+                        <div class="col-lg-4 col-md-2 col-sm-2">
+                            <select class="form-control"ng-model="aaa.projectId" ng-options="temp.projectId as temp.projectName for temp in centralizedTreatmentProjects">
+                                <option value="">请选择集中处理类型</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row search-padding-10">
+                        <div class="col-lg-12 col-md-2 col-sm-2">
+                            说明
+                        </div>
+                        <div class="col-lg-12 col-md-4 col-sm-4">
+                            <textarea class="text_min" cols="3" placeholder="请输入内容" ng-model="aaa.remarks"></textarea>
+                        </div>
+                    </div>
+
+
+
+                </div>
+
+            </div>
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                </button>
+                <button class="btn bg-primary" data-dismiss="modal"   ng-click="updateTaskss()">提交</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!--任务全部完成-->
+<div class="modal fade" id="finishs" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <span>
+                    任务完成
+                </span>
+            </div>
+            <div class="modal-body">
+                <div class="sel1">
+                    <div class="row search-padding-10">
+                        <div class="col-lg-12 col-md-2 col-sm-2">
+                            说明
+                        </div>
+                        <div class="col-lg-12 col-md-4 col-sm-4">
+                            <textarea class="text_min" cols="3" placeholder="请输入内容" ng-model="aaa.remarks"></textarea>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                </button>
+                <button class="btn bg-primary" data-dismiss="modal"   ng-click="updateFinishs()">提交</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+    <!--查询人员模态框-->
+    <div class="modal fade" id="myModal_user" role="dialog" aria-label="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width: 1024px">
+            <div class="modal-content" >
+                <div class="modal-header">
+                    <span>授权人信息：</span>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="padding">
+                        <div class="search-padding-10">
+                            <div class="row sel">
+                                <div class="col-lg-1 col-md-2 col-sm-2 text-right search-padding-10">
+                                    姓名
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4 text-right search-padding-10">
+                                    <input type="text" class="form-control" placeholder="请输入查询姓名" ng-model="housez.name"/>
+                                </div>
+                                <div class="col-lg-1 col-md-2 col-sm-2 text-right search-padding-10">
+                                    身份证号
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4 text-right search-padding-10">
+                                    <input type="text" class="form-control" placeholder="请输入查询身份证号" ng-model="housez.cardNum"/>
+                                </div>
+                                <div class="col-lg-1 col-md-2 col-sm-2 text-right search-padding-10">
+                                    手机号
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4 text-right search-padding-10">
+                                    <input type="text" class="form-control" placeholder="请输入手机号码" ng-model="housez.phoneNum"/>
+                                </div>
+                                <div class="col-lg-1 col-md-2 col-sm-2 text-right search-padding-10">
+                                    资产类型
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4 text-right search-padding-10">
+                                    <select class="form-control"  ng-model="housez.id" ng-options="c.id as c.areaTypeName for c in areaTypeNew">
+                                        <option value="">请选择</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-1 col-md-2 col-sm-2 text-right search-padding-10">
+                                    资产编号
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4 text-right search-padding-10">
+                                    <input type="text" class="form-control" placeholder="请输入查询的资产编号" ng-model="housez.houseNum"/>
+                                </div>
+                                <div class="col-lg-1 col-md-2 col-sm-2 text-right search-padding-10">
+                                    房产证号
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4 text-right search-padding-10">
+                                    <input type="text" class="form-control" placeholder="请输入查询的房产证号" ng-model="housez.premisesPermit"/>
+                                </div>
+                                <div class="col-lg-1 col-md-2 col-sm-2 text-right search-padding-10">
+                                    地址
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-4 text-right search-padding-10">
+                                    <input type="text" class="form-control" placeholder="请输入地址" ng-model="housez.fullName"/>
+                                </div>
+                                <div class="col-lg-8 col-md-2 col-sm-2 text-right search-padding-10 text-right">
+                                    <button type="button" class="btn btn-default btn-primary"  ng-click="searchPaginator_user._load()" data-toggle="modal" data-target="#myModal_zuping">
+                                        <span class="glyphicon glyphicon-search btn_icon"></span>
+                                        查询
+                                    </button>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+                        </div>
+                        <table>
+                            <thead>
+                            <tr >
+                                <th width="50"></th>
+                                <th>序号</th>
+                                <th>业主姓名</th>
+                                <th>房屋地址</th>
+                                <th>入伙状态</th>
+                                <th>房屋编号</th>
+                                <th>销售状态</th>
+                                <th>竣工面积</th>
+                                <th>房屋户型</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="house in searchPaginator_user.object.houseNews" ng-show="house.id!=null">
+                                <!--<td><input class="form-control" type="checkbox" id="{{house.id}}" ng-click="getData(house)"></td>-->
+                                <td><input id={{house.id}} type="checkbox"  ng-model="x" ng-checked="master" ng-click="choiceRelation(house,x)" name="personNameOne"></td>
+                                <td>{{$index}}</td>
+                                <td>{{house.name}}</td>
+                                <td>{{house.fullName}}</td>
+                                <td ng-switch on="house.joinState">
+                                    <span ng-switch-when="0">未入伙</span>
+                                    <span ng-switch-when="1">已入伙</span>
+                                </td>
+                                <td>{{house.houseNum}}</td>
+                                <td>{{house.marketState}}</td>
+                                <td>{{house.completeArea}}</td>
+                                <td>{{house.houseType}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="bill_paging">
+                            <ul class="pagination">
+                                <li><a style="cursor:pointer;" ng-click="searchPaginator_user.go(1)">首页</a></li>
+                                <li><a style="cursor:pointer;" ng-show="searchPaginator_user.hasPrevious()" ng-click="searchPaginator_user.previous()">上一页</a></li>
+                                <li><a style="cursor:pointer;" ng-repeat="i in searchPaginator_user.pages"  ng-click="searchPaginator_user.go(i)">{{i}}</a></li>
+                                <li><a style="cursor:pointer;" ng-show="searchPaginator_user.hasNext()" ng-click="searchPaginator_user.next()">下一页</a></li>
+                                <li><a style="cursor:pointer;" ng-click="searchPaginator_user.go(searchPaginator_user.page.totalPage)">尾页</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" ng-click="resetData()">取消</button>
+                    <button type="button" class="btn btn-primary" ng-click="saveData()">提交</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

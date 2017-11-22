@@ -1,0 +1,249 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 巡检管理
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../../app');
+
+    app.controller('newPlanCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        var url = $rootScope.url;
+
+        $scope.addInspectionPlan={inspectionPlan:{},tList:[]};  //最终保存的对象
+        $scope.currentEditIndex=null;      //当前编辑框(初始为空)
+        $scope.editData=false;
+        $scope.currentObject={object:[]};
+        $scope.currentData={};
+
+        /**
+         *  修改按钮点击事件
+         * @param index  行下标
+         */
+       /* $scope.updateItem=function(index){
+            $scope.editData=true;
+            $scope.currentEditIndex=index;
+            var current=$scope.currentObject.object[index];
+            $scope.currentData={
+                checkItemName:current.checkItemName,
+                checkItemUnit:current.checkItemUnit,
+                checkItemReference:current.checkItemReference,
+                inputType:current.inputType
+            };
+        };*/
+
+        //修改新增行
+        $scope.updateItem = function(index){
+            if($scope.editData){
+                layer.msg('请先保存行数据！',{icon : 0,time : 1000});
+                return;
+            }
+
+            $scope.currentEditIndex = index;
+            var current=$scope.currentObject.object[index];
+            $scope.currentData={
+                checkItemName:current.checkItemName,
+                checkItemUnit:current.checkItemUnit,
+                checkItemReference:current.checkItemReference,
+                inputType:current.inputType
+            };
+            $scope.editData=true;
+        };
+
+        /**
+         * 修改保存
+         * @param index 行下标
+         */
+        $scope.updateSave=function(index){
+            $scope.inspectionPlan[index].editing=false;
+        };
+        /**
+         * 取消
+         * @param index 行下标
+         */
+        $scope.updateCancel=function(index){
+            $scope.inspectionPlan[index]=$scope.cloneItem;
+            $scope.inspectionPlan[index].editing=false;
+        };
+        /**
+         * 删除数据
+         * @param index 行下标
+         */
+       /* $scope.deleteItem=function(index){
+            $scope.currentObject.object.splice(index,1);
+        };*/
+
+        //删除新增行
+        //删除行时进行提示  杨升权  2016.07.18
+        $scope.deleteItem = function(index){
+            //增加判断是否有数据未保存的判断  杨升权  2016.07.18
+            if($scope.editData){
+                layer.msg('请先保存行数据！',{icon : 0,time : 1000});
+                return;
+            }
+            layer.confirm('是否删除此行？',{
+                btn : ['确定','取消']
+            },function(){
+                $scope.currentObject.object.splice(index,1);
+                layer.msg('删除成功！',{icon : 1,time : 1000});
+                $scope.$apply($scope.currentObject);
+            },function(){});
+        };
+
+        /**
+         * 新增按钮事件
+         */
+        /*$scope.addItem=function(){
+            $scope.editData=true;
+            $scope.currentEditIndex=null;
+        };*/
+        /**
+         * 新增按钮事件 杨升权 2017/7/18
+         */
+        $scope.addItem = function(){
+            if($scope.editData){
+                layer.msg('请先保存正在填写的数据！',{icon : 0,time : 1000});
+                return;
+            }
+            $scope.editData = true;
+            $scope.currentEditIndex = null;
+            $scope.currentEditArea = {};
+        };
+
+        /**
+         * 新增保存功能
+         */
+        $scope.addSave=function(){
+            /*if($scope.currentEditIndex!=null){
+                $scope.currentObject.object[$scope.currentEditIndex]={
+                    checkItemName:$scope.currentData.checkItemName,
+                    checkItemUnit:$scope.currentData.checkItemUnit,
+                    checkItemReference:$scope.currentData.checkItemReference,
+                    inputType:$scope.currentData.inputType
+                };
+            }
+            else{
+                $scope.currentObject.object.push({
+                    checkItemName:$scope.currentData.checkItemName,
+                    checkItemUnit:$scope.currentData.checkItemUnit,
+                    checkItemReference:$scope.currentData.checkItemReference,
+                    inputType:$scope.currentData.inputType
+                });
+            }
+            $scope.currentData={};
+            $scope.editData=false;
+            $scope.addInspectionPlan.tList = $scope.currentObject.object;*/
+        /*******************************************************************************/
+            /**
+             * 新增保存功能 杨升权 2017/7/18
+             */
+            var areanum = '';
+            areanum = app.get('valueCheck').isNull($scope.currentData.checkItemName);
+            if(areanum.state == false){
+                layer.msg('检测名称' + areanum.info, {icon : 0,time : 1000});
+                return;
+            }
+            var areaname = '';
+            areaname = app.get('valueCheck').isNull($scope.currentData.checkItemUnit);
+            if(areaname.state == false){
+                layer.msg('单位' + areaname.info, {icon : 0,time : 1000});
+                return;
+            }
+            var areaareas = '';
+            areaareas = app.get('valueCheck').isNumberAndNotNull($scope.currentData.checkItemReference);
+            if(areaareas.state == false){
+                layer.msg('默认值' + areaareas.info, {icon : 0,time : 1000});
+                return;
+            }
+
+
+
+            //增加保存行数据时的重复验证，验证序号和名称不能重复 杨升权 2016/7/18
+            if($scope.currentEditIndex!=null){
+                namecount = 0;
+                for(var i = 0, len = $scope.currentObject.object.length; i <len; i++){
+                    if($scope.currentData.checkItemName == $scope.currentObject.object[i].checkItemName && i != $scope.currentEditIndex){
+                        namecount++;
+                    }
+                }
+
+                if(namecount > 0){
+                    layer.msg('检测名称不能重复！',{icon : 0,time : 1000});
+                    return;
+                }
+                $scope.currentObject.object[$scope.currentEditIndex]={
+                    checkItemName:$scope.currentData.checkItemName,
+                    checkItemUnit:$scope.currentData.checkItemUnit,
+                    checkItemReference:$scope.currentData.checkItemReference,
+                    inputType:$scope.currentData.inputType
+                };
+            }else {
+                var namecount = 0;
+                for(var i = 0, len = $scope.currentObject.object.length; i <len; i++){
+
+                    if($scope.currentData.checkItemName ==  $scope.currentObject.object[i].checkItemName){
+                        namecount++;
+                    }
+                }
+
+                if(namecount > 0){
+                    layer.msg('检测名称不能重复！',{icon : 0,time : 1000});
+                    return;
+                }
+                $scope.currentObject.object.push({
+                    checkItemName:$scope.currentData.checkItemName,
+                    checkItemUnit:$scope.currentData.checkItemUnit,
+                    checkItemReference:$scope.currentData.checkItemReference,
+                    inputType:$scope.currentData.inputType
+                });
+            }
+            $scope.currentData={};
+            $scope.editData=false;
+            $scope.addInspectionPlan.tList = $scope.currentObject.object;
+
+        };
+        /**
+         * 新增取消
+         */
+        $scope.addCancel=function(){
+            $scope.editData=false;
+            $scope.currentEditArea ={};
+        };
+
+        //新增保存
+        $scope.saveAll=function(){
+            if($scope.addInspectionPlan.inspectionPlanName==undefined || $scope.addInspectionPlan.inspectionPlanName==''){
+                layer.msg('请先巡检名称！',{icon : 0,time : 1000});
+                return;
+            }
+            if($scope.addInspectionPlan.remarks==undefined || $scope.addInspectionPlan.remarks==''){
+                layer.msg('请先方案描述！',{icon : 0,time : 1000});
+                return;
+            }
+
+
+            for(var i=0;i<$scope.addInspectionPlan.tList.length;i++){
+                if($scope.addInspectionPlan.tList[i].inputType="填写输入"){
+                    $scope.addInspectionPlan.tList[i].inputType=0;
+                }else if($scope.addInspectionPlan.tList[i].inputType="选择输入"){
+                    $scope.addInspectionPlan.tList[i].inputType=1;
+                }
+            }
+            $http.post(url+'/InspectionPlan/insertInspectionPlan',{InspectionPlan:$scope.addInspectionPlan}).success(function(data) {
+                alert('添加成功');
+                $scope.addInspectionPlan={inspectionPlan:{},tList:[]};  //最终保存的对象
+
+            }).error(function(data, status, headers, config){
+                alert('添加失败');
+            });
+        };
+
+        //取消
+        $scope.cancle=function(){
+            $scope.addInspectionPlan={inspectionPlan:{},plans:[]};  //最终保存的对象
+        };
+
+    }]);
+});

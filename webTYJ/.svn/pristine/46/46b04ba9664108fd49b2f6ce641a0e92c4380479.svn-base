@@ -1,0 +1,382 @@
+/**
+ * Created by 尹霞 on 2015/8/17.
+ * 名称：银联银行托收js
+ */
+
+/**
+ * Created by NM on 2018/1/18.
+ * 银联银行托收js
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../app');
+
+    app.controller('unionPayCollectionCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        var url = $rootScope.url;
+        $scope.unionpayCollectionTotall={page:{}};
+        $scope.unionpayCounterofferTotal={page:{}};
+        $scope.show1 = true;
+        $scope.show2 = false;
+        $scope.show3 = false;
+        $scope.show5 = false;
+        $scope.show4 = false;
+        $scope.btnIndex0=1;
+        /**
+         * 显示新建方案
+         */
+        $scope.finance = function () {
+            $scope.btnIndex0=1;
+            $scope.show1 = true;
+            $scope.show2 = false;
+            $scope.show3 = false;
+        };
+
+        $scope.unionPay = function () {
+            $scope.btnIndex0=2;
+            $scope.show1 = false;
+            $scope.show2 = true;
+            $scope.show3 = false;
+        };
+
+        $scope.selectProjects=[{id:0,name:'请选择项目'}];      //项目列表
+        $scope.selectProjects.id = 0;
+
+        /**
+         * 查询项目列表
+         */
+        $scope.checkProjects=function(){
+            $http.get(url + '/Project/listAllProject').success(function (data) {
+                $scope.projects=data.Project;
+                for(var i=0;i< $scope.projects.length;i++){
+                    var selectProject={};
+                    selectProject.id=$scope.projects[i].projectId;
+                    selectProject.name=$scope.projects[i].projectName;
+                    $scope.selectProjects.push(selectProject);
+                }
+            }).error(function (data, status, headers, config) {
+                layer.msg('查询项目列表失败',{icon : 2,time : 2000});
+            });
+        };
+
+        /**
+         * 获取项目id
+         */
+        $scope.getProject=function(projectId){
+            $scope.unionpayCollectionTotall.projectId=projectId;
+        };
+        $scope.checkProjects();
+
+        //添加数据库
+        $scope.totals={unionpayCounterofferTotals:[]};//总结文件
+        $scope.details={unionpayCounterofferDetais:[]};//明细文件
+        $scope.leading = function () {
+            //$scope.load1();
+            $scope.totals.unionpayCounterofferTotals=$scope.unionpayCounterofferTotal_add;
+            $scope.details.unionpayCounterofferDetais=$scope.unionpayCounterofferDetai;
+            //总结文件添加到数据库
+            $http.post(url+'/UnionpayCounterofferTotal/importExcelFile',{UnionpayCounterofferTotal:$scope.totals}).success(function(data){
+                console.log(data);
+                //alert(data.Info.info.$);
+                $http.post(url+'/UnionpayCounterofferDetai/importExcel',{UnionpayCounterofferDetai:$scope.details}).success(function(data){
+                    console.log(data);
+                    $scope.load1();
+                    $scope.show1 = false;
+                    $scope.show2 = false;
+                    $scope.show3 = true;
+                    //alert(data.Info.info.$);
+                });//明细文件添加到数据库
+            });
+        };
+
+
+        $scope.change =function(id){
+
+            $http.get(url + '/UnionpayCollectionTotall/getUnionpayCollectionTotallById/'+$scope.id).success(function(data) {
+                $scope.financiala=data.UnionpayCollectionTotall;
+            })
+
+        }
+
+        /**
+         * 分页查询文件体文件
+         */
+        $scope.load = function () {
+            var fetchFunction = function (page, callback) {
+                $scope.unionpayCollectionTotall.page = page;
+                $scope.show5 = false;
+                $http.post(url + '/UnionpayCollectionTotall/listPageUnionpayCollectionTotall', {UnionpayCollectionTotall: $scope.unionpayCollectionTotall}).success(callback);
+            };
+
+            $scope.searchPaginator = app.get('Paginator').list(fetchFunction,4);
+            console.log($scope.searchPaginator);
+
+        };
+
+        $scope.load();
+
+
+        /**
+         *   通过id查询总结明细文件
+         */
+        $scope.select = function(item){
+            $scope.show5 = true;
+            //$scope.id = item.projectId;
+            $scope.unionpayCollectionTotallId = item.unionpayCollectionTotallId;
+            $scope.btnIndex=item.unionpayCollectionTotallId;
+            $http.get(url + '/UnionpayCollectionDetail/getUnionpayCollectionDetailById/'+$scope.unionpayCollectionTotallId).success(function(data) {
+                $scope.currentCheck = data.UnionpayCollectionDetail;
+                console.log($scope.currentCheck);
+            })
+        };
+
+        /**
+         * 分页查询银行回盘头文件
+         */
+        $scope.unionpayCounterofferTotal_check={page:{}};
+        $scope.load1 = function () {
+            var fetchFunction1 = function (page, callback) {
+                $scope.unionpayCounterofferTotal_check.page = page;
+                $scope.show4 = false;
+                $http.post(url + '/UnionpayCounterofferTotal/listPageUnionpayCounterofferTotal', {UnionpayCounterofferTotal: $scope.unionpayCounterofferTotal_check}).success(callback);
+            };
+            $scope.searchPaginator1 = Paginator(fetchFunction1,4);
+            console.log($scope.searchPaginator1);
+        };
+
+
+        /**
+         *   通过id查询回盘明细
+         */
+        $scope.select1 = function(item){
+            $scope.btnIndex3=item.unionpayCounterofferCotalId;
+            $scope.id = item.unionpayCounterofferCotalId;
+            console.log(item.unionpayCounterofferCotalId);
+            $scope.show4 = true;
+            $http.get(url + '/UnionpayCounterofferDetai/getUnionpayCounterofferDetaiById/'+ $scope.id).success(function(data) {
+                $scope.UnionpayCounterofferDetai = data.UnionpayCounterofferDetai;
+            })
+        };
+
+        /**
+         *
+         * 导出文件头文件
+         */
+        $scope.exportExcelFile=function(){
+            if($scope.d==false){
+                layer.msg("请先选择导出项 ",{icon:0});
+            }else if($scope.d==true) {
+                layer.confirm("是否导出总结文件？",
+                    {btn : ['是','否']},function(){
+                        window.location.href=fileUrl +"/info/exportUTotalFile.do?unionpayCollectionTotallId="+$scope.unionpayCollectionTotallId;
+                        layer.msg("导出总结文件成功 ",{icon:0});
+                        layer.confirm("是否导出明细文件？",
+                            {btn : ['是','否']},function(){
+                                window.location.href=fileUrl +"/info/exportUDetailFile.do?unionpayCollectionTotallId="+$scope.unionpayCollectionTotallId;
+                                layer.msg("导出明细文件成功 ",{icon:0});
+                            })
+                    })
+
+            }
+        };
+
+        /**
+         *
+         * 导出盘回总结文件模版
+         */
+        $scope.exportMBExcelFile=function(){
+            layer.confirm("是否导出盘回总结文件模版？",
+                {btn : ['是','否']},function(){
+                    window.location.href=fileUrl +"/info/exportUTotalMBFile.do";
+                    layer.msg("导出盘回总结文件模版成功 ",{icon:0});
+                    layer.confirm("是否导出盘回明细文件模版？",
+                        {btn : ['是','否']},function(){
+                            window.location.href=fileUrl +"/info/exportMBUDetailFile.do";
+                            layer.msg("导出盘回明细文件模版成功 ",{icon:0});
+                        });
+                });
+
+
+        };
+
+        //判断checkbx是否选中
+        $scope.d=false;
+        $scope.getdata=function(item){
+            var chk = document.getElementsByName("aaa");
+            for(var i=0;i<chk.length;i++){
+                if( chk[i].checked==true){
+                    $scope.accountRecord=item;
+                    $scope.d=true;
+                    return;
+                }else{
+                    $scope.d=false;
+                }
+            }
+        };
+        /**
+         * 导入Excel数据文档
+         */
+        var fileUrl=$rootScope.fileUrl;    //上传的文件路径
+        var filePath='';          //上传文件的路径
+        $scope.annex={
+            annexAddress:'',
+            annexName:'',
+            relationId:''
+        };
+        $scope.inportExcel = function(){
+            $scope.fileState="1";
+            $(function(){
+                $("#remove").html('');
+                $("#remove").append('<div id="excelupload" class="zyupload"></div>');
+                // 初始化插件
+                $("#excelupload").zyUpload({
+                    width            :   "550px",                 // 宽度
+                    height           :   "auto",                 // 宽度
+                    itemWidth        :   "140px",                 // 文件项的宽度
+                    itemHeight       :   "115px",                 // 文件项的高度
+                    url              :   fileUrl+"/FileService",  // 上传文件的路径
+                    fileType         :   ["jpg","png","jpeg","gif","xls","docx","xlsx","pdf","txt","doc","ppt"],// 上传文件的类型
+                    fileSize         :   51200000,                // 上传文件的大小
+                    multiple         :   true,                    // 是否可以多个文件上传
+                    dragDrop         :   true,                    // 是否可以拖动上传文件
+                    tailor           :   true,                    // 是否可以裁剪图片
+                    del              :   true,                    // 是否可以删除文件
+                    finishDel        :   false,  				  // 是否在上传文件完成后删除预览
+                    /* 外部获得的回调接口 */
+                    onSelect: function(selectFiles, allFiles){    // 选择文件的回调方法  selectFile:当前选中的文件  allFiles:还没上传的全部文件
+                        //console.info(selectFiles);
+                    },
+                    onDelete: function(file, files){
+                        //console.info(file.name);
+                    },
+                    onSuccess: function(file, response){          // 文件上传成功的回调方法
+                        //console.info("此文件上传成功：");
+                        //console.info(file.name);
+                        //console.info("此文件上传到服务器地址：");
+                        filePath=response;
+                        $scope.annex.annexAddress=filePath;
+                        $scope.annex.annexName=file.name;
+                        $http.post(url + "/UnionpayCounterofferTotal/getImportFileDatas",{Annex:$scope.annex}).success(function(data){
+                            console.log(data);
+                            $scope.unionpayCounterofferTotal=data.UnionpayCounterofferTotal;
+
+                        });
+                        console.info(filePath);
+                    },
+                    onFailure: function(file, response){          // 文件上传失败的回调方法
+                        alert("此文件上传失败：");
+                        //console.info(file.name);
+                    },
+                    onComplete: function(response){           	  // 上传完成的回调方法
+                        //console.info("文件上传完成");
+                        //console.info(response);
+                    }
+                });
+
+            });
+        }
+
+        /*导入明细文件*/
+        $scope.importDetails = function(item){
+            $scope.unionpayCounterofferTotal_add=item;
+            $scope.fileState="2";
+            $scope.btnIndex2= $scope.unionpayCounterofferTotal_add.unionpayCounterofferCotalId;
+            $(function(){
+                $("#remove").html('');
+                $("#remove").append('<div id="excelupload" class="zyupload"></div>');
+                // 初始化插件
+                $("#excelupload").zyUpload({
+                    //width            :   "900px",                 // 宽度
+                    //height           :   "400px",                 // 宽度
+                    itemWidth        :   "140px",                 // 文件项的宽度
+                    itemHeight       :   "115px",                 // 文件项的高度
+                    url              :   fileUrl+"/FileService",  // 上传文件的路径
+                    fileType         :   ["jpg","png","jpeg","gif","xls","docx","xlsx","pdf","txt","doc","ppt"],// 上传文件的类型
+                    fileSize         :   51200000,                // 上传文件的大小
+                    multiple         :   true,                    // 是否可以多个文件上传
+                    dragDrop         :   true,                    // 是否可以拖动上传文件
+                    tailor           :   true,                    // 是否可以裁剪图片
+                    del              :   true,                    // 是否可以删除文件
+                    finishDel        :   false,  				  // 是否在上传文件完成后删除预览
+                    /* 外部获得的回调接口 */
+                    onSelect: function(selectFiles, allFiles){    // 选择文件的回调方法  selectFile:当前选中的文件  allFiles:还没上传的全部文件
+                        //console.info(selectFiles);
+                    },
+                    onDelete: function(file, files){
+                        //console.info(file.name);
+                    },
+                    onSuccess: function(file, response){          // 文件上传成功的回调方法
+                        filePath=response;
+                        $scope.annex.annexAddress=filePath;
+                        $scope.annex.annexName=file.name;
+                        $scope.annex.relationId=item.unionpayCounterofferCotalId;//传递回盘总文件id
+                        $http.post(url + "/UnionpayCounterofferDetai/getImportCounterofferDetai",{Annex:$scope.annex}).success(function(data){
+                            console.log(data);
+                            $scope.unionpayCounterofferDetai=data.UnionpayCounterofferDetai;
+                            //
+                            $scope.annex={};
+                        });
+                        console.info(filePath);
+                    },
+                    onFailure: function(file, response){          // 文件上传失败的回调方法
+                        alert("此文件上传失败：");
+                        //console.info(file.name);
+                    },
+                    onComplete: function(response){           	  // 上传完成的回调方法
+                        //console.info("文件上传完成");
+                        //console.info(response);
+                    }
+                });
+
+            });
+        };
+
+        /**
+         * 参数初始化
+         */
+        $scope.resetParams=function(){
+            $scope.unionpayCollectionTotall={page:{}};
+            $scope.unionpayCounterofferTotal={page:{}};
+            //$scope.unionpayCounterofferDetai=[];
+            //$scope.unionpayCounterofferTotal=[];
+            //$scope.UnionpayCounterofferDetai=[];
+            $scope.annex={};
+            $scope.unionpayCounterofferTotal_check={};
+            $scope.btnIndex='';
+            //$scope.btnIndex2='';
+            $scope.btnIndex3='';
+            $scope.totals={};
+            $scope.details={};
+        };
+
+        /**
+         * 清空按钮功能
+         */
+        $scope.qingkong=function(){
+            $scope.unionpayCounterofferDetai=[];
+            $scope.unionpayCounterofferTotal=[];
+            $scope.annex={};
+        };
+
+    }]);
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

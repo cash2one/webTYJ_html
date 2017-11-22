@@ -1,0 +1,46 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 账单js
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../app');
+
+    app.controller('recordsCtrl', ['$scope', '$http','$rootScope','$location','$filter', function ($scope,$http,$rootScope,$location,$filter) {
+
+        var url = $rootScope.url;
+        /**
+         * 根据条件分页查询
+         */
+        $scope.billing={page:{}};
+        var fetchFunction=function(page,callback){
+            console.log($scope.billing.billingEndTime);
+            console.log($scope.billing.billingStartTime);
+            var minDate=$filter('date')($scope.billing.billingStartTime,'yyyy-MM-dd');
+            var maxDate=$filter('date')($scope.billing.billingEndTime,'yyyy-MM-dd');
+            var minStaTime = app.get('valueCheck').isTimerRight(minDate);
+            var maxStaTime = app.get('valueCheck').isTimerRight(maxDate);
+            if(minStaTime.state == false){
+                layer.msg(minStaTime.info,{icon : 0,time : 1000});
+                return;
+            }
+            if(maxStaTime.state == false){
+                layer.msg(maxStaTime.info,{icon : 0,time : 1000});
+                return;
+            }
+            if(Date.parse($scope.billing.billingStartTime)>Date.parse($scope.billing.billingEndTime))
+            {
+                layer.msg('开始时间不能大于结束时间',{icon : 0,time : 1000});
+                return;
+            }
+            $scope.billing.page=page;
+            $http.post(
+                url + '/Billing/listPageSearchBilling', {Billing:$scope.billing}).success(callback);
+        };
+        $scope.searchPaginator=app.get('Paginator').list(fetchFunction,6);
+        console.log($scope.searchPaginator);
+
+    }]);
+});

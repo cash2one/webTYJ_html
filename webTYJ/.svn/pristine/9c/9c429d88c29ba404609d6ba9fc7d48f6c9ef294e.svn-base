@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>系统报表</title>
+    <link href="bower_components/chart/jqplot/jquery.jqplot.min.css" rel="stylesheet" />
+    <script src="bower_components/chart/jqplot/jquery.min.js"></script>
+    <script src="bower_components/chart/jqplot/jquery.jqplot.min.js"></script>
+    <script src="bower_components/chart/jqplot/jqplot.pieRenderer.min.js"></script>
+    <!--<script src="bower_components/chart/jqplot/jqplot.donutRenderer.min.js"></script>-->
+    <style type="text/css">
+        .jqplot-table-legend { width: auto; }
+    </style>
+</head>
+<body>
+<div id="content-first">
+    <!--tab页切换开始-->
+    <div id="tab">
+        <a ng-click="now()">应收款报表</a>
+        <a ng-click="ago()">收款报表</a>
+        <a ng-click="now1()">欠款报表</a>
+        <a lang="no" ng-click="ago1()">收款率报表</a>
+    </div>
+    <!--tab页切换结束-->
+    <!--应收款报表-->
+    <div ng-show="show1">
+        <div class="sel">
+            <div class="row search-padding-10">
+                <div class="col-lg-1 col-md-2 col-sm-2">
+                    项目
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <select class="form-control" ng-options="item.projectId as item.projectName for item in projects" ng-model="bill.projectId">
+                        <option value="">请选择项目</option>
+                    </select>
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2">
+                    月份
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <input class="form-control" type="month" ng-model="bill.billDate"/>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-6 text-right">
+                    <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="getInfo()">
+                        <span class="glyphicon glyphicon-search btn_icon"></span>
+                        查询
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row padding">
+            <div class="col-lg-6 text-center">
+                <!--<img width="100%" height="auto" src="images/u157.png">-->
+                <div id="pieChart1" style="width:500px;height:300px;"></div>
+                <br />
+                <img width="100%" height="auto" src="images/chart/chart_7.png">
+            </div>
+            <div class="col-lg-6">
+                <div class="col-lg-12">
+                    <div class="row search-padding-10">
+
+                            管理户数：{{chargeAccountNum}}户
+
+                        </div>
+                    <div class="row search-padding-10">
+                            应收款总金额：{{totalBillingSum | number : 2}}元
+                     </div>
+                </div>
+
+                <div class="row padding">
+                    <!--<div class="col-lg-6 text-center">-->
+                        <!--<img width="100%" height="auto" src="images/u157.png">-->
+                        <!--<br />-->
+                        <!--<img width="100%" height="auto" src="images/u153.png">-->
+                    <!--</div>-->
+                    <div class="col-lg-6">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>收费项目</th>
+                                <th>金额</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="item1 in billsForBillingSum" ng-click="getSubBills(item1)" ng-show="item1.chargeItemName!=null">
+                                <td>{{item1.chargeItemName}}</td>
+                                <td>{{item1.billingSum | number : 2}}元</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-lg-6" ng-show="subBills!=null">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>收费详情</th>
+                                <th>金额</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="item2 in subBills">
+                                <td>{{item2.chargeItemName}}</td>
+                                <td>{{item2.currentSum | number : 2}}元</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+    <!--应收款报表 END-->
+    <!--收款报表-->
+    <div ng-show="show2">
+        <div class="sel">
+            <div class="row search-padding-10">
+                <div class="col-lg-1 col-md-2 col-sm-2">
+                    项目
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <select class="form-control" ng-options="item.projectId as item.projectName for item in projects" ng-model="bill1.projectId">
+                        <option value="">请选择项目</option>
+                    </select>
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2">
+                    月份
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <input type="month" ng-model="bill1.billDate"/>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-6 text-right">
+                    <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="getInfo1()">
+                        <span class="glyphicon glyphicon-search btn_icon"></span>
+                        查询
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row padding">
+            <div class="col-lg-6 text-center">
+                <!--<img width="100%" height="auto" src="images/u157.png">-->
+                <div id="pieChart2" style="width:500px;height:300px;"></div>
+                <br />
+                <img width="100%" height="auto" src="images/chart/chart_7.png">
+            </div>
+            <div class="col-lg-6">
+                <div class="col-lg-12">
+                    <div class="row search-padding-10">
+                
+                            管理户数：{{chargeAccountNum}}户
+                        </div>
+                    <div class="row search-padding-10">
+                        收款总金额：{{totalCollectSum | number : 2}}元
+                     </div>
+                </div>
+            </div>
+                <div class="row padding">
+                    <!--<div class="col-lg-6 text-center">-->
+                    <!--<img width="100%" height="auto" src="images/u157.png">-->
+                    <!--<br />-->
+                    <!--<img width="100%" height="auto" src="images/u153.png">-->
+                    <!--</div>-->
+                    <div class="col-lg-3">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>收费项目</th>
+                                <th>金额</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="item1 in billsForCollectSum" ng-click="getSubBills(item1)" ng-show="item1.chargeItemName!=null">
+                                <td>{{item1.chargeItemName}}</td>
+                                <td>{{item1.collectSum | number : 2}}元</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <!--收款报表 END-->
+    <!--欠款报表-->
+    <div ng-show="show3">
+        <div class="sel">
+            <div class="row search-padding-10">
+                <div class="col-lg-1 col-md-2 col-sm-2">
+                    项目
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <select class="form-control" ng-options="item.projectId as item.projectName for item in projects" ng-model="bill.projectId">
+                        <option value="">请选择项目</option>
+                    </select>
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2">
+                    月份
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                   <input type="month" class="form-control">
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-6 text-right">
+                    <button type="button" class="btn btn-default btn-primary tab-btn">
+                        <span class="glyphicon glyphicon-search btn_icon"></span>
+                        查询
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row padding">
+            <div class="col-lg-6 text-center">
+                <div id="piChart" style="width:500px;height:300px;"></div>
+                <br />
+                <img width="100%" height="auto" src="images/chart/chart_7.png">
+            </div>
+            <div class="col-lg-6">
+                <div class="col-lg-12">
+                    <div class="row search-padding-10">
+                            管理户数：{{chargeAccountNum}}户
+                        </div>
+                        <div class="row search-padding-10">
+                            欠款总金额：{{totalSum1 | number : 2}}元
+                        </div>
+                    </div>
+                </div>
+                <div class="row padding">
+                    <div class="col-lg-3">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>收费项目</th>
+                                <th>金额</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-click="showDetailed(item)" ng-repeat="item in owe">
+                                <td>{{item.chargeItemName}}</td>
+                                <td>{{item.noCollectSum | number : 2}}元</td>
+                            </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-lg-3" ng-show="detailed">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>收费详情</th>
+                                <th>金额</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="item in ee">
+                                <td>{{item.chargeItemName}}</td>
+                                <td>{{item.noCollectSum  | number : 2}}元</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <!--欠款报表 END-->
+    <!--收款率报表-->
+    <div ng-show="show4">
+        <div class="sel">
+            <div class="row search-padding-10">
+                <div class="col-lg-1 col-md-2 col-sm-2">
+                    项目
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <select class="form-control" ng-options="item.projectId as item.projectName for item in projects" ng-model="bill.projectId">
+                        <option value="">请选择项目</option>
+                    </select>
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2">
+                    月份
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <input type="month" class="form-control">
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-6 text-right">
+                    <button type="button" class="btn btn-default btn-primary tab-btn">
+                        <span class="glyphicon glyphicon-search btn_icon"></span>
+                        查询
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary tab-btn" ng-click="ExportExcel()">
+
+                        导出Excel表
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row padding">
+            <div class="col-lg-6 text-center">
+                <div id="pChart" style="width:500px;height:300px;"></div>
+                <!--<img width="400px" height="auto" src="images/u428.png">-->
+            </div>
+            <div class="col-lg-6">
+                <div class="row search-padding-10">
+                    管理户数：{{chargeAccountNum}}户
+                </div>
+                <div class="row search-padding-10">
+                    未缴总金额：{{totalSum1 | number : 2}}元
+                </div>
+                <div class="row search-padding-10">
+                    已收总金额：{{totalSum2 | number : 2}}元
+                </div>
+                <!--<table>-->
+                    <!--<thead>-->
+                    <!--<tr>-->
+                        <!--<th>深圳桃源居6月收缴情况</th>-->
+                    <!--</tr>-->
+                    <!--</thead>-->
+                    <!--<tbody>-->
+                    <!--<tr>-->
+                        <!--<td>管理户数：1000元</td>-->
+                    <!--</tr>-->
+                    <!--<tr>-->
+                        <!--<td>未缴总金额：{{totalSum1 | number : 2}}元</td>-->
+                    <!--</tr>-->
+                    <!--<tr>-->
+                        <!--<td>已收总金额：{{totalSum2 | number : 2}}元</td>-->
+                    <!--</tr>-->
+                    <!--</tbody>-->
+                <!--</table>-->
+            <!--</div>-->
+        <!--</div>-->
+    </div>
+    <!--收款率报表 END-->
+</div>
+<!--tab页切换开始-->
+
+
+</div>
+</div>
+</body>
+</html>

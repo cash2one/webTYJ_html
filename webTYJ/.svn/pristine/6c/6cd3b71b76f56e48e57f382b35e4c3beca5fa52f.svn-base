@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>收款台</title>
+</head>
+<body>
+<div id="content-first">
+    <!--tab页切换开始-->
+    <div id="tab">
+        <a ng-class="{'this_action ':btnIndex==1}" ng-click="doClick(1)" ui-sref="index.cashier.cashier.cashierUI.billInquiry">收银界面</a>
+        <a ng-class="{'this_action ':btnIndex==2}" ng-click="doClick(2)" ui-sref="index.cashier.cashier.accountFors">交账</a>
+        <a ng-class="{'this_action ':btnIndex==3}" ng-click="doClick(3)" ui-sref="index.cashier.cashier.cashierLeader">收银组长</a>
+        <a ng-class="{'this_action ':btnIndex==4}" ng-click="doClick(4)" ui-sref="index.cashier.cashier.cashierPay">出纳</a>
+        <a ng-class="{'this_action ':btnIndex==5}" ng-click="doClick(5)" lang="no" ui-sref="index.cashier.cashier.accounting">会计</a>
+    </div>
+    <!--tab页切换结束-->
+    <!--视图加载-->
+    <div ui-view></div>
+    <!--视图加载开始-->
+</div>
+<!--tab页切换开始-->
+
+</body>
+</html>

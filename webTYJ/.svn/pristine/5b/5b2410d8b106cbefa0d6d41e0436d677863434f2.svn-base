@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html ng-app="firstApp" lang="zh-CN">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>设备订购列表</title>
+</head>
+<body>
+
+
+<div class="row padding">
+        <div class="row sel">
+            <div class="sel-position col-md-3">
+                <div class="col-md-4 text-right">
+                    <span class=" text-right">订单号：</span>
+                </div>
+                <div class="col-md-8">
+                    <input ng-model="order.orderNum" placeholder="请输入订单号" class="form-control">
+                </div>
+            </div>
+            <div class="sel-position col-md-3">
+                <div class="col-md-4 text-right">
+                    <span class=" text-right">订单数量：</span>
+                </div>
+                <div class="col-md-8">
+                    <input ng-model="order.number" placeholder="请输入订单数量" class="form-control">
+                </div>
+            </div>
+            <div class="sel-position col-md-3">
+                <div class="col-md-4 text-right">
+                    <span class=" text-right">联系人：</span>
+                </div>
+                <div class="col-md-8">
+                    <input ng-model="order.custName" placeholder="请输入联系人" class="form-control">
+                </div>
+            </div>
+            <div class="col-md-3 text-left">
+                <button class="btn btn-primary" ng-click="load(page.pageNo,6)">
+                    <span class="glyphicon glyphicon-search btn_icon"></span>
+                    搜索
+                </button>
+            </div>
+            <!--<div class="col-md-12">
+                &lt;!&ndash;<button class="btn btn-primary">确认收货</button>&ndash;&gt;
+                <button class="btn btn-primary" data-toggle="modal" data-target="#modal1">申请退换货</button>
+                <button class="btn btn-primary" data-toggle="modal" data-target="#modal2">录入物流信息</button>
+            </div>-->
+        </div>
+        <div class="padding">
+            <p>设备订单列表</p>
+            <table>
+                <thead>
+                <tr>
+                    <th>订单号</th>
+                    <th>订单数量</th>
+                    <th>联系人</th>
+                    <th>联系电话</th>
+                    <th>地址</th>
+                    <th>发货状态</th>
+                    <th>操作员</th>
+                    <th>合同编号</th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr ng-class="{'this_info':btnIndex==item.id}" ng-repeat="item in orders" ng-click="selected(item)">
+                        <td>{{item.orderNum}}</td>
+                        <td>{{item.orderQuantity}}</td>
+                        <td>{{item.custAddress.consignee}}</td>
+                        <td>{{item.custAddress.phone}}</td>
+                        <td>{{item.custAddress.address}}</td>
+                        <td>
+                            <span ng-switch="item.state">
+                                <span ng-switch-when="0">已发货</span>
+                                <span ng-switch-when="1">未发货</span>
+                                <span ng-switch-when="2">等待发货</span>
+                                <span ng-switch-when="3">配货中</span>
+                                <span ng-switch-when="4">已退订</span>
+                            </span>
+                        </td>
+                        <td>{{item.operationName}}</td>
+                        <td>{{item.eqContract.contractNum}}</td>
+                    </tr>
+                    <tr ng-show="orders.length==0" >
+                        <td colspan="8" class="text-center">
+                            暂无数据!
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="text-right">
+                <div class="bill_paging">
+                    <ul class="pagination">
+                        <span>共{{page.total}}条</span>
+                        <li ng-class="{true:'disabled'}[page.pageNo==1]">
+                            <a style="cursor:pointer;" ng-click="page.go(1)">首页</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[page.pageNo==1]">
+                            <a style="cursor:pointer;"
+                               ng-click="page.prev()">上一页</a>
+                        </li>
+                        <li ng-class="{true:'active'}[page.pageNo==i]" ng-repeat="i in page.pages">
+                            <a style="cursor:pointer;" ng-click="page.go(i)">{{i}}</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[page.pageNo==page.pageTotal]">
+                            <a style="cursor:pointer;"
+                               ng-click="page.next()">下一页</a>
+                        </li>
+                        <li ng-class="{true:'disabled'}[page.pageNo==page.pageTotal]">
+                            <a style="cursor:pointer;" ng-click="page.go(page.pageTotal)">尾页</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="clear"></div>
+                <!--<ul class="pagination">
+                    <li>
+                        <a href="#" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li><a href="#" class="this_action">1</a></li>
+                    <li><a href="#">2</a></li>
+                    <li><a href="#">3</a></li>
+                    <li><a href="#">4</a></li>
+                    <li><a href="#">5</a></li>
+                    <li>
+                        <a href="#" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>-->
+            </div>
+            <div class="search-padding-10" ng-show="invoiceLogDetailsShow">
+                <div id="content-first">
+                    <div id="tab">
+                        <a href="#" ng-class="{true: 'this_action'}[show]" ng-click="show = true">设备订单详情</a>
+                        <a href="#" ng-class="{false: 'this_action'}[show]" ng-click="show = false">合同信息</a>
+                    </div>
+                    <div class="padding" ng-show="show">
+
+                        <div class="col-md-12">
+                            <table>
+                                <thead>
+                                <th>设备名称</th>
+                                <th>设备型号</th>
+                                <th>合同数量</th>
+                                <th>已发货数量</th>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="item in invoiceLogDetaileds">
+                                    <td>{{item.eqName}}</td>
+                                    <td>{{item.eqModel}}</td>
+                                    <td>{{item.number}}</td>
+                                    <td>{{item.count}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="clear"></div>
+
+                    </div>
+                    <div class="padding" ng-hide="show">
+                        <div class="row sel1">
+                            <div class="sel-position col-md-4">
+                                <span class="text-right">合同编号：</span>{{eqContract.contractNum}}
+                            </div>
+                            <div class="sel-position col-md-4">
+                                <span class="text-right">合同名称：</span>{{eqContract.contractName}}
+                            </div>
+                            <div class="sel-position col-md-4">
+                                <span class="text-right">甲方：</span>{{eqContract.aName}}
+                            </div>
+                            <div class="sel-position col-md-4">
+                                <span class="text-right">乙方：</span>{{eqContract.bName}}
+                            </div>
+                            <div class="sel-position col-md-4">
+                                <span class="text-right">丙方：</span>{{eqContract.cName}}
+                            </div>
+                            <div class="sel-position col-md-4">
+                                <span class="text-right">合同签订日期：</span>{{eqContract.signTime}}
+                            </div>
+                            <div class="sel-position col-md-4">
+                                <span class="text-right">订单数量：</span>{{eqContract.totalNum}}
+                            </div>
+                            <div class="sel-position col-md-4">
+                                <span class="text-right">总金额：</span><b class="red">{{eqContract.totalPrice}}</b>
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="padding" ng-show="invoiceLogShow">
+                <div class="search-padding-10">
+                    <p>收货单列表</p>
+                    <button class="btn btn-primary">确认收货</button>
+                </div>
+                <div class="">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th width="60px">
+                                <input type="checkbox">
+                            </th>
+                            <th>批次号</th>
+                            <th>型号</th>
+                            <th>数量</th>
+                            <th>收货状态</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-class="{'this_info':btnIndex1==item.id}" ng-repeat="item in invoiceLogs" ng-click="invoiceLogDetailSelected(item)" >
+                            <td><input type="checkbox"></td>
+                            <td>{{item.outgoingBath}}</td>
+                            <td>{{item.eqModel}}</td>
+                            <td>{{item.count}}</td>
+                            <td>
+                                {{item.count}}
+                            </td>
+                        </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+
+
+                <div class="text-right">
+                    <div class="bill_paging">
+                        <ul class="pagination">
+                            <span>共{{invoiceLogPage.total}}条</span>
+                            <li ng-class="{true:'disabled'}[invoiceLogPage.pageNo==1]">
+                                <a style="cursor:pointer;" ng-click="invoiceLogPage.go(1)">首页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[invoiceLogPage.pageNo==1]">
+                                <a style="cursor:pointer;"
+                                   ng-click="invoiceLogPage.prev()">上一页</a>
+                            </li>
+                            <li ng-class="{true:'active'}[invoiceLogPage.pageNo==i]" ng-repeat="i in invoiceLogPage.pages">
+                                <a style="cursor:pointer;" ng-click="invoiceLogPage.go(i)">{{i}}</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[invoiceLogPage.pageNo==invoiceLogPage.pageTotal]">
+                                <a style="cursor:pointer;"
+                                   ng-click="invoiceLogPage.next()">下一页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[invoiceLogPage.pageNo==invoiceLogPage.pageTotal]">
+                                <a style="cursor:pointer;" ng-click="invoiceLogPage.go(invoiceLogPage.pageTotal)">尾页</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+            </div>
+
+            <div class="search-padding-10" ng-show="invoiceLogDetailsListShow">
+                <div id="content-first">
+                    <div id="tab">
+                        <a href="#" ng-class="{true: 'this_action'}[show1]" ng-click="show1 = true">收货单详情</a>
+                        <a href="#" ng-class="{false: 'this_action'}[show1]" ng-click="show1 = false">物流详情</a>
+                    </div>
+                    <!--<div class="row sel" ng-show="show1">
+                        &lt;!&ndash;<div class="sel-position col-md-3">
+                            <div class="col-md-4 text-right">
+                                <span class=" text-right">设备名称：</span>
+                            </div>
+                            <div class="col-md-8">
+                                <input ng-model="order.orderNum" class="form-control">
+                            </div>
+                        </div>
+                        <div class="sel-position col-md-3">
+                            <div class="col-md-4 text-right">
+                                <span class=" text-right">设备型号：</span>
+                            </div>
+                            <div class="col-md-8">
+                                <input ng-model="order.number" class="form-control">
+                            </div>
+                        </div>
+                        <div class="sel-position col-md-3">
+                            <div class="col-md-4 text-right">
+                                <span class=" text-right">设备芯片号：</span>
+                            </div>
+                            <div class="col-md-8">
+                                <input ng-model="order.custName" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-right">
+                            <button class="btn btn-primary" ng-click="">
+                                <span class="glyphicon glyphicon-search btn_icon"></span>
+                                搜索
+                            </button>
+                        </div>&ndash;&gt;
+                    </div>-->
+                    <div class="padding" ng-show="show1">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>设备名称</th>
+                                    <th>设备型号</th>
+                                    <th>芯片号</th>
+                                    <th>质保开始日期</th>
+                                    <th>质保结束日期</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="item in invoiceLogDetailsList">
+                                    <td>{{item.eqName}}</td>
+                                    <td>{{item.eqModel}}</td>
+                                    <td>{{item.eqSn}}</td>
+                                    <td>{{item.startDate.substring(0,10)}}</td>
+                                    <td>{{item.endDate.substring(0,10)}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="text-right">
+                            <div class="bill_paging">
+                                <ul class="pagination">
+                                    <span>共{{invoiceLogDetailsPage.total}}条</span>
+                                    <li ng-class="{true:'disabled'}[invoiceLogDetailsPage.pageNo==1]">
+                                        <a style="cursor:pointer;" ng-click="invoiceLogDetailsPage.go(1)">首页</a>
+                                    </li>
+                                    <li ng-class="{true:'disabled'}[invoiceLogDetailsPage.pageNo==1]">
+                                        <a style="cursor:pointer;"
+                                           ng-click="invoiceLogDetailsPage.prev()">上一页</a>
+                                    </li>
+                                    <li ng-class="{true:'active'}[invoiceLogDetailsPage.pageNo==i]" ng-repeat="i in invoiceLogDetailsPage.pages">
+                                        <a style="cursor:pointer;" ng-click="invoiceLogDetailsPage.go(i)">{{i}}</a>
+                                    </li>
+                                    <li ng-class="{true:'disabled'}[invoiceLogDetailsPage.pageNo==invoiceLogDetailsPage.pageTotal]">
+                                        <a style="cursor:pointer;"
+                                           ng-click="invoiceLogDetailsPage.next()">下一页</a>
+                                    </li>
+                                    <li ng-class="{true:'disabled'}[invoiceLogDetailsPage.pageNo==invoiceLogDetailsPage.pageTotal]">
+                                        <a style="cursor:pointer;" ng-click="invoiceLogDetailsPage.go(invoiceLogDetailsPage.pageTotal)">尾页</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                    </div>
+                    <div class="padding" ng-hide="show1">
+                        <div class="search-padding-10">
+                            <div class="sel-position col-md-4">
+                                <span class="text-right">物流公司：</span>深圳顺丰速递有限公司
+                            </div>
+                            <div class="sel-position col-md-4">
+                                <span class="text-right">物流编号：</span>LP00025291750839
+                            </div>
+                            <div class="sel-position col-md-4">
+                                <span class="text-right">运货单号：</span>5743534582
+                            </div>
+                        </div>
+                        <table>
+                            <thead>
+                            <th>时间</th>
+                            <th>明细</th>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>2014-04-12 15:30</td>
+                                <td>广东深圳顺丰已收件</td>
+                            </tr>
+                            <tr>
+                                <td>2014-04-11 13:30</td>
+                                <td>广东深圳顺丰已打包</td>
+                            </tr>
+                            <tr>
+                                <td>2014-04-10 10:30</td>
+                                <td>广东深圳顺丰已发出</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+</div>
+<!--正文结束-->
+<div class="modal fade bs-example-modal-lg" id="modal1" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">申请退换货</h4>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                    <div class="row sel1">
+                        <div class="sel-position col-md-4">
+                            <span class="text-right">服务号：</span>
+                            <input class="form-control">
+                        </div>
+                        <div class="sel-position col-md-4">
+                            <span class="text-right">合同编号</span>
+                            <input class="form-control">
+                        </div>
+                        <div class="sel-position col-md-4">
+                            <span class="text-right">数量：</span>
+                            <input class="form-control">
+                        </div>
+                        <div class="sel-position col-md-4">
+                            <span class="text-right">申请人：</span>
+                            <input class="form-control">
+                        </div>
+                        <div class="sel-position col-md-4">
+                            <span class="text-right">申请人电话</span>
+                            <input class="form-control">
+                        </div>
+                        <div class="sel-position col-md-4">
+                            <span class="text-right">申请人单位：</span>
+                            <input class="form-control">
+                        </div>
+                        <div class="sel-position col-md-4">
+                            <span class="text-right">申请理由：</span>
+                            <select class="form-control">
+                                <option>申请补发</option>
+                                <option>申请补发</option>
+                            </select>
+                        </div>
+                        <div class="sel-position col-md-4">
+                            <span class="text-right">订单号：</span>
+                            <input class="form-control">
+                        </div>
+                        <div class="sel-position col-md-12">
+                            <span class="text-right">退货详细原因：</span>
+                            <textarea class="form-control text_min"></textarea>
+                        </div>
+                    </div>
+                    <div class="search-padding-10">
+                        <button type="button" class="btn btn-primary">新建</button>
+                        <button type="button" class="btn btn-primary">批量导入</button>
+                        <button type="button" class="btn btn-primary">编辑</button>
+                        <button type="button" class="btn btn-primary">删除</button>
+                        <button type="button" class="btn btn-primary">保存</button>
+                    </div>
+                    <table>
+                        <thead>
+                        <th width="60px">
+                            <sapn type="button" class="all-choose">全选</sapn>
+                        </th>
+                        <th>编号</th>
+                        <th>设备名称</th>
+                        <th>设备型号</th>
+                        <th>芯片号</th>
+                        <th>保质开始日期</th>
+                        <th>保质结束日期</th>
+                        <th>批次号</th>
+                        <th>申请原因</th>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>300</td>
+                            <td>设备1代</td>
+                            <td>XH001</td>
+                            <td>SN001</td>
+                            <td>2014-12-23</td>
+                            <td>2017-12-23</td>
+                            <td>PC001</td>
+                            <td>申请换货</td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>290</td>
+                            <td>设备1代</td>
+                            <td>XH001</td>
+                            <td>SN001</td>
+                            <td>2014-12-23</td>
+                            <td>2017-12-23</td>
+                            <td>PC001</td>
+                            <td>申请换货</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modal2" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">录入物流信息</h4>
+            </div>
+            <div class="modal-body">
+                <div class="padding">
+                    <div class="row sel1">
+                        <div class="col-xs-6">
+                            <div class="col-xs-4 text-right">
+                                物流编号：
+                            </div>
+                            <div class="col-xs-8">
+                                <input type="text" class="form-control" placeholder="请输入物流编号" />
+                            </div>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="col-xs-4 text-right">
+                                物流信息：
+                            </div>
+                            <div class="col-xs-8">
+                                <input type="text" class="form-control" placeholder="请输入物流信息" />
+                            </div>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="col-xs-4 text-right">
+                                发货时间：
+                            </div>
+                            <div class="col-xs-8">
+                                <input type="text" class="form-control" placeholder="请输入发货时间" />
+                            </div>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="col-xs-4 text-right">
+                                联系人：
+                            </div>
+                            <div class="col-xs-8">
+                                <input type="text" class="form-control" placeholder="请输入联系人" />
+                            </div>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="col-xs-4 text-right">
+                                联系电话：
+                            </div>
+                            <div class="col-xs-8">
+                                <input type="text" class="form-control" placeholder="请输入联系电话" />
+                            </div>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="col-xs-4 text-right">
+                                接货地址：
+                            </div>
+                            <div class="col-xs-8">
+                                <input type="text" class="form-control" placeholder="请输入接货地址" />
+                            </div>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="col-xs-4 text-right">
+                                发货地址：
+                            </div>
+                            <div class="col-xs-8">
+                                <input type="text" class="form-control" placeholder="请输入发货地址" />
+                            </div>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="col-xs-4 text-right">
+                                联系电话：
+                            </div>
+                            <div class="col-xs-8">
+                                <input type="text" class="form-control" placeholder="请输入联系电话" />
+                            </div>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="col-xs-4 text-right">
+                                销售地址：
+                            </div>
+                            <div class="col-xs-8">
+                                <input type="text" class="form-control" placeholder="请输入销售地址" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        var wWidth = $(window).width();
+        var wHeight = $(window).height();
+        $(".container-fluid .left").height(wHeight - 75);
+        $(".container-fluid .right").height(wHeight - 105);
+        $(".container-fluid .rightheight").height(wHeight - 105);
+    });
+</script>
+</body>
+</html>

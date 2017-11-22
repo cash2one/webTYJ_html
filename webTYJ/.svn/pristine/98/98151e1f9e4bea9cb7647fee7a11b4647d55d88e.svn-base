@@ -1,0 +1,99 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 专业线管理js
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../app');
+
+    app.controller('professionalLineCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+        var url = $rootScope.url;
+        $scope.specialtyInfos=[];
+        $scope.specialtys={page:{}};
+        //专业线信息初始化
+        $scope.load=function(){
+            /* 删除分页显示改为列表 朱琪 2016-2-4 start */
+            $scope.specialtyList = [];
+            $http.get(url + '/SpecialtyInfo/listAllSpecialtyInfoRestfulList').success(function(data){
+                if (!angular.isArray(data.SpecialtyInfo)){
+                    //console.log(data);
+                    $scope.specialtyList.push(data.SpecialtyInfo);
+                } else {
+                    $scope.specialtyList = data.SpecialtyInfo;
+                }
+                if ($scope.specialtyList.length != 0){
+                    $scope.details($scope.specialtyList[0]);
+                }
+            }).error(function(){
+            });
+        };
+        $scope.load();
+        /* 删除分页显示改为列表 朱琪 2016-2-4 end */
+        //修改状态保存
+
+        var companyId=null;
+        var user = {};                                             //设置默认用户信息为空
+        var userCook = JSON.parse(sessionStorage.getItem("USER_LOGIN"));   //从cook中获取用户信息
+        $scope.user = userCook?userCook:user;                      //三目运算获取用户信息
+        companyId= $scope.user.companyId;
+
+        $scope.chazhao=function(item){
+            $http.get(url+'/SpecialtyInfo/listSpecialtyInfoByCompanyId/'+companyId+"/"+item.specialtyId).success(function(data){
+                console.log(data.SpecialtyInfo.length);
+                if(data.SpecialtyInfo.length>0){
+                    if(item.state=='0'){
+                        layer.confirm('该模块下已有编制,是否关闭此模块？',{
+                            btn : ['是','否']
+                        },function(){
+                            $scope.insert();
+                        },function(){
+                            $scope.cancle();
+                        })
+                    }else {
+                        $scope.insert();
+                    }
+                }else{
+
+                    if(item.state=='0'){
+                            $scope.insert();
+                    }else{
+                            $scope.insert();
+                    }
+
+
+                }
+            }) ;
+         }
+
+
+        $scope.insert=function(){
+            for(var i=0;i<$scope.specialtyList.length;i++)
+            {
+                $scope.specialtyList[i].state = $scope.specialtyList[i].state;
+            }
+            var specialtyInfoResult={specialtyInfos:$scope.specialtyList};
+            $http.post(url+'/SpecialtyInfo/updateListSpecialtyInfo',{SpecialtyInfoResult:specialtyInfoResult}).success(function(){
+                layer.msg('操作成功',{icon : 1,time : 2000});
+                $scope.cancle();
+            }).error(function(data, status, headers, config){
+                layer.msg('操作失败',{icon : 3,time : 2000});
+                $scope.cancle();
+            }) ;
+        };
+        //取消
+        $scope.cancle=function(){
+            $scope.btnIndex='';
+            $scope.load();
+            $scope.datas={};
+        };
+
+        //查看描述
+        $scope.datas={};
+        $scope.details=function(data){
+            $scope.btnIndex=data.specialtyId;
+            $scope.datas=data;
+        };
+    }]);
+});

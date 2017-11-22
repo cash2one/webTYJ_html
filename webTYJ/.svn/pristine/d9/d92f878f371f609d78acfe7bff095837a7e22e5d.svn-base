@@ -1,0 +1,86 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 人员管理设置js
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../app');
+
+    app.controller('personnelManagementSetCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        var url = $rootScope.url;
+        $scope.teamPer={professionalLineId:'',projectId:'',staffId:''};
+        $scope.teamPermissionsResult={teamPermissions:[]};//最后保存的对象
+
+        //查询出页面数据
+        $scope.load = function(){
+            $http.get(url + '/TeamPermissions/getCorePositionByProjectAndSpecialty').success(function(data){
+                var teamworkResult = data.TeamworkResult;
+                $scope.data=JSON.parse(teamworkResult.data);
+                $scope.title=$scope.data.shift();
+                $scope.tr=[];
+                for(var i=0;i<$scope.data.length;i++){
+                    var tr=$scope.data[i].shift();
+                    $scope.tr.push(tr);
+                }
+                $scope.data1=[];
+                for(var i=0;i<$scope.tr.length;i++) {
+                    var data = {tr: $scope.tr[i], td: $scope.data[i]}
+                    $scope.data1.push(data);
+
+                }
+            }).error(function(data){
+                layer.alert('查询数据异常，请重试！',{icon : 2});
+            });
+        };
+        $scope.load();
+
+
+        //查询项目经理和专业线经理
+        $scope.teamPermission = {projectId : '',professionalLineId : '',corePositionId : '',teamPermissionsId : ''};
+        $scope.searchManage = function(sid,pid,item){
+            if(item == ""){
+                $scope.teamPermission.teamPermissionsId = '';
+            }else{
+                $scope.teamPermission.teamPermissionsId = item.teamPermissionsId;
+
+            }
+            var i = document.getElementsByTagName('th');
+            $scope.teamPermission.projectId = pid;
+            $scope.teamPermission.professionalLineId = i[sid + 1].id;
+            //通过项目id和专业线id查询核心团队数据
+            //如果选择的是项目，查询岗位表中专业线为项目的关联核心岗位，如果是其他专业线，查询项目经理和对应的专业线经理
+            $http.get(url + '/CorePosition/listCorePositionBySid/'+i[sid+1].id).success(function(data){
+                if(data.CorePosition.length == 0){
+                    layer.msg('还未设置对应的核心岗位，请先设置！',{icon : 0});
+                }else{
+                    $scope.CorePosition = data.CorePosition;
+                    $("#myModal").modal("show");
+                }
+            }).error(function(data){
+                layer.alert('查询核心岗位失败，请重试！',{icon : 2});
+            });
+        };
+
+        //将选择的经理放入需要修改的对象
+        $scope.changeCore = function(items){
+            $scope.teamPermission.corePositionId = items.corePositionId;
+            $scope.teamPermission.staffId = items.staffId;
+            layer.confirm('是否将' + items.staffName + '设置为新的经理？',{
+                btn : ['是','否']
+            },function(){
+                $http.post(url + '/TeamPermissions/addOrUpdateTeamPermissions',{TeamPermissions : $scope.teamPermission}).success(function(data){
+                    layer.msg('设置成功！',{icon : 1});
+                    $("#myModal").modal("hide");
+                    $scope.load();
+                }).error(function(data){
+                    layer.alert('设置失败，请重新操作！',{icon : 2});
+                });
+            },function(){
+            });
+        };
+
+    }]);
+});

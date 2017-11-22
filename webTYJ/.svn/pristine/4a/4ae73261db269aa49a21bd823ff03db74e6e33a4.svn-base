@@ -1,0 +1,14 @@
+<!--
+    创建人：彭婷婷
+    创建时间：2015-10-10
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>打印小票</title>
+</head>
+<body>
+{{test}}
+</body>
+</html>

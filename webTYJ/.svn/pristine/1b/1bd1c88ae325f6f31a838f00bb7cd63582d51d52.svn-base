@@ -1,0 +1,465 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 收银员 交账
+ */
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../app');
+
+    app.controller('accountForCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+        var url = $rootScope.url;
+        $scope.show1 = true;
+        $scope.show2 = false;
+        $scope.black = 0;
+        var user = {employId: ''};
+        var userCookie = JSON.parse(sessionStorage.getItem("USER_LOGIN"));
+       // var financialInfo = JSON.parse(sessionStorage.getItem("financialInfo"));
+        $scope.user = userCookie ? userCookie : user;
+        $scope.postName = $scope.user.staff.post
+        $scope.total = 0;
+        $scope.payDetails=[];
+      //for(var i=0;i<financialInfo.length;i++){
+      //    if(financialInfo[i].postName=='收银员'){
+      //        $scope.id=financialInfo[i].financialStaffId;
+      //    }
+      //}
+        //console.log( $scope.id);
+        //$scope.postInfo={annexs:[]};
+        //var fetchFunction11=$http.get(url + '/Post/getPostByName/' + $scope.postName).success(function (callback) { });
+        //
+        //    $scope.postInfo=fetchFunction11();
+
+        //$scope.postInfo={annexs:[]};
+        for(var i=0;i<$scope.postName.length;i++){
+            if($scope.postName[i].nameOfCustom=='收银员'){
+                $scope.total++;
+            }
+            if($scope.postName[i].nameOfCustom=='收银组长'){
+                $scope.total++;
+            }
+            if($scope.postName[i].nameOfCustom=='出纳'){
+                $scope.total++;
+            }
+            if($scope.postName[i].nameOfCustom=='会计'){
+                $scope.total++;
+            }
+        }
+        if($scope.total!=0){
+            $scope.doClickForAccountFor(1);
+            var url = $rootScope.url;
+            $scope.btnIndex =1;
+            //切换
+            $scope.doClick = function(index) {
+                $scope.btnIndex = index;
+                if ($scope.btnIndex == 1) {
+                    $scope.show1 = true;
+                    $scope.show2 = false;
+                    $scope.load();
+                }
+                if ($scope.btnIndex == 2) {
+                    $scope.show1 = false;
+                    $scope.show2 = true;
+                    $scope.loadData();
+                }
+            }
+        }else{
+
+            $scope.show1 = false;
+            $scope.show2 = false;
+        }
+
+
+
+        //新增 交账对象
+        $scope.addAccountRecord={
+            accountTotalNum:'',//交账笔数
+            cashSum:'',//现金金额
+            creditCardSum:'',//刷卡金额
+            wechatSum:'',//微信金额
+            refundSum:'',//退款金额
+            financialStaffId:'',//交账人id
+            staffId:'',//收账人id
+            totalSum:''//总金额
+        };
+        $scope.financialStaffFirst={
+            financialStaffId:'',
+            postId:''//岗位id
+        };
+        $scope.paymentDetails={};//收支明细对象
+        $scope.accountRecordData={};//交账对象
+        //$scope.id=$scope.user.staff.staffId;//登录人id
+        //$scope.id='d6e9cf52-3735-11e5-b859-74d4359b657c';
+        //交账人id
+       // $scope.addAccountRecord.financialStaffId= $scope.id;
+        //交账人id，员工id
+
+        //$scope.financialStaffFirst.financialStaffId= $scope.id;
+
+
+
+        //$http.get(url+'/Post/getPostByName/'+$scope.postName).success(function(data)
+        //{
+        //    $scope.postInfo=data.Post;
+        //});
+        //根据登录人id查询上级信息
+        //console.log($scope.postInfo);
+        //$scope.postName = '收银员';
+
+       // $scope.financialStaffFirst.postName=$scope.postName;
+       // $http.post(url+'/FinancialStaff/selectAllsByStaffId', {FinancialStaff: $scope.financialStaffFirst}).success(function(data)
+       // {
+       //     $scope.financialStaff=data.FinancialStaff;
+
+            //收账人id
+            //$scope.addAccountRecord.staffId=  $scope.financialStaff.financialStaffId;
+       // });
+
+        //将所有的收款金额相加 显示
+        $scope.ids=[];//得到结算数据的id
+        $scope.num=0;//交账笔数
+
+     /*   $scope.load=function(){
+            $scope.totals={
+                cashTotal:0,creditTotal:0,wechatTotal:0,
+                totalSum:0,handedSum:0
+            };
+            //$scope.id=$scope.financialStaff.financialStaffId;
+
+            //根据登录人的员工id查询
+
+            $http.get(url+'/PaymentDetails/getPaymentDatilsByStaffId/'+$scope.user.employId).success(function(data)
+            {
+                $scope.paymentDetails=data.PaymentDetails;
+                for(var i=0;i<$scope.paymentDetails.length;i++) {
+                    if($scope.paymentDetails[i].transactionAmount==null){
+                        $scope.paymentDetails[i].transactionAmount=0;
+                    }
+                    if($scope.paymentDetails[i].cashSum==null){
+                        $scope.paymentDetails[i].cashSum=0;
+                    }
+                    if($scope.paymentDetails[i].creditCardSum==null){
+                        $scope.paymentDetails[i].creditCardSum=0;
+                    }
+                    if($scope.paymentDetails[i].wechatSum==null){
+                        $scope.paymentDetails[i].wechatSum=0;
+                    }
+                    if($scope.totals.totalSum==null){
+                        $scope.totals.totalSum=0;
+                    }
+                    if($scope.totals.cashTotal==null){
+                        $scope.totals.cashTotal=0;
+                    }
+                    if($scope.totals.creditTotal==null){
+                        $scope.totals.creditTotal=0;
+                    }
+                    if($scope.totals.wechatTotal==null){
+                        $scope.totals.wechatTotal=0;
+                    }
+
+                    //$scope.totals.totalSum = $scope.totals.totalSum + $scope.paymentDetails[i].transactionAmount;//总计金额
+                    $scope.totals.cashTotal = $scope.totals.cashTotal +$scope.paymentDetails[i].cashSum;//现金总额
+                    $scope.totals.creditTotal = $scope.totals.creditTotal + $scope.paymentDetails[i].creditCardSum;//刷卡总额
+                    $scope.totals.wechatTotal = $scope.totals.wechatTotal + $scope.paymentDetails[i].wechatSum;//微信总额
+                    $scope.paymentDetailsId = $scope.paymentDetails[i].paymentDetailsId;
+                    $scope.ids.push($scope.paymentDetailsId);
+                    $scope.num=$scope.paymentDetails.length;
+
+
+                }
+                $scope.totals.totalSum=$scope.totals.cashTotal+ $scope.totals.wechatTotal+$scope.totals.creditTotal;
+            });
+           console.log($scope.totals.cashTotal ) ;
+
+
+            //列表中的现金交账数据=交账记录表中无批次号数据的总和
+            $http.get(url+'/AccountRecord/selectAccountRecordById/'+$scope.user.employId).success(function(data)
+            {
+                $scope.accountRecordData=data.AccountRecord;
+                if($scope.accountRecordData.length==0){
+                    $scope.totals.handedSum=0;
+                }else{
+                    for(var i=0;i<$scope.accountRecordData.length;i++){
+                        $scope.totals.handedSum=$scope.totals.handedSum+$scope.accountRecordData[i].cashSum*1;
+                    }
+                }
+
+            });
+        }*/
+
+        /////////////////////
+        ////////////////////////
+        $scope.load=function() {
+            $scope.totals = {
+                cashTotal: 0, creditTotal: 0, wechatTotal: 0,
+                totalSum: 0, handedSum: 0,wechatHand:0,creditHand:0
+            };
+            //$scope.id=$scope.financialStaff.financialStaffId;
+            //根据登录人的员工id查询
+            $scope.paymentDetails = {page:{},financialStaffId:''};
+
+            var listPage = function (page, callback) {
+                $scope.paymentDetails.financialStaffId = $scope.user.employId;
+                $scope.paymentDetails.page=page;
+                $http.post(url + '/PaymentDetails/listPageWithPaymentDetails',{PaymentDetails:$scope.paymentDetails}).success(callback);
+            }
+            $scope.searchPaginator1=app.get('Paginator').list(listPage,6);
+
+            //结算的交账总金额，现金总额，刷卡总额，微信总额
+            $http.get(url + '/PaymentDetails/getPaymentDatilsSumByStaffId/'+$scope.user.employId).success(function(data){
+                $scope.payDetails = data.PaymentDetails;
+                $scope.totals.cashTotal = $scope.payDetails.cashSum;//现金总额
+                $scope.totals.creditTotal = $scope.payDetails.creditCardSum;//刷卡总额
+                $scope.totals.wechatTotal = $scope.payDetails.wechatSum;//微信总额
+            });
+
+            //
+            $http.get(url+'/PaymentDetails/getPaymentDatilsByStaffId/'+$scope.user.employId).success(function(data) {
+                $scope.paymentDetails = data.PaymentDetails;
+                for(var i=0;i<$scope.paymentDetails.length;i++) {
+                    $scope.paymentDetailsId = $scope.paymentDetails[i].paymentDetailsId;
+                    $scope.ids.push($scope.paymentDetailsId);
+                }
+            })
+
+            //列表中的现金交账数据=交账记录表中无批次号数据的总和
+            $http.get(url + '/AccountRecord/selectAccountRecordById/' + $scope.user.employId).success(function (data) {
+                $scope.accountRecordData = data.AccountRecord;
+                if ($scope.accountRecordData.length == 0) {
+                    $scope.totals.handedSum = 0;
+                } else {
+                    for (var i = 0; i < $scope.accountRecordData.length; i++) {
+                        $scope.totals.handedSum += $scope.accountRecordData[i].cashSum;
+                        $scope.totals.wechatHand += $scope.accountRecordData[i].wechatSum;
+                        $scope.totals.creditHand += $scope.accountRecordData[i].creditCardSum;
+
+
+                    }
+                }
+
+            });
+
+
+        };
+        $scope.load();
+
+        //弹出现金缴款模态框
+        $scope.cashHand=function(){
+            $scope.noHandedSum = $scope.totals.cashTotal - $scope.totals.handedSum;
+            if( $scope.noHandedSum!=0) {
+                //$('#cash').modal({backdrop: 'static', keyboard: false});
+                angular.element('#cash').modal({backdrop: 'static', keyboard: false});
+                $scope.addAccountRecord.cashSum = '';
+            }else
+            {
+                layer.msg('没有现金未交账', {icon: 0, time: 2000});
+            }
+        }
+        /**现金交款 */
+        $scope.account=function() {
+            $scope.noHandedSum = $scope.totals.cashTotal - $scope.totals.handedSum;
+          //  if( $scope.noHandedSum!=0) {
+                if ($scope.paymentDetails.length > 0) {
+                    if ($scope.addAccountRecord.cashSum != "") {
+                        $scope.noHandedSum = $scope.totals.cashTotal - $scope.totals.handedSum;
+                        if ($scope.addAccountRecord.cashSum > $scope.noHandedSum) {
+                            layer.alert('交账金额不应大于未交帐现金金额', {icon: 0});
+                        } else if (IsNum($scope.addAccountRecord.cashSum)) {
+                                    $scope.addAccountRecord.accountType = 0;//现金交账
+                                    $scope.addAccountRecord.accountTotalNum = 1;//交账笔数
+                                    $scope.addAccountRecord.financialStaffId= $scope.user.employId;//交账人
+                                    $scope.addAccountRecord.cashSum= $scope.addAccountRecord.cashSum;
+                                   // $scope.addAccountRecord.staffId=  $scope.financialStaff.financialStaffId;//收账人
+                                    $http.post(url + '/AccountRecord/insertAccountRecordRes', {AccountRecord: $scope.addAccountRecord}).success(function () {
+                                        layer.msg('现金交账成功', {icon: 1, time: 2000});
+                                        angular.element('#cash').modal('hide');
+                                        $scope.load();
+                                    }).error(function (data, status, headers, config) {
+                                        layer.msg('现金交账失败', {icon: 3, time: 2000});
+                                    });
+                            }
+                    } else {
+                        layer.alert('请输入交账金额', {icon: 0});
+                    }
+                } else {
+                    layer.msg('请选择现金交款数据', {icon: 1, time: 2000});
+                }
+            //}else{
+            //    layer.msg('没有现金未交账', {icon: 1, time: 2000});
+            //}
+        };
+
+        /********结算********/
+            //结算模态框
+        $scope.toAccount=function(){
+            //$('#account').modal({backdrop: 'static', keyboard: false});
+            angular.element('#account').modal({backdrop: 'static', keyboard: false});
+        }
+
+        //确认交账
+        $scope.handAccount=function(){
+
+            if ($scope.paymentDetails.length >0) {
+                $scope.addAccountRecord.parentId = '';
+                $scope.diss=[];
+                $scope.diss=uniqueArray( $scope.ids) ;
+                for (var i = 0; i < $scope.diss.length; i++) {
+                    if (i < $scope.diss.length - 1) {
+                        $scope.addAccountRecord.parentId += $scope.ids[i] + ",";
+                    }
+                    else if (i == $scope.diss.length - 1) {
+                        $scope.addAccountRecord.parentId += $scope.ids[i];
+                    }
+                }
+
+                $scope.addAccountRecord.accountType = 1;//结算
+                $scope.addAccountRecord.cashSum = $scope.totals.cashTotal - $scope.totals.handedSum;//现金金额
+                $scope.addAccountRecord.creditCardSum = $scope.totals.creditTotal;//刷卡金额
+                $scope.addAccountRecord.wechatSum = $scope.totals.wechatTotal;//微信金额
+                $scope.addAccountRecord.totalSum = $scope.totals.totalSum - $scope.totals.handedSum;//总金额
+                $scope.addAccountRecord.accountTotalNum = $scope.num;//交账笔数
+              //  $scope.addAccountRecord.staffId=  $scope.financialStaff.financialStaffId;//收账人
+                $scope.addAccountRecord.financialStaffId= $scope.user.employId;
+                //$scope.addAccountRecord.financialStaffId=  $scope.financialStaff.financialStaffId;//交账人
+                $http.post(url + '/AccountRecord/insertAccountRecordRes', {AccountRecord: $scope.addAccountRecord}).success(function () {
+                        layer.msg('结算成功', {icon: 1, time: 2000});
+                        $('#account').modal('hide');
+                        $scope.load();//重新加载数据
+                    }).error(function (data, status, headers, config) {
+                        layer.msg('结算失败', {icon: 3, time: 2000});
+                    })
+            }else{
+                layer.msg('请选择结算数据', {icon: 1, time: 2000});
+            }
+        };
+
+
+        //分页显示 交账中的数据
+        $scope.accountR={page:{},financialStaffId:''};
+       // $scope.accountR.financialStaffId=$scope.id;//登录人id
+        $scope.accountR.financialStaffId=$scope.user.employId;
+        //$scope.accountR.financialStaffId=$scope.financial.financialStaffId;//财务人员id
+        //$scope.accountR.financialStaffId= $scope.financialStaff.financialStaffId
+        $scope.loadData=function(){
+            var fetchFunction = function(page,callback) {
+                $scope.accountR.page=page;
+                $http.post(url + '/AccountRecord/listPageByState',{AccountRecord:$scope.accountR}).success(callback);
+            };
+            $scope.searchPaginator1=app.get('Paginator').list(fetchFunction,6);
+        }
+
+
+        //判断是否选中
+        $scope.accountRecords={accountRecordList:[]};
+        $scope.getData=function(data){
+            var chk = document.getElementById(data.accountRecordId);
+            $scope.data={};
+            $scope.data=data;
+            if(chk.checked == true){
+                $scope.accountRecords.accountRecordList.push($scope.data);
+            }else{
+                $scope.tem=[];
+                $scope.tem=$scope.accountRecords.accountRecordList;
+                $scope.accountRecords={accountRecordList:[]};
+                for(var i = 0; i < $scope.tem.length; i ++){
+                    if($scope.tem[i].accountRecordId != data.accountRecordId){
+                        $scope.accountRecords.accountRecordList.push($scope.data);
+                    }
+                }
+            }
+        };
+
+        //撤回
+        $scope.withDraw=function(){
+            if($scope.accountRecords.accountRecordList.length>0){
+                for(var j=0;j<$scope.accountRecords.accountRecordList.length;j++){
+                    if(typeof($scope.accountRecords.accountRecordList[j].batchNum)=='undefined'||$scope.accountRecords.accountRecordList[j].accountState!='0'){
+                        layer.alert('该数据不能进行回退操作',{icon : 0});
+                                $scope.accountRecords={accountRecordList:[]};
+                                $scope.loadData();
+                                return;
+                    //if($scope.accountRecords.accountRecordList[j].accountType==0){//现金交账
+                    //    if(typeof($scope.accountRecords.accountRecordList[j].batchNum)=='undefined'){
+                    //        layer.alert('该数据不能进行回退操作',{icon : 0});
+                    //        $scope.accountRecords={accountRecordList:[]};
+                    //        $scope.loadData();
+                    //        return;
+                    //    }
+                        //else{
+                        //    $http.put(url+'/AccountRecord/backAccountRecordData',{AccountRecord:$scope.accountRecords}).success(function(){
+                        //        layer.msg("退回成功",{icon : 1,time : 2000});
+                        //        $scope.loadData();//刷新
+                        //        $scope.accountRecords={accountRecordList:[]};
+                        //    }).error(function(data, status, headers, config){
+                        //        layer.msg("退回失败",{icon : 3,time : 2000});
+                        //    }) ;
+                        //}
+                    }else {
+                        if (confirm("确定要撤回吗"), {
+                                btn: ['确定', '取消']
+                            },function() {
+                                $http.put(url + '/AccountRecord/backAccountRecordData', {AccountRecord: $scope.accountRecords}).success(function () {
+                                    layer.msg("退回成功", {icon: 1, time: 2000});
+                                    $scope.loadData();//刷新
+                                    $scope.accountRecords = {accountRecordList: []};
+                                }).error(function (data, status, headers, config) {
+                                    layer.msg("退回失败", {icon: 3, time: 2000});
+                                })
+                            });
+                    }
+
+                }
+            }else{
+                layer.alert('请选择需要退回的数据！！',{icon : 0});
+            }
+
+       };
+
+        //查看详情
+        $scope.getDatils = function(id){
+            $scope.banks={};
+            $('#datil').modal({backdrop: 'static', keyboard: false});
+            $scope.btnIndex=id;
+            $http.get(url+'/BankDeposit/getBankDepositById/'+id).success(function(data)              {
+                $scope.banks=data.BankDeposit;
+            });
+
+        };
+
+        }]);
+});
+
+function uniqueArray(data){
+    data = data || [];
+    var a = {};
+    for (var i=0; i<data.length; i++) {
+        var v = data[i];
+        if (typeof(a[v]) == 'undefined'){
+            a[v] = 1;
+        }
+    };
+    data.length=0;
+    for (var i in a){
+        data[data.length] = i;
+    }
+    return data;
+}
+
+function IsNum(num) {
+    var reNum = /^\d*$/;
+    if(num==0){
+        layer.alert('交账金额不能为0', {icon: 0});
+    }else {
+        if (reNum.test(num)) {
+            return true;
+        } else {
+            if (num < 0) {
+                layer.alert('交账金额不能为负数', {icon: 0});
+                return false;
+            } else {
+                layer.alert('交账金额必须为数字', {icon: 0});
+                return false;
+            }
+        }
+    }
+}

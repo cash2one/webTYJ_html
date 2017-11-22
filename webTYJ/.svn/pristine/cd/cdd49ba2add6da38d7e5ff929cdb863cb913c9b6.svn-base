@@ -1,0 +1,246 @@
+<!--
+    页面名称：物业合同管理的合同列表
+    创建人：彭婷婷     创建时间：2015/6/16
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>合同列表</title>
+    <link rel="stylesheet" href="bower_components/skins/zyupload-1.0.0.min.css " type="text/css">
+</head>
+<body>
+<div ng-show="checkShow">
+
+    <div class="sel">
+        <div class="row" >
+            <div class="col-lg-1 col-md-2 col-sm-12 text-right">
+                筛选：
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-12">
+                <label class="checkbox inline">
+                    <input name="name1" type="radio" value="0" class="checkboxa" ng-model="searchTenementPact.state">
+                    <span>已失效</span>
+                </label>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-12">
+                <label class="checkbox inline">
+                    <input name="name2" type="radio" value="1" class="checkboxa" ng-model="searchTenementPact.state">
+                    <span>执行中</span>
+                </label>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-12">
+                <label class="checkbox inline">
+                    <input name="name3" type="radio" value="2" class="checkboxa" ng-model="searchTenementPact.state">
+                    <span>快失效</span>
+                </label>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-12">
+                <label class="checkbox inline">
+                    <input name="name4" type="radio" value="3" class="checkboxa" ng-model="searchTenementPact.state">
+                    <span>未生效</span>
+                </label>
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-12 text-right">
+                <button type="button" class="btn btn-default btn-primary" ng-click="currentItem._load()"><span
+                        class="glyphicon glyphicon-search btn_icon"></span>查询 </button>
+            </div>
+        </div>
+        <div class="row search-padding">
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                合同名称：
+            </div>
+            <div class="col-lg-5 col-md-4 col-sm-4">
+                <input  class="form-control" name="input" type="text" ng-model="searchTenementPact.pactName">
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                合同项目：
+            </div>
+            <div class="col-lg-5 col-md-4 col-sm-4">
+                <input class="form-control" ng-model="searchTenementPact.propertyProject">
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                到期时间：
+            </div>
+            <div class="col-lg-5 col-md-4 col-sm-4">
+                <input name="input2" type="date" ng-model="searchTenementPact.minendTime" class="form-control">
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                至：
+            </div>
+            <div class="col-lg-5 col-md-4 col-sm-4">
+                <input name="input2" type="date"  ng-model="searchTenementPact.maxendTime" class="form-control">
+            </div>
+        </div>
+    </div>
+
+    <div class="padding">
+
+        <div class="padding">
+            <button type="button" class="btn btn-default btn-primary" ui-sref="index.businessManagement.propertyManagementContract.contractNew">
+                <span class="glyphicon glyphicon-plus btn_icon"></span>
+                新建合同
+            </button>
+        </div>
+
+        <div class="col-lg-4 col-md-6 col-sm-4" ng-repeat="item in currentItem.object.tenementPacts" ng-show="item.pactId != null">
+                <div id="pannel">
+                    <div class="title">
+                        <div class="col-xs-6 col-lg-6 col-md-6 col-sm-6">
+                            <h3>合同信息</h3>
+                        </div>
+                    </div>
+                    <div class="pannel_content">
+                        <div class="row">
+                            <div class="col-xs-4 col-lg-4 col-md-4">
+                                <a style="cursor:pointer" ng-click="currentCheck(item)">
+                                    <img src="images/img/img_03.png" width="100%" >
+                                </a>
+                            </div>
+                            <div class="col-xs-8 col-lg-8 col-md-8">
+                                <ul>
+                                    <li>合同名称：{{item.pactName}}</li>
+                                    <li>合同编号：{{item.pactCode}}</li>
+                                    <li>合同类型：
+                                        <span ng-switch on="item.pactType">
+                                            <span ng-switch-when="0">佣金合同</span>
+                                            <span ng-switch-when="1">全包合同</span>
+                                            <span ng-switch-when="2">固定合同</span>
+                                        </span>
+                                    </li>
+                                    <li>合同金额：{{item.totalPrice}}</li>
+                                    <li>物业项目：{{item.propertyProject}}</li>
+                                    <li>开始时间：{{item.staTime | date:'yyyy-MM-dd'}}</li>
+                                    <li>到期时间：{{item.endTime | date:'yyyy-MM-dd'}}</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        <div class="clear"></div>
+
+        <div class="row padding">
+            <div class="bill_paging">
+                <ul class="pagination">
+                    <li><a style="cursor:pointer;" ng-click="currentItem.go(1)">首页</a></li>
+                    <li><a style="cursor:pointer;" ng-show="currentItem.hasPrevious()" ng-click="currentItem.previous()">上一页</a></li>
+                    <li><a style="cursor:pointer;" ng-repeat="i in currentItem.pages"  ng-click="currentItem.go(i)">{{i}}</a></li>
+                    <li><a style="cursor:pointer;" ng-show="currentItem.hasNext()" ng-click="currentItem.next()">下一页</a></li>
+                    <li><a style="cursor:pointer;" ng-click="currentItem.go(currentItem.page.totalPage)">尾页</a></li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<div class="padding" ng-show="show1">
+
+    <div class="sel">
+        <div class="row search-padding">
+            <div class="col-lg-12 col-md-12 col-sm-12">
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    合同编号：
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4">
+                    {{tenementPact.pactCode}}
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    合同名称：
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4">
+                    {{tenementPact.pactName}}
+                </div>
+            </div>
+            <div class="col-lg-12 col-md-12 col-sm-12">
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    合同类型：
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4">
+                    <span ng-switch on="tenementPact.pactType">
+                        <span ng-switch-when="0">佣金合同</span>
+                        <span ng-switch-when="1">全包合同</span>
+                        <span ng-switch-when="2">固定金额</span>
+                    </span>
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    物业项目：
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4">
+                    {{tenementPact.propertyProject}}
+                </div>
+            </div>
+            <div class="col-lg-12 col-md-12 col-sm-12">
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    开始时间：
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4">
+                    {{tenementPact.staTime | date : 'yyyy-MM-dd'}}
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    结束日期：
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4">
+                    {{tenementPact.endTime | date : 'yyyy-MM-dd'}}
+                </div>
+            </div>
+            <div class="col-lg-12 col-md-12 col-sm-12">
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    签订甲方：
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4">
+                    {{tenementPact.preEnterprise}}
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    签订乙方：
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4">
+                    {{tenementPact.aftEnterprise}}
+                </div>
+            </div>
+            <div class="col-lg-12 col-md-12 col-sm-12">
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    金额类型：
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4">
+                    <span ng-switch on="tenementPact.totalPriceType">
+                        <span ng-switch-when="0">收入</span>
+                        <span ng-switch-when="1">支出</span>
+                    </span>
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                    合同金额：
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4">
+                    {{tenementPact.totalPrice}}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="sel1">
+        <div class="row search-padding">
+            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                上传合同：
+            </div>
+            <div class="col-lg-10 col-md-10 col-sm-10">
+                <div class="col-lg-2" ng-repeat="item in tenementPact.annexs" ng-show="tenementPact.annexs != null">
+                        <img src={{fileUrl}}/{{item.annexAddress}}>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center">
+        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="checkClose()">
+            返回
+        </button>
+    </div>
+
+</div>
+
+</body>
+</html>

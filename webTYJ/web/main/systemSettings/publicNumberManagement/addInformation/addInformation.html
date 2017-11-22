@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>新建群发</title>
+    <link rel="stylesheet" href="bower_components/skins/zyupload-1.0.0.min.css " type="text/css">
+    <link href="bower_components/ueditor/themes/default/css/ueditor.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="bower_components/ueditor/third-party/jquery.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="bower_components/ueditor/ueditor.config.js"></script>
+    <script type="text/javascript" charset="utf-8" src="bower_components/ueditor/ueditor.all.js"></script>
+    <script type="text/javascript" charset="utf-8" src="bower_components/ueditor/angular-ueditor.js"></script>
+    <script type="text/javascript" src="bower_components/ueditor/lang/zh-cn/zh-cn.js"></script>
+</head>
+<body>
+<div class="information_box1">
+    <div class="row sel_button">
+        <div class="col-lg-4 col-md-12 col-sm-12">
+            <a ui-sref="index.systemSettings.publicNumberManagement.massInformation">
+                <button type="button" class="btn btn-default btn-primary">
+                    <span class="glyphicon glyphicon-arrow-left btn_icon"></span>
+                    返回
+                </button>
+            </a>
+        </div>
+    </div>
+    <div class="row padding">
+        <div class="col-lg-3">
+
+            <!-- 循环显示图文详情 -->
+            <div ng-repeat="item in massInformation.informationList">
+                <div ng-class="{true: 'pn_new_active', false: 'pn_new'}[information.index==item.index]" ng-show="$index == 0" ng-click="select($index)">
+                    <img src="{{jiajiaFileUrl}}/{{item.coverPath}}" ng-show="item.coverPath != ''" width="245px" height="150px"/>
+                    <div class="pn_new_title">
+                        {{item.title}}
+                    </div>
+                </div>
+                <div ng-class="{true: 'pn_new_two_active', false: 'pn_new_two'}[information.index==item.index]" ng-mouseenter="show = true" ng-mouseleave="show = false" ng-show="$index!=0" ng-click="select($index)">
+                    <div class="pn-edit" ng-show="show">
+                        <span class="glyphicon glyphicon-edit btn_icon"></span>
+                        <span class="glyphicon glyphicon-trash btn_icon" ng-click="delInformation($index)"></span>
+                    </div>
+                    <div class="pn_new_two_img">
+                        <img src="{{jiajiaFileUrl}}/{{item.coverPath}}" ng-show="item.coverPath != ''" width="70px" height="70px"/>
+                    </div>
+                    {{item.title}}
+                </div>
+            </div>
+            <!-- 循环结束 -->
+            <div class="pn_new_add" ng-click="addInformation()">
+                <span class="glyphicon glyphicon-plus btn_icon"></span>
+            </div>
+
+        </div>
+        <div class="col-lg-9">
+            <div class="row search-padding-10   ">
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">标题：</div>
+                <div class="col-lg-7 col-md-7 col-sm-7"><input class="form-control" ng-model="information.title"></div>
+                <div class="col-lg-1 col-md-3 col-sm-3 blankSpace">
+                    <span style="color: red">*</span>
+                </div>
+            </div>
+            <div class="row search-padding-10">
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">作者：</div>
+                <div class="col-lg-7 col-md-7 col-sm-7"><input class="form-control" ng-model="information.author"></div>
+            </div>
+            <!--<div class="row search-padding-10">-->
+                <!--<div class="col-lg-2 col-md-2 col-sm-2 text-right">封面：</div>-->
+                <!--<div id="zyupload" class="zyupload" ></div>-->
+            <!--</div>-->
+            <div class="row search-padding-10">
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">正文：</div>
+                <div class="col-lg-7 col-md-7 col-sm-7">
+                    <div  class="ueditor" ng-model="information.content"></div>
+                </div>
+                <div class="col-lg-1 col-md-3 col-sm-3 blankSpace">
+                    <span style="color: red">*</span>
+                </div>
+            </div>
+            <div class="row search-padding-10">
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">摘要：</div>
+                <div class="col-lg-7 col-md-7 col-sm-7">
+                    <textarea class="form-control" ng-model="information.summary">{{information.summary}}</textarea>
+                </div>
+                <div class="col-lg-1 col-md-3 col-sm-3 blankSpace">
+                    <span style="color: red">*</span>
+                </div>
+            </div>
+            <div class="row search-padding-10">
+                <div class="col-lg-2 col-md-2 col-sm-2 text-right">封面：</div>
+                <div class="col-lg-4 col-md-7 col-sm-7">
+                    <div style="border: 2px dashed #515151; width: 100%" class="upload-paanel">
+                        <input id="file" type="file" style="width: 100%;" file-model="myFile" onchange="angular.element(this).scope().test()"/>
+                        <!--<input type="file" file-model="myFile" onchange="document.getElementById('aa').click();"/>-->
+                        <!--<input type="file" file-model="myFile"/>-->
+                        <!--<input id="aa" type="button" value="上传" ng-click="test()"/>-->
+                        <img src="{{jiajiaFileUrl}}/{{information.coverPath}}" ng-show="information.coverPath != ''" width="200px" height="145px"/>
+                    </div>
+                    <!--<div class="upload-paanel">-->
+                        <!--从素材库中选择-->
+                    <!--</div>-->
+                </div>
+                <div class="col-lg-1 col-md-3 col-sm-3 blankSpace">
+                    <span style="color: red">*</span>
+                </div>
+            </div>
+            <div class="row text-center ">
+                <button type="button" class="btn btn-default btn-primary" ng-click="openPhone()">
+                    预览
+                </button>
+                <button type="button" class="btn btn-default btn-primary" ng-click="upload()">
+                    发布
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="phone_panel" ng-show="phoneShow" ng-click="closePhone($event)">
+    <div class="phone_box">
+        <div class="phone_back">
+            <div class="phone_header"> </div>
+            <div class="phone_body">
+                <div class="phone_body_title">
+                    123456
+                </div>
+                <!-- 一条图文消息 -->
+                <div class="phone_body_content" ng-show="massInformation.informationList.length == 1">
+                        <div class="phone_body_list">
+                            <div class="phone_body_list_title">
+                                   <div class="col-xs-6">
+                                        <b>{{information.title}}</b>
+                                   </div>
+                                    <div class="col-xs-6 text-right">
+                                        {{showDate|date:'yyyy-MM-dd'}}
+                                    </div>
+                                <div class="clear"></div>
+                            </div>
+                            <div class="phone_body_list_img">
+                                <img src="{{jiajiaFileUrl}}/{{information.coverPath}}" width="258" height="130"/>
+                            </div>
+                            <div class="phone_body_list_text">
+                                {{information.summary}}
+                            </div>
+                            <div class="phone_body_foot">
+                                <div class="col-xs-6">
+                                    阅读全文
+                                </div>
+                                <div class="col-xs-6 text-right">
+                                    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+                        </div>
+                </div>
+                <!-- 一条图文消息结束 -->
+                <!-- 多条图文消息 -->
+                <div class="phone_body_content" ng-show="massInformation.informationList.length != 1">
+                    <div class="phone_body_list">
+                        <div class="phone_body_list_title">
+                            <div class="col-xs-6">
+                                <b></b>
+                            </div>
+                            <div class="col-xs-6 text-right">
+
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                        <div ng-repeat="item in massInformation.informationList">
+                            <div class="phone_body_list_img" ng-show="$index == 0">
+                                <img src="{{jiajiaFileUrl}}/{{item.coverPath}}" width="258" height="130"/>
+                                <div class="phone_body_list_text">
+                                    {{item.title}}
+                                </div>
+                            </div>
+
+                            <div class="phone_body_list_pannel" ng-show="$index != 0">
+                                {{item.title}}
+                                <div class="phone_body_list_pannel_img">
+                                    <img src="{{jiajiaFileUrl}}/{{item.coverPath}}" width="50" height="50"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 多条图文消息结束 -->
+            </div>
+            <div class="phone_circle">
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,70 @@
+/**
+ * Created by LM on 2015/3/11.
+ * 工作台js
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../app');
+
+    app.controller('workCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+
+        var url = $rootScope.url;
+        var user = {};
+        var userSession = JSON.parse(sessionStorage.getItem("USER_LOGIN"));
+        $scope.user = userSession?userSession:user;
+        console.log($scope.user);
+        if($scope.user.staff != null){
+            $scope.staffId = $scope.user.staff.staffId;
+        }else{
+            $scope.userId = $scope.user.userId;
+        }
+
+
+        /**
+         * 查询工作台--我的任务
+         */
+        $http.get(url + "/Tasks/getTaskCount/" + $scope.staffId).success(function(data){
+            $scope.toCompleted = data.count0 + data.count1;
+            $scope.completed = data.count2;
+            $scope.notBeginning = data.count3 + data.count4;
+        }).error(function(data,status,headers,config){
+            layer.alert('任务数量查询失败！',{icon:2});
+        });
+
+        /**
+         * 查询工作台--维修
+         */
+        $http.get("http://10.0.13.227:8080/webTYJ/cxfws/rest/Tasks/getTasksbyStateRestful/" + $scope.staffId).success(function(data){
+            $scope.toCompleted = data.count0 + data.count1;
+            $scope.completed = data.count2;
+            $scope.notBeginning = data.count3 + data.count4;
+        }).error(function(data,status,headers,config){
+            layer.alert('任务数量查询失败！',{icon:2});
+        });
+
+        /**
+         * 查询工作台--集中处理处理管理项
+         */
+        $http.get(url + "/Tasks/getTaskCount/" + $scope.staffId).success(function(data){
+            $scope.toCompleted = data.count0 + data.count1;
+            $scope.completed = data.count2;
+            $scope.notBeginning = data.count3 + data.count4;
+        }).error(function(data,status,headers,config){
+            layer.alert('任务数量查询失败！',{icon:2});
+        });
+
+        /**
+         * 查询工作台--专项资金处理管理项
+         */
+        $http.get(url + "/Tasks/getTaskCount/" + $scope.staffId).success(function(data){
+            $scope.toCompleted = data.count0 + data.count1;
+            $scope.completed = data.count2;
+            $scope.notBeginning = data.count3 + data.count4;
+        }).error(function(data,status,headers,config){
+            layer.alert('任务数量查询失败！',{icon:2});
+        });
+
+    }]);
+});

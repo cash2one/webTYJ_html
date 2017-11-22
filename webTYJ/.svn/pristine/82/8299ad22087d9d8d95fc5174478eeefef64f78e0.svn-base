@@ -1,0 +1,305 @@
+<!--
+    页面名称：产品初始化
+-->
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>产品初始化</title>
+</head>
+<body>
+<div id="content-first">
+    <!--tab页切换开始-->
+    <!--<div id="tab">
+        <a lang="no" ng-class="{'this_action ':btnIndex==1}">产品初始化</a>
+    </div>-->
+    <!--tab页切换结束-->
+    <!--应收款报表-->
+    <!--条件搜索-->
+    <div id="tab">
+        <a ng-class="{'this_action ':btnIndex==1}" ng-click="doClick(1)" ui-sref="index.accountManagement.productAndProperty.product">产品初始化</a>
+        <a ng-class="{'this_action ':btnIndex==2}" ng-click="doClick(2)" ui-sref="index.accountManagement.productAndProperty.product.propertyProject.plan.detailPlan" lang="no">计费模版初始化</a>
+    </div>
+    <div class="sel">
+        <div class="row search-padding-10">
+            <div class="col-lg-12 col-md-12 col-sm-12">
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    价格区间：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <input class="form-control" placeholder="请输入最低价格" ng-model="searchProduct.startPrice" ng-blur="goCheck(searchProduct.startPrice)">
+                </div>
+                <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                    至：
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-4">
+                    <input class="form-control" placeholder="请输入最高价格" ng-model="searchProduct.endPrice">
+                </div>
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                产品名称：
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                <input class="form-control" placeholder="请输入产品名称" ng-model="searchProduct.productName">
+            </div>
+            <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+                产品类型：
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4">
+                <select class="form-control" ng-model="searchProduct.productType">
+                    <option value="">--请选择--</option>
+                    <option value="0">建筑租凭</option>
+                    <option value="1">停车优惠卡</option>
+                    <option value="2">门禁卡</option>
+                    <option value="3">装修服务</option>
+                    <option value="4">固定车位</option>
+                    <option value="5">广告租凭</option>
+                    <option value="6">普通服务</option>
+                </select>
+            </div>
+            <div class="col-lg-1 col-md-6 col-sm-6 text-right">
+                <button type="button" class="btn btn-default btn-primary tab-btn"
+                        ng-click="currentProduct._load();">
+                    <span class="glyphicon glyphicon-search btn_icon"></span>
+                    查询
+                </button>
+            </div>
+        </div>
+        <!--条件搜索 END-->
+        <!--修改按钮图标 bug1863-->
+        <div class="row padding">
+            <div class="col-lg-12">
+                <div class="search-padding-10">
+                    <button type="button" class="btn btn-default btn-primary" ng-click="toAdd();">
+                        <span class="glyphicon  btn_icon"></span>新增
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary" ng-click="toUpdate();">
+                        <span class="glyphicon  btn_icon"></span>修改
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary" ng-click="detail();">
+                        <span class="glyphicon  btn_icon"></span>详情
+                    </button>
+                    <button type="button" class="btn btn-default btn-primary" ng-click="changeState();">
+                        <span class="glyphicon  btn_icon"></span>失效
+                    </button>
+                </div>
+                <table>
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>序号</th>
+                        <th>产品类型</th>
+                        <th>产品名称</th>
+                        <th>面积</th>
+                        <th>价格</th>
+                        <th>支付类型</th>
+                        <th>递增类型</th>
+                        <th>简介</th>
+                        <th>启用状态</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-class="{'navigation_info':btnIndex==item}" ng-repeat="item in currentProduct.object['products']" ng-click="chargeItem(item['productId'])" ng-show="item['productId'] != null">
+                        <td style="width: 10%; overflow: hidden; text-overflow: ellipsis;"><input type="checkbox" ng-click="chargeItem(item['productId'])" id="{{item['productId']}}" value="{{item['productId']}}" /></td>
+                        <td style="width: 10%; overflow: hidden; text-overflow: ellipsis;">{{$index}}</td>
+                        <td style="width: 10%; overflow: hidden; text-overflow: ellipsis;" ng-switch on="item.productType">
+                            <span ng-switch-when="0">建筑租赁</span>
+                            <span ng-switch-when="1">停车优惠卡</span>
+                            <span ng-switch-when="2">门禁卡</span>
+                            <span ng-switch-when="3">装修服务</span>
+                            <span ng-switch-when="4">固定车位</span>
+                            <span ng-switch-when="5">广告租赁</span>
+                            <span ng-switch-when="6">普通服务</span>
+                        </td>
+                        <td style="width: 10%; overflow: hidden; text-overflow: ellipsis;">
+                            <span ng-if="item.productName.length <= 10">
+                                {{item.productName}}
+                            </span>
+                            <span ng-if="item.productName.length > 10" title="{{item.productName}}">
+                                {{item.productName | limitTo:10}}...
+                            </span>
+                        </td>
+                        <td style="width: 10%; overflow: hidden; text-overflow: ellipsis;">{{item.totalArea}}</td>
+                        <td style="width: 10%; overflow: hidden; text-overflow: ellipsis;">
+                            {{item.price}}{{item.unit}}
+                        </td>
+                        <td style="width: 10%; overflow: hidden; text-overflow: ellipsis;"><span ng-if="item.payWay != null">
+                            <span ng-switch="item.payWay">
+                                <span ng-switch-when="0">预付</span>
+                                <span ng-switch-when="1">一次性付款</span>
+                            </span>
+                        </span>
+                            <span ng-if="item.payWay == null">/</span>
+                        </td>
+                        <td style="width: 10%; overflow: hidden; text-overflow: ellipsis;">
+                            <span ng-if="item.rentType != null">
+                                <span ng-switch="item.rentType">
+                                    <span ng-switch-when="1">半年递增</span>
+                                    <span ng-switch-when="2">逐年递增</span>
+                                    <span ng-switch-when="3">两年递增</span>
+                                    <span ng-switch-when="4">三年递增</span>
+                                </span>
+                            </span>
+                            <span ng-if="item.rentType == null">/</span>
+                        </td>
+                        <td style="width: 10%; overflow: hidden; text-overflow: ellipsis;">
+                            <span ng-if="item.lntroduction.length < 10"><nobr>{{item.lntroduction}}</nobr></span>
+                            <span ng-if="item.lntroduction.length >= 10" title="{{item.lntroduction}}"><nobr>{{item.lntroduction | limitTo:18}}...</nobr></span>
+                            <span ng-if="item.lntroduction.length == null">/</span>
+                        </td>
+                        <td style="width: 10%; overflow: hidden; text-overflow: ellipsis;">
+                            <span ng-if="item.state == 0">已启用</span>
+                            <span ng-if="item.state == 1">失效</span>
+                            <span ng-if="item.state == 2">未启用</span>
+                        </td>
+                    </tr>
+                    <tr ng-if="currentProduct.object.products.length == null">
+                        <td colspan="9" style="cursor: default">暂无数据！</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="padding">
+                    <div class="bill_paging">
+                        <span>共{{currentProduct.object.page.totalResult}}条</span>
+                        <ul class="pagination">
+                            <li ng-class="{true:'disabled'}[currentProduct.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-click="currentProduct.go(1)">首页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[currentProduct.page.currentPage==1]">
+                                <a href="javascript:void(0)" ng-show="currentProduct.hasPrevious()"
+                                   ng-click="currentProduct.previous()">上一页</a>
+                            </li>
+                            <li ng-class="{true:'active'}[currentProduct.page.currentPage==i]"
+                                ng-repeat="i in currentProduct.pages">
+                                <a href="javascript:void(0)" ng-click="currentProduct.go(i)">{{i}}</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[currentProduct.page.currentPage==currentProduct.page.totalPage]">
+                                <a href="javascript:void(0)" ng-show="currentProduct.hasNext()"
+                                   ng-click="currentProduct.next()">下一页</a>
+                            </li>
+                            <li ng-class="{true:'disabled'}[currentProduct.page.currentPage==currentProduct.page.totalPage]">
+                                <a href="javascript:void(0)"
+                                   ng-click="currentProduct.go(currentProduct.page.totalPage)">尾页</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!--应收款报表 END-->
+        </div>
+        <!--tab页切换开始-->
+        <!--查看详情模态框-->
+        <div class="modal fade ng-scope in" id="personDatil" role="dialog" aria-label="personDatil" aria-hidden="false"><div class="modal-backdrop fade in" style="height: 666px;"></div>
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <span>详情：</span>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="sel1">
+                            <div class="row search-padding-10">
+                                <div class="col-xs-12">
+                                    <div class="col-xs-2 text-right">
+                                        产品名称：
+                                    </div>
+                                    <div class="col-xs-4">
+                                        {{Product.productName}}
+                                    </div>
+                                    <div class="col-xs-2 text-right">
+                                        产品编号：
+                                    </div>
+                                    <div class="col-xs-4">
+                                        {{Product.productNum}}
+                                    </div>
+                                    <div class="col-xs-2 text-right">
+                                        生效日期：
+                                    </div>
+                                    <div class="col-xs-4">
+                                        {{Product.effectDate | date:"yyyy-MM-dd"}}
+                                    </div>
+                                    <div class="col-xs-2 text-right">
+                                        失效日期：
+                                    </div>
+                                    <div class="col-xs-4">
+                                        {{Product.expiryDate | date:"yyyy-MM-dd"}}
+                                    </div>
+                                    <div ng-show="Product.productType==1" class="col-xs-2 text-right">
+                                        金额：
+                                    </div>
+                                    <div ng-show="Product.productType==1" class="col-xs-4">
+                                        {{Product.price}}<spam>元</spam>
+                                    </div>
+                                    <div ng-show="Product.productType==1" class="col-xs-2 text-right">
+                                        使用月份：
+                                    </div>
+                                    <div ng-show="Product.productType==1" class="col-xs-4">
+                                        {{Product.month}}<span>月</span>
+                                    </div>
+
+                                    <div ng-show="Product.productType==1" class="col-xs-2 text-right">
+                                        绑定车库：
+                                    </div>
+                                    <div ng-show="Product.productType==1" class="col-xs-10">
+                                        <div class="col-lg-4 col-md-4 col-sm-4">
+                                            <span>已选车库:</span>
+                                            <ul id="treeDemo"  class="ztree"></ul>
+                                        </div>
+                                        <!--<span ng-repeat="item in BuildingStructureNewList">-->
+                                            <!--{{item.fullName}}<br/>-->
+                                        <!--</span>-->
+                                        <span ng-show="BuildingStructureNewList.length==0">
+                                            暂无
+                                        </span>
+                                    </div>
+
+                                </div>
+                                <table ng-show="ServiceProjectList.length!=0">
+                                    <thead>
+                                    <tr>
+                                        <th>服务项目</th>
+                                        <th>单价(元)</th>
+                                        <th>单位</th>
+                                        <th>现场核验</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="item in ServiceProjectList">
+                                        <td>{{item.serviceProjectName}}</td>
+                                        <td>{{item.unitPrice}}</td>
+                                        <td>{{item.unit}}</td>
+                                        <td ng-switch="item.onsiteVerification">
+                                            <span ng-switch-when="0">现场核检</span>
+                                            <span ng-switch-when="1">不现场核检</span>
+                                        </td>
+                                    </tr>
+                                    <tr ng-show="editItem">
+                                        <td><input type="text" class="form-control" ng-model="ServiceProject.serviceProjectName"></td>
+                                        <td><input type="text" class="form-control" ng-model="ServiceProject.unitPrice"></td>
+                                        <td><input type="text" class="form-control" ng-model="ServiceProject.unit"></td>
+                                        <td>
+                                            <input type="radio" ng-model="ServiceProject.onsiteVerification" value="0">是&nbsp;
+                                            <input type="radio" ng-model="ServiceProject.onsiteVerification" value="1">否
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="save_concel_botton icon_float_else">
+                            <a href="" class="radius_all button_bule" data-dismiss="modal" aria-label="Close">关闭</a>
+                            <div class="clear"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+</html>

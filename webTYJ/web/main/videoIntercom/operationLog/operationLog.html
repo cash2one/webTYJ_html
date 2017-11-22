@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+
+<div id="content-first">
+    <!--tab页切换开始-->
+    <div id="tab">
+        <a ui-sref="index.videoIntercom.operationLog.operationLogs" ng-class="{'this_action':btnIndex==1}"  ng-click="doClick(1)">操作日志</a>
+        <a lang="no" ui-sref="index.videoIntercom.operationLog.deviceLogs" ng-class="{'this_action':btnIndex==2}"  ng-click="doClick(2)">硬件日志</a>
+    </div>
+    <!--tab页切换结束-->
+    <!--视图加载-->
+    <div ui-view></div>
+    <!--视图加载结束-->
+</div>
+</body>
+</html>

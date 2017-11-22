@@ -1,0 +1,167 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 规章制度
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../app');
+
+    app.controller('institutionCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+        var url = $rootScope.url;
+
+        //分页查询规章制度
+        //$scope.showDate=new Date();//用于显示当前时间
+        //    $scope.Rules.page=page;
+        //$http.post(url + '/Rules/listPageRules', {Rules:$scope.Rules}).success(function (data) {
+        //    $scope.currentItem2 = data.Lost;
+        //    $scope.totalPage2 = Math.ceil($scope.currentItem2.length / $scope.showCount);
+        //    $scope.page2();
+        //    console.log($scope.currentItem2);
+        //}).error(function (data, status, headers, config) {
+        //    alert('获取记录失败');
+        //});
+
+        //选择规章制度
+        $scope.ruleone={};
+        $scope.choiceRule=function(rule){
+            $scope.ruleone=rule;
+            console.log($scope.ruleone);
+        };
+
+        //修改选定的规章制度
+        $scope.updateRule=function(){
+            $http.put(url+'/Rules/UpdateRules',{Rules:$scope.ruleone}).success(function() {
+                console.log("修改规章成功");
+            }).error(function(data, status, headers, config){
+                console.log("修改规章失败");
+            }) ;
+        };
+
+        //删除选择的规章制度
+        //$scope.delrul=function(id){
+        //    $http.post(url+'/Rules/DeleteRulesById/'+id).success(function() {
+        //        console.log("删除成功");
+        //        $("#myModales").modal("show");
+        //        $http.get(url + '/Rules/listAllRules').success(function(data) {
+        //            console.log('eeeeeeeeeeeeeeeeeeeeeeeeee');
+        //            console.log(data);
+        //            $scope.rulesList=data.Rules;
+        //            console.log('eeeeeeeeeeeeeeeeeeeeeeeeee');
+        //            console.log($scope.rulesList);
+        //        }).error(function(data, status, headers, config){
+        //            console.log("加载失败");
+        //        }) ;
+        //    }).error(function(data, status, headers, config){
+        //        console.log("删除失败");
+        //    }) ;
+        //};
+
+        //新增规章制度
+        $scope.rul={};
+        $scope.addRule=function(){
+            $http.post(url+'/Rules/AddRules',{Rules:$scope.rul}).success(function() {
+                console.log("添加成功");
+            }).error(function(data, status, headers, config){
+                console.log("添加faq失败");
+            }) ;
+        };
+
+        //查询所有规章制度
+        $scope.rules={};
+        $scope.currentItem2 = [];
+        $http.get(url + '/Rules/listAllsRules').success(function(data) {
+            $scope.currentItem2 = data.Rules;
+            console.log($scope.currentItem2);
+            $scope.totalPage2 = Math.ceil($scope.currentItem2.length / $scope.showCount2);
+            $scope.page2();
+            console.log($scope.currentItem2);
+        }).error(function(data, status, headers, config){
+            console.log("失败");
+        }) ;
+        //根据id查询相应的信息
+        $scope.rulesA={};
+        $scope.getRules=function(id){
+            console.log(id);
+            $http.get(url + '/Rules/getRulesById/'+id).success(function(data){
+                $scope.rulesA=data.Rules;
+                console.log('qqqqqqqqqqqqqqqqqqqqqqqqqqqqqq');
+                console.log( $scope.rulesA);
+            }).error(function(data, status, headers, config){
+                console.log("失败");
+            }) ;
+        }
+
+        $scope.addRul=function(){
+            $("#myModale").modal("show");
+        }
+        //
+        $scope.ruleLists=function(){
+            $("#myModales").modal("show");
+            $http.get(url + '/Rules/listAllRules').success(function(data) {
+                console.log('eeeeeeeeeeeeeeeeeeeeeeeeee');
+                console.log(data);
+                $scope.rulesList=data.Rules;
+                console.log('eeeeeeeeeeeeeeeeeeeeeeeeee');
+                console.log($scope.rulesList);
+            }).error(function(data, status, headers, config){
+                console.log("加载失败");
+            }) ;
+        }
+
+        /**
+        * 领取物品前端分页查询
+        * @type {number}
+        */
+        $scope.index2=1;
+        $scope.showCount2=5;
+        $scope.totalPage2 = 0;
+        $scope.page2=function(){
+            $scope.data2 = [];
+            if($scope.index2!=$scope.totalPage2){
+                for(var i=(($scope.index2-1)*$scope.showCount2);i<($scope.index2*$scope.showCount2);i++){
+                    $scope.data2.push($scope.currentItem2[i]);
+                }
+            }else{
+                for(var i=(($scope.index2-1)*$scope.showCount2);i<$scope.currentItem2.length;i++){
+                    $scope.data2.push($scope.currentItem2[i]);
+                }
+            }
+            console.log($scope.data2)
+        };
+        /**
+        * 显示下一页
+        */
+        $scope.next2=function(){
+            if($scope.index2==$scope.totalPage2){
+                alert('已经是末页');
+            }else{
+                $scope.index2 += 1;
+                $scope.page2();
+            }
+        };
+        /**
+        * 显示上一页
+        */
+        $scope.previous2=function(){
+            if($scope.index2==1){
+                alert('已经是首页');
+            }else{
+                $scope.index2 -= 1;
+                $scope.page2();
+            }
+        };
+        /**
+        * 显示当前页
+        */
+        $scope.go2=function(index2) {
+            if(index2>=1 && index2<=$scope.totalPage2) {
+                $scope.totalPage2=index2;
+            }
+            $scope.page2();
+        };
+
+    }]);
+});
+

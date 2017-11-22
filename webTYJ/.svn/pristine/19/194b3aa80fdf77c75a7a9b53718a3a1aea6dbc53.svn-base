@@ -1,0 +1,308 @@
+/**
+ * Created by Administrator on 2015/12/15.
+ */
+/*define(['tyjApp',
+],function(module){
+    module.controller("meterReadingProgramCtrl",function($scope,$location,$http,Paginator,$cookieStore,$rootScope){*/
+        'use strict';
+
+        define(function (require) {
+            var app = require('../../../../app');
+            app.controller('meterReadingProgramCtrl', ['$scope', '$http','$rootScope','$location', function ($scope,$http,$rootScope,$location) {
+        $scope.test='抄表计划';
+        var url = $rootScope.url;                     //url地址
+        $scope.searchMeter={page:{}};         //水表抄表计划分页
+        $scope.fileUrl=$rootScope.fileUrl;
+        $scope.waterAddSave={};         //新增水表抄表保存
+
+        $rootScope.MeterReadingProgramId=''; //全局变量抄表计划id
+        $rootScope.tree=true;   //树形显示状态
+        $scope.bslist={};       //建筑结构id集合
+
+        /**
+         * 分页查询所有水表抄表
+         */
+            $scope.load=function(){
+        var waterCheckFunction = function(page,callback){
+            $scope.searchMeter.page=page;
+            $http.post(url + '/MeterReadingProgram/listMeterReadingProgram',
+                {SearchMeter:$scope.searchMeter}).success(callback);
+        };
+        $scope.waterChecks = app.get('Paginator').list(waterCheckFunction,10);
+        console.log($scope.waterChecks);
+            }
+        $scope.load();
+        /**
+         * 选中一条数据事件
+         * @param index  水表抄表计划数据id
+         */
+        $scope.check = function(index){
+            $scope.btnIndex = index
+            $scope.item2=index;
+        };
+
+        /**
+         * 新建水表抄表
+         */
+        $scope.submitWater=function(){
+            $scope.waterAddSave.buildingStructureNew=$scope.treeResult.treeList;
+            if($scope.waterAddSave.projectName==undefined ||$scope.waterAddSave.projectName.replace(/\s+/g,"")=="" ||$scope.waterAddSave.projectName== null){
+                layer.alert('计划名称不能为空！',{icon : 0});
+                return;
+            }else    if($scope.waterAddSave.projectId==undefined ||$scope.waterAddSave.projectId=="" ||$scope.waterAddSave.projectId== null){
+                layer.alert('项目名称不能为空！',{icon : 0});
+                return;
+            }else    if($scope.waterAddSave.settlementDay==undefined ||$scope.waterAddSave.settlementDay=="" ||$scope.waterAddSave.settlementDay== null){
+                layer.alert('月结日不能为空！',{icon : 0});
+                return;
+            }
+            else    if($scope.waterAddSave.startTime==undefined ||$scope.waterAddSave.startTime=="" ||$scope.waterAddSave.startTime== null){
+                layer.alert('开始时间不能为空！',{icon : 0});
+                return;
+            }  else    if($scope.waterAddSave.endTime==undefined ||$scope.waterAddSave.endTime=="" ||$scope.waterAddSave.endTime== null){
+                layer.alert('结束时间不能为空！',{icon : 0});
+                return;
+            }else    if($scope.waterAddSave.currentExecutor==undefined ||$scope.waterAddSave.currentExecutor=="" ||$scope.waterAddSave.currentExecutor== null){
+                layer.alert('抄表人不能为空！',{icon : 0});
+                return;
+            }else    if($scope.waterAddSave.buildingStructureNew==undefined ||$scope.waterAddSave.buildingStructureNew=="" ||$scope.waterAddSave.buildingStructureNew== null){
+                layer.alert('建筑不能为空！',{icon : 0});
+                return;
+            }
+
+            console.log($scope.waterAddSave.buildingStructureNew);
+            $http.post(url+'/MeterReadingProgram/insertMeterReadingProgram',
+                {MeterReadingProgram:$scope.waterAddSave}).success(function(){
+                    layer.alert('添加水表抄表成功',{icon:1});
+                    console.log($scope.waterAddSave);
+                    $scope.load();
+                }).error(function(data,status,headers,config){
+                    layer.alert('添加水表抄表失败',{icon:2});
+                });
+        };
+        /**
+         * 获取抄表计划项目
+         */
+        $http.get(url+'/Project/listAllProject').success(function(data){
+            $scope.currentObject = data.Project;
+        }).error(function(data,status,headers,config){
+            layer.alert('获取抄表计划项目失败',{icon:2});
+        });
+        /**
+         * 取消水表抄表
+         */
+        $scope.cancelWater=function(){
+            $scope.load();
+        };
+        /**
+         * 计划修改(按钮)
+         */
+        $scope.currentObject = [];                   //所有项目
+        $scope.currentStaff = [];                    //所有审核人员
+
+        $scope.updatePlans=function(index){
+            if(index==null){
+                layer.alert("请选择抄表计划",{icon:0})
+                return;
+            }else{
+                $("#myModals").modal("show");
+                $rootScope.tree=false;
+                $scope.item3=index;
+                $scope.currentProjectPlan=$scope.item3;
+                $scope.currentProjectPlan.startTime=new Date($scope.currentProjectPlan.startTime);
+                $scope.currentProjectPlan.endTime= new Date( $scope.currentProjectPlan.endTime);
+               // console.log(index);
+                $scope.id=index.meterReadingProgramId;
+                $http.get(url+'/BuildingStructureNew/listAllBuildingStructureNewByAllId/'+$scope.id).success(function(data){
+                    $scope.zNodes =[{}];
+                    //获取json数据
+                    $scope.buildingStructureNews = data.BuildingStructureNew;
+                    var tasks =  $scope.buildingStructureNews;
+                    if(tasks!=null){
+                        for(var i=0;i<tasks.length;i++){
+                            $scope.zNode ={ id:tasks[i].id, pId:tasks[i].parentId, name:tasks[i].nodeName,fullname:tasks[i].fullName,checked:tasks[i].checked};
+                            $scope.zNodes.push($scope.zNode);
+                        }
+                        $.fn.zTree.init($("#treeDemo1"), setting, $scope.zNodes);
+
+                        var zTree = $.fn.zTree.getZTreeObj("treeDemo1");
+                        var nodes = zTree.getNodes();
+                        nodes[0].name = "建筑信息";
+                        zTree.updateNode(nodes[0]);
+
+                        var treeObj = $.fn.zTree.getZTreeObj("treeDemo1");
+                        var node = treeObj.getNodeByParam("id","");
+                        treeObj.checkNode (node);
+
+                       //onTreeClick(event,'02',node,true);
+
+                        setting.callback.onClick = updateWaterReading;
+                    }
+                }).error(function(data,status,headers,config){
+                    layer.alert("建筑信息查询失败！",{icon:2})
+                });
+                ///**
+                // * 获取抄表计划
+                // */
+                //$http.get(url+'/Project/listAllProject').success(function(data){
+                //    $scope.currentObject = data.Project;
+                //}).error(function(data,status,headers,config){
+                //    layer.alert('获取抄表计划项目失败',{icon:2});
+                //});
+                /**
+                 * 获取审核人员
+                 */
+                //$http.get(url+'/staff/getStaffbyPostType/'+$scope.currentIndex).success(function(data){
+                //    $scope.currentStaff = data.Staff;
+                //}).error(function(data,status,headers,config){
+                //    layer.alert('获取审核人员失败',{icon:2});
+                //});
+
+            };
+        }
+        /**
+         * 保存计划修改
+         */
+        $scope.submitUpdatePlan=function(index){
+            //alert(index);
+            if($scope.currentProjectPlan.projectName==undefined ||$scope.currentProjectPlan.projectName=="" ||$scope.currentProjectPlan.projectName== null){
+                layer.alert('计划名称不能为空！',{icon : 0});
+                $scope.load();
+                return;
+            }else    if($scope.currentProjectPlan.projectId==undefined ||$scope.currentProjectPlan.projectId=="" ||$scope.currentProjectPlan.projectId== null){
+                layer.alert('项目名称不能为空！',{icon : 0});
+                $scope.load();
+                return;
+            }else    if($scope.currentProjectPlan.settlementDay==undefined ||$scope.currentProjectPlan.settlementDay=="" ||$scope.currentProjectPlan.settlementDay== null){
+                layer.alert('月结日不能为空！',{icon : 0});
+                $scope.load();
+                return;
+            }
+            else    if($scope.currentProjectPlan.startTime==undefined ||$scope.currentProjectPlan.startTime=="" ||$scope.currentProjectPlan.startTime== null){
+                layer.alert('开始时间不能为空！',{icon : 0});
+                $scope.load();
+                return;
+            }  else    if($scope.currentProjectPlan.endTime==undefined ||$scope.currentProjectPlan.endTime=="" ||$scope.currentProjectPlan.endTime== null){
+                layer.alert('结束时间不能为空！',{icon : 0});
+                $scope.load();
+                return;
+            }else    if($scope.currentProjectPlan.currentExecutor==undefined ||$scope.currentProjectPlan.currentExecutor=="" ||$scope.currentProjectPlan.currentExecutor== null){
+                layer.alert('抄表人不能为空！',{icon : 0});
+                $scope.load();
+                return;
+            }
+            $scope.currentProjectPlan.meterReadingProgramId=index;
+            $scope.currentProjectPlan.buildingStructureNew=$scope.bslist;
+            $http.put(url+'/MeterReadingProgram/updateMeterReadingProgram',
+                {MeterReadingProgram:$scope.currentProjectPlan}).success(function(){
+                    layer.alert('保存计划修改成功',{icon:1});
+                    $scope.load();
+                }).error(function(data,status,headers,config){
+                    layer.alert('保存计划修改失败',{icon:2});
+                });
+        };
+        /**
+         * 取消计划修改
+         */
+        $scope.cancelUpdatePlan=function(){
+            $scope.item2=null;
+            $scope.load();
+
+        };
+
+        /**
+         * 显示添加页面树状菜单
+         */
+            //查询所有建筑结构信息.
+        $http.get(url+'/BuildingStructureNew/listAllBuildingStructureNewByAllId/'+$scope.id).success(function(data){
+            $scope.zNodes =[{}];
+            //获取json数据
+            $scope.buildingStructureNews = data.BuildingStructureNew;
+            var tasks =  $scope.buildingStructureNews;
+            if(tasks!=null){
+                for(var i=0;i<tasks.length;i++){
+                    $scope.zNode ={ id:tasks[i].id, pId:tasks[i].parentId, name:tasks[i].nodeName,fullname:tasks[i].fullName,checked:tasks[i].checked};
+                    $scope.zNodes.push($scope.zNode);
+                }
+                $.fn.zTree.init($("#treeDemo"), setting, $scope.zNodes);
+
+                var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+                var nodes = zTree.getNodes();
+                nodes[0].name = "建筑信息";
+                zTree.updateNode(nodes[0]);
+            }
+        }).error(function(data,status,headers,config){
+            layer.alert("建筑信息查询失败！",{icon:2})
+        });
+
+        var zTreeOnCheck=function(event, treeId, treeNode) {
+            if($rootScope.tree==true){
+                var treeObj=$.fn.zTree.getZTreeObj("treeDemo");
+            }else{
+                var treeObj=$.fn.zTree.getZTreeObj("treeDemo1");
+            }
+
+            var nodes=treeObj.getCheckedNodes(true);
+            $scope.treeResult={treeList:[]};
+            for(var i=0;i<nodes.length;i++){
+                if(nodes[i].isParent==false) {
+                    $scope.treeResult.treeList.push(nodes[i]);
+                }
+            }
+            console.log($scope.treeResult.treeList);
+            $scope.bslist=$scope.treeResult.treeList;
+
+        };
+        ///**
+        // * 显示选中的树状数据
+
+        $scope.addWaterReading = function(){
+            $scope.addWaterCheck = $scope.treeResult.treeList;
+            console.log($scope.addWaterCheck);
+        };
+        var setting = {
+            check:{
+                enable:true
+            },
+            view: {
+                selectedMulti: false
+            },
+            edit: {
+                enable: false,
+                editNameSelectAll: false
+                //showRemoveBtn: showRemoveBtn,
+                //showRenameBtn: showRenameBtn
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            },
+            callback: {
+                onCheck:zTreeOnCheck,
+                onClick:updateWaterReading
+            }
+        };
+
+
+      var updateWaterReading = function(){
+
+
+            $scope.updateWaterCheck = $scope.treeResult.treeList;
+            console.log($scope.updateWaterCheck);
+        };
+        function selectAll() {
+            var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+            zTree.setting.edit.editNameSelectAll =  $("#selectAll").attr("checked");
+        }
+
+        $(document).ready(function(){
+            $("#selectAll").bind("click", selectAll);
+        });
+
+        $scope.updateWaterReading = function(){
+            $scope.updateWaterCheck = $scope.treeResult.treeList;
+            console.log($scope.updateWaterCheck);
+        };
+    }]);
+});

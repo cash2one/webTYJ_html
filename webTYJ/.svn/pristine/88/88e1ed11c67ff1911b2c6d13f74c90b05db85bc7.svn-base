@@ -1,0 +1,50 @@
+<!--
+    创建人：倪明
+    页面名称：页面整个布局，首次加载的页面
+    js路径：js/main
+    修改时间：2015-09-20
+-->
+<div  ng-init="loadDefault()">
+    <!-- 头部开始 -->
+    <div ui-view="head"></div>
+    <!-- 头部结束 -->
+    <div class="row">
+        <!-- 左边开始 -->
+        <div class="col-lg-2 col-md-2 col-sm-3" >
+            <div ui-view="left"></div>
+        </div>
+        <!-- 左边结束 -->
+        <!-- 右边开始 -->
+        <div class="col-lg-10 col-md-10 col-sm-9" >
+            <div class="main_right">
+                <!--导航开始-->
+                <div ui-view="top"></div>
+                <!--导航结束-->
+                <!--内容开始-->
+                <div class="content">
+                    <!--<div class="top_top">-->
+                    <!--<b class="glyphicon glyphicon-map-marker"></b><span>主页</span>-->
+                    <!--<span>></span><span>物业服务</span>-->
+                    <!--</div>-->
+                    <!--<div class="sel_height">-->
+                    <div class="row padding">
+                        <div ui-view="main"></div>
+                    </div>
+                    <!--</div>-->
+                </div>
+                <!--内容结束-->
+                <!--下面内容开始-->
+                <!--    <div class="down">
+                        <div class="row">
+                            <div class="pannel-padding">
+                                <div ui-view="down"></div>
+                            </div>
+                        </div>
+                    </div>-->
+                <!--下面内容结束-->
+            </div>
+        </div>
+        <!-- 右边结束 -->
+    </div>
+</div>
+

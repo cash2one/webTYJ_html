@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+
+<div class="row sel">
+    <div class="col-lg-1 col-md-2 col-sm-2 text-right">项目：</div>
+    <div class="col-lg-3 col-md-4 col-sm-4">
+        <input class="form-control">
+    </div>
+    <div class="col-lg-1 col-md-2 col-sm-2 text-right">账号：</div>
+    <div class="col-lg-3 col-md-4 col-sm-4">
+        <input class="form-control">
+    </div>
+    <div class="col-lg-1 col-md-2 col-sm-2 text-right">联系人：</div>
+    <div class="col-lg-3 col-md-4 col-sm-4">
+        <input class="form-control">
+    </div>
+    <div class="col-lg-1 col-md-2 col-sm-2 text-right">邮箱：</div>
+    <div class="col-lg-3 col-md-4 col-sm-4">
+        <input class="form-control">
+    </div>
+    <div class="col-lg-8 col-md-6 col-sm-6 text-right">
+        <button class="btn btn-primary">
+            <span class="glyphicon glyphicon-search btn_icon"></span>
+            搜索
+        </button>
+    </div>
+</div>
+<div class="row padding">
+    <div class="search-padding-10">
+        <button class="btn btn-primary" data-toggle="modal" data-target="#new">
+            申请账号
+        </button>
+        <button class="btn btn-primary" data-toggle="modal" data-target="#detail">
+            修改密码
+        </button>
+        <button class="btn btn-primary">
+            删除账号
+        </button>
+    </div>
+    <table>
+        <thead>
+        <tr><th>全选</th>
+            <th>编号</th>
+            <th>组名</th>
+            <th>所属组</th>
+            <th>视频通话</th>
+            <th>语音通话</th>
+            <th>二维码</th>
+            <th>密码开门</th>
+            <th>设备类型</th>
+        </tr></thead>
+        <tbody>
+        <tr>
+            <td><input type="checkbox"></td>
+            <td>20</td>
+            <td>组一</td>
+            <td>一区一单元</td>
+            <td>开通</td>
+            <td>开通</td>
+            <td>开通</td>
+            <td>开通</td>
+            <td>门控机</td>
+        </tr>
+        <tr>
+            <td><input type="checkbox"></td>
+            <td>20</td>
+            <td>组一</td>
+            <td>一区一单元</td>
+            <td>开通</td>
+            <td>开通</td>
+            <td>开通</td>
+            <td>开通</td>
+            <td>门控机</td>
+        </tr>
+        <tr>
+            <td><input type="checkbox"></td>
+            <td>20</td>
+            <td>组一</td>
+            <td>一区一单元</td>
+            <td>开通</td>
+            <td>开通</td>
+            <td>开通</td>
+            <td>开通</td>
+            <td>门控机</td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="bill_paging">
+        <ul class="pagination">
+            <li><a>首页</a></li>
+            <li><a>上一页</a></li>
+            <li><a>1</a></li>
+            <li><a>2</a></li>
+            <li><a>3</a></li>
+            <li><a>4</a></li>
+            <li><a>下一页</a></li>
+            <li><a>尾页</a></li>
+        </ul>
+        <span>共17条</span>
+    </div>
+</div>
+
+</body>
+</html>

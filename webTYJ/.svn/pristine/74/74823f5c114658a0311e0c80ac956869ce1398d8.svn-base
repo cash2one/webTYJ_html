@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="css/ztree/demo.css" type="text/css">
+    <link rel="stylesheet" href="css/ztree/zTreeStyle.css" type="text/css">
+    <link rel="stylesheet" href="bower_components/skins/zyupload-1.0.0.min.css " type="text/css">
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.core-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.excheck-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.exedit-3.5.js"></script>
+
+    <script type="text/javascript">
+        var setting = {
+            check:{
+                enable:true
+            },
+            view: {
+                selectedMulti: false
+            },
+            edit: {
+                enable: false,
+                editNameSelectAll: false
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            }
+        };
+    </script>
+
+    <script language="javascript">
+        // --列头全选框被单击---
+        function ChkAllClick(sonName, cbAllId){
+            var arrSon = document.getElementsByName(sonName);
+            var cbAll = document.getElementById(cbAllId);
+            var tempState=cbAll.checked;
+            for(i=0;i<arrSon.length;i++) {
+                if(arrSon[i].checked!=tempState)
+                    arrSon[i].click();
+            }
+        }
+
+        // --子项复选框被单击---
+        function ChkSonClick(sonName, cbAllId) {
+            var arrSon = document.getElementsByName(sonName);
+            var cbAll = document.getElementById(cbAllId);
+            for(var i=0; i<arrSon.length; i++) {
+                if(!arrSon[i].checked) {
+                    cbAll.checked = false;
+                    return;
+                }
+            }
+            cbAll.checked = true;
+        }
+    </script>
+</head>
+<body>
+<form id="css_form" name="mainForm" novalidate>
+<div class="sel">
+    <div class="row search-padding-10">
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            合同单号：
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-4">
+   <!--         禅道BUG 253
+            修改人：陶勇超
+            2016年1月8日 15:08:31-->
+            <input class="form-control" ng-model="contract.contractOddNum" type="text" maxlength="36" onkeyup="value=value.replace(/[\W]/g,'') " onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))"  name="contractOddNum" required />
+                    <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.contractOddNum.$dirty && mainForm.contractOddNum.$invalid">
+                                                <p class="alter" ng-show="mainForm.contractOddNum.$error.required">
+                                                    不能为空
+                                                </p>
+                                                <p class="alter" ng-show="mainForm.contractOddNum.defined ">
+                                                    正确
+                                                </p>
+                                            </span>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2 ">
+          <span style="color: red">*</span>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            合同编号：
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-4">
+            <!--         禅道BUG 253
+         修改人：陶勇超
+         2016年1月8日 15:08:31-->
+            <input class="form-control"  ng-model="contract.contractNum"maxlength="36"  onkeyup="value=value.replace(/[\W]/g,'') " onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))"   name="contractNum" required />
+                    <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.contractNum.$dirty && mainForm.contractNum.$invalid">
+                                                <p class="alter" ng-show="mainForm.contractNum.$error.required">
+                                                    不能为空
+                                                </p>
+                                                <p class="alter" ng-show="mainForm.contractNum.defined ">
+                                                    正确
+                                                </p>
+                                            </span>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2 ">
+            <span style="color: red">*</span>
+        </div>
+        </div>
+    <div class="row search-padding-10">
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            合同类型：
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-4">
+            <select class="form-control" ng-model="contract.contractType" name="contractType" required>
+                <option value="">请选择</option>
+                <option value="施工装修">施工装修</option>
+                <option value="施工装修-豪华装修">施工装修-豪华装修</option>
+                <option value="施工装修-简约版">施工装修-简约版</option>
+            </select>
+                  <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.contractType.$dirty && mainForm.contractType.$invalid">
+                                                <p class="alter" ng-show="mainForm.contractType.$error.required">
+                                                    不能为空
+                                                </p>
+                                                <p class="alter" ng-show="mainForm.contractType.defined ">
+                                                    正确
+                                                </p>
+                                            </span>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2 ">
+            <span style="color: red">*</span>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            合同项目：
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-4">
+            <select class="form-control" ng-model="currentProject" ng-options="p.projectName for p in allProjects" name="currentProject" required>
+                <option value="">请选择</option>
+
+            </select>
+                       <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.currentProject.$dirty && mainForm.currentProject.$invalid">
+                                                <p class="alter" ng-show="mainForm.currentProject.$error.required">
+                                                    不能为空
+                                                </p>
+                                                <p class="alter" ng-show="mainForm.currentProject.defined ">
+                                                    正确
+                                                </p>
+                                            </span>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2 ">
+            <span style="color: red">*</span>
+        </div>
+        </div>
+    <div class="row search-padding-10">
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            建设方：
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-4">
+            <select  class="form-control" ng-model="currentArmour" ng-options="a.enterpriseName for a in armourEnterpriseCusts" name="currentArmour" required>
+                <option value="">请选择</option>
+            </select>
+                           <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.currentArmour.$dirty && mainForm.currentArmour.$invalid">
+                                                <p class="alter" ng-show="mainForm.currentArmour.$error.required">
+                                                    不能为空
+                                                </p>
+                                                <p class="alter" ng-show="mainForm.currentArmour.defined ">
+                                                    正确
+                                                </p>
+                                            </span>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2 ">
+            <span style="color: red">*</span>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            施工方：
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-4">
+            <select class="form-control" ng-model="currentSecond" ng-options="s.enterpriseName for s in armourEnterpriseCusts" name="currentSecond" required>
+                <option value="">请选择</option>
+            </select>
+              <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.currentSecond.$dirty && mainForm.currentSecond.$invalid">
+                                                <p class="alter" ng-show="mainForm.currentSecond.$error.required">
+                                                    不能为空
+                                                </p>
+                                                <p class="alter" ng-show="mainForm.currentSecond.defined ">
+                                                    正确
+                                                </p>
+                                            </span>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2 ">
+            <span style="color: red">*</span>
+        </div>
+        </div>
+    <div class="row search-padding-10">
+        <div class="col-lg-1 col-md-2 col-sm-2 text-right">
+            维保方：
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-4" >
+            <select class="form-control"  ng-model="currentThird" ng-options="e.enterpriseName for e in armourEnterpriseCusts"  name="currentThird" required>
+                <option value="">请选择</option>
+            </select>
+                  <span class="glyphicon glyphicon-exclamation-sign mess" ng-show="mainForm.currentThird.$dirty && mainForm.currentThird.$invalid">
+                                                <p class="alter" ng-show="mainForm.currentThird.$error.required">
+                                                    不能为空
+                                                </p>
+                                                <p class="alter" ng-show="mainForm.currentThird.defined ">
+                                                    正确
+                                                </p>
+                                            </span>
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2 ">
+            <span style="color: red">*</span>
+        </div>
+        <div class="col-lg-1 col-md-4 col-sm-4 text-right">
+            启动时间：
+            </div>
+        <div  class="col-lg-4 col-md-4 col-sm-4">
+            <input class="form-control" type="date"  ng-model="contract.startUsingDate">
+        </div>
+        <div class="col-lg-1 col-md-2 col-sm-2 ">
+            <span style="color: red">*</span>
+        </div>
+        </div>
+    <div class="row search-padding-10">
+      <!--  <div class="col-lg-1 col-md-4 col-sm-4  ">
+            </div>-->
+        <div class="col-lg-1 col-md-4 col-sm-4  ">
+            <button type="button" class="btn btn-default btn-primary" role="presentation" data-toggle="modal" data-target="#ddd" style="cursor:pointer" data-toggle="tab" ng-click="addAnnex()">
+                上传合同扫描件
+            </button>
+        </div>
+    </div>
+
+</div>
+<div class="padding">
+    <div class="row search-padding-10">
+
+    <div class="col-lg-8">
+
+        <table>
+            <thead>
+            <tr>
+                <th><input name="chkAll" id="chkAll" title="全选" onClick="ChkAllClick('chkSon','chkAll')" type="checkbox"></td>
+                <th>功能区名称</th>
+                <th>资产名称</th>
+                <th>启用时间</th>
+                <th>保质期</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="item in propertyData">
+               <!-- /**
+                * 新增合同
+                * 版本 001
+                * BUG 371 陶勇超 2016年1月18日 16:07:23
+                */-->
+                <td><input name="chkSon" onclick="ChkSonClick('chkSon','chkAll')" type="checkbox" ng-click="chooseDataa(item,$index)"></td>
+                <td>{{item.functionalName}}</td>
+                <td>{{item.propertyName}}</td>
+                <!--禅道BUG 101-->
+                <!--修改人：陶勇超-->
+                <!--2016年1月6日 11:48:15-->
+                <td><input type="date" id="{{$index}}"></td>
+                <td ng-show="item.property.expirationDate!=null">{{item.property.expirationDate}}月</td>
+                <td ng-show="item.property.expirationDate==null">暂无数据</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-lg-4">
+        <div class="component_select">
+            <div class="component_select_title">
+                <div class="search-padding-10">
+                <!--    禅道 BUG 251
+                    修改人：陶勇超
+                    2016年1月8日 14:20:50-->
+                <div class="col-md-6">请选择施工范围：</div>
+                <div class="text-right">
+                <button type="button" class="btn btn-default btn-primary" ng-click="onNextStep ()">
+                    确定
+                </button>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="component_select_height" id="remo">
+                <ul id="buildingNewtreeDemo"  class="ztree"></ul>
+            </div>
+        </div>
+     <!--   <div class="search-padding-10">
+            <div class="col-lg-6 col-md-6 col-sm-6">请选择建筑信息</div>
+            <div class="col-lg-6 col-md-6 col-sm-6 text-right">
+                <button type="button" class="btn btn-default btn-primary" ng-click="onNextStep ()">
+                    确定
+                </button>
+            </div>
+        </div>
+            <div id="tree">
+                <ul id="buildingNewtreeDemo"  class="ztree"></ul>
+            </div>-->
+        </div>
+    </div>
+    <div class="row text-center">
+    <button type="button" class="btn btn-default btn-primary" ng-click="cence()">
+        取消
+    </button>
+    <button type="button" class="btn btn-default btn-primary" ng-click="onSaveContract()">
+        提交
+    </button>
+
+</div>
+</div>
+</form>
+<div class="modal fade" id="ddd" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>上传</span>
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class=" padding"id="remove">
+                    <div id="zyupload" class="zyupload"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<SCRIPT type="text/javascript">
+    <!--
+    var setting = {
+        check:{
+            enable:true
+        },
+        view: {
+            selectedMulti: false
+        },
+        edit: {
+            enable: false,
+            editNameSelectAll: false
+        },
+        data: {
+            simpleData: {
+                enable: true
+            }
+        }/*,
+        callback: {
+            onCheck:zTreeBuildingBindingCheck
+        }*/
+    };
+
+    function selectAll() {
+        var zTree = $.fn.zTree.getZTreeObj("buildingNewtreeDemo");
+        zTree.setting.edit.editNameSelectAll =  $("#selectAll").attr("checked");
+    }
+
+    $(document).ready(function(){
+        $("#selectAll").bind("click", selectAll);
+    });
+
+    //-->
+</SCRIPT>
+</html>

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="css/ztree/ztreedf.css" type="text/css">
+    <link rel="stylesheet" href="css/ztree/zTreeStyle.css" type="text/css">
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.core-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.excheck-3.5.js"></script>
+    <script type="text/javascript" src="bower_components/ztree/jquery.ztree.exedit-3.5.js"></script>
+    <SCRIPT type="text/javascript">
+        var setting = {
+            check:{
+                enable:false
+            },
+            view: {
+                selectedMulti: false
+            },
+            edit: {
+                enable: false,
+                editNameSelectAll: false
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            }
+        };
+    </SCRIPT>
+</head>
+<body>
+<div id="content-first">
+    <div id="tab">
+        <a ng-class="{'this_action ':btnIndex==1}" ng-click="doClick(1)"
+           ui-sref="index.accountManagement.productAndProperty.product">产品初始化</a>
+        <a ng-class="{'this_action ':btnIndex==2}" ng-click="doClick(2)"
+           ui-sref="index.accountManagement.productAndProperty.product.propertyProject.plan.detailPlan" lang="no">计费模版初始化</a>
+    </div>
+    <!--计费方案和收费项目列表-->
+    <div ng-show="scheme_show">
+        <div class="row padding">
+            <div class="col-lg-12">
+                <div class="search-padding-10">
+                    <div class="search-padding-10">
+                        <button type="button" class="btn btn-default btn-primary" class="cursor_pointer"
+                                ng-click="addPlan()">
+                            <span class="glyphicon glyphicon-plus btn_icon"></span>新建
+                        </button>
+                        <button type="button" class="btn btn-default btn-primary" ng-click="editPlan()">
+                            <span class="glyphicon glyphicon-edit btn_icon"></span>编辑
+                        </button>
+                        <button type="button" class="btn btn-default btn-primary" ng-click="deletePlan()">
+                            <span class="glyphicon glyphicon-remove btn_icon"></span>失效
+                        </button>
+                    </div>
+                </div>
+                <div class="search-padding-10">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>选择</th>
+                            <th>收费类型</th>
+                            <th>物业项目</th>
+                            <th>方案名称</th>
+                            <th>生效日期</th>
+                            <th>失效日期</th>
+                            <th>计费时间</th>
+                            <th>启用状态</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="item in schemes" ng-show="item.schemeId != null"
+                            ng-click="viewChargeItemNewList(item.schemeId)"
+                            ng-class="{this_info:SchemeIdIndex==item.schemeId}" class="cursor_pointer">
+                            <td><input type="checkbox" ng-click="getCheckBoxs(item.schemeId)"></td>
+                            <td>{{item.chargeTypeName}}</td>
+                            <td>{{item.projectName}}</td>
+                            <td>{{item.schemeName}}</td>
+                            <td>{{item.startDate}}</td>
+                            <td>{{item.endDate}}</td>
+                            <td>{{item.chargeTime}}</td>
+                            <td>{{item.schemeStatus}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div ng-show="chargeItemNew_show">
+                    <div class="search-padding-10">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>编号</th>
+                                <th>收费项目名称</th>
+                                <th>单位</th>
+                                <th>户数</th>
+                                <th>使用范围</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="item in ChargeItemNewList"
+                                ng-class="{this_info:ChargeItemNewIdIndex==item.chargeItemNewId}">
+                                <td data-target="#chargeItemDatails" data-toggle="modal"
+                                    ng-click="veiwChargeItemNewDatails(item.chargeItemNewId)">{{item.chargeItemNewNum}}
+                                </td>
+                                <td data-target="#chargeItemDatails" data-toggle="modal"
+                                    ng-click="veiwChargeItemNewDatails(item.chargeItemNewId)">{{item.chargeTypeName}}
+                                </td>
+                                <td data-target="#chargeItemDatails" data-toggle="modal"
+                                    ng-click="veiwChargeItemNewDatails(item.chargeItemNewId)">{{item.chargeItemNewUnit}}
+                                </td>
+                                <td data-target="#chargeItemDatails" data-toggle="modal"
+                                    ng-click="veiwChargeItemNewDatails(item.chargeItemNewId)">{{item.houseNum}}
+                                </td>
+                                <td data-target="#range" data-toggle="modal" ng-click="viewRange(item.chargeItemNewId)"
+                                    class="cursor_pointer" style="color: blue;">查看
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--计费方案和收费项目列表 END-->
+
+    <!--收费项目详情和公式列表-->
+    <div class="modal fade" id="chargeItemDatails" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    收费项目详情
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="padding">
+                        <div class="col-lg-6">
+                            <table>
+                                <thead>
+                                <tr>
+                                    <th>收费项目详情名称</th>
+                                    <th>收费项目详情编号</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="item in NewChargeItemNewDetailsList"
+                                    ng-class="{this_info:ChargeItemDetailsIdIndex==item.chargeItemDetailsId}"
+                                    class="cursor_pointer" ng-click="viewFormulaList(item.chargeItemDetailsId)">
+                                    <td>{{item.chargeTypeDetailsName}}</td>
+                                    <td>{{item.chargeTypeDetailsNum}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="search-padding10">
+                                <table>
+                                    <thead>
+                                    <tr>
+                                        <th>条件</th>
+                                        <th>公式</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="item in NewFormulaList">
+                                        <td>
+                                            {{item.conditionName}}
+                                        </td>
+                                        <td>{{item.formulaName}}</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="row search-padding-10" ng-repeat="item in Constant">
+                                {{item.constantName}} = {{item.value}}元
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--收费项目详情列表 END-->
+
+    <!--修改方案-->
+    <div class="modal fade" id="editScheme_show" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    编辑计费方案
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="padding">
+                        <div class="row search-padding-10" style="margin-bottom: 20px;">
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                项目名称:
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3">
+                                {{project.projectName}}
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                方案名称:
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3">
+                                {{EditScheme.schemeName}}
+                            </div>
+                        </div>
+                        <div class="row search-padding-10" style="margin-bottom: 20px;">
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                生效日期:
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3">
+                                {{EditScheme.startDate}}
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                失效日期:
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3">
+                                <input type="text" onclick="WdatePicker({readOnly:true})" class="Wdate form-control" ng-model="EditScheme.endDate" onchange=""  ng-blur="checkDates()" ng-change="getStall(stallss.id,false)"/>
+                            </div>
+                        </div>
+                        <div class="row search-padding-10" style="margin-bottom: 20px;">
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                计费设置:
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3">
+                                {{EditScheme.chargeSet}}
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                收费类型:
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3s">
+                                {{EditScheme.chargeTypeName}}
+                            </div>
+                        </div>
+                        <div class="row search-padding-10" ng-show="EditScheme.chargeSet=='01' ">
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                计费频率:
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3">
+                                {{EditScheme.chargeFre}}
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 text-right">
+                                自动计费时间:
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3">
+                                {{EditScheme.chargeTime}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal"  ng-click="clean()">取消</button>
+                    <button type="button" class="btn btn-primary" ng-click="saveEditScheme()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--修改方案 END-->
+
+    <!--收费项目使用范围-->
+    <div class="modal fade" id="range" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    使用范围
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <ul id="viewRangetree"  style="background-color: #fff;" class="ztree"></ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--收费项目使用范围 END-->
+
+</div>
+</body>
+</html>

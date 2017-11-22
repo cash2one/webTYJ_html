@@ -1,0 +1,411 @@
+/**
+ * Created by NM on 2018/1/18.
+ * 计费管理--停车月卡模块JS
+ */
+
+'use strict';
+
+define(function (require) {
+    var app = require('../../../../../app');
+
+    app.controller('parkingSpacesCtrl', ['$scope', '$http','$rootScope','$filter','$location', function ($scope,$http,$rootScope,$filter,$location) {
+
+        /******************************  定义变量start      *******************************************/
+
+        var url = $rootScope.url;                                       //定义url
+        $scope.productId = $rootScope.productId;                        //修改时获取传入的产品id
+        $scope.Product = {};                                            //定义产品对象
+        $scope.BuildingStructureNew = {};                               //定义建筑结构对象，存放车库信息
+        $scope.BuildingStructureNewList = [];                           //定义建筑结构数组
+        $scope.fullname = '';                                           //定义车库查询条件
+        var productid = '';//
+        productid = JSON.parse(localStorage.getItem("product_id"));
+
+        /******************************    定义变量end    *********************************************/
+
+
+        /******************************  页面载入函数start     *****************************************/
+
+            //查询相关产品信息
+        $scope.getProduct = function(){
+            if(productid != ''){
+                $http.post(url + '/Product/getProductByProductId/' + productid).success(function(data){
+                    $scope.Product = data.Product;
+
+                    if(angular.isDefined($scope.Product)){
+                        $scope.Product.effectDate = $filter('date')($scope.Product.effectDate,'yyyy-MM-dd');
+                        if(angular.isDefined($scope.Product.buildingstructruenewlist)){
+                            if(angular.isArray($scope.Product.buildingstructruenewlist)){
+                                for(var i = 0; i < $scope.Product.buildingstructruenewlist.length; i ++){
+                                    $scope.BuildingStructureNewList.push($scope.Product.buildingstructruenewlist[i]);
+                                }
+                            }else{
+                                $scope.BuildingStructureNewList.push($scope.Product.buildingstructruenewlist);
+                            }
+                        }
+                        /*for(var i = 0; i < $scope.BuildingStructureNewLists.length; i ++){
+                            for(var j = 0; j < $scope.BuildingStructureNewList.length; j ++){
+                                if($scope.BuildingStructureNewList[j].id == $scope.BuildingStructureNewLists[i].id){
+                                    document.getElementById($scope.BuildingStructureNewLists[i].id).checked = true;
+                                }
+                            }
+                        }*/
+                        $scope.addWaterCheck = $scope.BuildingStructureNewList;
+                        var children =[];
+                        var tasks = $scope.BuildingStructureNewList;
+                        for (var i = 0; i < tasks.length; i++) {
+                            $scope.zNode = {
+                                id: tasks[i].id,
+                                pId: tasks[i].parentId,
+                                name: tasks[i].nodeName,
+                                fullName: tasks[i].fullName,
+                                checked: true
+                            };
+                            $scope.zNodes.push($scope.zNode);
+                            if (tasks[i].children != null) {
+                                if (tasks[i].children.length == null) {
+                                    children.push(tasks[i].children);
+                                } else {
+                                    children = tasks[i].children;
+                                }
+                                for (var n = 0; n < children.length; n++) {
+                                    $scope.zNode = {
+                                        id: children[n].id,
+                                        pId: children[n].parentId,
+                                        name: children[n].nodeName,
+                                        fullName: children[n].fullName,
+                                        checked: true
+                                    };
+                                    $scope.zNodes.push($scope.zNode);
+                                }
+                            }
+                        }
+                        $.fn.zTree.init($("#treeDemo"), setting, $scope.zNodes);
+                        var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+                        var nodes = zTree.getNodes();
+                        nodes[0].name = "车库信息";
+                        zTree.updateNode(nodes[0]);
+                    }
+                }).error(function(data){
+                    layer.alert('没有对应的产品信息！',{icon : 2});
+                });
+            }
+        };
+
+        //查询相关车库信息
+        $scope.getGarage = function(){
+
+            $scope.BuildingStructureNew.fullName = $scope.fullname;
+            //$http.post(url + '/BuildingStructureNew/listIdAndfullNameByType',{BuildingStructureNew : $scope.BuildingStructureNew}).success(function(data){
+            $http.post(url + '/BuildingStructureNew/listAllByType').success(function(data){
+                $scope.BuildingStructureNewLists = data.BuildingStructureNew;
+                $scope.BuildingStructureNewLists= $scope.newDate($scope.BuildingStructureNewLists);
+                $scope.getProduct();
+
+            }).error(function(data){
+                layer.alert('查询车库信息出错！',{icon : 2});
+            });
+        };
+        $scope.getGarage();
+
+
+
+        /******************************  页面载入函数end   *********************************************/
+
+
+        /******************************  方法start  ***************************************************/
+
+            //将车库信息存入数组
+        /*$scope.chargeItem = function(item){
+            $scope.BuildingStructureNew = {};
+            $scope.BuildingStructureNew = item;
+            var temp = $scope.BuildingStructureNew.id;
+            if(document.getElementById(temp).checked == true){
+                $scope.BuildingStructureNewList.push($scope.BuildingStructureNew);
+            } else{
+                $scope.temps = [];
+                $scope.temps = $scope.BuildingStructureNewList;
+                $scope.BuildingStructureNewList = [];
+                for(var i =0; i < $scope.temps.length; i ++){
+                    if($scope.temps[i].id != item.id){
+                        $scope.BuildingStructureNewList.push($scope.temps[i]);
+                    }
+                }
+            }
+        };*/
+
+        //新增或修改停车月卡
+        $scope.addOrUpdateProduct = function() {
+            //设置产品属性为1
+            var areaCode = "440300";//深圳
+            var projectId = $scope.project.projectId;
+            var divideCode = "02";
+            var productTypeNumber = "01";
+            $http.post(url + '/ChargeTypeDetails/getCode').success(function (data) {
+                var serialNumber = data;
+                $http.post(url + '/ProductCommonservice/getProductNumber/' + areaCode + '/' + projectId + '/' + divideCode + '/' + productTypeNumber + '/' + serialNumber).success(function (data) {
+                    if (angular.isUndefined($scope.Product)) {
+                        layer.alert('产品参数未填！', {icon: 0});
+                        return;
+                    }
+                    var pName = app.get('valueCheck').isNull($scope.Product.productName);
+                    if (!pName.state) {
+                        layer.msg('产品名称' + pName.info, {icon: 0, time: 1000});
+                        return;
+                    }
+                    var pMonth = app.get('valueCheck').isNull($scope.Product.month);
+                    if (!pMonth.state) {
+                        layer.msg('使用时间' + pName.info, {icon: 0, time: 1000});
+                        return;
+                    }
+                    $scope.checkName();
+                    var pEffect = app.get('valueCheck').isNull($scope.Product.effectDate);
+                    if (!pEffect.state) {
+                        layer.msg('生效日期' + pEffect.info, {icon: 0, time: 1000});
+                        return;
+                    }
+                    var pExpiry = app.get('valueCheck').isNull($scope.Product.expiryDate);
+                    if (!pExpiry.state) {
+                        layer.msg('失效日期' + pEffect.info, {icon: 0, time: 1000});
+                        return;
+                    }
+
+                    var effectdate = $scope.Product.effectDate;
+                    var expiryedate = $scope.Product.expiryDate;
+                    //if(effectdate<date)
+                    //{
+                    //    layer.alert("请注意生效日期不能小于当先系统时间",{icon:1,time:2000});
+                    //    return;
+                    //}
+                    if (effectdate > expiryedate) {
+                        layer.alert("请注意生效日期与失效日期的顺序", {icon: 1, time: 2000});
+                        return;
+                    }
+                    var pPrice = app.get('valueCheck').isNumberAndNotNull($scope.Product.price);
+                    if (!pPrice.state) {
+                        layer.msg('金额' + pPrice.info, {icon: 0, time: 1000});
+                        return;
+                    }
+
+                    $scope.Product.productType = 1;
+                    $scope.Product.buildingstructruenewlist = $scope.BuildingStructureNewList;
+                    if ($scope.Product.buildingstructruenewlist.length == 0) {
+                        layer.msg('停车优惠卡必须绑定车库！', {icon: 0, time: 1000});
+                        return;
+                    }
+                    $scope.Product.productNum = data.code;
+                    //判断产品id是否存在，如果存在就修改，如果不存在就新增
+                    if (angular.isUndefined($scope.Product.productId) || $scope.Product.productId == null) {
+                        $http.post(url + '/Product/addProduct', {Product: $scope.Product}).success(function () {
+                            layer.alert('新增成功！', {icon: 1});
+                            var tcyks = document.getElementsByTagName("tcyk");
+                            if (tcyks.length > 0) {
+                                for (var i = 0; i < tcyks.length; i++) {
+                                    tcyks[i].checked = false;
+                                }
+                            }
+                            $location.path("/index/accountManagement/productAndProperty/product");
+                        }).error(function () {
+                            layer.alert('新增失败！', {icon: 2});
+                        });
+                    } else {
+                        $http.post(url + '/Product/updateProduct', {Product: $scope.Product}).success(function () {
+                            layer.alert('修改成功！', {icon: 1});
+                            $location.path("/index/accountManagement/productAndProperty/product");
+                        }).error(function () {
+                            layer.alert('修改失败！', {icon: 2});
+                        });
+                    }
+                });
+            });
+        };
+
+        //返回列表
+        $scope.backToProduct = function(){
+            $location.path("/index/accountManagement/productAndProperty/product");
+        };
+
+        /******************************  方法end  *****************************************************/
+
+        /**
+         * 重新排组数据结构
+         */
+        $scope.newDate=function(array){
+            for(var i=0;i<array.length;i++){
+                if(array[i].children){
+                    if(!isArray(array[i].children)){
+                        var children_copy=array[i].children;
+                        var childArray=[];
+                        childArray.push(children_copy);
+                        array[i].children=childArray;
+                    }
+                }
+            }
+            return array;
+        }
+
+        /**
+         * 判断对象是否是数组
+         * @creat by xiaocong
+         * @data 2015/12/25
+         * @param obj
+         * @returns {boolean}
+         */
+        function isArray(obj) {
+            return Object.prototype.toString.call(obj) === '[object Array]';
+        }
+
+        /**
+         * 判断产品名称是否重复
+         * 王洲
+         * 2016.04.22
+         */
+        $scope.checkNames = false;
+        $scope.checkName = function(){
+            if(app.get('valueCheck').isNull($scope.Product.productName).state){
+                $scope.check = {productId : '',productName : ''};
+                $scope.check.productId = productid;
+                $scope.check.productName = $scope.Product.productName;
+                $http.post(url + '/Product/checkProductName',{Product : $scope.check}).success(function(data){
+                    $scope.checkNames = data.Info.state;
+                    if(!$scope.checkNames){
+                        layer.msg('此产品名称已存在，请重试！',{icon : 0,time : 1000});
+                    }
+                }).error(function(data){
+                    layer.msg('数据查询异常，请重试！',{icon : 0,time : 1000});
+                });
+            }
+        };
+
+        /**
+         * 打开选择车库模态框
+         * 陈浪
+         * 2016-04-29 10:12:03
+         */
+        $scope.openBuilding = function(){
+            $("#chooseBuild").modal({backdrop:'static',keyboard:false});
+        };
+        var zTreeOnCheck=function(event, treeId, treeNode) {
+            var treeObj=$.fn.zTree.getZTreeObj("treeDemo");
+            var nodes=treeObj.getCheckedNodes(true);
+            $scope.treeResult={treeList:[]};
+            for(var i=0;i<nodes.length;i++){
+                if(nodes[i].isParent==false) {
+                    $scope.treeResult.treeList.push(nodes[i]);
+                }
+                if(nodes[i].check_Child_State == -1)
+                {
+                    $rootScope.addressIdT=nodes[i].id;
+                }
+            }
+        };
+        var setting = {
+            check:{
+                enable:true
+            },
+            view: {
+                selectedMulti: false
+            },
+            edit: {
+                enable: false,
+                editNameSelectAll: false
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            },
+            callback: {
+                onCheck:zTreeOnCheck
+            }
+        };
+
+        $scope.addWaterCheck = [];
+
+        //查询所有建筑结构信息.
+        $scope.zNodes =[{}];
+        $http.post(url+'/BuildingStructureNew/listAllByType').success(function(data){
+            //获取json数据
+            $scope.buildingStructureNews = data.BuildingStructureNew;
+            var tasks =  $scope.buildingStructureNews;
+            var children =[];
+            if(tasks!=null){
+                for(var i=0;i<tasks.length;i++){
+                    $scope.zNode ={ id:tasks[i].id, pId:tasks[i].parentId, name:tasks[i].nodeName,fullName:tasks[i].fullName,checked:tasks[i].checked};
+                    $scope.zNodes.push($scope.zNode);
+                    if(tasks[i].children!=null){
+                        if(tasks[i].children.length==null){
+                            children.push(tasks[i].children);
+                        }else{
+                            children = tasks[i].children;
+                        }
+                        for(var n=0;n<children.length;n++){
+                            $scope.zNode ={ id:children[n].id, pId:children[n].parentId, name:children[n].nodeName,fullName:children[n].fullName,checked:children[n].checked};
+                            $scope.zNodes.push($scope.zNode);
+                        }
+                    }
+                }
+                $.fn.zTree.init($("#treeDemo"), setting, $scope.zNodes);
+                var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+                var nodes = zTree.getNodes();
+                nodes[0].name = "车库信息";
+                zTree.updateNode(nodes[0]);
+                if($scope.addWaterCheck.length > 0){
+                    for(var j = 0; j < $scope.addWaterCheck.length; j++){
+                        var node = zTree.getNodeByParam("id",$scope.addWaterCheck[j].id);
+                        zTree.checkNode(node);
+                        zTree.selectNode(node);
+                    }
+                }
+            }
+        }).error(function(data,status,headers,config){
+            layer.alert('建筑信息查询失败！',{icon : 0,time : 1000});
+        });
+
+        /**
+         * 显示选中的树状数据
+         */
+        $scope.addWaterReading = function(){
+            console.log($scope.treeResult);
+            if($scope.treeResult.treeList instanceof Array &&$scope.treeResult.treeList.length==0)
+            {
+                layer.msg('请选择车库！',{icon : 0});
+                return;
+            }
+            if($scope.treeResult.treeList[0]!=null&&$scope.treeResult.treeList[0].name!='车库信息'){
+                $scope.addWaterCheck = $scope.treeResult.treeList;
+            }
+
+        };
+
+        /**
+         * 删除已选中的车库
+         */
+        $scope.removeItem=function(index,item){
+            var treeObj=$.fn.zTree.getZTreeObj("treeDemo");
+            var node ={id:item.id, pId:item.pId, name:item.nodeName,fullName:item.fullName,checked:false};
+            var parentNode=treeObj.getNodeByParam("id",item.id,null);
+            treeObj.checkNode(parentNode, false, true);
+            $scope.addWaterCheck.splice(index,1);
+        };
+
+        /**
+         * 清空已勾选的车库
+         */
+        $scope.remove_all = function()
+        {
+            console.log($scope.zNodes);
+            var treeObj=$.fn.zTree.getZTreeObj("treeDemo");
+            $scope.addWaterCheck = null;
+            treeObj.checkAllNodes(false);
+        };
+
+
+        /**
+         * 获取选中的车库
+         */
+        $scope.addBuildingToProduct= function () {
+            $scope.BuildingStructureNewList = $scope.treeResult.treeList;
+        };
+    }]);
+});

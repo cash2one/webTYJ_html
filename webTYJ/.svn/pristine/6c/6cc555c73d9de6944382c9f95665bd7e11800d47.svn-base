@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div id="content-first">
+    <!--方案列表-->
+    <div ng-show="show2">
+        <div class="row padding">
+            <div class="col-lg-12">
+                <div class="search-padding-10">
+                    <div class="search-padding-10">
+                        <button type="button" class="btn btn-default btn-primary" class="cursor_pointer" ng-click="addPlan()">
+                            <span class="glyphicon glyphicon-plus btn_icon"></span>新增
+                        </button>
+                        <button type="button" class="btn btn-default btn-primary" ng-click="editPlan()">
+                            <span class="glyphicon glyphicon-edit btn_icon"></span>编辑
+                        </button>
+                        <button type="button" class="btn btn-default btn-primary" ng-click="deletePlan()">
+                            <span class="glyphicon glyphicon-remove btn_icon"></span>失效
+                        </button>
+                    </div>
+                </div>
+                <!--数据显示开始-->
+                <div class="search-padding-10">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>编号</th>
+                                <th>收费项目名称</th>
+                                <th>优先级</th>
+                                <th>账户类型</th>
+                                <th>启用状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr  ng-repeat="item in currentProduct.object.chargetypes" ng-show="item.chargeTypeId != null">
+                                <td style="width: 10%; overflow: hidden; text-overflow: ellipsis;"><input type="checkbox" ng-click="getCheckBoxs(item.chargeTypeId)" /></td>
+                                <td>{{item.chargeTypeNum}}</td>
+                                <td>{{item.chargeTypeName}}</td>
+                                <td>{{item.chargeTypePriority}}</td>
+                                <td style="width: 10%; overflow: hidden; text-overflow: ellipsis;" ng-switch on="item.accountType">
+                                    <span ng-switch-when="0">资产账户</span>
+                                    <span ng-switch-when="1">押金账户</span>
+                                </td>
+                                <td style="width: 10%; overflow: hidden; text-overflow: ellipsis;" ng-switch on="item.chargeTypeStatus">
+                                    <span ng-switch-when="0">已启用</span>
+                                    <span ng-switch-when="1">未启用</span>
+                                    <span ng-switch-when="2">失效</span>
+                                </td>
+                                <td><a ng-click="getSchemeScope(item.chargeTypeId)" data-target="#viewDatil" class="btn btn-default btn-primary">查看详情</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!--分页开始-->
+                    <div class="padding">
+                        <div class="bill_paging">
+                            <span>共{{currentProduct.object.page.totalResult}}条</span>
+                            <ul class="pagination">
+                                <li ng-class="{true:'disabled'}[currentProduct.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-click="currentProduct.go(1)">首页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[currentProduct.page.currentPage==1]">
+                                    <a href="javascript:void(0)" ng-show="currentProduct.hasPrevious()"
+                                       ng-click="currentProduct.previous()">上一页</a>
+                                </li>
+                                <li ng-class="{true:'active'}[currentProduct.page.currentPage==i]"
+                                    ng-repeat="i in currentProduct.pages">
+                                    <a href="javascript:void(0)" ng-click="currentProduct.go(i)">{{i}}</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[currentProduct.page.currentPage==currentProduct.page.totalPage]">
+                                    <a href="javascript:void(0)" ng-show="currentProduct.hasNext()"
+                                       ng-click="currentProduct.next()">下一页</a>
+                                </li>
+                                <li ng-class="{true:'disabled'}[currentProduct.page.currentPage==currentProduct.page.totalPage]">
+                                    <a href="javascript:void(0)"
+                                       ng-click="currentProduct.go(currentProduct.page.totalPage)">尾页</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--新建框开始-->
+    <div class="modal fade ng-scope in" id="personDatil" role="dialog" aria-label="personDatil" aria-hidden="false"><div class="modal-backdrop fade in" style="height: 666px;"></div>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>新增收费项目:</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" >
+                    <span aria-hidden="true" ng-click="cancelChargeType()">×</span>
+                </button>
+            </div>
+            <!--内容框开始-->
+            <div class="modal-body">
+                <div class="sel1">
+                    <div class="row search-padding-10">
+                        <div class="col-xs-2 text-right">收费项目名称：</div>
+                        <div class="col-lg-3 col-md-4 col-sm-4"><input ng-model="newchargeType.chargeTypeName" class="form-control" placeholder="请输入收费项目名称"></div>
+                        <div class="col-lg-1 col-md-2 col-sm-2"><span style="color: red">*</span></div>
+                        <div class="col-xs-2 text-right">优先级：</div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <select  class="form-control" ng-model="newchargeType.chargeTypePriority" ng-options="a.description as a.description for a in priority">
+                                <option value="">--请选择--</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-1 col-md-2 col-sm-2"><span style="color: red">*</span></div>
+                    </div>
+                    <div class="row search-padding-10">
+                        <div class="col-xs-2 text-right">启用状态：</div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <select class="form-control" ng-model="newchargeType.chargeTypeStatus" ng-options="a.slaveName as a.description for a in startType">
+
+                            </select>
+                        </div>
+                        <div class="col-lg-1 col-md-2 col-sm-2"><span style="color: red">*</span></div>
+                        <div class="col-xs-2 text-right">账户类型：</div>
+                        <div class="col-lg-3 col-md-4 col-sm-4">
+                            <select class="form-control" ng-model="newchargeType.accountType" ng-options="a.slaveName as a.description for a in accountType">
+
+                            </select>
+                        </div>
+                        <div class="col-lg-1 col-md-2 col-sm-2"><span style="color: red">*</span></div>
+                        <div class="col-lg-1 col-md-2 col-sm-2"></div>
+                        <div class="row search-padding-10">
+                            <button type="button" class="btn btn-default btn-primary" ng-click="addItem()">
+                                新建
+                            </button>
+                        </div>
+                    </div>
+                    <div class="search-padding-10">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>收费详情</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="item in chargeTypeDetailsList">
+                                <td>{{item.chargeTypeDetailsName}}</td>
+                                <td>
+                                    <button type="button" class="btn btn-default" ng-click="deleteItem($index)">删除</button>
+                                </td>
+                            </tr>
+                            <tr ng-show="editItem">
+                                <td><input class="form-control" ng-model="chargeTypeDetails.chargeTypeDetailsName"></td>
+                                <td>
+                                    <button type="button" class="btn btn-default btn-primary" ng-click="addSave()">保存</button>
+                                    <button type="button" class="btn btn-default" ng-click="addCancel()">取消</button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!--内容框结束-->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close" ng-click="cancelChargeType()">
+                    取消
+                </button>
+                <button type="button" ng-click="addChargeType();" class="btn btn-default btn-primary">
+                    提交
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+    <!--新建框结束-->
+
+
+    <!--修改框开始-->
+    <div class="modal fade ng-scope in" id="editDatil" role="dialog" aria-label="editDatil" aria-hidden="false"><div class="modal-backdrop fade in" style="height: 666px;"></div>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span>修改收费项目:</span>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true" ng-click="cancelChargeType()">×</span>
+                    </button>
+                </div>
+                <!--内容框开始-->
+                <div class="modal-body">
+                    <div class="sel1">
+                        <div class="row search-padding-10">
+                            <div class="col-xs-2 text-right">收费项目名称：</div>
+                            <div class="col-lg-3 col-md-4 col-sm-4"><input ng-model="editchargeType.chargeTypeName" class="form-control" placeholder="请输入收费项目名称"></div>
+                            <div class="col-lg-1 col-md-2 col-sm-2"><span style="color: red">*</span></div>
+                            <div class="col-xs-2 text-right">优先级：</div>
+                            <div class="col-lg-3 col-md-4 col-sm-4">
+                                <select  class="form-control" ng-model="editchargeType.chargeTypePriority" ng-options="a.description as a.description for a in priority">
+                                </select>
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2"><span style="color: red">*</span></div>
+                        </div>
+                        <div class="row search-padding-10">
+                            <div class="col-xs-2 text-right">启用状态：</div>
+                            <div class="col-lg-3 col-md-4 col-sm-4">
+                                <select class="form-control" ng-model="editchargeType.chargeTypeStatus" ng-options="a.slaveName as a.description for a in startType">
+
+                                </select>
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2"><span style="color: red">*</span></div>
+                            <div class="col-xs-2 text-right">账户类型：</div>
+                            <div class="col-lg-3 col-md-4 col-sm-4">
+                                <select class="form-control" ng-model="editchargeType.accountType" ng-options="a.slaveName as a.description for a in accountType">
+
+                                </select>
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-2"><span style="color: red">*</span></div>
+                            <div class="col-lg-1 col-md-2 col-sm-2"></div>
+                            <div class="row search-padding-10">
+                                <button type="button" class="btn btn-default btn-primary" ng-click="addItem()">
+                                    新建
+                                </button>
+                            </div>
+                        </div>
+                        <div class="search-padding-10">
+                            <table>
+                                <thead>
+                                <tr>
+                                    <th>收费详情</th>
+                                    <th>操作</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="item in chargeTypeDetailsList">
+                                    <td>{{item.chargeTypeDetailsName}}</td>
+                                    <td>
+                                        <button type="button" class="btn btn-default" ng-click="deleteItem($index)">删除</button>
+                                    </td>
+                                </tr>
+                                <tr ng-show="editItem">
+                                    <td><input class="form-control" ng-model="chargeTypeDetails.chargeTypeDetailsName"></td>
+                                    <td>
+                                        <button type="button" class="btn btn-default btn-primary" ng-click="addSave()">保存</button>
+                                        <button type="button" class="btn btn-default" ng-click="addCancel()">取消</button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!--内容框结束-->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close" ng-click="cancelChargeType()">
+                        取消
+                    </button>
+                    <button type="button" ng-click="editChargeType();" class="btn btn-default btn-primary">
+                        提交
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--修改框结束-->
+
+
+    <!--查看详情框开始-->
+    <div class="modal fade ng-scope in" id="viewDatil" role="dialog" aria-label="personDatil" aria-hidden="false">
+        <div class="modal-backdrop fade in" style="height: 666px;"></div>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span>查看详情:</span>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" ng-click="cancelChargeType()">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <!--内容框开始-->
+                <div class="modal-body">
+                    <div class="sel1">
+                        <div class="search-padding-10">
+                            <table>
+                                <thead>
+                                <tr>
+                                    <th>收费项目名称</th>
+                                    <th>收费项目编号</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="item in chargeTypeDetails" ng-show="item.chargeTypeDetailsId != null" class="{'navigation_info':btnIndex==item}">
+                                    <td>{{item.chargeTypeDetailsName}}</td>
+                                    <td>{{item.chargeTypeDetailsNum}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!--内容框结束-->
+                <div class="modal-footer">
+                    <div class="save_concel_botton icon_float_else">
+                        <a href="" class="radius_all button_bule" data-dismiss="modal" aria-label="Close">关闭</a>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--查看详情框结束-->
+</div>
+</body>
+</html>
